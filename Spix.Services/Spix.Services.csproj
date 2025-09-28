@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Spix.AppInfra\Spix.AppInfra.csproj" />
+    <ProjectReference Include="..\Spix.DomainLogic\Spix.DomainLogic.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,20 @@
+﻿/* Cambiar color de fondo del botón activo */
+.pagination .page-item.active .page-link {
+    background-color: #6c757d; /* Gris */
+    border-color: #6c757d;
+    color: white;
+}
+
+/* Cambiar color del botón al pasar el mouse (opcional) */
+.pagination .page-item .page-link:hover {
+    background-color: #5a6268; /* Gris oscuro */
+    border-color: #5a6268;
+    color: white;
+}
+
+/* Botones deshabilitados */
+.pagination .page-item.disabled .page-link {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #6c757d;
+}

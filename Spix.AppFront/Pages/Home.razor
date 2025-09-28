@@ -1,4 +1,6 @@
-﻿@page "/"
+﻿@page "/dashboard"
+@attribute [Authorize(Roles = "Admin, Administrator, Member")]
+
 
 <PageTitle>Home</PageTitle>
 

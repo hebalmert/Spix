@@ -1,0 +1,26 @@
+﻿
+    <div class="modal show d-block fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">@Localizer[nameof(Resource.LogoutTitle)]</h5>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                <p>@Localizer[nameof(Resource.LogoutMsg)]</p>
+                </div>
+                <div class="modal-footer">
+                <button class="btn btn-gradient-primary" @onclick="ConfirmLogout">
+                    <i class="fa fa-right-from-bracket me-2"></i> @Localizer[nameof(Resource.ButtonLogout)]
+                </button>
+                <button class="btn btn-gradient-black" @onclick="CloseModal">
+                    <i class="fa fa-arrow-left me-2"></i> @Localizer[nameof(Resource.ButtonCancel)]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop fade show"></div>
+
+
