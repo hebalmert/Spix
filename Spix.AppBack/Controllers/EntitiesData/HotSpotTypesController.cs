@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.Domain.EntitiesData;
 using Spix.DomainLogic.Pagination;
 using Spix.UnitOfWork.InterfacesEntitiesData;
@@ -25,57 +26,92 @@ public class HotSpotTypesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<HotSpotType>>> GetAll([FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
     {
-        var response = await _hotSpotTypeUnitOfWork.GetAsync(pagination);
-        if (!response.WasSuccess)
+        try
         {
-            return BadRequest(response.Message);
+            var response = await _hotSpotTypeUnitOfWork.GetAsync(pagination);
+            return ResponseHelper.Format(response);
         }
-        return Ok(response.Result);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(int id)
     {
-        var response = await _hotSpotTypeUnitOfWork.GetAsync(id);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            var response = await _hotSpotTypeUnitOfWork.GetAsync(id);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 
     [HttpPut]
-    public async Task<ActionResult<HotSpotType>> PutAsync(HotSpotType modelo)
+    public async Task<IActionResult> PutAsync(HotSpotType modelo)
     {
-        var response = await _hotSpotTypeUnitOfWork.UpdateAsync(modelo);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            var response = await _hotSpotTypeUnitOfWork.UpdateAsync(modelo);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 
     [HttpPost]
-    public async Task<ActionResult<HotSpotType>> PostAsync(HotSpotType modelo)
+    public async Task<IActionResult> PostAsync(HotSpotType modelo)
     {
-        var response = await _hotSpotTypeUnitOfWork.AddAsync(modelo);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            var response = await _hotSpotTypeUnitOfWork.AddAsync(modelo);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<bool>> DeleteAsync(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
-        var response = await _hotSpotTypeUnitOfWork.DeleteAsync(id);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            var response = await _hotSpotTypeUnitOfWork.DeleteAsync(id);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 }
