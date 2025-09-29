@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesData;
+using Spix.Domain.EntitiesGen;
 using System.Reflection;
 
 namespace Spix.AppInfra;
@@ -40,6 +41,21 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Security> Securities => Set<Security>();
     public DbSet<HotSpotType> HotSpotTypes => Set<HotSpotType>();
     public DbSet<ChainType> ChainTypes => Set<ChainType>();
+
+    //EntitiesGen
+
+    public DbSet<Register> Registers => Set<Register>();
+    public DbSet<DocumentType> DocumentTypes => Set<DocumentType>();
+    public DbSet<Zone> Zones => Set<Zone>();
+    public DbSet<Mark> Marks => Set<Mark>();
+    public DbSet<MarkModel> MarkModels => Set<MarkModel>();
+    public DbSet<Tax> Taxes => Set<Tax>();
+    public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
+    public DbSet<ServiceClient> ServiceClients => Set<ServiceClient>();
+    public DbSet<PlanCategory> PlanCategories => Set<PlanCategory>();
+    public DbSet<Plan> Plans => Set<Plan>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

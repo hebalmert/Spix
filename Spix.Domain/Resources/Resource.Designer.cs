@@ -1681,7 +1681,7 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must select a valid {0}.
+        ///   Looks up a localized string similar to You must select between {1} and {2}.
         /// </summary>
         public static string Validation_Range {
             get {

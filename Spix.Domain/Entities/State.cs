@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Spix.Domain.EntitiesGen;
 using Spix.Domain.Resources;
+using System.ComponentModel.DataAnnotations;
 
 namespace Spix.Domain.Entities;
 
@@ -22,4 +23,6 @@ public class State
     public Country? Country { get; set; }
 
     public ICollection<City>? Cities { get; set; }
+
+    public ICollection<Zone>? Zones { get; set; }
 }

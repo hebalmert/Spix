@@ -122,7 +122,7 @@
     <value>Passwords do not match</value>
   </data>
   <data name="Validation_Range" xml:space="preserve">
-    <value>You must select a valid {0}</value>
+    <value>You must select between {1} and {2}</value>
   </data>
   <data name="Validation_Required" xml:space="preserve">
     <value>The Field is required</value>

@@ -122,7 +122,7 @@
     <value>Las contraseñas no coinciden</value>
   </data>
   <data name="Validation_Range" xml:space="preserve">
-    <value>Debes seleccionar un {0} válido</value>
+    <value>Debe Seleccionar entre {1} y {2}</value>
   </data>
   <data name="Validation_Required" xml:space="preserve">
     <value>El campo es obligatorio</value>
