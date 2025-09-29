@@ -6,6 +6,7 @@ using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
+using Spix.AppInfra.Validations;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.Enum;
 using Spix.Domain.Resources;
@@ -96,7 +97,7 @@ public class FrecuencyService : IFrecuencyService
                 return new ActionResponse<Frecuency>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_RegisterNotFound)]
                 };
             }
 
@@ -114,6 +115,14 @@ public class FrecuencyService : IFrecuencyService
 
     public async Task<ActionResponse<Frecuency>> UpdateAsync(Frecuency modelo)
     {
+        if (modelo == null || modelo.FrecuencyId <= 0)
+        {
+            return new ActionResponse<Frecuency>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidId)]
+            };
+        }
         await _transactionManager.BeginTransactionAsync();
 
         try
@@ -138,6 +147,14 @@ public class FrecuencyService : IFrecuencyService
 
     public async Task<ActionResponse<Frecuency>> AddAsync(Frecuency modelo)
     {
+        if (!ValidatorModel.IsValid(modelo, out var errores))
+        {
+            return new ActionResponse<Frecuency>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
         await _transactionManager.BeginTransactionAsync();
         try
         {
@@ -169,7 +186,7 @@ public class FrecuencyService : IFrecuencyService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 

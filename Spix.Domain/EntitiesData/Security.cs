@@ -1,5 +1,4 @@
-﻿using Spix.Domain.EntitiesNet;
-using Spix.Domain.Resources;
+﻿using Spix.Domain.Resources;
 using System.ComponentModel.DataAnnotations;
 
 namespace Spix.Domain.EntitiesData;
@@ -19,5 +18,5 @@ public class Security
 
     //Relaciones
 
-    public ICollection<Node>? Nodes { get; set; }
+    //public ICollection<Node>? Nodes { get; set; }
 }

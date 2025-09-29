@@ -5,6 +5,7 @@ using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
+using Spix.AppInfra.Validations;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.Enum;
 using Spix.Domain.Resources;
@@ -95,7 +96,7 @@ public class ChannelService : IChannelService
                 return new ActionResponse<Channel>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_RegisterNotFound)]
                 };
             }
 
@@ -113,6 +114,14 @@ public class ChannelService : IChannelService
 
     public async Task<ActionResponse<Channel>> UpdateAsync(Channel modelo)
     {
+        if (modelo == null || modelo.ChannelId <= 0)
+        {
+            return new ActionResponse<Channel>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidId)]
+            };
+        }
         await _transactionManager.BeginTransactionAsync();
 
         try
@@ -137,6 +146,14 @@ public class ChannelService : IChannelService
 
     public async Task<ActionResponse<Channel>> AddAsync(Channel modelo)
     {
+        if (!ValidatorModel.IsValid(modelo, out var errores))
+        {
+            return new ActionResponse<Channel>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
         await _transactionManager.BeginTransactionAsync();
         try
         {
@@ -168,7 +185,7 @@ public class ChannelService : IChannelService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 

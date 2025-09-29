@@ -550,53 +550,11 @@
   <data name="Select_B_Document" xml:space="preserve">
     <value>[Select Document]</value>
   </data>
-  <data name="Edit_Cro" xml:space="preserve">
-    <value>Edit Cro</value>
-  </data>
-  <data name="Create_Cro" xml:space="preserve">
-    <value>Create Cro</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
-  <data name="Edit_DocumentType" xml:space="preserve">
-    <value>Edit Document Type</value>
-  </data>
-  <data name="Create_DocumentType" xml:space="preserve">
-    <value>Create Document Type</value>
-  </data>
   <data name="DocumentType" xml:space="preserve">
     <value>Document Type</value>
-  </data>
-  <data name="Edit_Enrolling" xml:space="preserve">
-    <value>Edit Enrolling</value>
-  </data>
-  <data name="Create_Enrolling" xml:space="preserve">
-    <value>Create Enrolling</value>
-  </data>
-  <data name="Edit_Indication" xml:space="preserve">
-    <value>Edit Indication</value>
-  </data>
-  <data name="Create_Indication" xml:space="preserve">
-    <value>Create Indication</value>
-  </data>
-  <data name="Edit_Irb" xml:space="preserve">
-    <value>Edit IRB</value>
-  </data>
-  <data name="Create_IRB" xml:space="preserve">
-    <value>Create IRB</value>
-  </data>
-  <data name="Edit_Sponsor" xml:space="preserve">
-    <value>Edit Sponsor</value>
-  </data>
-  <data name="Create_Sponsor" xml:space="preserve">
-    <value>Create Sponsor</value>
-  </data>
-  <data name="Edit_Therapeutic" xml:space="preserve">
-    <value>Edit Therapeutic</value>
-  </data>
-  <data name="Create_Therapeutic" xml:space="preserve">
-    <value>Create Therapeutic</value>
   </data>
   <data name="ButtonEdit" xml:space="preserve">
     <value>Edit</value>
@@ -624,5 +582,71 @@
   </data>
   <data name="Select_B_Frecuency" xml:space="preserve">
     <value>[Select Frecuency]</value>
+  </data>
+  <data name="Create_ChainType" xml:space="preserve">
+    <value>Create ChainType</value>
+  </data>
+  <data name="Edit_ChainType" xml:space="preserve">
+    <value>Edit ChainType</value>
+  </data>
+  <data name="ChainType" xml:space="preserve">
+    <value>Chain Type</value>
+  </data>
+  <data name="Edit_Channel" xml:space="preserve">
+    <value>Edit Channel</value>
+  </data>
+  <data name="Create_Channel" xml:space="preserve">
+    <value>Create Channel</value>
+  </data>
+  <data name="Channel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="Create_Hotspot" xml:space="preserve">
+    <value>Create HotSpot</value>
+  </data>
+  <data name="Edit_Hotspot" xml:space="preserve">
+    <value>Edit Hotspot</value>
+  </data>
+  <data name="Hotspot" xml:space="preserve">
+    <value>HotSpot</value>
+  </data>
+  <data name="Edit_Operation" xml:space="preserve">
+    <value>Edit Operation</value>
+  </data>
+  <data name="Create_Operation" xml:space="preserve">
+    <value>Create Operation</value>
+  </data>
+  <data name="Operacion" xml:space="preserve">
+    <value>Operation</value>
+  </data>
+  <data name="Create_Security" xml:space="preserve">
+    <value>Create Security</value>
+  </data>
+  <data name="Edit_Security" xml:space="preserve">
+    <value>Edit Security</value>
+  </data>
+  <data name="Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Edit_FrecuencyType" xml:space="preserve">
+    <value>Edit Frecuency Type</value>
+  </data>
+  <data name="Create_FrecuencyType" xml:space="preserve">
+    <value>Create_FrecuencyType</value>
+  </data>
+  <data name="FrecuencyType" xml:space="preserve">
+    <value>Frecuency Type</value>
+  </data>
+  <data name="Frecuencies" xml:space="preserve">
+    <value>Frecuencies</value>
+  </data>
+  <data name="Frecuency" xml:space="preserve">
+    <value>Frecuency</value>
+  </data>
+  <data name="Create_Frecuency" xml:space="preserve">
+    <value>Create Frecuency</value>
+  </data>
+  <data name="Edit_Frecuency" xml:space="preserve">
+    <value>Edit Frecuency</value>
   </data>
 </root>

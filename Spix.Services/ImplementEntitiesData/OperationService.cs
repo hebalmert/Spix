@@ -5,6 +5,7 @@ using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
+using Spix.AppInfra.Validations;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.Enum;
 using Spix.Domain.Resources;
@@ -94,7 +95,7 @@ public class OperationService : IOperationService
                 return new ActionResponse<Operation>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_RegisterNotFound)]
                 };
             }
 
@@ -112,6 +113,14 @@ public class OperationService : IOperationService
 
     public async Task<ActionResponse<Operation>> UpdateAsync(Operation modelo)
     {
+        if (modelo == null || modelo.OperationId <= 0)
+        {
+            return new ActionResponse<Operation>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidId)]
+            };
+        }
         await _transactionManager.BeginTransactionAsync();
 
         try
@@ -136,6 +145,14 @@ public class OperationService : IOperationService
 
     public async Task<ActionResponse<Operation>> AddAsync(Operation modelo)
     {
+        if (!ValidatorModel.IsValid(modelo, out var errores))
+        {
+            return new ActionResponse<Operation>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
         await _transactionManager.BeginTransactionAsync();
         try
         {
@@ -167,7 +184,7 @@ public class OperationService : IOperationService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 

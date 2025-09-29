@@ -12,8 +12,8 @@ using Spix.AppInfra;
 namespace Spix.AppBack.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250927182415_InititialDB")]
-    partial class InititialDB
+    [Migration("20250929155346_InitialDb")]
+    partial class InitialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -668,6 +668,175 @@ namespace Spix.AppBack.Migrations
                     b.ToTable("UserRoleDetails");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesData.ChainType", b =>
+                {
+                    b.Property<int>("ChainTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChainTypeId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ChainName")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.HasKey("ChainTypeId");
+
+                    b.HasIndex("ChainName")
+                        .IsUnique();
+
+                    b.ToTable("ChainTypes");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesData.Channel", b =>
+                {
+                    b.Property<int>("ChannelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChannelId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ChannelName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("ChannelId");
+
+                    b.HasIndex("ChannelName")
+                        .IsUnique();
+
+                    b.ToTable("Channels");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesData.Frecuency", b =>
+                {
+                    b.Property<int>("FrecuencyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FrecuencyId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("FrecuencyName")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FrecuencyTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FrecuencyId");
+
+                    b.HasIndex("FrecuencyTypeId", "FrecuencyName")
+                        .IsUnique();
+
+                    b.ToTable("Frecuencies");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesData.FrecuencyType", b =>
+                {
+                    b.Property<int>("FrecuencyTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FrecuencyTypeId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("FrecuencyTypeId");
+
+                    b.HasIndex("TypeName")
+                        .IsUnique();
+
+                    b.ToTable("FrecuencyTypes");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesData.HotSpotType", b =>
+                {
+                    b.Property<int>("HotSpotTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HotSpotTypeId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.HasKey("HotSpotTypeId");
+
+                    b.HasIndex("TypeName")
+                        .IsUnique();
+
+                    b.ToTable("HotSpotTypes");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesData.Operation", b =>
+                {
+                    b.Property<int>("OperationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OperationId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OperationName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("OperationId");
+
+                    b.HasIndex("OperationName")
+                        .IsUnique();
+
+                    b.ToTable("Operations");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesData.Security", b =>
+                {
+                    b.Property<int>("SecurityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SecurityId"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("SecurityId");
+
+                    b.HasIndex("SecurityName")
+                        .IsUnique();
+
+                    b.ToTable("Securities");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -820,6 +989,17 @@ namespace Spix.AppBack.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesData.Frecuency", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesData.FrecuencyType", "FrecuencyType")
+                        .WithMany("Frecuencies")
+                        .HasForeignKey("FrecuencyTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FrecuencyType");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitesSoftSec.Usuario", b =>
                 {
                     b.Navigation("UsuarioRoles");
@@ -854,6 +1034,11 @@ namespace Spix.AppBack.Migrations
             modelBuilder.Entity("Spix.Domain.Entities.User", b =>
                 {
                     b.Navigation("UserRoleDetails");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesData.FrecuencyType", b =>
+                {
+                    b.Navigation("Frecuencies");
                 });
 #pragma warning restore 612, 618
         }

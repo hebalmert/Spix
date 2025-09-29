@@ -5,6 +5,7 @@ using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
+using Spix.AppInfra.Validations;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.Enum;
 using Spix.Domain.Resources;
@@ -94,7 +95,7 @@ public class SecurityService : ISecurityService
                 return new ActionResponse<Security>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_RegisterNotFound)]
                 };
             }
 
@@ -112,8 +113,15 @@ public class SecurityService : ISecurityService
 
     public async Task<ActionResponse<Security>> UpdateAsync(Security modelo)
     {
+        if (modelo == null || modelo.SecurityId <= 0)
+        {
+            return new ActionResponse<Security>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidId)]
+            };
+        }
         await _transactionManager.BeginTransactionAsync();
-
         try
         {
             _context.Securities.Update(modelo);
@@ -136,6 +144,15 @@ public class SecurityService : ISecurityService
 
     public async Task<ActionResponse<Security>> AddAsync(Security modelo)
     {
+        if (!ValidatorModel.IsValid(modelo, out var errores))
+        {
+            return new ActionResponse<Security>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
+
         await _transactionManager.BeginTransactionAsync();
         try
         {
@@ -167,7 +184,7 @@ public class SecurityService : ISecurityService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 
