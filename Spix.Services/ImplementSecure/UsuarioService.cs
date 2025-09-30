@@ -216,7 +216,7 @@ public class UsuarioService : IUsuarioService
                     if (response.IsSuccess == false)
                     {
                         var guid = modelo.Photo;
-                        _fileStorage.DeleteImage(_imgOption.ImgUsuario, guid!);
+                        await _fileStorage.RemoveFileAsync(_imgOption.ImgUsuario, guid!);
                         await _transactionManager.RollbackTransactionAsync();
                         return new ActionResponse<Usuario>
                         {
@@ -292,7 +292,7 @@ public class UsuarioService : IUsuarioService
                 if (response.IsSuccess == false)
                 {
                     var guid = modelo.Photo;
-                    _fileStorage.DeleteImage(_imgOption.ImgUsuario, guid!);
+                    await _fileStorage.RemoveFileAsync(_imgOption.ImgUsuario, guid!);
                     await _transactionManager.RollbackTransactionAsync();
                     return new ActionResponse<Usuario>
                     {
@@ -337,7 +337,7 @@ public class UsuarioService : IUsuarioService
 
             if (DataRemove.Photo is not null)
             {
-                var response = _fileStorage.DeleteImage(_imgOption.ImgUsuario, DataRemove.Photo);
+                var response = await _fileStorage.RemoveFileAsync(_imgOption.ImgUsuario, DataRemove.Photo);
                 if (!response)
                 {
                     return new ActionResponse<bool>
