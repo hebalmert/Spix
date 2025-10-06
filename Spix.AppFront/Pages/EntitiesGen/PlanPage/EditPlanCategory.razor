@@ -1,0 +1,17 @@
+﻿@page "/plancategories/edit/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (PlanCategory is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormPlanCategory PlanCategory="PlanCategory"
+                                 OnSubmit="Edit"
+                                 ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

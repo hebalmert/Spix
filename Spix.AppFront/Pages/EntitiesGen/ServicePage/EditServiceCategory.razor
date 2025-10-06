@@ -1,0 +1,17 @@
+﻿@page "/servicecategories/edit/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (ServiceCategory is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormServiceCategory ServiceCategory="ServiceCategory"
+                                 OnSubmit="Edit"
+                                 ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

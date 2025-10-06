@@ -1,14 +1,18 @@
 ﻿using Spix.Services.ImplementEntitiesData;
+using Spix.Services.ImplementEntitiesGen;
 using Spix.Services.ImplementEntties;
 using Spix.Services.ImplementSecure;
 using Spix.Services.InterfaceEntities;
 using Spix.Services.InterfacesEntitiesData;
+using Spix.Services.InterfacesEntitiesGen;
 using Spix.Services.InterfacesSecure;
 using Spix.UnitOfWork.ImplementEntities;
 using Spix.UnitOfWork.ImplementEntitiesData;
+using Spix.UnitOfWork.ImplementEntitiesGen;
 using Spix.UnitOfWork.ImplementSecure;
 using Spix.UnitOfWork.InterfaceEntities;
 using Spix.UnitOfWork.InterfacesEntitiesData;
+using Spix.UnitOfWork.InterfacesEntitiesGen;
 using Spix.UnitOfWork.InterfacesSecure;
 
 namespace Spix.AppBack.DependencyInjection;
@@ -54,5 +58,31 @@ public class UnitOfWorkRegistration
         services.AddScoped<IOperationService, OperationService>();
         services.AddScoped<ISecurityUnitOfWork, SecurityUnitOfWork>();
         services.AddScoped<ISecurityService, SecurityService>();
+
+        //EntitiesGen
+        services.AddScoped<IDocumentTypeUnitOfWork, DocumentTypeUnitOfWork>();
+        services.AddScoped<IDocumentTypeService, DocumentTypeService>();
+        services.AddScoped<IRegisterUnitOfWork, RegisterUnitOfWork>();
+        services.AddScoped<IRegisterService, RegisterService>();
+        services.AddScoped<IZoneUnitOfWork, ZoneUnitOfWork>();
+        services.AddScoped<IZoneService, ZoneService>();
+        services.AddScoped<IMarkUnitOfWork, MarkUnitOfWork>();
+        services.AddScoped<IMarkService, MarkService>();
+        services.AddScoped<IMarkModelUnitOfWork, MarkModelUnitOfWork>();
+        services.AddScoped<IMarkModelService, MarkModelService>();
+        services.AddScoped<ITaxUnitOfWork, TaxUnitOfWork>();
+        services.AddScoped<ITaxService, TaxService>();
+        services.AddScoped<IProductCategoryUnitOfWork, ProductCategoryUnitOfWork>();
+        services.AddScoped<IProductCategoryService, ProductCategoryService>();
+        services.AddScoped<IProductUnitOfWork, ProductUnitOfWork>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IServiceCategoryUnitOfWork, ServiceCategoryUnitOfWork>();
+        services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
+        services.AddScoped<IServiceClientUnitOfWork, ServiceClientUnitOfWork>();
+        services.AddScoped<IServiceClientService, ServiceClientService>();
+        services.AddScoped<IPlanCategoryUnitOfWork, PlanCategoryUnitOfWork>();
+        services.AddScoped<IPlanCategoryService, PlanCategoryService>();
+        services.AddScoped<IPlanUnitOfWork, PlanUnitOfWork>();
+        services.AddScoped<IPlanService, PlanService>();
     }
 }

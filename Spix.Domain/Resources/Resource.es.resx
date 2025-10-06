@@ -658,4 +658,25 @@
   <data name="Button_Disk" xml:space="preserve">
     <value>Disco</value>
   </data>
+  <data name="Edit_DocumentType" xml:space="preserve">
+    <value>Editar Tipo Documento</value>
+  </data>
+  <data name="Create_DocumentType" xml:space="preserve">
+    <value>Crear Tipo Documento</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripcion</value>
+  </data>
+  <data name="Edit_Mark" xml:space="preserve">
+    <value>Editar Marca</value>
+  </data>
+  <data name="Create_Mark" xml:space="preserve">
+    <value>Crear Marca</value>
+  </data>
+  <data name="MarkEquipment" xml:space="preserve">
+    <value>Marca Equipos</value>
+  </data>
+  <data name="Models" xml:space="preserve">
+    <value>Modelos</value>
+  </data>
 </root>

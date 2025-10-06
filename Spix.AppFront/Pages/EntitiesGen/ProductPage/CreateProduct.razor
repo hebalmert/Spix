@@ -1,0 +1,18 @@
+﻿@page "/products/Createproducts/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (Product is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormProduct Product="Product"
+                         IsEditControl="false"
+                         OnSubmit="Create"
+                         ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

@@ -1,0 +1,26 @@
+﻿<EditForm Model="ServiceCategory" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <MudTextField Label="@GetDisplayName(() => ServiceCategory.Name)"
+                  @bind-Value="@ServiceCategory.Name"
+                  For="@(() => ServiceCategory.Name)"
+                  Class="mb-4" />
+    <MudCheckBox Label="@GetDisplayName(() => ServiceCategory.Active)"
+                 @bind-Value="@ServiceCategory.Active"
+                 For="@(() => ServiceCategory.Active)"
+                 Class="mb-4" />
+    <br />
+    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Color="Color.Surface"
+                   OnClick="ReturnAction">
+            Volver
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Color="Color.Dark"
+                   ButtonType="ButtonType.Submit">
+            Guardar
+        </MudButton>
+    </div>
+</EditForm>

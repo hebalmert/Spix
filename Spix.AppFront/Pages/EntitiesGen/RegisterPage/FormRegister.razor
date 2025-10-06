@@ -1,0 +1,60 @@
+﻿<EditForm Model="Register" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="6">
+            <MudNumericField Label="@GetDisplayName(() => Register.Contratos)"
+                          @bind-Value="@Register.Contratos"
+                          For="@(() => Register.Contratos)"
+                          Class="mb-4" />
+            <MudNumericField Label="@GetDisplayName(() => Register.Solicitudes)"
+                          @bind-Value="@Register.Solicitudes"
+                          For="@(() => Register.Solicitudes)"
+                          Class="mb-4" />
+            <MudNumericField Label="@GetDisplayName(() => Register.Cargue)"
+                          @bind-Value="@Register.Cargue"
+                          For="@(() => Register.Cargue)"
+                          Class="mb-4" />
+            <MudNumericField Label="@GetDisplayName(() => Register.Egresos)"
+                          @bind-Value="@Register.Egresos"
+                          For="@(() => Register.Egresos)"
+                          Class="mb-4" />
+            <MudNumericField Label="@GetDisplayName(() => Register.PagoContratista)"
+                          @bind-Value="@Register.PagoContratista"
+                          For="@(() => Register.PagoContratista)"
+                          Class="mb-4" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudNumericField Label="@GetDisplayName(() => Register.Adelantado)"
+                          @bind-Value="@Register.Adelantado"
+                          For="@(() => Register.Adelantado)"
+                          Class="mb-4" />
+            <MudNumericField Label="@GetDisplayName(() => Register.Exonerado)"
+                          @bind-Value="@Register.Exonerado"
+                          For="@(() => Register.Exonerado)"
+                          Class="mb-4" />
+            <MudNumericField Label="@GetDisplayName(() => Register.NotaCobro)"
+                          @bind-Value="@Register.NotaCobro"
+                          For="@(() => Register.NotaCobro)"
+                          Class="mb-4" />
+            <MudNumericField Label="@GetDisplayName(() => Register.Factura)"
+                          @bind-Value="@Register.Factura"
+                          For="@(() => Register.Factura)"
+                          Class="mb-4" />
+        </MudItem>
+    </MudGrid>
+    <br />
+    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Color="Color.Surface"
+                   OnClick="ReturnAction">
+            Volver
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Color="Color.Dark"
+                   ButtonType="ButtonType.Submit">
+            Guardar
+        </MudButton>
+    </div>
+</EditForm>

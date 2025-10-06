@@ -13,8 +13,7 @@ namespace Spix.AppBack.Controllers.EntitiesGenV1;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/registers")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Usuario")]
-[ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar
 public class RegistersController : ControllerBase
 {
     private readonly IRegisterUnitOfWork _unitOfWork;

@@ -14,7 +14,7 @@ namespace Spix.AppBack.Controllers.EntitiesGenV1;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/taxes")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Usuario")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
 [ApiController]
 public class TaxesController : ControllerBase
 {

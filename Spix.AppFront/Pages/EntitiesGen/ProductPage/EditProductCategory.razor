@@ -1,0 +1,17 @@
+﻿@page "/productcategories/edit/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (ProductCategory is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormProductCategory ProductCategory="ProductCategory"
+                                 OnSubmit="Edit"
+                                 ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

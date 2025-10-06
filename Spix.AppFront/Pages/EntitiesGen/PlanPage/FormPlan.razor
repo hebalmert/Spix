@@ -1,0 +1,116 @@
+﻿<EditForm Model="Plan" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTextField Label="@GetDisplayName(() => Plan.PlanName)"
+                          @bind-Value="@Plan.PlanName"
+                          For="@(() => Plan.PlanName)"
+                          Class="mb-4" />
+        </MudItem>
+        <MudItem xs="6">
+            @if (ListUserTypeUp is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <MudSelect T="EnumItemModel" Class="mb-4"
+                           Value="SelectedUserTypeUp"
+                           ValueChanged="UsertTypeUpChanged"
+                           ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
+                           Placeholder="-- Up --"
+                           For="@(() => SelectedUserTypeUp)">
+                    @foreach (var item in ListUserTypeUp!)
+                    {
+                        <MudSelectItem Value="item">@item.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+            <MudNumericField Label="@GetDisplayName(() => Plan.SpeedUp)"
+                          @bind-Value="@Plan.SpeedUp"
+                          For="@(() => Plan.SpeedUp)"
+                          Class="mb-4" />
+        </MudItem>
+
+        <MudItem xs="6">
+            @if (ListUserTypeDown is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <MudSelect T="EnumItemModel" Class="mb-4"
+                           Value="SelectedUserTypeDown"
+                           ValueChanged="UsertTypeDownChanged"
+                           ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
+                           Placeholder="-- Down --"
+                           For="@(() => SelectedUserTypeDown)">
+                    @foreach (var item in ListUserTypeDown!)
+                    {
+                        <MudSelectItem Value="item">@item.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+            <MudNumericField Label="@GetDisplayName(() => Plan.SpeedDown)"
+                          @bind-Value="@Plan.SpeedDown"
+                          For="@(() => Plan.SpeedDown)"
+                          Class="mb-4" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudNumericField Label="@GetDisplayName(() => Plan.TasaReuso)"
+                          @bind-Value="@Plan.TasaReuso"
+                          For="@(() => Plan.TasaReuso)"
+                          Class="mb-4" />
+        </MudItem>
+        <MudItem xs="6"></MudItem>
+
+        <MudItem xs="3"></MudItem>
+        <MudItem xs="6">
+            @if (Taxes is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <MudSelect T="Tax" Class="mb-4"
+                           Label="Impuesto"
+                           Value="SelectedTax"
+                           ValueChanged="TaxesChanged"
+                           ToStringFunc="@(e=> e==null?null : $"{e.TaxName}")"
+                           For="@(() => Plan.Tax)">
+                    @foreach (var item in Taxes!)
+                    {
+                        <MudSelectItem Value="item">@item.TaxName</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+
+            <MudTextField Label="@GetDisplayName(() => Plan.Price)"
+                          @bind-Value="@Plan.Price"
+                          For="@(() => Plan.Price)"
+                          Class="mb-4" />
+            <MudCheckBox Label="@GetDisplayName(() => Plan.Active)"
+                         @bind-Value="@Plan.Active"
+                         For="@(() => Plan.Active)"
+                         Class="mb-4" />
+
+        </MudItem>
+        <MudItem xs="3"></MudItem>
+    </MudGrid>
+
+    <br />
+    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Color="Color.Surface"
+                   OnClick="ReturnAction">
+            Volver
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Color="Color.Dark"
+                   ButtonType="ButtonType.Submit">
+            Guardar
+        </MudButton>
+    </div>
+</EditForm>

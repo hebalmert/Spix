@@ -304,6 +304,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Document Type.
+        /// </summary>
+        public static string Create_DocumentType {
+            get {
+                return ResourceManager.GetString("Create_DocumentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Frecuency.
         /// </summary>
         public static string Create_Frecuency {
@@ -327,6 +336,15 @@ namespace Spix.Domain.Resources {
         public static string Create_Hotspot {
             get {
                 return ResourceManager.GetString("Create_Hotspot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Mark.
+        /// </summary>
+        public static string Create_Mark {
+            get {
+                return ResourceManager.GetString("Create_Mark", resourceCulture);
             }
         }
         
@@ -394,6 +412,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Document Type.
         /// </summary>
         public static string DocumentType {
@@ -421,6 +448,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Document Type.
+        /// </summary>
+        public static string Edit_DocumentType {
+            get {
+                return ResourceManager.GetString("Edit_DocumentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Frecuency.
         /// </summary>
         public static string Edit_Frecuency {
@@ -444,6 +480,15 @@ namespace Spix.Domain.Resources {
         public static string Edit_Hotspot {
             get {
                 return ResourceManager.GetString("Edit_Hotspot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Mark.
+        /// </summary>
+        public static string Edit_Mark {
+            get {
+                return ResourceManager.GetString("Edit_Mark", resourceCulture);
             }
         }
         
@@ -1123,11 +1168,29 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mark Equipment.
+        /// </summary>
+        public static string MarkEquipment {
+            get {
+                return ResourceManager.GetString("MarkEquipment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Login Successful.
         /// </summary>
         public static string meg_LoginSuccessMessage {
             get {
                 return ResourceManager.GetString("meg_LoginSuccessMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Models.
+        /// </summary>
+        public static string Models {
+            get {
+                return ResourceManager.GetString("Models", resourceCulture);
             }
         }
         

@@ -1,0 +1,91 @@
+﻿@page "/zones"
+@attribute [Authorize(Roles = "Usuario")]
+
+<MudCardContent>
+    <div class="shadow-lg mb-5">
+        <MudCard Outlined="true">
+            <MudCardContent>
+                <h3>Zonas</h3>
+
+                <div class="col-sm-12">
+                    <div class="row align-items-center">
+                        <!-- Columna para el botón -->
+                        <div class="col-md-3 d-flex justify-content-start">
+                            <MudButton Variant="Variant.Filled"
+                                       EndIcon="@Icons.Material.Filled.AddCircle"
+                                       Color="Color.Dark" style="width:130px"
+                                       OnClick="@(()=> ShowModalAsync())">
+                                Zona
+                            </MudButton>
+                        </div>
+                        <!-- Columna para el filtro -->
+                        <div class="col-md-9 d-flex justify-content-end">
+                            <FilterComponent ApplyFilter="SetFilterValue" />
+                        </div>
+                    </div>
+                    <br />
+                </div>
+                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+                <div class="row">
+                    <div class="col-md-12 table-responsive">
+                        <GenericList MyList="Zones">
+                            <Body>
+                                <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Estado</th>
+                                            <th>Ciudad</th>
+                                            <th>Activo</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Zones!)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item.ZoneName
+                                                </td>
+                                                <td>
+                                                    @item.state!.Name
+                                                </td>
+                                                <td>
+                                                    @item.city!.Name
+                                                </td>
+                                                <td>
+                                                    <MudCheckBox @bind-Value="@item.Active" ReadOnly="true"></MudCheckBox>
+                                                </td>
+                                                <td style="width:1px; padding-left:1px; padding-right:4px;">
+                                                    <MudFab Size="Size.Small"
+                                                            EndIcon="@Icons.Material.Filled.Edit"
+                                                            Color="Color.Dark"
+                                                            OnClick="@(()=> ShowModalAsync(item.ZoneId, true))">
+                                                    </MudFab>
+                                                </td>
+                                                <td style="width:1px; padding-left:1px; padding-right:4px;">
+                                                    <MudFab Size="Size.Small"
+                                                            EndIcon="@Icons.Material.Filled.Delete"
+                                                            Color="Color.Error"
+                                                            OnClick="@(()=> DeleteAsync(item.ZoneId))">
+                                                    </MudFab>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </MudSimpleTable>
+                            </Body>
+                        </GenericList>
+                    </div>
+                </div>
+                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages">
+                </Pagination>
+            </MudCardContent>
+        </MudCard>
+    </div>
+</MudCardContent>
+

@@ -1,0 +1,18 @@
+﻿@page "/plans/Editproducts/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (Plan is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormPlan Plan="Plan"
+                      IsEditControl="true"
+                      OnSubmit="Edit"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

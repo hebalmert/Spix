@@ -1,0 +1,17 @@
+﻿@page "/plancategories/create"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (PlanCategory is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormPlanCategory PlanCategory="PlanCategory"
+                      OnSubmit="Create"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

@@ -1,0 +1,19 @@
+﻿@page "/registers/edit/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (Register is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormRegister Register="Register"
+                          OnSubmit="Edit"
+                          ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}
+
+

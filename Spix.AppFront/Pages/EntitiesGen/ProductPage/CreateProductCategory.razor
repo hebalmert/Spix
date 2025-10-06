@@ -1,0 +1,17 @@
+﻿@page "/productcategories/create"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (ProductCategory is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormProductCategory ProductCategory="ProductCategory"
+                      OnSubmit="Create"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

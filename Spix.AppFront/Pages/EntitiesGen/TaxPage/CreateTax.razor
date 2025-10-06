@@ -1,0 +1,18 @@
+﻿@page "/taxes/create"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (Tax is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormTax Tax="Tax"
+                      OnSubmit="Create"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}
+

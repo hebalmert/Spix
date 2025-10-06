@@ -1,0 +1,18 @@
+﻿@page "/serviceclients/Editproducts/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (ServiceClient is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormServiceClient ServiceClient="ServiceClient"
+                         IsEditControl="true"
+                         OnSubmit="Edit"
+                         ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

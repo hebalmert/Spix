@@ -1,0 +1,30 @@
+﻿<EditForm Model="Tax" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <MudTextField Label="@GetDisplayName(() => Tax.TaxName)"
+                  @bind-Value="@Tax.TaxName"
+                  For="@(() => Tax.TaxName)"
+                  Class="mb-4" />
+    <MudTextField Label="@GetDisplayName(() => Tax.Rate)"
+                  @bind-Value="@Tax.Rate"
+                  For="@(() => Tax.Rate)"
+                  Class="mb-4" />
+    <MudCheckBox Label="@GetDisplayName(() => Tax.Active)"
+                 @bind-Value="@Tax.Active"
+                 For="@(() => Tax.Active)"
+                 Class="mb-4" />
+    <br />
+    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Color="Color.Surface"
+                   OnClick="ReturnAction">
+            Volver
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Color="Color.Dark"
+                   ButtonType="ButtonType.Submit">
+            Guardar
+        </MudButton>
+    </div>
+</EditForm>

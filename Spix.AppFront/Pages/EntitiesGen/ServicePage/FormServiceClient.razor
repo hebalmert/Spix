@@ -1,0 +1,57 @@
+﻿<EditForm Model="ServiceClient" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <MudTextField Label="@GetDisplayName(() => ServiceClient.ServiceName)"
+                  @bind-Value="@ServiceClient.ServiceName"
+                  For="@(() => ServiceClient.ServiceName)"
+                  Class="mb-4" />
+    <MudTextField Label="@GetDisplayName(() => ServiceClient.Description)"
+                  @bind-Value="@ServiceClient.Description"
+                  For="@(() => ServiceClient.Description)"
+                  Class="mb-4" />
+    <MudTextField Label="@GetDisplayName(() => ServiceClient.Costo)"
+                  @bind-Value="@ServiceClient.Costo"
+                  For="@(() => ServiceClient.Costo)"
+                  Class="mb-4" />
+    @if (Taxes is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <MudSelect T="Tax" Class="mb-4"
+                   Label="Impuesto"
+                   Value="SelectedTax"
+                   ValueChanged="TaxesChanged"
+                   ToStringFunc="@(e=> e==null?null : $"{e.TaxName}")"
+                   For="@(() => ServiceClient.Tax)">
+            @foreach (var item in Taxes!)
+            {
+                <MudSelectItem Value="item">@item.TaxName</MudSelectItem>
+            }
+        </MudSelect>
+    }
+
+    <MudTextField Label="@GetDisplayName(() => ServiceClient.Price)"
+                  @bind-Value="@ServiceClient.Price"
+                  For="@(() => ServiceClient.Price)"
+                  Class="mb-4" />
+    <MudCheckBox Label="@GetDisplayName(() => ServiceClient.Active)"
+                 @bind-Value="@ServiceClient.Active"
+                 For="@(() => ServiceClient.Active)"
+                 Class="mb-4" />
+    <br />
+    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Color="Color.Surface"
+                   OnClick="ReturnAction">
+            Volver
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Color="Color.Dark"
+                   ButtonType="ButtonType.Submit">
+            Guardar
+        </MudButton>
+    </div>
+</EditForm>

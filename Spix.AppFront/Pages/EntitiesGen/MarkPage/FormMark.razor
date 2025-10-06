@@ -1,0 +1,26 @@
+﻿<EditForm Model="Mark" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <MudTextField Label="@GetDisplayName(() => Mark.MarkName)"
+                  @bind-Value="@Mark.MarkName"
+                  For="@(() => Mark.MarkName)"
+                  Class="mb-4" />
+    <MudCheckBox Label="@GetDisplayName(() => Mark.Active)"
+                 @bind-Value="@Mark.Active"
+                 For="@(() => Mark.Active)"
+                 Class="mb-4" />
+    <br />
+    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Color="Color.Surface"
+                   OnClick="ReturnAction">
+            Volver
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Color="Color.Dark"
+                   ButtonType="ButtonType.Submit">
+            Guardar
+        </MudButton>
+    </div>
+</EditForm>

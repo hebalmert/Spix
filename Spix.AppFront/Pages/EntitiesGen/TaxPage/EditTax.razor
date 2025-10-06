@@ -1,0 +1,19 @@
+﻿@page "/taxes/edit/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (Tax is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormTax Tax="Tax"
+                      OnSubmit="Edit"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}
+
+

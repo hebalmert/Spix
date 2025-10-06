@@ -1,0 +1,18 @@
+﻿@page "/registers/create"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (Register is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormRegister Register="Register"
+                      OnSubmit="Create"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}
+

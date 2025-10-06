@@ -1,0 +1,93 @@
+﻿@page "/products/detailsProductStocks/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+<MudCardContent>
+    <div class="shadow-lg mb-5">
+        <MudCard Outlined="true">
+            <MudCardContent>
+                @if (Product is null)
+                {
+                    <Loading />
+                }
+                else
+                {
+                    <h3>@Product.ProductName</h3>
+
+                    <div class="col-sm-12">
+                        <div class="row align-items-center">
+                            <!-- Columna para el botón -->
+                            <div class="col-md-3 d-flex justify-content-start">
+                                <div>
+                                    <MudButton Variant="Variant.Filled"
+                                               EndIcon="@Icons.Material.Filled.ArrowBack"
+                                               Color="Color.Surface" style="width:150px"
+                                               Href="@($"/products/details/{Product.ProductCategoryId}")">
+                                        Volver
+                                    </MudButton>
+                                </div>
+                            </div>
+                            <!-- Columna para el filtro -->
+                            <div class="col-md-9 d-flex justify-content-end">
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+                }
+                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+                <div class="row">
+                    <div class="col-md-12 table-responsive">
+                        @if (ProductStocks is null)
+                        {
+                            <Loading />
+                        }
+                        else
+                        {
+                            <GenericList MyList="ProductStocks">
+                                <Body>
+                                    <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Bodega</th>
+                                                <th>Stock</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in ProductStocks!)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @item.Product!.ProductName
+                                                    </td>
+                                                    <td>
+                                                        @item.ProductStorage!.StorageName
+                                                    </td>
+                                                    <td>
+                                                        @item.Stock
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </MudSimpleTable>
+                                </Body>
+                            </GenericList>
+                        }
+
+                    </div>
+                </div>
+                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+                @if (ProductStocks is null)
+                {
+                    <Loading />
+                }
+                else
+                {
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages">
+                    </Pagination>
+                }
+            </MudCardContent>
+        </MudCard>
+    </div>
+</MudCardContent>

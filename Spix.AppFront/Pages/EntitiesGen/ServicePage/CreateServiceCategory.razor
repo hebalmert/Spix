@@ -1,0 +1,17 @@
+﻿@page "/servicecategories/create"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (ServiceCategory is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormServiceCategory ServiceCategory="ServiceCategory"
+                      OnSubmit="Create"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

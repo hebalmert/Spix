@@ -1,0 +1,17 @@
+﻿@page "/marksmodels/EditMarkModel/{Id}"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (MarkModel is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormMarkModel MarkModel="MarkModel"
+                             OnSubmit="Edit"
+                             ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}

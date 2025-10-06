@@ -1,0 +1,19 @@
+﻿@page "/zones/create"
+@attribute [Authorize(Roles = "Usuario")]
+
+@if (Zone is null)
+{
+    <Loading />
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+            <FormZone Zone="Zone"
+                      IsEditControl="false"
+                      OnSubmit="Create"
+                      ReturnAction="Return" />
+        </DialogContent>
+    </MudDialog>
+}
+

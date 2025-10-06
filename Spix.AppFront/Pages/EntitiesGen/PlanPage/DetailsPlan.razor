@@ -1,0 +1,107 @@
+﻿@page "/plans/details/{Id:guid}"
+@attribute [Authorize(Roles = "Usuario")]
+
+<MudCardContent>
+    <div class="shadow-lg mb-5">
+        <MudCard Outlined="true">
+            <MudCardContent>
+                @if (PlanCategory is null)
+                {
+                    <Loading />
+                }
+                else
+                {
+                    <h3>@PlanCategory!.PlanCategoryName</h3>
+
+                    <div class="col-sm-12">
+                        <div class="row align-items-center">
+                            <div>
+                                <MudButton Variant="Variant.Filled"
+                                           EndIcon="@Icons.Material.Filled.ArrowBack"
+                                           Color="Color.Surface" style="width:150px"
+                                           Href="@($"/plancategories")">
+                                    Volver
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled"
+                                           EndIcon="@Icons.Material.Filled.AddBox"
+                                           Color="Color.Dark" style="width:150px"
+                                           OnClick="@(()=> ShowModalAsync())">
+                                    Plan
+                                </MudButton>
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+                }
+                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+                <div class="row">
+                    <div class="col-md-12 table-responsive">
+                        @if (Plans is null)
+                        {
+                            <Loading />
+                        }
+                        else
+                        {
+                            <GenericList MyList="Plans">
+                                <Body>
+                                    <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                                        <thead>
+                                            <tr>
+                                                <th>Plan</th>
+                                                <th>Activo</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Plans!)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @item.PlanName
+                                                    </td>
+                                                    <td>
+                                                        <MudCheckBox @bind-Value="@item.Active" ReadOnly="true"></MudCheckBox>
+                                                    </td>
+                                                    <td style="width:1px; padding-left:1px; padding-right:4px;">
+                                                        <MudFab Size="Size.Small"
+                                                                EndIcon="@Icons.Material.Filled.Edit"
+                                                                Color="Color.Dark"
+                                                                OnClick="@(()=> ShowModalAsync(item.PlanId, true))">
+                                                        </MudFab>
+                                                    </td>
+                                                    <td style="width:1px; padding-left:1px; padding-right:4px;">
+                                                        <MudFab Size="Size.Small"
+                                                                EndIcon="@Icons.Material.Filled.Delete"
+                                                                Color="Color.Error"
+                                                                OnClick="@(()=> DeleteAsync(item.PlanId))">
+                                                        </MudFab>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </MudSimpleTable>
+                                </Body>
+                            </GenericList>
+                        }
+
+                    </div>
+                </div>
+                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+                @if (Plans is null)
+                {
+                    <Loading />
+                }
+                else
+                {
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages">
+                    </Pagination>
+                }
+            </MudCardContent>
+        </MudCard>
+    </div>
+</MudCardContent>
+
+
