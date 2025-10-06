@@ -171,6 +171,25 @@ public class UsuarioService : IUsuarioService
 
     public async Task<ActionResponse<Usuario>> UpdateAsync(Usuario modelo, string urlFront)
     {
+        User CheckUserName = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+        if (CheckUserName != null)
+        {
+            return new ActionResponse<Usuario>
+            {
+                WasSuccess = true,
+                Message = _localizer["Generic_UserNameAlreadyUsed"]
+            };
+        }
+        User CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.Email);
+        if (CheckEmail != null)
+        {
+            return new ActionResponse<Usuario>
+            {
+                WasSuccess = true,
+                Message = _localizer["Generic_EmailAlreadyUsed"]
+            };
+        }
+
         await _transactionManager.BeginTransactionAsync();
 
         try

@@ -79,6 +79,33 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Camara.
+        /// </summary>
+        public static string Button_Camara {
+            get {
+                return ResourceManager.GetString("Button_Camara", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capture.
+        /// </summary>
+        public static string Button_Capture {
+            get {
+                return ResourceManager.GetString("Button_Capture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disk.
+        /// </summary>
+        public static string Button_Disk {
+            get {
+                return ResourceManager.GetString("Button_Disk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
         public static string ButtonBack {

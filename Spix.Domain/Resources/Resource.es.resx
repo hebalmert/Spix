@@ -649,4 +649,13 @@
   <data name="Edit_Frecuency" xml:space="preserve">
     <value>Editar Frecuencia</value>
   </data>
+  <data name="Button_Capture" xml:space="preserve">
+    <value>Capturar</value>
+  </data>
+  <data name="Button_Camara" xml:space="preserve">
+    <value>Camara</value>
+  </data>
+  <data name="Button_Disk" xml:space="preserve">
+    <value>Disco</value>
+  </data>
 </root>

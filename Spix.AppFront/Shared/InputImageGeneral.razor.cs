@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
+using Spix.Domain.Resources;
 
 namespace Spix.AppFront.Shared;
 
 public partial class InputImageGeneral
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IJSRuntime JS { get; set; } = null!;
 
     private string? ImageBase64;

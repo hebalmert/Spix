@@ -273,6 +273,25 @@ public class ManagerService : IManagerService
                 modelo.ImgBase64 = Newmodelo.ImgBase64;
             }
 
+            User CheckUserName = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+            if (CheckUserName != null)
+            {
+                return new ActionResponse<Manager>
+                {
+                    WasSuccess = true,
+                    Message = _localizer["Generic_UserNameAlreadyUsed"]
+                };
+            }
+            User CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.UserName);
+            if (CheckEmail != null)
+            {
+                return new ActionResponse<Manager>
+                {
+                    WasSuccess = true,
+                    Message = _localizer["Generic_EmailAlreadyUsed"]
+                };
+            }
+
             //Para subir la iamgen a blob
             if (!string.IsNullOrEmpty(modelo.ImgBase64))
             {

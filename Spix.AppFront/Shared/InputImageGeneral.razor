@@ -20,17 +20,15 @@
         <div class="camera-actions mt-2 d-flex flex-row justify-content-center gap-2">
             @if (ShowCamera)
             {
-                <button type="button" class="btn btn-outline-primary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="CaptureImage">Capturar</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="CaptureImage">@Localizer[nameof(Resource.Button_Capture)]</button>
             }
             else
             {
-                <button type="button" class="btn btn-outline-primary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="ToggleCamera">Camara</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="ToggleCamera">@Localizer[nameof(Resource.Button_Camara)]</button>
             }
 
-            <button type="button" class="btn btn-outline-secondary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="LoadFromFile">Disco</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="LoadFromFile">@Localizer[nameof(Resource.Button_Disk)]</button>
             <input type="file" id="fileInput" accept="image/*" style="display:none" />
         </div>
-
-
     </div>
 </div>
