@@ -8,8 +8,8 @@
 else
 {
     <div class="container pt-4">
-    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">@Localizer[nameof(Resource.UserRole)]</h3>
+        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+            <h3 class="mb-4">@Localizer[nameof(Resource.UserRole)]</h3>
 
             <h3>@Usuario!.FullName</h3>
 
@@ -23,51 +23,46 @@ else
                 <br />
             </div>
 
-        <hr />
-        <GenericList MyList="UsuarioRoles">
-            <Body>
-                @if (UsuarioRoles is not null)
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>@Localizer[nameof(Resource.Role)]</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in UsuarioRoles!)
-                                {
+            <hr />
+            <GenericList MyList="UsuarioRoles">
+                <Body>
+                    @if (UsuarioRoles is not null)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="table-dark">
                                     <tr>
-                                        <td>
-                                            @item.UserType.ToString()
-                                        </td>
-                                        <td style="width:1px;">
-                                            <button class="btn-shadow-danger" @onclick="() => DeleteAsync(item.UsuarioRoleId)">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </td>
+                                        <th>@Localizer[nameof(Resource.Role)]</th>
+                                        <th></th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in UsuarioRoles!)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @item.UserType.ToString()
+                                            </td>
+                                            <td style="width:1px;">
+                                                <button class="btn-shadow-danger" @onclick="() => DeleteAsync(item.UsuarioRoleId)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
 
-            </Body>
-        </GenericList>
-        <!-- Tabla -->
-        <hr />
-        @if (UsuarioRoles is not null)
-        {
+                </Body>
+            </GenericList>
+            <!-- Tabla -->
+            <hr />
             <!-- Paginación -->
             <Pagination CurrentPage="CurrentPage"
                         SelectedPage="SelectedPage"
                         TotalPages="TotalPages" />
-        }
+        </div>
     </div>
-</div>
-
-
 }

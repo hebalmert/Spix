@@ -12,6 +12,7 @@ using Spix.AppInfra.FileHelper;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
+using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
 using Spix.Domain.Enum;
 using Spix.Domain.Resources;
@@ -136,6 +137,31 @@ public class ManagerService : IManagerService
 
     public async Task<ActionResponse<Manager>> UpdateAsync(Manager modelo, string frontUrl)
     {
+        var CurrentUsuario = await _context.Managers.AsNoTracking()
+                                            .FirstOrDefaultAsync(u => u.ManagerId == modelo.ManagerId);
+        if (CurrentUsuario!.Email != modelo.Email)
+        {
+            if (await _userHelper.GetUserByEmailAsync(modelo.Email) is not null) //---> Verificamos si el Email ya existe
+            {
+                return new ActionResponse<Manager>
+                {
+                    WasSuccess = true,
+                    Message = _localizer[nameof(Resource.Generic_EmailAlreadyUsed)]
+                };
+            }
+        }
+        if (CurrentUsuario.UserName != modelo.UserName)
+        {
+            if (await _userHelper.GetUserByUserNameAsync(modelo.UserName) is not null) //---> Verificamos si el Usuario ya existe
+            {
+                return new ActionResponse<Manager>
+                {
+                    WasSuccess = true,
+                    Message = _localizer[nameof(Resource.Generic_UserNameAlreadyUsed)]
+                };
+            }
+        }
+
         await _transactionManager.BeginTransactionAsync();
 
         try

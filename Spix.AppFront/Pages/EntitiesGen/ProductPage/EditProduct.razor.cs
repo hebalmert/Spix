@@ -19,6 +19,7 @@ public partial class EditProduct
     private string BaseView = "/products/details";
 
     [Parameter] public Guid Id { get; set; }  //ProductId
+    [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

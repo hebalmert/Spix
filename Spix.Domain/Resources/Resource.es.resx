@@ -679,4 +679,52 @@
   <data name="Models" xml:space="preserve">
     <value>Modelos</value>
   </data>
+  <data name="Mark" xml:space="preserve">
+    <value>Marca</value>
+  </data>
+  <data name="Edit_Models" xml:space="preserve">
+    <value>Editar Modelos</value>
+  </data>
+  <data name="Create_Model" xml:space="preserve">
+    <value>Crear Modelo</value>
+  </data>
+  <data name="Edit_Category" xml:space="preserve">
+    <value>Editar Categoria</value>
+  </data>
+  <data name="Create_Category" xml:space="preserve">
+    <value>Crear Categoria</value>
+  </data>
+  <data name="PlanCategory" xml:space="preserve">
+    <value>Categoria de Planes</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="Plans" xml:space="preserve">
+    <value>Planes</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Producto</value>
+  </data>
+  <data name="ProductCategory" xml:space="preserve">
+    <value>Categoria Producto</value>
+  </data>
+  <data name="WithSerials" xml:space="preserve">
+    <value>Con Seriales</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Costo</value>
+  </data>
+  <data name="Create_Product" xml:space="preserve">
+    <value>Crear Producto</value>
+  </data>
+  <data name="Edit_Product" xml:space="preserve">
+    <value>Editar Producto</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>Inventario</value>
+  </data>
+  <data name="Storage" xml:space="preserve">
+    <value>Bodega</value>
+  </data>
 </root>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModal;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.MarkPage;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.Resources;
 using Spix.HttpService;
@@ -46,26 +47,28 @@ public partial class IndexPlanCategory
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        var options = new DialogOptions() { CloseOnEscapeKey = true, CloseButton = true };
-        IDialogReference? dialog;
         if (isEdit)
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", id }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Category)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<EditPlanCategory>($"Editar Categoria", parameters, options);
+            await _modalService.ShowAsync<EditPlanCategory>(parameters);
         }
         else
         {
-            dialog = await _dialogService.ShowAsync<CreatePlanCategory>($"Nueva Categoria", options);
+            var parameters = new Dictionary<string, object>
+            {
+                { "Title",$"{Localizer[nameof(Resource.Create_Category)]}"   }
+            };
+            await _modalService.ShowAsync<CreatePlanCategory>(parameters);
         }
+    }
 
-        var result = await dialog.Result;
-        if (result!.Canceled)
-        {
-            await Cargar();
-        }
+    private void ShowModalDetailsAsync(Guid? id = null)
+    {
+        _navigationManager.NavigateTo($"/plans/details/{id}");
     }
 
     private async Task Cargar(int page = 1)

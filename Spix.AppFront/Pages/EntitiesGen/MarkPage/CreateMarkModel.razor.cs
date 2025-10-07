@@ -19,6 +19,7 @@ public partial class CreateMarkModel
     private string BaseView = "/marksmodels/details";
 
     [Parameter] public Guid Id { get; set; }  //MarkId
+    [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {

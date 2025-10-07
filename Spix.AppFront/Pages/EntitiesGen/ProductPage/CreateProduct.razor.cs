@@ -20,6 +20,8 @@ public partial class CreateProduct
 
     [Parameter] public Guid Id { get; set; }  //ProductCategoryId
 
+    [Parameter] public string? Title { get; set; }
+
     private async Task Create()
     {
         Product.ProductCategoryId = Id;

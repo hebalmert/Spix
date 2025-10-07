@@ -171,23 +171,29 @@ public class UsuarioService : IUsuarioService
 
     public async Task<ActionResponse<Usuario>> UpdateAsync(Usuario modelo, string urlFront)
     {
-        User CheckUserName = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
-        if (CheckUserName != null)
+        var CurrentUsuario = await _context.Usuarios.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.UsuarioId == modelo.UsuarioId);
+        if (CurrentUsuario!.Email != modelo.Email)
         {
-            return new ActionResponse<Usuario>
+            if (await _userHelper.GetUserByEmailAsync(modelo.Email) is not null) //---> Verificamos si el Email ya existe
             {
-                WasSuccess = true,
-                Message = _localizer["Generic_UserNameAlreadyUsed"]
-            };
+                return new ActionResponse<Usuario>
+                {
+                    WasSuccess = true,
+                    Message = _localizer[nameof(Resource.Generic_EmailAlreadyUsed)]
+                };
+            }
         }
-        User CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.Email);
-        if (CheckEmail != null)
+        if (CurrentUsuario.UserName != modelo.UserName)
         {
-            return new ActionResponse<Usuario>
+            if (await _userHelper.GetUserByUserNameAsync(modelo.UserName) is not null) //---> Verificamos si el Usuario ya existe
             {
-                WasSuccess = true,
-                Message = _localizer["Generic_EmailAlreadyUsed"]
-            };
+                return new ActionResponse<Usuario>
+                {
+                    WasSuccess = true,
+                    Message = _localizer[nameof(Resource.Generic_UserNameAlreadyUsed)]
+                };
+            }
         }
 
         await _transactionManager.BeginTransactionAsync();

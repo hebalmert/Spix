@@ -1,22 +1,21 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.Resources;
 using Spix.HttpService;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Spix.AppFront.Pages.EntitiesGen.ProductPage;
 
 public partial class FormProduct
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
-    private Tax? SelectedTax;
     private List<Tax>? Taxes;
 
     [Parameter, EditorRequired] public Product Product { get; set; } = null!;
@@ -41,33 +40,13 @@ public partial class FormProduct
         }
 
         Taxes = responseHTTP.Response;
-        if (IsEditControl == true)
-        {
-            SelectedTax = Taxes!.Where(x => x.TaxId == Product.TaxId)
-                .Select(x => new Tax { TaxId = x.TaxId, TaxName = x.TaxName }).FirstOrDefault();
-        }
     }
 
-    private void TaxesChanged(Tax modelo)
+    private void TaxChanged(ChangeEventArgs e)
     {
-        Product.TaxId = modelo.TaxId;
-        SelectedTax = modelo;
-    }
-
-    private string GetDisplayName<T>(Expression<Func<T>> expression)
-    {
-        if (expression.Body is MemberExpression memberExpression)
+        if (e?.Value is Guid selectedId)
         {
-            var property = memberExpression.Member as PropertyInfo;
-            if (property != null)
-            {
-                var displayAttribute = property.GetCustomAttribute<DisplayAttribute>();
-                if (displayAttribute != null)
-                {
-                    return displayAttribute.Name!;
-                }
-            }
+            Product.TaxId = selectedId;
         }
-        return "Texto no definido";
     }
 }

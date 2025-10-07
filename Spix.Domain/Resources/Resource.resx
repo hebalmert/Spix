@@ -679,4 +679,52 @@
   <data name="Models" xml:space="preserve">
     <value>Models</value>
   </data>
+  <data name="Mark" xml:space="preserve">
+    <value>Mark</value>
+  </data>
+  <data name="Edit_Models" xml:space="preserve">
+    <value>Edit Models</value>
+  </data>
+  <data name="Create_Model" xml:space="preserve">
+    <value>Create Model</value>
+  </data>
+  <data name="Edit_Category" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="Create_Category" xml:space="preserve">
+    <value>Create Category</value>
+  </data>
+  <data name="PlanCategory" xml:space="preserve">
+    <value>Plan Category</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Plans" xml:space="preserve">
+    <value>Plans</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="ProductCategory" xml:space="preserve">
+    <value>Product Category</value>
+  </data>
+  <data name="WithSerials" xml:space="preserve">
+    <value>With Serials</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="Create_Product" xml:space="preserve">
+    <value>Create Product</value>
+  </data>
+  <data name="Edit_Product" xml:space="preserve">
+    <value>Edit Product</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>Stock</value>
+  </data>
+  <data name="Storage" xml:space="preserve">
+    <value>Storage</value>
+  </data>
 </root>

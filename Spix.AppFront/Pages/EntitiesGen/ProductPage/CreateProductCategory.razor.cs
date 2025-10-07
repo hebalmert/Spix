@@ -18,6 +18,8 @@ public partial class CreateProductCategory
     private string BaseUrl = "/api/v1/productcategories";
     private string BaseView = "/productcategories";
 
+    [Parameter] public string? Title { get; set; }
+
     private async Task Create()
     {
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", ProductCategory);

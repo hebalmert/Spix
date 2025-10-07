@@ -18,6 +18,8 @@ public partial class CreateMark
     private string BaseUrl = "/api/v1/marks";
     private string BaseView = "/marks";
 
+    [Parameter] public string? Title { get; set; }
+
     private async Task Create()
     {
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Mark);

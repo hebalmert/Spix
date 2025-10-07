@@ -19,6 +19,7 @@ public partial class EditMarkModel
     private string BaseView = "/marksmodels/details";
 
     [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

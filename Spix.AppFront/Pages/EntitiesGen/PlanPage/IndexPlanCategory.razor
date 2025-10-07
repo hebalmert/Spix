@@ -1,96 +1,76 @@
 ﻿@page "/plancategories"
 @attribute [Authorize(Roles = "Usuario")]
 
-<MudCardContent>
-    <div class="shadow-lg mb-5">
-        <MudCard Outlined="true">
-            <MudCardContent>
-                <h3>Categoria Planes</h3>
 
-                <div class="col-sm-12">
-                    <div class="row align-items-center">
-                        <!-- Columna para el botón -->
-                        <div class="col-md-3 d-flex justify-content-start">
-                            <MudButton Variant="Variant.Filled"
-                                       EndIcon="@Icons.Material.Filled.AddCircle"
-                                       Color="Color.Dark" style="width:130px"
-                                       OnClick="@(()=> ShowModalAsync())">
-                                Categoria
-                            </MudButton>
-                        </div>
-                        <!-- Columna para el filtro -->
-                        <div class="col-md-9 d-flex justify-content-end">
-                            <FilterComponent ApplyFilter="SetFilterValue" />
-                        </div>
-                    </div>
-                    <br />
+@if (PlanCategories is null)
+{
+    <FullScreenSpinner IsVisible=true />
+}
+else
+{
+    <div class="container pt-4">
+        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+            <h3 class="mb-4">@Localizer[nameof(Resource.PlanCategory)]</h3>
+
+            <!-- Botón + Filtro -->
+            <div class="row align-items-center mb-3">
+                <div class="col-md-3 d-flex justify-content-start">
+                    <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                        <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
+                    </button>
                 </div>
-                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
-                <div class="row">
-                    <div class="col-md-12 table-responsive">
-                        <GenericList MyList="PlanCategories">
-                            <Body>
-                                <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
-                                    <thead>
-                                        <tr>
-                                            <th>Categoria</th>
-                                            <th>Productos</th>
-                                            <th>Activo</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in PlanCategories!)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    @item.PlanCategoryName
-                                                </td>
-                                                <td>
-                                                    @item.PlanesNumer
-                                                </td>
-                                                <td>
-                                                    <MudCheckBox @bind-Value="@item.Active" ReadOnly="true"></MudCheckBox>
-                                                </td>
-                                                <td style="width:1px; padding-left:1px; padding-right:4px;">
-                                                    <MudFab Size="Size.Small"
-                                                            EndIcon="@Icons.Material.Filled.Edit"
-                                                            Color="Color.Dark"
-                                                            OnClick="@(()=> ShowModalAsync(item.PlanCategoryId, true))">
-                                                    </MudFab>
-                                                </td>
-                                                <td style="width:1px; padding-left:1px; padding-right:4px;">
-                                                    <MudFab Size="Size.Small"
-                                                            Href="@($"/plans/details/{item.PlanCategoryId}")"
-                                                            StartIcon="@Icons.Material.Filled.ManageAccounts"
-                                                            Color="Color.Dark">
-                                                    </MudFab>
-                                                </td>
-                                                <td style="width:1px; padding-left:1px; padding-right:4px;">
-                                                    <MudFab Size="Size.Small"
-                                                            EndIcon="@Icons.Material.Filled.Delete"
-                                                            Color="Color.Error"
-                                                            OnClick="@(()=> DeleteAsync(item.PlanCategoryId))">
-                                                    </MudFab>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </MudSimpleTable>
-                            </Body>
-                        </GenericList>
-                    </div>
+                <div class="col-md-9 d-flex justify-content-end">
+                    <FilterComponent ApplyFilter="SetFilterValue" />
                 </div>
-                <hr style="height:2px;border:none;color:#333;background-color:#333;" />
-                <Pagination CurrentPage="CurrentPage"
-                            SelectedPage="SelectedPage"
-                            TotalPages="TotalPages">
-                </Pagination>
-            </MudCardContent>
-        </MudCard>
+            </div>
+
+            <hr />
+            <GenericList MyList="PlanCategories">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>@Localizer[nameof(Resource.Category)]</th>
+                                    <th>@Localizer[nameof(Resource.Plans)]</th>
+                                    <th>@Localizer[nameof(Resource.Active)]</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in PlanCategories!)
+                                {
+                                    <tr>
+                                        <td>@item.PlanCategoryName</td>
+                                        <td>@item.PlanesNumer</td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.PlanCategoryId)" TooTip="@Localizer[nameof(Resource.Plan)]"
+                                                           Icon="fa fa-wifi" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonEdit OnClick="() => ShowModalAsync(item.PlanCategoryId, true)" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.PlanCategoryId)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+            <!-- Tabla -->
+            <hr />
+            <!-- Paginación -->
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        </div>
     </div>
-</MudCardContent>
-
+}
 

@@ -27,10 +27,8 @@ public partial class FormCorporation
 
     //Local State
 
-    private Country? SelectedCountry;
     private List<Country>? Countries;
     private SoftPlan? SelectedSoftplan;
-    private SoftPlan? SoftplanDays;
     private List<SoftPlan>? SoftPlans;
     private DateTime? DateMin = new DateTime(2025, 1, 1);
     private string? ImageUrl;
