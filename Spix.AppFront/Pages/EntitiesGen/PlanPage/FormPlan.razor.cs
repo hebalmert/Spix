@@ -1,8 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
+using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.Enum;
+using Spix.Domain.Resources;
 using Spix.HttpService;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
@@ -12,6 +15,7 @@ namespace Spix.AppFront.Pages.EntitiesGen.PlanPage;
 
 public partial class FormPlan
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
@@ -57,20 +61,24 @@ public partial class FormPlan
         }
     }
 
-    private void UsertTypeUpChanged(IntItemModel modelo)
+    private void UsertTypeUpChanged(ChangeEventArgs e)
     {
-        if (modelo.Name == "K") { Plan.SpeedUpType = SpeedUpType.k; }
-        if (modelo.Name == "M") { Plan.SpeedUpType = SpeedUpType.M; }
-        if (modelo.Name == "G") { Plan.SpeedUpType = SpeedUpType.G; }
-        SelectedUserTypeUp = modelo;
+        if (int.TryParse(e?.Value?.ToString(), out int modelo))
+        {
+            if (modelo == 1) { Plan.SpeedUpType = SpeedUpType.k; }
+            if (modelo == 2) { Plan.SpeedUpType = SpeedUpType.M; }
+            if (modelo == 3) { Plan.SpeedUpType = SpeedUpType.G; }
+        }
     }
 
-    private void UsertTypeDownChanged(IntItemModel modelo)
+    private void UsertTypeDownChanged(ChangeEventArgs e)
     {
-        if (modelo.Name == "K") { Plan.SpeedDownType = SpeedDownType.k; }
-        if (modelo.Name == "M") { Plan.SpeedDownType = SpeedDownType.M; }
-        if (modelo.Name == "G") { Plan.SpeedDownType = SpeedDownType.G; }
-        SelectedUserTypeDown = modelo;
+        if (int.TryParse(e?.Value?.ToString(), out int modelo))
+        {
+            if (modelo == 1) { Plan.SpeedDownType = SpeedDownType.k; }
+            if (modelo == 1) { Plan.SpeedDownType = SpeedDownType.M; }
+            if (modelo == 1) { Plan.SpeedDownType = SpeedDownType.G; }
+        }
     }
 
     private async Task LoadTaxes()

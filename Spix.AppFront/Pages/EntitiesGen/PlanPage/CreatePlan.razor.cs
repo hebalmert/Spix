@@ -19,6 +19,7 @@ public partial class CreatePlan
     private string BaseView = "/plans/details";
 
     [Parameter] public Guid Id { get; set; }  //ProductCategoryId
+    [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {

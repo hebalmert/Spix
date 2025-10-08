@@ -1654,6 +1654,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [-- Down --].
+        /// </summary>
+        public static string Select_B_Down {
+            get {
+                return ResourceManager.GetString("Select_B_Down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Frecuency].
         /// </summary>
         public static string Select_B_Frecuency {
@@ -1713,6 +1722,15 @@ namespace Spix.Domain.Resources {
         public static string Select_B_Secutiry {
             get {
                 return ResourceManager.GetString("Select_B_Secutiry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [-- Up --].
+        /// </summary>
+        public static string Select_B_Up {
+            get {
+                return ResourceManager.GetString("Select_B_Up", resourceCulture);
             }
         }
         

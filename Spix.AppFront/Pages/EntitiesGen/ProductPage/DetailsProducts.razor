@@ -50,14 +50,10 @@ else
                                             <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
                                         </td>
                                         <td style="width:1px;">
-                                            <button class="btn-shadow-black" @onclick="() => ShowModalAsync(item.ProductId, true)">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
+                                            <ButtonEdit OnClick="() => ShowModalAsync(item.ProductId, true)" />
                                         </td>
                                         <td style="width:1px;">
-                                            <button class="btn-shadow-danger" @onclick="() => DeleteAsync(item.ProductId)">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.ProductId)" />
                                         </td>
                                     </tr>
                                 }

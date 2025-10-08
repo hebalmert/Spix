@@ -1,116 +1,114 @@
 ﻿<EditForm Model="Plan" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    <MudGrid>
-        <MudItem xs="12">
-            <MudTextField Label="@GetDisplayName(() => Plan.PlanName)"
-                          @bind-Value="@Plan.PlanName"
-                          For="@(() => Plan.PlanName)"
-                          Class="mb-4" />
-        </MudItem>
-        <MudItem xs="6">
-            @if (ListUserTypeUp is null)
-            {
-                <Loading />
-            }
-            else
-            {
-                <MudSelect T="EnumItemModel" Class="mb-4"
-                           Value="SelectedUserTypeUp"
-                           ValueChanged="UsertTypeUpChanged"
-                           ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
-                           Placeholder="-- Up --"
-                           For="@(() => SelectedUserTypeUp)">
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Plan)]
+                </span>
+                <InputText class="form-control" @bind-Value="Plan.PlanName" />
+            </div>
+            <ValidationMessage For="@(() => Plan.PlanName)" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Up)]</span>
+                <select class="form-select" @onchange="UsertTypeUpChanged">
                     @foreach (var item in ListUserTypeUp!)
                     {
-                        <MudSelectItem Value="item">@item.Name</MudSelectItem>
+                        <option value="@item.Value">@item.Name</option>
                     }
-                </MudSelect>
-            }
-            <MudNumericField Label="@GetDisplayName(() => Plan.SpeedUp)"
-                          @bind-Value="@Plan.SpeedUp"
-                          For="@(() => Plan.SpeedUp)"
-                          Class="mb-4" />
-        </MudItem>
+                </select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@GetDisplayName(() => Plan.SpeedUp)</span>
+                <InputNumber class="form-control" @bind-Value="Plan.SpeedUp" />
+            </div>
+            <ValidationMessage For="@(() => Plan.SpeedUp)" />
 
-        <MudItem xs="6">
-            @if (ListUserTypeDown is null)
-            {
-                <Loading />
-            }
-            else
-            {
-                <MudSelect T="EnumItemModel" Class="mb-4"
-                           Value="SelectedUserTypeDown"
-                           ValueChanged="UsertTypeDownChanged"
-                           ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
-                           Placeholder="-- Down --"
-                           For="@(() => SelectedUserTypeDown)">
+        </div>
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Down)]</span>
+                <select class="form-select" @onchange="UsertTypeDownChanged">
                     @foreach (var item in ListUserTypeDown!)
                     {
-                        <MudSelectItem Value="item">@item.Name</MudSelectItem>
+                        <option value="@item.Value">@item.Name</option>
                     }
-                </MudSelect>
-            }
-            <MudNumericField Label="@GetDisplayName(() => Plan.SpeedDown)"
-                          @bind-Value="@Plan.SpeedDown"
-                          For="@(() => Plan.SpeedDown)"
-                          Class="mb-4" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudNumericField Label="@GetDisplayName(() => Plan.TasaReuso)"
-                          @bind-Value="@Plan.TasaReuso"
-                          For="@(() => Plan.TasaReuso)"
-                          Class="mb-4" />
-        </MudItem>
-        <MudItem xs="6"></MudItem>
+                </select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@GetDisplayName(() => Plan.SpeedDown)</span>
+                <InputNumber class="form-control" @bind-Value="Plan.SpeedDown" />
+            </div>
+            <ValidationMessage For="@(() => Plan.SpeedDown)" />
+        </div>
+    </div>
 
-        <MudItem xs="3"></MudItem>
-        <MudItem xs="6">
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.ProductCategory)]
+                </span>
+                <InputNumber class="form-control" @bind-Value="Plan.TasaReuso" />
+            </div>
+            <ValidationMessage For="@(() => Plan.TasaReuso)" />
+        </div>
+        <div class="col-md-6 mb-2">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-2">
+        </div>
+        <div class="col-md-6 mb-2">
             @if (Taxes is null)
             {
                 <Loading />
             }
             else
             {
-                <MudSelect T="Tax" Class="mb-4"
-                           Label="Impuesto"
-                           Value="SelectedTax"
-                           ValueChanged="TaxesChanged"
-                           ToStringFunc="@(e=> e==null?null : $"{e.TaxName}")"
-                           For="@(() => Plan.Tax)">
-                    @foreach (var item in Taxes!)
-                    {
-                        <MudSelectItem Value="item">@item.TaxName</MudSelectItem>
-                    }
-                </MudSelect>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" style="width: 150px">Impuesto</span>
+                    <select class="form-select" @bind="SelectedTax" @onchange="TaxesChanged">
+                        @foreach (var item in Taxes!)
+                        {
+                            <option value="@item.TaxId">@item.TaxName</option>
+                        }
+                    </select>
+                </div>
             }
+            <div class="mb-0">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.ProductCategory)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Plan.Price" />
+                </div>
+                <ValidationMessage For="@(() => Plan.Price)" />
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Active)]
+                    </span>
+                    <div class="d-flex align-items-center ps-3">
+                        <InputCheckbox @bind-Value="Plan.Active" class="form-check-input me-2" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+        </div>
+    </div>
 
-            <MudTextField Label="@GetDisplayName(() => Plan.Price)"
-                          @bind-Value="@Plan.Price"
-                          For="@(() => Plan.Price)"
-                          Class="mb-4" />
-            <MudCheckBox Label="@GetDisplayName(() => Plan.Active)"
-                         @bind-Value="@Plan.Active"
-                         For="@(() => Plan.Active)"
-                         Class="mb-4" />
 
-        </MudItem>
-        <MudItem xs="3"></MudItem>
-    </MudGrid>
-
-    <br />
-    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-        <MudButton Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.ArrowBack"
-                   Color="Color.Surface"
-                   OnClick="ReturnAction">
-            Volver
-        </MudButton>
-        <MudButton Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.Save"
-                   Color="Color.Dark"
-                   ButtonType="ButtonType.Submit">
-            Guardar
-        </MudButton>
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
     </div>
 </EditForm>

@@ -727,4 +727,10 @@
   <data name="Storage" xml:space="preserve">
     <value>Bodega</value>
   </data>
+  <data name="Select_B_Up" xml:space="preserve">
+    <value>[-- Up --]</value>
+  </data>
+  <data name="Select_B_Down" xml:space="preserve">
+    <value>[-- Down --]</value>
+  </data>
 </root>

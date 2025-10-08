@@ -18,6 +18,8 @@ public partial class CreatePlanCategory
     private string BaseUrl = "/api/v1/plancategories";
     private string BaseView = "/plancategories";
 
+    [Parameter] public string? Title { get; set; }
+
     private async Task Create()
     {
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", PlanCategory);
