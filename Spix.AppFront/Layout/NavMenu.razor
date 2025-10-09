@@ -42,17 +42,42 @@
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
                             @onclick="submenu3"
                             style="background: none; border: none;">
-                        <span class="fa fa-cogs" aria-hidden="true"></span> Studies
+                        <span class="fa fa-cogs" aria-hidden="true"></span> Configuración
                         <span class="ms-auto fa @(expandSubMenu3 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
                     @if (expandSubMenu3)
                     {
-                        <NavLink class="nav-link text-white ps-4" href="/studies">
-                            <span class="fa fa-th-large me-2" aria-hidden="true"></span> Studies
+                        <NavLink class="nav-link text-white ps-4" href="/documenttypes">
+                            <span class="fa fa-file me-2"></span> Tipo Documento
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/taxes">
+                            <span class="fa fa-percent me-2"></span> Impuestos
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/registers">
+                            <span class="fa fa-book me-2"></span> Registros
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/contractor">
+                            <span class="fa fa-user-tie me-2"></span> Contratistas
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/zones">
+                            <span class="fa fa-map-marker-alt me-2"></span> Zonas
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/marks">
+                            <span class="fa fa-tags me-2"></span> Marca Modelo
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/productcategories">
+                            <span class="fa fa-boxes me-2"></span> Categoria/Productos
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/servicecategories">
+                            <span class="fa fa-concierge-bell me-2"></span> Categoria/Servicios
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/plancategories">
+                            <span class="fa fa-sitemap me-2"></span> Categoria/Planes
                         </NavLink>
                     }
                 </div>
+
             </Authorized>
         </AuthorizeView>
         <AuthorizeView Roles="Administrator">

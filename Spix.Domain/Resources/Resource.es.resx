@@ -733,4 +733,82 @@
   <data name="Select_B_Down" xml:space="preserve">
     <value>[-- Down --]</value>
   </data>
+  <data name="Contracts" xml:space="preserve">
+    <value>Contratos</value>
+  </data>
+  <data name="ItSupport" xml:space="preserve">
+    <value>Soportes</value>
+  </data>
+  <data name="StockLoad" xml:space="preserve">
+    <value>Cargue Inventario</value>
+  </data>
+  <data name="CashOut" xml:space="preserve">
+    <value>Egresos</value>
+  </data>
+  <data name="ContractorPay" xml:space="preserve">
+    <value>Pago Contratista</value>
+  </data>
+  <data name="Prepayment" xml:space="preserve">
+    <value>Pago Adelantado</value>
+  </data>
+  <data name="Exempt" xml:space="preserve">
+    <value>Exonerado</value>
+  </data>
+  <data name="InvoiceNote" xml:space="preserve">
+    <value>Nota Cobro</value>
+  </data>
+  <data name="Invoice" xml:space="preserve">
+    <value>Factura</value>
+  </data>
+  <data name="Edit_Register" xml:space="preserve">
+    <value>Editar Register</value>
+  </data>
+  <data name="Create_Register" xml:space="preserve">
+    <value>Crear Registro</value>
+  </data>
+  <data name="Edit_Service" xml:space="preserve">
+    <value>Editar Servicio</value>
+  </data>
+  <data name="Create_Service" xml:space="preserve">
+    <value>Crear Servicio</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>Impuesto</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Servicio</value>
+  </data>
+  <data name="ServiceCategory" xml:space="preserve">
+    <value>Categoria Servicio</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Tasa</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>Ciudad</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zona</value>
+  </data>
+  <data name="Edit_Plan" xml:space="preserve">
+    <value>Editar Plan</value>
+  </data>
+  <data name="Create_Plan" xml:space="preserve">
+    <value>Crear Plan</value>
+  </data>
+  <data name="Edit_Zone" xml:space="preserve">
+    <value>Editar Zona</value>
+  </data>
+  <data name="Create_Zone" xml:space="preserve">
+    <value>Crear Zona</value>
+  </data>
+  <data name="Edit_Tax" xml:space="preserve">
+    <value>Editar Impuesto</value>
+  </data>
+  <data name="Create_Tax" xml:space="preserve">
+    <value>Crear Impuesto</value>
+  </data>
 </root>

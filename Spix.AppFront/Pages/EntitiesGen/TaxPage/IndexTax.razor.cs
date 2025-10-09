@@ -66,25 +66,22 @@ public partial class IndexTax
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        var options = new DialogOptions() { CloseOnEscapeKey = true, CloseButton = true };
-        IDialogReference? dialog;
         if (isEdit)
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", id }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Tax)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<EditTax>($"Editar Impuesto", parameters, options);
+            await _modalService.ShowAsync<EditTax>(parameters);
         }
         else
         {
-            dialog = await _dialogService.ShowAsync<CreateTax>($"Nuevo Impuesto", options);
-        }
-
-        var result = await dialog.Result;
-        if (result!.Canceled)
-        {
-            await Cargar();
+            var parameters = new Dictionary<string, object>
+            {
+                { "Title",$"{Localizer[nameof(Resource.Create_Tax)]}"   }
+            };
+            await _modalService.ShowAsync<CreateTax>(parameters);
         }
     }
 

@@ -1,7 +1,9 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.Resources;
 using Spix.HttpService;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
@@ -11,6 +13,7 @@ namespace Spix.AppFront.Pages.EntitiesGen.ServicePage;
 
 public partial class FormServiceClient
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
@@ -48,10 +51,12 @@ public partial class FormServiceClient
         }
     }
 
-    private void TaxesChanged(Tax modelo)
+    private void TaxesChanged(ChangeEventArgs e)
     {
-        ServiceClient.TaxId = modelo.TaxId;
-        SelectedTax = modelo;
+        if (e?.Value is Guid selectedId)
+        {
+            ServiceClient.TaxId = selectedId;
+        }
     }
 
     private string GetDisplayName<T>(Expression<Func<T>> expression)

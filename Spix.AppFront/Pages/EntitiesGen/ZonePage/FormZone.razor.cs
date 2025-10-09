@@ -1,8 +1,10 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.Resources;
 using Spix.HttpService;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
@@ -12,6 +14,7 @@ namespace Spix.AppFront.Pages.EntitiesGen.ZonePage;
 
 public partial class FormZone
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
@@ -55,12 +58,14 @@ public partial class FormZone
         }
     }
 
-    private async Task StateChanged(State modelo)
+    private async Task StateChanged(ChangeEventArgs e)
     {
-        Zone.StateId = modelo.StateId;
-        SelectedSate = modelo;
-        SelectedCity = new();
-        await LoadCity(modelo.StateId);
+        if (int.TryParse(e.Value?.ToString(), out var stateId))
+        {
+            Zone.StateId = stateId;
+            Zone.CityId = 0;
+            await LoadCity(stateId);
+        }
     }
 
     private async Task LoadCity(int id)
@@ -81,10 +86,12 @@ public partial class FormZone
         }
     }
 
-    private void CityChanged(City modelo)
+    private void CityChanged(ChangeEventArgs e)
     {
-        Zone.CityId = modelo.CityId;
-        SelectedCity = modelo;
+        if (int.TryParse(e.Value?.ToString(), out var cityId))
+        {
+            Zone.CityId = cityId;
+        }
     }
 
     private string GetDisplayName<T>(Expression<Func<T>> expression)

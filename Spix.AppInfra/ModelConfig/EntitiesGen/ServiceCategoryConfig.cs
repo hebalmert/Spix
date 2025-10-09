@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Spix.Domain.EntitiesGen;
 
-namespace Spix.AppInfra.ModelConfig.EntitiesGen;;
+namespace Spix.AppInfra.ModelConfig.EntitiesGen;
 
 public class ServiceCategoryConfig : IEntityTypeConfiguration<ServiceCategory>
 {

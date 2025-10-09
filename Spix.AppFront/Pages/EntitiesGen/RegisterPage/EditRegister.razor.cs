@@ -18,6 +18,7 @@ public partial class EditRegister
     private string BaseView = "/registers";
 
     [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

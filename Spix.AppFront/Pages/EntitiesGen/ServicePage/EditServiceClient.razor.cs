@@ -19,6 +19,7 @@ public partial class EditServiceClient
     private string BaseView = "/serviceclients/details";
 
     [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

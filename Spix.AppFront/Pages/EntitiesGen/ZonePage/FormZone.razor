@@ -1,63 +1,81 @@
 ﻿<EditForm Model="Zone" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
+
+    <!-- Estado -->
     @if (States is null)
     {
         <Loading />
     }
     else
     {
-        <MudSelect T="State" Class="mb-4"
-                   Label="--- Estado/Departamento ---"
-                   Value="SelectedSate"
-                   ValueChanged="StateChanged"
-                   ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
-                   For="@(() => Zone.state)">
-            @foreach (var item in States!)
-            {
-                <MudSelectItem Value="item">@item.Name</MudSelectItem>
-            }
-        </MudSelect>
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.State)]</span>
+                    <select class="form-select" value="@Zone.StateId" @onchange="StateChanged">
+                        @foreach (var item in States!)
+                        {
+                            <option value="@item.StateId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
     }
+
+    <!-- Ciudad -->
     @if (Cities is null)
     {
         <Loading />
     }
     else
     {
-        <MudSelect T="City" Class="mb-4"
-                   Label="--- Ciudad ---"
-                   Value="SelectedCity"
-                   ValueChanged="CityChanged"
-                   ToStringFunc="@(e=> e==null?null : $"{e.Name}")"
-                   For="@(() => Zone.city)">
-            @foreach (var item in Cities!)
-            {
-                <MudSelectItem Value="item">@item.Name</MudSelectItem>
-            }
-        </MudSelect>
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.City)]</span>
+                    <select class="form-select" value="@Zone.CityId" @onchange="CityChanged">
+                        @foreach (var item in Cities!)
+                        {
+                            <option value="@item.CityId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
     }
 
-    <MudTextField Label="@GetDisplayName(() => Zone.ZoneName)"
-                  @bind-Value="@Zone.ZoneName"
-                  For="@(() => Zone.ZoneName)"
-                  Class="mb-4" />
-    <MudCheckBox Label="@GetDisplayName(() => Zone.Active)"
-                 @bind-Value="@Zone.Active"
-                 For="@(() => Zone.Active)"
-                 Class="mb-4" />
-    <br />
-    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-        <MudButton Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.ArrowBack"
-                   Color="Color.Surface"
-                   OnClick="ReturnAction">
-            Volver
-        </MudButton>
-        <MudButton Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.Save"
-                   Color="Color.Dark"
-                   ButtonType="ButtonType.Submit">
-            Guardar
-        </MudButton>
+    <!-- Nombre de zona -->
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Zone)]
+                </span>
+                <InputText class="form-control" @bind-Value="Zone.ZoneName" />
+            </div>
+            <ValidationMessage For="@(() => Zone.ZoneName)" />
+        </div>
+    </div>
+
+    <!-- Activo -->
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Active)]
+                </span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="Zone.Active" class="form-check-input me-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
     </div>
 </EditForm>
+

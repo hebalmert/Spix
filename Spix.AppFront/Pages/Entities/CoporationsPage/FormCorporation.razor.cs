@@ -61,13 +61,6 @@ public partial class FormCorporation
             return;
         }
         SoftPlans = responseHttp.Response;
-        if (IsEditControl)
-        {
-            SelectedSoftplan = SoftPlans!.Where(x => x.SoftPlanId == Corporation.SoftPlanId)
-                .Select(x => new SoftPlan { SoftPlanId = x.SoftPlanId, Name = x.Name })
-                .FirstOrDefault();
-            SoftplanDays = SoftPlans!.FirstOrDefault(x => x.SoftPlanId == Corporation.SoftPlanId);
-        }
     }
 
     private async Task LoadCountry()
@@ -80,12 +73,6 @@ public partial class FormCorporation
             return;
         }
         Countries = responseHttp.Response;
-        if (IsEditControl)
-        {
-            SelectedCountry = Countries!.Where(x => x.CountryId == Corporation.CountryId)
-                .Select(x => new Country { CountryId = x.CountryId, Name = x.Name })
-                .FirstOrDefault();
-        }
     }
 
     private void ImageSelected(string imagenBase64)
@@ -99,7 +86,6 @@ public partial class FormCorporation
         if (int.TryParse(e?.Value?.ToString(), out int selectedId))
         {
             Corporation.CountryId = selectedId;
-            SelectedCountry = Countries!.FirstOrDefault(x => x.CountryId == selectedId);
         }
     }
 

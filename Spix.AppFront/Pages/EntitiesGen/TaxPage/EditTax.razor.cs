@@ -18,6 +18,7 @@ public partial class EditTax
     private string BaseView = "/taxes";
 
     [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

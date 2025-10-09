@@ -19,6 +19,7 @@ public partial class EditServiceCategory
     private string BaseView = "/servicecategories";
 
     [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

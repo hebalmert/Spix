@@ -205,6 +205,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cash Out.
+        /// </summary>
+        public static string CashOut {
+            get {
+                return ResourceManager.GetString("CashOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string Category {
@@ -241,6 +250,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to City.
+        /// </summary>
+        public static string City {
+            get {
+                return ResourceManager.GetString("City", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A Transaction is already Active.
         /// </summary>
         public static string Context_Begin {
@@ -264,6 +282,24 @@ namespace Spix.Domain.Resources {
         public static string Context_RollBack {
             get {
                 return ResourceManager.GetString("Context_RollBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contractor Pay.
+        /// </summary>
+        public static string ContractorPay {
+            get {
+                return ResourceManager.GetString("ContractorPay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts.
+        /// </summary>
+        public static string Contracts {
+            get {
+                return ResourceManager.GetString("Contracts", resourceCulture);
             }
         }
         
@@ -394,6 +430,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Plan.
+        /// </summary>
+        public static string Create_Plan {
+            get {
+                return ResourceManager.GetString("Create_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Product.
         /// </summary>
         public static string Create_Product {
@@ -403,11 +448,47 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Register.
+        /// </summary>
+        public static string Create_Register {
+            get {
+                return ResourceManager.GetString("Create_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Security.
         /// </summary>
         public static string Create_Security {
             get {
                 return ResourceManager.GetString("Create_Security", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Service.
+        /// </summary>
+        public static string Create_Service {
+            get {
+                return ResourceManager.GetString("Create_Service", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Tax.
+        /// </summary>
+        public static string Create_Tax {
+            get {
+                return ResourceManager.GetString("Create_Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Zone.
+        /// </summary>
+        public static string Create_Zone {
+            get {
+                return ResourceManager.GetString("Create_Zone", resourceCulture);
             }
         }
         
@@ -565,6 +646,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Plan.
+        /// </summary>
+        public static string Edit_Plan {
+            get {
+                return ResourceManager.GetString("Edit_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Product.
         /// </summary>
         public static string Edit_Product {
@@ -574,11 +664,47 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Register.
+        /// </summary>
+        public static string Edit_Register {
+            get {
+                return ResourceManager.GetString("Edit_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Security.
         /// </summary>
         public static string Edit_Security {
             get {
                 return ResourceManager.GetString("Edit_Security", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Service.
+        /// </summary>
+        public static string Edit_Service {
+            get {
+                return ResourceManager.GetString("Edit_Service", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Tax.
+        /// </summary>
+        public static string Edit_Tax {
+            get {
+                return ResourceManager.GetString("Edit_Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Zone.
+        /// </summary>
+        public static string Edit_Zone {
+            get {
+                return ResourceManager.GetString("Edit_Zone", resourceCulture);
             }
         }
         
@@ -669,6 +795,15 @@ namespace Spix.Domain.Resources {
         public static string EndDate {
             get {
                 return ResourceManager.GetString("EndDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exempt.
+        /// </summary>
+        public static string Exempt {
+            get {
+                return ResourceManager.GetString("Exempt", resourceCulture);
             }
         }
         
@@ -1195,6 +1330,33 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invoice.
+        /// </summary>
+        public static string Invoice {
+            get {
+                return ResourceManager.GetString("Invoice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice Note.
+        /// </summary>
+        public static string InvoiceNote {
+            get {
+                return ResourceManager.GetString("InvoiceNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supports.
+        /// </summary>
+        public static string ItSupport {
+            get {
+                return ResourceManager.GetString("ItSupport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Job.
         /// </summary>
         public static string Job {
@@ -1582,6 +1744,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Prepayment.
+        /// </summary>
+        public static string Prepayment {
+            get {
+                return ResourceManager.GetString("Prepayment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Price.
         /// </summary>
         public static string Price {
@@ -1605,6 +1776,15 @@ namespace Spix.Domain.Resources {
         public static string ProductCategory {
             get {
                 return ResourceManager.GetString("ProductCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rate.
+        /// </summary>
+        public static string Rate {
+            get {
+                return ResourceManager.GetString("Rate", resourceCulture);
             }
         }
         
@@ -1762,6 +1942,24 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Service.
+        /// </summary>
+        public static string Service {
+            get {
+                return ResourceManager.GetString("Service", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Category.
+        /// </summary>
+        public static string ServiceCategory {
+            get {
+                return ResourceManager.GetString("ServiceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Soft Plan.
         /// </summary>
         public static string SoftPlan {
@@ -1789,11 +1987,29 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stock.
         /// </summary>
         public static string Stock {
             get {
                 return ResourceManager.GetString("Stock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock Load.
+        /// </summary>
+        public static string StockLoad {
+            get {
+                return ResourceManager.GetString("StockLoad", resourceCulture);
             }
         }
         
@@ -1812,6 +2028,15 @@ namespace Spix.Domain.Resources {
         public static string StudyCount {
             get {
                 return ResourceManager.GetString("StudyCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tax.
+        /// </summary>
+        public static string Tax {
+            get {
+                return ResourceManager.GetString("Tax", resourceCulture);
             }
         }
         
@@ -1965,6 +2190,15 @@ namespace Spix.Domain.Resources {
         public static string WithSerials {
             get {
                 return ResourceManager.GetString("WithSerials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zone.
+        /// </summary>
+        public static string Zone {
+            get {
+                return ResourceManager.GetString("Zone", resourceCulture);
             }
         }
     }

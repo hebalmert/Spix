@@ -19,6 +19,7 @@ public partial class CreateServiceClient
     private string BaseView = "/serviceclients/details";
 
     [Parameter] public Guid Id { get; set; }  //ServiceCategoryId
+    [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {

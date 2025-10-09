@@ -18,6 +18,8 @@ public partial class CreateTax
     private string BaseUrl = "/api/v1/taxes";
     private string BaseView = "/taxes";
 
+    [Parameter] public string? Title { get; set; }
+
     private async Task Create()
     {
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Tax);

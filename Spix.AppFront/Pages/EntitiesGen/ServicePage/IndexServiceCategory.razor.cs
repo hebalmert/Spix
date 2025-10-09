@@ -46,25 +46,22 @@ public partial class IndexServiceCategory
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        var options = new DialogOptions() { CloseOnEscapeKey = true, CloseButton = true };
-        IDialogReference? dialog;
         if (isEdit)
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", id }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Service)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<EditServiceCategory>($"Editar Servicio", parameters, options);
+            await _modalService.ShowAsync<EditServiceCategory>(parameters);
         }
         else
         {
-            dialog = await _dialogService.ShowAsync<CreateServiceCategory>($"Nuevo Servicio", options);
-        }
-
-        var result = await dialog.Result;
-        if (result!.Canceled)
-        {
-            await Cargar();
+            var parameters = new Dictionary<string, object>
+            {
+                { "Title",$"{Localizer[nameof(Resource.Create_Service)]}"   }
+            };
+            await _modalService.ShowAsync<CreateServiceCategory>(parameters);
         }
     }
 
@@ -92,24 +89,23 @@ public partial class IndexServiceCategory
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Confirmacion",
-            Text = "Estas Seguro de Borrar el Registro",
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
             Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
-        {
+
+        if (result.IsDismissed || result.Value != "true")
             return;
-        }
 
         var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
         var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandler)
-        {
-            _navigationManager.NavigateTo("/");
             return;
-        }
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
     }
 }

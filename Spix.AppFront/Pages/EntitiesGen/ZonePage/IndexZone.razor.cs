@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModal;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.MarkPage;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.Resources;
 using Spix.HttpService;
@@ -66,25 +67,22 @@ public partial class IndexZone
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        var options = new DialogOptions() { CloseOnEscapeKey = true, CloseButton = true };
-        IDialogReference? dialog;
         if (isEdit)
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", id }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Zone)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<EditZone>($"Editar Zona", parameters, options);
+            await _modalService.ShowAsync<EditZone>(parameters);
         }
         else
         {
-            dialog = await _dialogService.ShowAsync<CreateZone>($"Nueva Zona", options);
-        }
-
-        var result = await dialog.Result;
-        if (result!.Canceled)
-        {
-            await Cargar();
+            var parameters = new Dictionary<string, object>
+            {
+                { "Title",$"{Localizer[nameof(Resource.Create_Zone)]}"   }
+            };
+            await _modalService.ShowAsync<CreateZone>(parameters);
         }
     }
 

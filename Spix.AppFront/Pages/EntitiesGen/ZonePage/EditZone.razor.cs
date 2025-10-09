@@ -18,6 +18,7 @@ public partial class EditZone
     private string BaseView = "/zones";
 
     [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

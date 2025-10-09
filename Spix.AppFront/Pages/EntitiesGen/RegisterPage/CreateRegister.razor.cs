@@ -18,6 +18,8 @@ public partial class CreateRegister
     private string BaseUrl = "/api/v1/registers";
     private string BaseView = "/registers";
 
+    [Parameter] public string? Title { get; set; }
+
     private async Task Create()
     {
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Register);

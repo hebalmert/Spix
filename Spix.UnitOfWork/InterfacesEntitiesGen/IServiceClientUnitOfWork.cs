@@ -8,7 +8,7 @@ public interface IServiceClientUnitOfWork
 {
     Task<ActionResponse<IEnumerable<ServiceClient>>> ComboAsync(string username, Guid id);
 
-    Task<ActionResponse<IEnumerable<ServiceClient>>> GetAsync(PaginationDTO pagination, string emailusername;
+    Task<ActionResponse<IEnumerable<ServiceClient>>> GetAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<ServiceClient>> GetAsync(Guid id);
 

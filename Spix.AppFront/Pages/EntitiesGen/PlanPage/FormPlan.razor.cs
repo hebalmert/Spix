@@ -81,6 +81,14 @@ public partial class FormPlan
         }
     }
 
+    private void TaxesChanged(ChangeEventArgs e)
+    {
+        if (e?.Value is Guid selectedId)
+        {
+            Plan.TaxId = selectedId;
+        }
+    }
+
     private async Task LoadTaxes()
     {
         var responseHTTP = await _repository.GetAsync<List<Tax>>($"api/v1/taxes/loadCombo");
@@ -98,12 +106,6 @@ public partial class FormPlan
             SelectedTax = Taxes!.Where(x => x.TaxId == Plan.TaxId)
                 .Select(x => new Tax { TaxId = x.TaxId, TaxName = x.TaxName }).FirstOrDefault();
         }
-    }
-
-    private void TaxesChanged(Tax modelo)
-    {
-        Plan.TaxId = modelo.TaxId;
-        SelectedTax = modelo;
     }
 
     private string GetDisplayName<T>(Expression<Func<T>> expression)

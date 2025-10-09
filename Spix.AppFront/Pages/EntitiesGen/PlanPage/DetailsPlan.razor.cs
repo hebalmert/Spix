@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModal;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.MarkPage;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.Resources;
 using Spix.HttpService;
@@ -50,29 +51,23 @@ public partial class DetailsPlan
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        var options = new DialogOptions() { CloseOnEscapeKey = true, CloseButton = true };
-        IDialogReference? dialog;
         if (isEdit)
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", id } //Manejamos el MarkModelId viene de razor
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Plan)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<EditPlan>($"Editar Plan", parameters, options);
+            await _modalService.ShowAsync<EditPlan>(parameters);
         }
         else
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", Id }  //Manejamos el MarkId viene como Parametro
+                { "Id", Id },
+                { "Title",$"{Localizer[nameof(Resource.Create_Plan)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<CreatePlan>($"Nuevo Plan", parameters, options);
-        }
-
-        var result = await dialog.Result;
-        if (result!.Canceled)
-        {
-            await Cargar();
+            await _modalService.ShowAsync<CreatePlan>(parameters);
         }
     }
 

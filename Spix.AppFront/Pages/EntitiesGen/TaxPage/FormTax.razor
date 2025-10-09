@@ -1,30 +1,47 @@
 ﻿<EditForm Model="Tax" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    <MudTextField Label="@GetDisplayName(() => Tax.TaxName)"
-                  @bind-Value="@Tax.TaxName"
-                  For="@(() => Tax.TaxName)"
-                  Class="mb-4" />
-    <MudTextField Label="@GetDisplayName(() => Tax.Rate)"
-                  @bind-Value="@Tax.Rate"
-                  For="@(() => Tax.Rate)"
-                  Class="mb-4" />
-    <MudCheckBox Label="@GetDisplayName(() => Tax.Active)"
-                 @bind-Value="@Tax.Active"
-                 For="@(() => Tax.Active)"
-                 Class="mb-4" />
-    <br />
-    <div class="mb-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-        <MudButton Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.ArrowBack"
-                   Color="Color.Surface"
-                   OnClick="ReturnAction">
-            Volver
-        </MudButton>
-        <MudButton Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.Save"
-                   Color="Color.Dark"
-                   ButtonType="ButtonType.Submit">
-            Guardar
-        </MudButton>
+
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Name)]
+                </span>
+                <InputText class="form-control" @bind-Value="Tax.TaxName" />
+            </div>
+            <ValidationMessage For="@(() => Tax.TaxName)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Rate)]
+                </span>
+                <InputNumber class="form-control" @bind-Value="Tax.Rate" />
+            </div>
+            <ValidationMessage For="@(() => Tax.Rate)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Active)]
+                </span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="Tax.Active" class="form-check-input me-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
     </div>
 </EditForm>
+

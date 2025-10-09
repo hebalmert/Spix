@@ -1,14 +1,18 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModal;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.ProductPage;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.Resources;
 using Spix.HttpService;
 
 namespace Spix.AppFront.Pages.EntitiesGen.ServicePage;
 
 public partial class DetailsServiceClient
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
@@ -47,29 +51,23 @@ public partial class DetailsServiceClient
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        var options = new DialogOptions() { CloseOnEscapeKey = true, CloseButton = true };
-        IDialogReference? dialog;
         if (isEdit)
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", id } //Manejamos el MarkModelId viene de razor
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Service)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<EditServiceClient>($"Editar Servicio", parameters, options);
+            await _modalService.ShowAsync<EditServiceClient>(parameters);
         }
         else
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", Id }  //Manejamos el MarkId viene como Parametro
+                { "Id", Id },
+                { "Title",$"{Localizer[nameof(Resource.Create_Service)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<CreateServiceClient>($"Nuevo Servicio", parameters, options);
-        }
-
-        var result = await dialog.Result;
-        if (result!.Canceled)
-        {
-            await Cargar();
+            await _modalService.ShowAsync<CreateServiceClient>(parameters);
         }
     }
 

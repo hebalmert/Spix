@@ -71,10 +71,10 @@
             }
             else
             {
-                <div class="input-group mb-3">
-                    <span class="input-group-text" style="width: 150px">Impuesto</span>
-                    <select class="form-select" @bind="SelectedTax" @onchange="TaxesChanged">
-                        @foreach (var item in Taxes!)
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Corporation)]</span>
+                    <select class="form-select" value="@Plan.TaxId" @onchange="TaxesChanged">
+                        @foreach (var item in Taxes)
                         {
                             <option value="@item.TaxId">@item.TaxName</option>
                         }

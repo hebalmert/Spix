@@ -66,25 +66,22 @@ public partial class IndexRegister
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        var options = new DialogOptions() { CloseOnEscapeKey = true, CloseButton = true };
-        IDialogReference? dialog;
         if (isEdit)
         {
-            var parameters = new DialogParameters
+            var parameters = new Dictionary<string, object>
             {
-                { "Id", id }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Register)]}"   }
             };
-            dialog = await _dialogService.ShowAsync<EditRegister>($"Editar Registro", parameters, options);
+            await _modalService.ShowAsync<EditRegister>(parameters);
         }
         else
         {
-            dialog = await _dialogService.ShowAsync<CreateRegister>($"Nuevo Registro", options);
-        }
-
-        var result = await dialog.Result;
-        if (result!.Canceled)
-        {
-            await Cargar();
+            var parameters = new Dictionary<string, object>
+            {
+                { "Title",$"{Localizer[nameof(Resource.Create_Register)]}"   }
+            };
+            await _modalService.ShowAsync<CreateRegister>(parameters);
         }
     }
 

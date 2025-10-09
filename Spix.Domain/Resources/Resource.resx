@@ -733,4 +733,82 @@
   <data name="Select_B_Down" xml:space="preserve">
     <value>[-- Down --]</value>
   </data>
+  <data name="Contracts" xml:space="preserve">
+    <value>Contracts</value>
+  </data>
+  <data name="ItSupport" xml:space="preserve">
+    <value>Supports</value>
+  </data>
+  <data name="StockLoad" xml:space="preserve">
+    <value>Stock Load</value>
+  </data>
+  <data name="CashOut" xml:space="preserve">
+    <value>Cash Out</value>
+  </data>
+  <data name="ContractorPay" xml:space="preserve">
+    <value>Contractor Pay</value>
+  </data>
+  <data name="Prepayment" xml:space="preserve">
+    <value>Prepayment</value>
+  </data>
+  <data name="Exempt" xml:space="preserve">
+    <value>Exempt</value>
+  </data>
+  <data name="InvoiceNote" xml:space="preserve">
+    <value>Invoice Note</value>
+  </data>
+  <data name="Invoice" xml:space="preserve">
+    <value>Invoice</value>
+  </data>
+  <data name="Edit_Register" xml:space="preserve">
+    <value>Edit Register</value>
+  </data>
+  <data name="Create_Register" xml:space="preserve">
+    <value>Create Register</value>
+  </data>
+  <data name="Edit_Service" xml:space="preserve">
+    <value>Edit Service</value>
+  </data>
+  <data name="Create_Service" xml:space="preserve">
+    <value>Create Service</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>Tax</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="ServiceCategory" xml:space="preserve">
+    <value>Service Category</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Rate</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zone</value>
+  </data>
+  <data name="Edit_Plan" xml:space="preserve">
+    <value>Edit Plan</value>
+  </data>
+  <data name="Create_Plan" xml:space="preserve">
+    <value>Create Plan</value>
+  </data>
+  <data name="Edit_Zone" xml:space="preserve">
+    <value>Edit Zone</value>
+  </data>
+  <data name="Create_Zone" xml:space="preserve">
+    <value>Create Zone</value>
+  </data>
+  <data name="Edit_Tax" xml:space="preserve">
+    <value>Edit Tax</value>
+  </data>
+  <data name="Create_Tax" xml:space="preserve">
+    <value>Create Tax</value>
+  </data>
 </root>

@@ -18,6 +18,8 @@ public partial class CreateZone
     private string BaseUrl = "/api/v1/zones";
     private string BaseView = "/zones";
 
+    [Parameter] public string? Title { get; set; }
+
     private async Task Create()
     {
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Zone);
