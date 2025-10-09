@@ -1,4 +1,5 @@
-﻿using Spix.Domain.Entities;
+﻿using Spix.Core.EntitiesContratos;
+using Spix.Domain.Entities;
 using Spix.Domain.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,5 +29,5 @@ public class ServiceCategory
 
     public ICollection<ServiceClient>? ServiceClients { get; set; }
 
-    //public ICollection<ContractClient>? ContractClients { get; set; }
+    public ICollection<ContractClient>? ContractClients { get; set; }
 }

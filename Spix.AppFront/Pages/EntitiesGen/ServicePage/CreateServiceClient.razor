@@ -1,5 +1,5 @@
 ﻿@page "/serviceclients/Createproducts/{Id:guid}"
-@attribute [Authorize(Roles = "Usuario")]
+@attribute [Authorize(Roles = "Administrator")]
 
 @if (ServiceClient is null)
 {

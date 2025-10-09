@@ -1,5 +1,5 @@
 ﻿@page "/products/detailsProductStocks/{Id:guid}"
-@attribute [Authorize(Roles = "Usuario")]
+@attribute [Authorize(Roles = "Administrator")]
 
 @if (Product is null || ProductStocks is null)
 {

@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesInven;
 using Spix.Domain.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,7 +29,7 @@ public class ProductCategory
 
     public ICollection<Product>? Products { get; set; }
 
-    //public ICollection<PurchaseDetail>? PurchaseDetails { get; set; }
+    public ICollection<PurchaseDetail>? PurchaseDetails { get; set; }
 
-    //public ICollection<TransferDetails>? TransferDetails { get; set; }
+    public ICollection<TransferDetails>? TransferDetails { get; set; }
 }

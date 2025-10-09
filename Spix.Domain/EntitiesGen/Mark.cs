@@ -1,4 +1,5 @@
-﻿using Spix.Domain.Entities;
+﻿using Spix.Core.EntitiesNet;
+using Spix.Domain.Entities;
 using Spix.Domain.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,7 +29,7 @@ public class Mark
 
     public ICollection<MarkModel>? MarkModels { get; set; }
 
-    //public ICollection<Node>? Nodes { get; set; }
+    public ICollection<Node>? Nodes { get; set; }
 
-    //public ICollection<Server>? Servers { get; set; }
+    public ICollection<Server>? Servers { get; set; }
 }

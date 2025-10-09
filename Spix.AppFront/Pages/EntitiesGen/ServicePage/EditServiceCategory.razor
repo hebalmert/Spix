@@ -1,5 +1,5 @@
 ﻿@page "/servicecategories/edit/{Id:guid}"
-@attribute [Authorize(Roles = "Usuario")]
+@attribute [Authorize(Roles = "Administrator")]
 
 @if (ServiceCategory is null)
 {

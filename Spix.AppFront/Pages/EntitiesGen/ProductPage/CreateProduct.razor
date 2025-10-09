@@ -1,5 +1,5 @@
 ﻿@page "/products/Createproducts/{Id:guid}"
-@attribute [Authorize(Roles = "Usuario")]
+@attribute [Authorize(Roles = "Administrator")]
 
 @if (Product is null)
 {

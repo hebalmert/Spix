@@ -1,4 +1,5 @@
-﻿using Spix.Domain.Entities;
+﻿using Spix.Core.EntitiesContratos;
+using Spix.Domain.Entities;
 using Spix.Domain.Enum;
 using Spix.Domain.Resources;
 using System.ComponentModel;
@@ -60,7 +61,7 @@ public class Plan
     public Tax? Tax { get; set; }
 
     //Relaciones en dos vias
-    //public ICollection<ContractPlan>? ContractPlans { get; set; }
+    public ICollection<ContractPlan>? ContractPlans { get; set; }
 
-    //public ICollection<ContractQue>? ContractQues { get; set; }
+    public ICollection<ContractQue>? ContractQues { get; set; }
 }
