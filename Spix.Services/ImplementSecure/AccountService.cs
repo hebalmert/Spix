@@ -2,9 +2,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Spix.AppInfra;
 using Spix.AppInfra.EmailHelper;
 using Spix.AppInfra.FileHelper;
@@ -16,6 +13,10 @@ using Spix.Domain.Resources;
 using Spix.DomainLogic.ResponcesSec;
 using Spix.DomainLogic.SpixResponse;
 using Spix.Services.InterfacesSecure;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Web;
 
 namespace Spix.Services.ImplementSecure;
 
@@ -314,9 +315,9 @@ public class AccountService : IAccountService
     private async Task<Response> SendRecoverEmailAsync(User user, string frontUrl)
     {
         var myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
-
+        var encodedToken = HttpUtility.UrlEncode(myToken);
         // Construir la URL sin `Url.Action`
-        string tokenLink = $"{frontUrl}/api/accounts/ResetPassword?userid={user.Id}&token={myToken}";
+        string tokenLink = $"{frontUrl}/api/accounts/ResetPassword?token={encodedToken}";
 
         string subject = $"Recuperacion de Clave{_localizer[nameof(Resource.EmailSubject)]}";
         string body = ($"De: Optimus U" +
