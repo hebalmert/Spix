@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
@@ -23,17 +24,25 @@ public class FileStorage : IFileStorage
 
     public async Task<bool> RemoveFileAsync(string containerName, string fileName)
     {
-        var client = new BlobContainerClient(_azureOption.AzureStorage, containerName);
-        await client.CreateIfNotExistsAsync();
-
-        var blob = client.GetBlobClient(fileName);
-
-        if (await blob.ExistsAsync())
+        try
         {
-            await blob.DeleteAsync(); // más explícito que DeleteIfExistsAsync
-            return true;
+            var client = new BlobContainerClient(_azureOption.AzureStorage, containerName);
+            var blob = client.GetBlobClient(fileName);
+
+            if (await blob.ExistsAsync())
+            {
+                await blob.DeleteAsync(); // más explícito que DeleteIfExistsAsync
+                return true;
+            }
+
+            return false;
         }
-        return false;
+        catch (RequestFailedException ex)
+        {
+            // Aquí puedes loguear el error si lo necesitas
+            Console.WriteLine($"Error al intentar borrar el archivo: {ex.Message}");
+            return false;
+        }
     }
 
     public async Task<string> SaveImageAsync(byte[] content, string fileName, string containerName)
