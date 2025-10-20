@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesGen;
+using Spix.Domain.EntitiesInven;
 using Spix.Domain.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,9 +21,10 @@ public class State
     public int CitiesNumber => Cities == null ? 0 : Cities.Count;
 
     //Relaciones
+
     public Country? Country { get; set; }
-
     public ICollection<City>? Cities { get; set; }
-
     public ICollection<Zone>? Zones { get; set; }
+    public ICollection<ProductStorage>? ProductStorages { get; set; }
+    public ICollection<Supplier>? Supplier { get; set; }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Spix.Domain.EntitiesInven;
 
-namespace Spix.Infrastructure.ModelConfig.EntitiesInven;
+namespace Spix.AppInfra.ModelConfig.EntitiesInven;
 
 public class CargueDetailsConfig : IEntityTypeConfiguration<CargueDetail>
 {

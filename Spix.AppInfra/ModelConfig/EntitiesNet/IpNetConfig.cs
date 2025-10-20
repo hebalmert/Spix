@@ -1,0 +1,14 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Spix.Core.EntitiesNet;
+
+namespace Spix.AppInfra.ModelConfig.EntitiesNet;
+
+public class IpNetConfig : IEntityTypeConfiguration<IpNet>
+{
+    public void Configure(EntityTypeBuilder<IpNet> builder)
+    {
+        builder.HasKey(e => e.IpNetId);
+        builder.HasIndex(e => new { e.Ip, e.CorporationId }).IsUnique();
+    }
+}

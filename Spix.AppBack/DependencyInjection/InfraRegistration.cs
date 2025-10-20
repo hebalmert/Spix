@@ -3,6 +3,7 @@ using MapsterMapper;
 using Spix.AppInfra.EmailHelper;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.FileHelper;
+using Spix.AppInfra.FunctionSoft;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
@@ -16,6 +17,9 @@ public class InfraRegistration
     {
         // Manejo de Errores
         services.AddScoped<HttpErrorHandler>();
+
+        // Manejo de Direcciones IP y Redes
+        services.AddScoped<IIpControl, IpControl>();
 
         // Manejo de transacciones por request
         services.AddScoped<ITransactionManager, TransactionManager>();

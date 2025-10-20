@@ -46,6 +46,12 @@ public class UserHelper : IUserHelper
         return user!;
     }
 
+    public async Task<User> GetUserAsync(string email)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        return user!;
+    }
+
     public async Task<IdentityResult> AddUserAsync(User user, string password)
     {
         var result = await _userManager.CreateAsync(user, password);

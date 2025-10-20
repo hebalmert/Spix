@@ -1,18 +1,26 @@
 ﻿using Spix.Services.ImplementEntitiesData;
 using Spix.Services.ImplementEntitiesGen;
+using Spix.Services.ImplementEntitiesNet;
 using Spix.Services.ImplementEntties;
+using Spix.Services.ImplementInven;
 using Spix.Services.ImplementSecure;
 using Spix.Services.InterfaceEntities;
+using Spix.Services.InterfaceEntitiesNet;
 using Spix.Services.InterfacesEntitiesData;
 using Spix.Services.InterfacesEntitiesGen;
+using Spix.Services.InterfacesInven;
 using Spix.Services.InterfacesSecure;
 using Spix.UnitOfWork.ImplementEntities;
 using Spix.UnitOfWork.ImplementEntitiesData;
 using Spix.UnitOfWork.ImplementEntitiesGen;
+using Spix.UnitOfWork.ImplementEntitiesNet;
+using Spix.UnitOfWork.ImplementInven;
 using Spix.UnitOfWork.ImplementSecure;
 using Spix.UnitOfWork.InterfaceEntities;
+using Spix.UnitOfWork.InterfaceEntitiesNet;
 using Spix.UnitOfWork.InterfacesEntitiesData;
 using Spix.UnitOfWork.InterfacesEntitiesGen;
+using Spix.UnitOfWork.InterfacesInven;
 using Spix.UnitOfWork.InterfacesSecure;
 
 namespace Spix.AppBack.DependencyInjection;
@@ -84,5 +92,35 @@ public class UnitOfWorkRegistration
         services.AddScoped<IPlanCategoryService, PlanCategoryService>();
         services.AddScoped<IPlanUnitOfWork, PlanUnitOfWork>();
         services.AddScoped<IPlanService, PlanService>();
+
+        //EntitiesInven
+        services.AddScoped<ISupplierUnitOfWork, SupplierUnitOfWork>();
+        services.AddScoped<ISupplierServices, SupplierService>();
+        services.AddScoped<IProductStockUnitOfWork, ProductStockUnitOfWork>();
+        services.AddScoped<IProductStockService, ProductStockService>();
+        services.AddScoped<IProductStorageUnitOfWork, ProductStorageUnitOfWork>();
+        services.AddScoped<IProductStorageService, ProductStorageService>();
+        services.AddScoped<IPurchaseUnitOfWork, PurchaseUnitOfWork>();
+        services.AddScoped<IPurchaseService, PurchaseService>();
+        services.AddScoped<IPurchaseDetailsUnitOfWork, PurchaseDetailsUnitOfWork>();
+        services.AddScoped<IPurchaseDetailsService, PurchaseDetailsService>();
+        services.AddScoped<ITransferUnitOfWork, TransferUnitOfWork>();
+        services.AddScoped<ITransferService, TransferService>();
+        services.AddScoped<ITransferDetailsUnitOfWork, TransferDetailsUnitOfWork>();
+        services.AddScoped<ITransferDetailsService, TransferDetailsService>();
+        services.AddScoped<ICargueUnitOfWork, CargueUnitOfWork>();
+        services.AddScoped<ICargueService, CargueService>();
+        services.AddScoped<ICargueDetailsUnitOfWork, CargueDetailsUnitOfWork>();
+        services.AddScoped<ICargueDetailsService, CargueDetailsService>();
+
+        //EntitiesNet
+        services.AddScoped<IIpNetworkUnitOfWork, IpNetworkUnitOfWork>();
+        services.AddScoped<IIpNetworkService, IpNetworkService>();
+        services.AddScoped<IIpNetUnitOfWork, IpNetUnitOfWork>();
+        services.AddScoped<IIpNetService, IpNetService>();
+        services.AddScoped<INodeUnitOfWork, NodeUnitOfWork>();
+        services.AddScoped<INodeService, NodeService>();
+        services.AddScoped<IServerUnitOfWork, ServerUnitOfWork>();
+        services.AddScoped<IServerService, ServerService>();
     }
 }

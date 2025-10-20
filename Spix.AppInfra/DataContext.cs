@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Spix.Core.EntitiesNet;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.EntitiesInven;
 using System.Reflection;
 
 namespace Spix.AppInfra;
@@ -56,6 +58,25 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ServiceClient> ServiceClients => Set<ServiceClient>();
     public DbSet<PlanCategory> PlanCategories => Set<PlanCategory>();
     public DbSet<Plan> Plans => Set<Plan>();
+
+    //EntitiesInven
+
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<ProductStorage> ProductStorages => Set<ProductStorage>();
+    public DbSet<ProductStock> ProductStocks => Set<ProductStock>();
+    public DbSet<Purchase> Purchases => Set<Purchase>();
+    public DbSet<PurchaseDetail> PurchaseDetails => Set<PurchaseDetail>();
+    public DbSet<Transfer> Transfers => Set<Transfer>();
+    public DbSet<TransferDetails> TransferDetails => Set<TransferDetails>();
+    public DbSet<Cargue> Cargues => Set<Cargue>();
+    public DbSet<CargueDetail> CargueDetails => Set<CargueDetail>();
+
+    //EntitiesNet
+
+    public DbSet<IpNetwork> IpNetworks => Set<IpNetwork>();
+    public DbSet<IpNet> IpNets => Set<IpNet>();
+    public DbSet<Node> Nodes => Set<Node>();
+    public DbSet<Server> Servers => Set<Server>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

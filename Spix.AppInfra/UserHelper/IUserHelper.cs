@@ -13,6 +13,8 @@ public interface IUserHelper
 
     Task<User> GetUserByIdAsync(Guid userId);
 
+    Task<User> GetUserAsync(string email);
+
     Task<IdentityResult> AddUserAsync(User user, string password);
 
     Task<bool> DeleteUser(string username);
