@@ -9,6 +9,7 @@ public class PurchaseConfig : IEntityTypeConfiguration<Purchase>
     public void Configure(EntityTypeBuilder<Purchase> builder)
     {
         builder.HasKey(e => e.PurchaseId);
+        builder.Property(x => x.PurchaseId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.SupplierId, e.NroFactura }).IsUnique();
         builder.HasIndex(e => new { e.CorporationId, e.NroPurchase }).IsUnique();
         builder.Property(e => e.FacuraDate).HasColumnType("date");

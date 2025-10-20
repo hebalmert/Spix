@@ -9,6 +9,7 @@ public class ServiceClientConfig : IEntityTypeConfiguration<ServiceClient>
     public void Configure(EntityTypeBuilder<ServiceClient> builder)
     {
         builder.HasKey(e => e.ServiceClientId);
+        builder.Property(x => x.ServiceClientId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.ServiceName }).IsUnique();
         builder.Property(e => e.Costo).HasPrecision(18, 2);
         builder.Property(e => e.Price).HasPrecision(18, 2);

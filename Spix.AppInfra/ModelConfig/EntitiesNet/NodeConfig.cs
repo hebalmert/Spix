@@ -9,6 +9,7 @@ public class NodeConfig : IEntityTypeConfiguration<Node>
     public void Configure(EntityTypeBuilder<Node> builder)
     {
         builder.HasKey(e => e.NodeId);
+        builder.Property(x => x.NodeId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.NodesName, e.CorporationId, e.OperationId }).IsUnique();
         //Evitar el borrado en cascada
         builder.HasOne(e => e.IpNetwork).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);

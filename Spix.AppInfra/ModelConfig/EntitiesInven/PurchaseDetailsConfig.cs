@@ -9,6 +9,7 @@ public class PurchaseDetailsConfig : IEntityTypeConfiguration<PurchaseDetail>
     public void Configure(EntityTypeBuilder<PurchaseDetail> builder)
     {
         builder.HasKey(e => e.PurchaseDetailId);
+        builder.Property(x => x.PurchaseDetailId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.ProductId, e.PurchaseId }).IsUnique();
         //Evitar el borrado en cascada
         builder.HasOne(e => e.Product).WithMany(c => c.PurchaseDetails).OnDelete(DeleteBehavior.Restrict);

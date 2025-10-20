@@ -9,6 +9,7 @@ public class PlanConfig : IEntityTypeConfiguration<Plan>
     public void Configure(EntityTypeBuilder<Plan> builder)
     {
         builder.HasIndex(x => x.PlanId);
+        builder.Property(x => x.PlanId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(x => new { x.CorporationId, x.PlanName });
         builder.Property(e => e.Price).HasPrecision(18, 2);
         //Evitar el borrado en cascada

@@ -9,6 +9,7 @@ public class SupplierConfig : IEntityTypeConfiguration<Supplier>
     public void Configure(EntityTypeBuilder<Supplier> builder)
     {
         builder.HasKey(e => e.SupplierId);
+        builder.Property(x => x.SupplierId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.Name }).IsUnique();
         builder.HasIndex(e => new { e.CorporationId, e.Document, e.DocumentTypeId }).IsUnique();
         //Evitar el borrado en cascada

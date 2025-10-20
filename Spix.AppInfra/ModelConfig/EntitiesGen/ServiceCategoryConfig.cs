@@ -9,6 +9,7 @@ public class ServiceCategoryConfig : IEntityTypeConfiguration<ServiceCategory>
     public void Configure(EntityTypeBuilder<ServiceCategory> builder)
     {
         builder.HasKey(x => x.ServiceCategoryId);
+        builder.Property(x => x.ServiceCategoryId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.Name }).IsUnique();
     }
 }

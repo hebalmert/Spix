@@ -9,6 +9,7 @@ public class CargueConfig : IEntityTypeConfiguration<Cargue>
     public void Configure(EntityTypeBuilder<Cargue> builder)
     {
         builder.HasKey(e => e.CargueId);
+        builder.Property(x => x.CargueId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.Property(e => e.DateCargue).HasColumnType("date");
         //Evitar el borrado en cascada
         builder.HasOne(e => e.Purchase).WithMany(c => c.Cargue).OnDelete(DeleteBehavior.Restrict);
