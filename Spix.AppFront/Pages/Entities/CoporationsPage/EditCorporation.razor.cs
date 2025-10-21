@@ -22,6 +22,7 @@ public partial class EditCorporation
     [Parameter] public string? Title { get; set; }
 
     private Corporation? _Corporation;
+    private bool isLoading = false;
     private string BaseUrl = "/api/v1/corporations";
     private string BaseView = "/corporations";
 
@@ -39,10 +40,12 @@ public partial class EditCorporation
             await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_ValidationWarningTitle)], Localizer[nameof(Resource.msg_ValidationWarningMessage)], SweetAlertIcon.Warning);
             return;
         }
+        isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", _Corporation);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) return;
+        if (errorHandled) { isLoading = false; return; }
 
+        isLoading = false;
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
         _modalService.Close();
         _navigationManager.NavigateTo("/dashboard");

@@ -23,6 +23,7 @@ public partial class CreateManager
     [Parameter] public string? Title { get; set; }
 
     private Manager _Manager = new() { Active = true };
+    private bool isLoading = false;
 
     private string BaseUrl = "/api/v1/managers";
     private string BaseView = "/managers";
@@ -34,10 +35,12 @@ public partial class CreateManager
             await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_ValidationWarningTitle)], Localizer[nameof(Resource.msg_ValidationWarningMessage)], SweetAlertIcon.Warning);
             return;
         }
+        isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", _Manager);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) return;
+        if (errorHandled) { isLoading = false; return; }
 
+        isLoading = false;
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
         _modalService.Close();
         _navigationManager.NavigateTo("/dashboard");

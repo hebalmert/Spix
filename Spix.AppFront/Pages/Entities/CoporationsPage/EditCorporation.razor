@@ -22,6 +22,12 @@ else
                                  IsEditControl="true"
                                  OnSubmit="Edit"
                                  ReturnAction="Return" />
+                @if (isLoading)
+                {
+                    <div class="loading-overlay">
+                        <Loading />
+                    </div>
+                }
             </div>
         </div>
     </div>

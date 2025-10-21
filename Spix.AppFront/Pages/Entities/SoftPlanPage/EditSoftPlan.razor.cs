@@ -28,6 +28,7 @@ public partial class EditSoftPlan
     //Local State
 
     private SoftPlan? _softplan;
+    private bool isLoading = false;
     private const string BaseUrl = "/api/v1/softplans";
     private const string BaseView = "/softplans";
 
@@ -41,10 +42,12 @@ public partial class EditSoftPlan
 
     private async Task Edit()
     {
+        isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", _softplan);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) return;
+        if (errorHandled) { isLoading = false; return; }
 
+        isLoading = false;
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
         _modalService.Close();
         _navigationManager.NavigateTo(BaseView);

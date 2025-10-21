@@ -27,15 +27,18 @@ public partial class CreateSoftPlan
     //Local State
 
     private SoftPlan _softplan = new() { Active = true };
+    private bool isLoading = false;
     private string BaseUrl = "/api/v1/softplans";
     private string BaseView = "/softplans";
 
     private async Task Create()
     {
+        isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", _softplan);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) return;
+        if (errorHandled) { isLoading = false; return; }
 
+        isLoading = false;
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
         _modalService.Close();
         _navigationManager.NavigateTo(BaseView);
