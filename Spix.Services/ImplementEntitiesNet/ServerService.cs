@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
+using Spix.AppInfra.FunctionSoft;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;

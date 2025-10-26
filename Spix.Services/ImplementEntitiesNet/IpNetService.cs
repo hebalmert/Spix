@@ -21,13 +21,13 @@ public class IpNetService : IIpNetService
     private readonly HttpErrorHandler _httpErrorHandler;
 
     public IpNetService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, IUserHelper userHelper)
+        ITransactionManager transactionManager, IUserHelper userHelper, HttpErrorHandler httpErrorHandler)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
         _transactionManager = transactionManager;
         _userHelper = userHelper;
-        _httpErrorHandler = new HttpErrorHandler();
+        _httpErrorHandler = httpErrorHandler;
     }
 
     public async Task<ActionResponse<IEnumerable<IpNet>>> GetAsync(PaginationDTO pagination, string email)

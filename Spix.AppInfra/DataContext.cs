@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Spix.Core.EntitiesContratos;
 using Spix.Core.EntitiesNet;
+using Spix.Core.EntitiesOper;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesData;
@@ -77,6 +79,20 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<IpNet> IpNets => Set<IpNet>();
     public DbSet<Node> Nodes => Set<Node>();
     public DbSet<Server> Servers => Set<Server>();
+
+    //EntitiesOper
+
+    public DbSet<Contractor> Contractors => Set<Contractor>();
+    public DbSet<Client> Clients => Set<Client>();
+
+    //EntitiesContratos
+
+    public DbSet<ContractIp> ContractIps => Set<ContractIp>();
+    public DbSet<ContractServer> ContractServers => Set<ContractServer>();
+    public DbSet<ContractPlan> ContractPlans => Set<ContractPlan>();
+    public DbSet<ContractNode> ContractNodes => Set<ContractNode>();
+    public DbSet<ContractQue> ContractQues => Set<ContractQue>();
+    public DbSet<ContractClient> ContractClients => Set<ContractClient>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
