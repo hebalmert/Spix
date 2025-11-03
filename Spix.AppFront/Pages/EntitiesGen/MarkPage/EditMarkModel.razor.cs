@@ -1,5 +1,6 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Spix.AppFront.GenericModal;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
@@ -12,6 +13,7 @@ public partial class EditMarkModel
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
+    [Inject] private ModalService _modalService { get; set; } = null!;
 
     private MarkModel? MarkModel;
 
@@ -39,14 +41,18 @@ public partial class EditMarkModel
         bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandler)
         {
+            _modalService.Close();
             _navigationManager.NavigateTo($"{BaseView}/{Id}");
             return;
         }
+        _modalService.Close();
+        _navigationManager.NavigateTo("/dashboard");
         _navigationManager.NavigateTo($"{BaseView}/{MarkModel!.MarkId}");
     }
 
     private void Return()
     {
+        _modalService.Close();
         _navigationManager.NavigateTo($"{BaseView}/{MarkModel!.MarkId}");
     }
 }
