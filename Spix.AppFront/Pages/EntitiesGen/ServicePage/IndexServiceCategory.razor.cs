@@ -65,6 +65,11 @@ public partial class IndexServiceCategory
         }
     }
 
+    private void ShowModalDetailsAsync(Guid? id = null)
+    {
+        _navigationManager.NavigateTo($"/serviceclients/details/{id}");
+    }
+
     private async Task Cargar(int page = 1)
     {
         var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}";

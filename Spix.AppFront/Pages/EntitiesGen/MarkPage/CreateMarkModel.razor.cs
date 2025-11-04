@@ -15,7 +15,7 @@ public partial class CreateMarkModel
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private MarkModel MarkModel = new();
+    private MarkModel MarkModel = new() { Active = true };
 
     private string BaseUrl = "/api/v1/marksmodels";
     private string BaseView = "/marksmodels/details";

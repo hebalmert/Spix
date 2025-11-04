@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.Enum;
 using Spix.Domain.Resources;
 using Spix.HttpService;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Spix.AppFront.Pages.EntitiesGen.ServicePage;
 
@@ -20,7 +18,7 @@ public partial class FormServiceClient
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
     private Tax? SelectedTax;
-    private List<Tax>? Taxes;
+    private List<GuidItemModel>? Taxes;
 
     [Parameter, EditorRequired] public ServiceClient ServiceClient { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
@@ -34,7 +32,7 @@ public partial class FormServiceClient
 
     private async Task LoadTaxes()
     {
-        var responseHTTP = await _repository.GetAsync<List<Tax>>($"api/v1/taxes/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<GuidItemModel>>($"api/v1/taxes/loadCombo");
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
         if (errorHandled)
@@ -42,37 +40,14 @@ public partial class FormServiceClient
             _navigationManager.NavigateTo("/products");
             return;
         }
-
         Taxes = responseHTTP.Response;
-        if (IsEditControl == true)
-        {
-            SelectedTax = Taxes!.Where(x => x.TaxId == ServiceClient.TaxId)
-                .Select(x => new Tax { TaxId = x.TaxId, TaxName = x.TaxName }).FirstOrDefault();
-        }
     }
 
     private void TaxesChanged(ChangeEventArgs e)
     {
-        if (e?.Value is Guid selectedId)
+        if (Guid.TryParse(e?.Value?.ToString(), out Guid selectedId))
         {
             ServiceClient.TaxId = selectedId;
         }
-    }
-
-    private string GetDisplayName<T>(Expression<Func<T>> expression)
-    {
-        if (expression.Body is MemberExpression memberExpression)
-        {
-            var property = memberExpression.Member as PropertyInfo;
-            if (property != null)
-            {
-                var displayAttribute = property.GetCustomAttribute<DisplayAttribute>();
-                if (displayAttribute != null)
-                {
-                    return displayAttribute.Name!;
-                }
-            }
-        }
-        return "Texto no definido";
     }
 }

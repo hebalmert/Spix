@@ -8,7 +8,6 @@ using Spix.Domain.EntitiesGen;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.ResponcesSec;
 using Spix.UnitOfWork.InterfacesEntitiesGen;
-using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.EntitiesGenV1;
 
@@ -32,7 +31,7 @@ public class TaxesController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.ComboAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -51,7 +50,7 @@ public class TaxesController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -106,7 +105,7 @@ public class TaxesController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }

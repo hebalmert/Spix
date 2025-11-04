@@ -34,7 +34,7 @@ namespace Spix.AppBack.Controllers
         {
             try
             {
-                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
                 var response = await _unitOfWork.ComboAsync(userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }
@@ -53,7 +53,7 @@ namespace Spix.AppBack.Controllers
         {
             try
             {
-                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
                 var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }
@@ -108,7 +108,7 @@ namespace Spix.AppBack.Controllers
         {
             try
             {
-                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
                 var response = await _unitOfWork.AddAsync(modelo, _configuration["UrlFrontend"]!, userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }

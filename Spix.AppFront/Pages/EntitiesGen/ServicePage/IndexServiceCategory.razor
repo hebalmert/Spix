@@ -51,7 +51,8 @@ else
                                             <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceCategoryId, true)" />
                                         </td>
                                         <td style="width:1px;">
-                                            <ButtonGeneric Href=$"/serviceclients/details/{item.ServiceCategoryId}" TooTip="Clientes" Icon="fa fa-users" />
+                                            <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.ServiceCategoryId)" TooTip="@Localizer[nameof(Resource.Service)]"
+                                                           Icon="fa fa-wifi" />
                                         </td>
                                         <td style="width:1px;">
                                             <ButtonDelete OnClick="() => DeleteAsync(item.ServiceCategoryId)" />

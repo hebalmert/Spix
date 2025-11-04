@@ -2032,6 +2032,15 @@ namespace Spix.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reuse Rate.
+        /// </summary>
+        public static string TasaRehuso {
+            get {
+                return ResourceManager.GetString("TasaRehuso", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tax.
         /// </summary>
         public static string Tax {

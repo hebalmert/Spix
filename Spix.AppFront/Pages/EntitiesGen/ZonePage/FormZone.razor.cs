@@ -30,8 +30,8 @@ public partial class FormZone
     private City? SelectedCity = new();
     private List<City>? Cities = new();
     private string BaseView = "/corporations";
-    private string BaseComboState = "/api/v1/states/loadCombo";
-    private string BaseComboCity = "/api/v1/cities/loadCombo";
+    private string BaseComboState = "/api/v1/combosData/ComboState";
+    private string BaseComboCity = "/api/v1/combosData/ComboCity";
 
     protected override async Task OnInitializedAsync()
     {

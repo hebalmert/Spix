@@ -22,7 +22,7 @@ public class Product
 
     [MaxLength(100, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = "Descripción")]
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Column(TypeName = "decimal(18,2)")]

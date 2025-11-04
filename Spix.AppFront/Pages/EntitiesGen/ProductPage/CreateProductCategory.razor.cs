@@ -15,7 +15,7 @@ public partial class CreateProductCategory
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private ProductCategory ProductCategory = new();
+    private ProductCategory ProductCategory = new() { Active = true };
 
     private string BaseUrl = "/api/v1/productcategories";
     private string BaseView = "/productcategories";

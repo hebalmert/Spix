@@ -7,6 +7,7 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.Validations;
 using Spix.Domain.Entities;
+using Spix.Domain.Resources;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.ResponcesSec;
 using Spix.DomainLogic.SpixResponse;
@@ -42,7 +43,14 @@ public class StateService : IStateService
                     .Select(c => c.CountryId)
                     .FirstOrDefaultAsync();
 
-            IEnumerable<State> ListModel = await _context.States.Where(x => x.CountryId == IdCountry).ToListAsync();
+            List<State> ListModel = await _context.States.Where(x => x.CountryId == IdCountry).ToListAsync();
+            // Insertar el elemento neutro al inicio
+            var defaultItem = new State
+            {
+                StateId = 0,
+                Name = $"[{_localizer[nameof(Resource.State)]}]"
+            };
+            ListModel.Insert(0, defaultItem);
             return new ActionResponse<IEnumerable<State>>
             {
                 WasSuccess = true,

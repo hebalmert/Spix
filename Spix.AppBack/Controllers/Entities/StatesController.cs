@@ -72,7 +72,7 @@ public class StatesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.AddAsync(model);
             return ResponseHelper.Format(response);
         }
@@ -112,7 +112,7 @@ public class StatesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.DeleteAsync(id);
             return ResponseHelper.Format(response);
         }
@@ -123,22 +123,6 @@ public class StatesController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
-        }
-    }
-
-    [HttpGet("loadCombo")]
-    public async Task<IActionResult> GetCombo(int id)
-    {
-        try
-        {
-            //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
-            var response = await _unitOfWork.ComboAsync(userClaimsInfo);
-            return ResponseHelper.Format(response);
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(ex.Message);
         }
     }
 }

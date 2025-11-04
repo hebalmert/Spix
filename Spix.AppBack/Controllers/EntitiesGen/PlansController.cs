@@ -31,7 +31,7 @@ public class PlansController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.GetComboUpAsync();
             return ResponseHelper.Format(response);
         }
@@ -50,7 +50,7 @@ public class PlansController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.GetComboDownAsync();
             return ResponseHelper.Format(response);
         }
@@ -69,7 +69,7 @@ public class PlansController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -124,7 +124,7 @@ public class PlansController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }

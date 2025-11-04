@@ -51,7 +51,7 @@
         <div class="col-md-6 mb-2">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">
-                    @Localizer[nameof(Resource.ProductCategory)]
+                    @Localizer[nameof(Resource.TasaRehuso)]
                 </span>
                 <InputNumber class="form-control" @bind-Value="Plan.TasaReuso" />
             </div>
@@ -72,11 +72,11 @@
             else
             {
                 <div class="input-group">
-                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Corporation)]</span>
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Tax)]</span>
                     <select class="form-select" value="@Plan.TaxId" @onchange="TaxesChanged">
                         @foreach (var item in Taxes)
                         {
-                            <option value="@item.TaxId">@item.TaxName</option>
+                            <option value="@item.Value">@item.Name</option>
                         }
                     </select>
                 </div>
@@ -84,7 +84,7 @@
             <div class="mb-0">
                 <div class="input-group">
                     <span class="input-group-text" style="width: 150px">
-                        @Localizer[nameof(Resource.ProductCategory)]
+                        @Localizer[nameof(Resource.Price)]
                     </span>
                     <InputNumber class="form-control" @bind-Value="Plan.Price" />
                 </div>

@@ -37,7 +37,14 @@ public class CityService : ICityService
     {
         try
         {
-            IEnumerable<City> ListModel = await _context.Cities.Where(x => x.StateId == id).ToListAsync();
+            List<City> ListModel = await _context.Cities.Where(x => x.StateId == id).ToListAsync();
+            // Insertar el elemento neutro al inicio
+            var defaultItem = new City
+            {
+                CityId = 0,
+                Name = $"[{_localizer[nameof(Resource.City)]}]"
+            };
+            ListModel.Insert(0, defaultItem);
             return new ActionResponse<IEnumerable<City>>
             {
                 WasSuccess = true,

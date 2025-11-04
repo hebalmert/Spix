@@ -15,7 +15,7 @@ public partial class CreateServiceClient
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private ServiceClient ServiceClient = new();
+    private ServiceClient ServiceClient = new() { Active = true};
 
     private string BaseUrl = "/api/v1/serviceclients";
     private string BaseView = "/serviceclients/details";

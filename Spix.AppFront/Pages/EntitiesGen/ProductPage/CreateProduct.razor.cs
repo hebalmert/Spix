@@ -15,7 +15,7 @@ public partial class CreateProduct
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private Product Product = new();
+    private Product Product = new() { Active = true };
 
     private string BaseUrl = "/api/v1/products";
     private string BaseView = "/products/details";

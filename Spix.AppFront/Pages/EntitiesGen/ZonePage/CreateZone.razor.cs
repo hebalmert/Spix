@@ -15,7 +15,7 @@ public partial class CreateZone
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private Zone Zone = new();
+    private Zone Zone = new() { Active = true};
 
     private string BaseUrl = "/api/v1/zones";
     private string BaseView = "/zones";

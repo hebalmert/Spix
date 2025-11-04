@@ -85,7 +85,7 @@ public class UsuariosRoleController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _usuarioRoleUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }

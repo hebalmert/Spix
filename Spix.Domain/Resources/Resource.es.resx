@@ -811,4 +811,7 @@
   <data name="Create_Tax" xml:space="preserve">
     <value>Crear Impuesto</value>
   </data>
+  <data name="TasaRehuso" xml:space="preserve">
+    <value>Tasa de rehuso</value>
+  </data>
 </root>

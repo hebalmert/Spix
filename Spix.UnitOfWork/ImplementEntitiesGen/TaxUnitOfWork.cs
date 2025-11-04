@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesGen;
+using Spix.Domain.Enum;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.SpixResponse;
 using Spix.Services.InterfacesEntitiesGen;
@@ -15,7 +16,7 @@ public class TaxUnitOfWork : ITaxUnitOfWork
         _taxService = taxService;
     }
 
-    public async Task<ActionResponse<IEnumerable<Tax>>> ComboAsync(string username) => await _taxService.ComboAsync(username);
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username) => await _taxService.ComboAsync(username);
 
     public async Task<ActionResponse<IEnumerable<Tax>>> GetAsync(PaginationDTO pagination, string username) => await _taxService.GetAsync(pagination, username);
 

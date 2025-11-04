@@ -9,6 +9,7 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppInfra.Validations;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.Enum;
 using Spix.Domain.Resources;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.SpixResponse;
@@ -36,22 +37,34 @@ public class TaxService : ITaxService
         _localizer = localizer;
     }
 
-    public async Task<ActionResponse<IEnumerable<Tax>>> ComboAsync(string username)
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username)
     {
         try
         {
             User user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
-                return new ActionResponse<IEnumerable<Tax>>
+                return new ActionResponse<IEnumerable<GuidItemModel>>
                 {
                     WasSuccess = false,
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
-            var ListModel = await _context.Taxes.Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
+            var ListModel = await _context.Taxes.Where(x => x.Active && x.CorporationId == user.CorporationId)
+                                 .Select(u => new GuidItemModel
+                                 {
+                                     Value = u.TaxId,
+                                     Name = u.TaxName
+                                 }).ToListAsync();
+            // Insertar el elemento neutro al inicio
+            var defaultItem = new GuidItemModel
+            {
+                Value = Guid.Empty,
+                Name = $"[{_localizer[nameof(Resource.Tax)]}]"
+            };
+            ListModel.Insert(0, defaultItem);
 
-            return new ActionResponse<IEnumerable<Tax>>
+            return new ActionResponse<IEnumerable<GuidItemModel>>
             {
                 WasSuccess = true,
                 Result = ListModel
@@ -59,7 +72,7 @@ public class TaxService : ITaxService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Tax>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex); // ✅ Manejo de errores automático
         }
     }
 

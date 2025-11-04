@@ -6,7 +6,7 @@ namespace Spix.AppBack.Helper;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static ClaimsDTOs GetEmailOrThrow(this ClaimsPrincipal user, IStringLocalizer localizer)
+    public static ClaimsDTOs GetEmailOrThrow(this ClaimsPrincipal user, IStringLocalizer localizer, HttpContext httpContext)
     {
         if (user?.Identity?.IsAuthenticated != true)
             throw new ApplicationException(localizer["Generic_AuthRequired"].Value);
@@ -24,6 +24,13 @@ public static class ClaimsPrincipalExtensions
             Idcorporate = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "CorporateId")?.Value);
         }
 
+        string ip = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()
+            ?? httpContext.Connection.RemoteIpAddress?.ToString()
+            ?? "unknown";
+
+        string userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+        string referer = httpContext.Request.Headers["Referer"].ToString();
+
         if (string.IsNullOrWhiteSpace(email))
             throw new ApplicationException(localizer["Generic_AuthEmailFail"].Value);
 
@@ -38,7 +45,10 @@ public static class ClaimsPrincipalExtensions
             UserName = email,
             Id = id,
             CorporationId = Idcorporate,
-            Role = role
+            Role = role,
+            SourceIp = ip,
+            UserAgent = userAgent,
+            Referer = referer
         };
     }
 }

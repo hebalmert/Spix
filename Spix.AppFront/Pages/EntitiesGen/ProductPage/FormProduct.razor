@@ -4,7 +4,7 @@
     <div class="mb-2">
         <div class="input-group">
             <span class="input-group-text" style="width: 150px">
-                @Localizer[nameof(Resource.ProductCategory)]
+                @Localizer[nameof(Resource.Product)]
             </span>
             <InputText class="form-control" @bind-Value="Product.ProductName" />
         </div>
@@ -31,7 +31,7 @@
         <ValidationMessage For="@(() => Product.Costo)" />
     </div>
 
-    <div class="mb-0">
+    <div class="mb-2">
         @if (Taxes is null)
         {
             <Loading />
@@ -39,11 +39,11 @@
         else
         {
             <div class="input-group">
-                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Corporation)]</span>
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Tax)]</span>
                 <select class="form-select" value="@Product.TaxId" @onchange="TaxChanged">
                     @foreach (var item in Taxes)
                     {
-                        <option value="@item.TaxId">@item.TaxName</option>
+                        <option value="@item.Value">@item.Name</option>
                     }
                 </select>
             </div>

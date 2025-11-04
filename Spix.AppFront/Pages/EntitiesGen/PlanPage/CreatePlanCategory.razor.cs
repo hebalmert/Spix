@@ -15,7 +15,7 @@ public partial class CreatePlanCategory
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private PlanCategory PlanCategory = new();
+    private PlanCategory PlanCategory = new() { Active = true};
 
     private string BaseUrl = "/api/v1/plancategories";
     private string BaseView = "/plancategories";

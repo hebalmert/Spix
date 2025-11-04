@@ -15,7 +15,7 @@ public partial class CreateServiceCategory
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private ServiceCategory ServiceCategory = new();
+    private ServiceCategory ServiceCategory = new() { Active = true};
 
     private string BaseUrl = "/api/v1/servicecategories";
     private string BaseView = "/servicecategories";

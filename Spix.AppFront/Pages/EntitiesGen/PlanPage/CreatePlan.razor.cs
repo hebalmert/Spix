@@ -15,7 +15,7 @@ public partial class CreatePlan
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private Plan Plan = new();
+    private Plan Plan = new() { Active = true };
 
     private string BaseUrl = "/api/v1/plans";
     private string BaseView = "/plans/details";

@@ -22,13 +22,13 @@ public partial class FormPlan
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
     private Tax? SelectedTax;
-    private List<Tax>? Taxes;
+    private List<GuidItemModel>? Taxes;
 
     private IntItemModel? SelectedUserTypeUp;
-    private List<IntItemModel>? ListUserTypeUp;
+    private List<IntItemModel>? ListUserTypeUp = new();
 
     private IntItemModel? SelectedUserTypeDown;
-    private List<IntItemModel>? ListUserTypeDown;
+    private List<IntItemModel>? ListUserTypeDown = new();
 
     [Parameter, EditorRequired] public Plan Plan { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
@@ -91,7 +91,7 @@ public partial class FormPlan
 
     private async Task LoadTaxes()
     {
-        var responseHTTP = await _repository.GetAsync<List<Tax>>($"api/v1/taxes/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<GuidItemModel>>($"api/v1/taxes/loadCombo");
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
         if (errorHandled)
@@ -101,11 +101,6 @@ public partial class FormPlan
         }
 
         Taxes = responseHTTP.Response;
-        if (IsEditControl == true)
-        {
-            SelectedTax = Taxes!.Where(x => x.TaxId == Plan.TaxId)
-                .Select(x => new Tax { TaxId = x.TaxId, TaxName = x.TaxName }).FirstOrDefault();
-        }
     }
 
     private string GetDisplayName<T>(Expression<Func<T>> expression)

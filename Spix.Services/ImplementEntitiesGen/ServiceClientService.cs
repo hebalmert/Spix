@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
+using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppInfra.Validations;
@@ -25,9 +26,11 @@ public class ServiceClientService : IServiceClientService
     private readonly IUserHelper _userHelper;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
+    private readonly IMapperService _mapperService;
 
     public ServiceClientService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, IUserHelper userHelper, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
+        ITransactionManager transactionManager, IUserHelper userHelper, HttpErrorHandler httpErrorHandler,
+        IStringLocalizer localizer, IMapperService mapperService)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -35,6 +38,7 @@ public class ServiceClientService : IServiceClientService
         _userHelper = userHelper;
         _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
+        _mapperService = mapperService;
     }
 
     public async Task<ActionResponse<IEnumerable<ServiceClient>>> ComboAsync(string username, Guid id)
@@ -153,7 +157,8 @@ public class ServiceClientService : IServiceClientService
 
         try
         {
-            _context.ServiceClients.Update(modelo);
+            ServiceClient NewModelo = _mapperService.Map<ServiceClient, ServiceClient>(modelo);
+            _context.ServiceClients.Update(NewModelo);
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

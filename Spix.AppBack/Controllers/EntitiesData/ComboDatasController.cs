@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.Enum;
+using Spix.DomainLogic.ResponcesSec;
+using Spix.UnitOfWork.InterfaceEntities;
 using Spix.UnitOfWork.InterfacesEntitiesData;
 
 namespace Spix.AppBack.Controllers.EntitiesData
@@ -20,12 +24,16 @@ namespace Spix.AppBack.Controllers.EntitiesData
         private readonly IFrecuencyTypeUnitOfWork _frecuencyTypeUnitOfWork;
         private readonly IFrecuencyUnitOfWork _frecuencyUnitOfWork;
         private readonly IChannelUnitOfWork _channelUnitOfWork;
+        private readonly IStateUnitOfWork _stateUnitOfWork;
+        private readonly ICityUnitOfWork _cityUnitOfWork;
         private readonly IChainTypesUnitOfWork _chainTypesUnitOfWork;
+        private readonly IStringLocalizer _localizer;
 
         public ComboDatasController(ISecurityUnitOfWork securityUnitOfWork, IOperationUnitOfWork operationUnitOfWork,
             IHotSpotTypeUnitOfWork hotSpotTypeUnitOfWork, IFrecuencyTypeUnitOfWork frecuencyTypeUnitOfWork,
-            IFrecuencyUnitOfWork frecuencyUnitOfWork, IChannelUnitOfWork channelUnitOfWork,
-            IChainTypesUnitOfWork chainTypesUnitOfWork)
+            IFrecuencyUnitOfWork frecuencyUnitOfWork, IChannelUnitOfWork channelUnitOfWork, IStateUnitOfWork stateUnitOfWork,
+            ICityUnitOfWork cityUnitOfWork,
+            IChainTypesUnitOfWork chainTypesUnitOfWork, IStringLocalizer localizer)
         {
             _securityUnitOfWork = securityUnitOfWork;
             _operationUnitOfWork = operationUnitOfWork;
@@ -33,7 +41,42 @@ namespace Spix.AppBack.Controllers.EntitiesData
             _frecuencyTypeUnitOfWork = frecuencyTypeUnitOfWork;
             _frecuencyUnitOfWork = frecuencyUnitOfWork;
             _channelUnitOfWork = channelUnitOfWork;
+            _stateUnitOfWork = stateUnitOfWork;
+            _cityUnitOfWork = cityUnitOfWork;
             _chainTypesUnitOfWork = chainTypesUnitOfWork;
+            _localizer = localizer;
+        }
+
+        [HttpGet("ComboCity/{id}")]
+        public async Task<IActionResult> GetComboCity(int id)
+        {
+            try
+            {
+                //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
+                //ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+                var response = await _cityUnitOfWork.ComboAsync(id);
+                return ResponseHelper.Format(response);
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("ComboState")]
+        public async Task<IActionResult> GetComboState(int id)
+        {
+            try
+            {
+                //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
+                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+                var response = await _stateUnitOfWork.ComboAsync(userClaimsInfo);
+                return ResponseHelper.Format(response);
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("ComboSecurity")]

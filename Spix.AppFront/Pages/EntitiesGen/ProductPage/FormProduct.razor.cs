@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.Enum;
 using Spix.Domain.Resources;
 using Spix.HttpService;
 
@@ -16,7 +17,7 @@ public partial class FormProduct
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
-    private List<Tax>? Taxes;
+    private List<GuidItemModel>? Taxes;
 
     [Parameter, EditorRequired] public Product Product { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
@@ -30,7 +31,7 @@ public partial class FormProduct
 
     private async Task LoadTaxes()
     {
-        var responseHTTP = await _repository.GetAsync<List<Tax>>($"api/v1/taxes/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<GuidItemModel>>($"api/v1/taxes/loadCombo");
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
         if (errorHandled)
@@ -44,7 +45,7 @@ public partial class FormProduct
 
     private void TaxChanged(ChangeEventArgs e)
     {
-        if (e?.Value is Guid selectedId)
+        if (Guid.TryParse(e?.Value?.ToString(), out Guid selectedId))
         {
             Product.TaxId = selectedId;
         }

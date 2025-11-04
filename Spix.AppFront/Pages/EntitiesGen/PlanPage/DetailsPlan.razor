@@ -1,5 +1,5 @@
 ﻿@page "/plans/details/{Id:guid}"
-@attribute [Authorize(Roles = "Usuario")]
+@attribute [Authorize(Roles = "Administrator")]
 
 
 @if (PlanCategory is null || Plans is null)

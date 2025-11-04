@@ -126,7 +126,7 @@ public class CountriesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.DeleteAsync(id);
             return ResponseHelper.Format(response);
         }
