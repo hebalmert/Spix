@@ -1,0 +1,95 @@
+﻿@page "/Serials"
+@attribute [Authorize(Roles = "Administrator")]
+
+<div class="container shadow-lg mb-5 p-4 bg-white rounded">
+    <h3>General Macs</h3>
+
+    <div class="row align-items-center mb-3">
+        <!-- Columna para el botón -->
+        <div class="col-md-3 d-flex justify-content-start">
+            <!-- Botón vacío por ahora -->
+        </div>
+
+        <!-- Columna para el filtro -->
+        <div class="col-md-9 d-flex justify-content-end">
+            <FilterComponent ApplyFilter="SetFilterValue" />
+        </div>
+    </div>
+
+    <hr class="border-top border-dark opacity-75 my-3" />
+
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            @if (CargueDetails is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <GenericList MyList="CargueDetails">
+                    <Body>
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Mac</th>
+                                    <th>Comentario</th>
+                                    <th>Estatus</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in CargueDetails!)
+                                {
+                                    <tr>
+                                        <td>@item.MacWlan</td>
+                                        <td>@item.Comment</td>
+                                        <td>
+                                            @switch (item.Status.ToString())
+                                            {
+                                                case "Disponible":
+                                                    <strong style="color: orangered">@item.Status</strong>
+                                                    break;
+                                                case "Averiado":
+                                                    <strong style="color: red">@item.Status</strong>
+                                                    break;
+                                                case "Operativo":
+                                                    <strong style="color: forestgreen">@item.Status</strong>
+                                                    break;
+                                                default:
+                                                    <strong>@item.Status</strong>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            @if (item.Status != SerialStateType.Operativo)
+                                            {
+                                                <button class="btn btn-sm btn-dark"
+                                                        title="Editar"
+                                                        @onclick="@(() => ShowModalAsync(item.CargueDetailId, true))">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </Body>
+                </GenericList>
+            }
+        </div>
+    </div>
+
+    <hr class="border-top border-dark opacity-75 my-3" />
+
+    @if (CargueDetails is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    }
+</div>

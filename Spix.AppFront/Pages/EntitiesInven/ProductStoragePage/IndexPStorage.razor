@@ -1,0 +1,76 @@
+﻿@page "/productstorages"
+@attribute [Authorize(Roles = "Administrator")]
+
+<div class="container shadow-lg mb-5 p-4 rounded">
+    <h3>Bodegas</h3>
+
+    <div class="row align-items-center mb-3">
+        <!-- Columna para el botón -->
+        <div class="col-md-3 d-flex justify-content-start">
+            <button class="btn btn-dark d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                <i class="bi bi-plus-circle"></i> Nueva
+            </button>
+        </div>
+
+        <!-- Columna para el filtro -->
+        <div class="col-md-9 d-flex justify-content-end">
+            <FilterComponent ApplyFilter="SetFilterValue" />
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <GenericList MyList="ProductStorages">
+                <Body>
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Estado</th>
+                                <th>Ciudad</th>
+                                <th>Activo</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ProductStorages!)
+                            {
+                                <tr>
+                                    <td>@item.StorageName</td>
+                                    <td>@item.State!.Name</td>
+                                    <td>@item.City!.Name</td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <button class="btn btn-outline-dark btn-sm"
+                                                @onclick="() => ShowModalAsync(item.ProductStorageId, true)"
+                                                title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </td>
+                                    <td style="width:1px;">
+                                        <button class="btn btn-outline-danger btn-sm"
+                                                @onclick="() => DeleteAsync(item.ProductStorageId)"
+                                                title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </Body>
+            </GenericList>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <Pagination CurrentPage="CurrentPage"
+                SelectedPage="SelectedPage"
+                TotalPages="TotalPages" />
+</div>

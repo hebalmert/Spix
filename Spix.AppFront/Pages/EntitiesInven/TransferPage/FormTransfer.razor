@@ -1,0 +1,64 @@
+﻿<EditForm Model="Transfer" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <!-- Fecha de Registro -->
+    <div class="mb-4">
+        <label class="form-label">Registro</label>
+        <InputDate class="form-control"
+                   @bind-Value="Transfer.DateTransfer"
+                   min="@DateMin"
+                   @onchange="DateTransferChanged"
+                   readonly />
+        <ValidationMessage For="@(() => Transfer.DateTransfer)" />
+    </div>
+
+    <!-- Desde Bodega -->
+    @if (ProductStorages1 is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="mb-5">
+            <label class="form-label">Desde Bodega</label>
+            <InputSelect class="form-select"
+                         @bind-Value="SelectedProductStorage1"
+                         @onchange="ProductStorageChanged1">
+                <option value="">Seleccione...</option>
+                @foreach (var item in ProductStorages1!)
+                {
+                    <option value="@item">@item.StorageName</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => Transfer.FromStorageName)" />
+        </div>
+    }
+
+    <!-- Hacia Bodega -->
+    @if (ProductStorages2 is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="mb-5">
+            <label class="form-label">Hacia Bodega</label>
+            <InputSelect class="form-select"
+                         @bind-Value="SelectedProductStorage2"
+                         @onchange="ProductStorageChanged2">
+                <option value="">Seleccione...</option>
+                @foreach (var item in ProductStorages2!)
+                {
+                    <option value="@item">@item.StorageName</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => Transfer.ToStorageName)" />
+        </div>
+    }
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <ButtonFormBack OnClick="ReturnAction" />
+        <ButtonFormSave />
+    </div>
+</EditForm>

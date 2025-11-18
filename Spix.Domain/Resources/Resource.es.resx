@@ -814,4 +814,55 @@
   <data name="TasaRehuso" xml:space="preserve">
     <value>Tasa de rehuso</value>
   </data>
+  <data name="Create_Mac" xml:space="preserve">
+    <value>Nueva Mac</value>
+  </data>
+  <data name="Edit_Mac" xml:space="preserve">
+    <value>Editar Mac</value>
+  </data>
+  <data name="Create_Charge" xml:space="preserve">
+    <value>Crear Cargue</value>
+  </data>
+  <data name="Edit_Charge" xml:space="preserve">
+    <value>Editar Cargue</value>
+  </data>
+  <data name="Create_Storage" xml:space="preserve">
+    <value>Crear Almacen</value>
+  </data>
+  <data name="Edit_Storage" xml:space="preserve">
+    <value>Editar Almacen</value>
+  </data>
+  <data name="Edit_Items" xml:space="preserve">
+    <value>Editar Items</value>
+  </data>
+  <data name="Create_Items" xml:space="preserve">
+    <value>Crear Items</value>
+  </data>
+  <data name="Create_Purchase" xml:space="preserve">
+    <value>Crear Compra</value>
+  </data>
+  <data name="Edit_Purchase" xml:space="preserve">
+    <value>Editar Compra</value>
+  </data>
+  <data name="Create_Serial" xml:space="preserve">
+    <value>Crear Serial</value>
+  </data>
+  <data name="Edit_Serial" xml:space="preserve">
+    <value>Create Serial</value>
+  </data>
+  <data name="Create_Supplier" xml:space="preserve">
+    <value>Crear Proveedor</value>
+  </data>
+  <data name="Edit_Supplier" xml:space="preserve">
+    <value>Editar Proveedor</value>
+  </data>
+  <data name="Detail_Supplier" xml:space="preserve">
+    <value>Detalle Proveedor</value>
+  </data>
+  <data name="Edit_Transfer" xml:space="preserve">
+    <value>Edit Tranferencia</value>
+  </data>
+  <data name="Create_Transfer" xml:space="preserve">
+    <value>Crear Transferencia</value>
+  </data>
 </root>

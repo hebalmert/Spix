@@ -1,0 +1,143 @@
+﻿<EditForm Model="Supplier" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <!-- Nombre y Contacto -->
+        <div class="col-md-6 mb-4">
+            <label class="form-label">@GetDisplayName(() => Supplier.Name)</label>
+            <InputText class="form-control" @bind-Value="Supplier.Name" />
+            <ValidationMessage For="@(() => Supplier.Name)" />
+        </div>
+        <div class="col-md-6 mb-4">
+            <label class="form-label">@GetDisplayName(() => Supplier.ContactName)</label>
+            <InputText class="form-control" @bind-Value="Supplier.ContactName" />
+            <ValidationMessage For="@(() => Supplier.ContactName)" />
+        </div>
+
+        <!-- Documento y Tipo -->
+        <div class="col-md-6 mb-4">
+            <div class="d-flex gap-2 align-items-center">
+                <div class="flex-grow-1">
+                    <label class="form-label">@GetDisplayName(() => Supplier.Document)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.Document" />
+                    <ValidationMessage For="@(() => Supplier.Document)" />
+                </div>
+
+                <div class="flex-grow-1">
+                    @if (DocumentTypes is null)
+                    {
+                        <Loading />
+                    }
+                    else
+                    {
+                        <label class="form-label">Tipo</label>
+                        <InputSelect class="form-select"
+                                     @bind-Value="SelectedDocument"
+                                     @onchange="DocumentChanged">
+                            <option value="">Seleccione...</option>
+                            @foreach (var item in DocumentTypes!)
+                            {
+                                <option value="@item.DocumentTypeId">@item.DocumentName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => Supplier.DocumentType)" />
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="col-md-6 mb-4">
+            <div class="d-flex gap-2 align-items-center">
+                <div class="flex-grow-1">
+                    <label class="form-label">País</label>
+                    <InputText class="form-control" @bind-Value="Supplier.CodeCountry" />
+                    <ValidationMessage For="@(() => Supplier.CodeCountry)" />
+                </div>
+                <div class="flex-grow-1">
+                    <label class="form-label">Área</label>
+                    <InputText class="form-control" @bind-Value="Supplier.CodeNumber" />
+                    <ValidationMessage For="@(() => Supplier.CodeNumber)" />
+                </div>
+                <div class="flex-grow-2">
+                    <label class="form-label">Teléfono</label>
+                    <InputText class="form-control" @bind-Value="Supplier.PhoneNumber" />
+                    <ValidationMessage For="@(() => Supplier.PhoneNumber)" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="col-md-12 mb-4">
+            <label class="form-label">@GetDisplayName(() => Supplier.Address)</label>
+            <InputText class="form-control" @bind-Value="Supplier.Address" />
+            <ValidationMessage For="@(() => Supplier.Address)" />
+        </div>
+
+        <!-- Estado -->
+        <div class="col-md-6 mb-4">
+            @if (States is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <label class="form-label">--- Estado/Departamento ---</label>
+                <InputSelect class="form-select"
+                             @bind-Value="SelectedSate"
+                             @onchange="StateChanged">
+                    <option value="">Seleccione...</option>
+                    @foreach (var item in States!)
+                    {
+                        <option value="@item">@item.Name</option>
+                    }
+                </InputSelect>
+            }
+        </div>
+
+        <!-- Ciudad -->
+        <div class="col-md-6 mb-4">
+            @if (Cities is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <label class="form-label">--- Ciudad ---</label>
+                <InputSelect class="form-select"
+                             @bind-Value="SelectedCity"
+                             @onchange="CityChanged">
+                    <option value="">Seleccione...</option>
+                    @foreach (var item in Cities!)
+                    {
+                        <option value="@item">@item.Name</option>
+                    }
+                </InputSelect>
+            }
+        </div>
+
+        <!-- Usuario y Estado -->
+        <div class="col-md-6 mb-4">
+            <label class="form-label">@GetDisplayName(() => Supplier.UserName)</label>
+            <InputText class="form-control" @bind-Value="Supplier.UserName" />
+            <ValidationMessage For="@(() => Supplier.UserName)" />
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="form-check mt-4">
+                <InputCheckbox class="form-check-input" @bind-Value="Supplier.Active" />
+                <label class="form-check-label">@GetDisplayName(() => Supplier.Active)</label>
+            </div>
+        </div>
+
+        <!-- Imagen -->
+        <div class="col-md-12 mb-4 text-center">
+            <InputImage ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <ButtonFormBack OnClick="ReturnAction" />
+        <ButtonFormSave />
+    </div>
+</EditForm>

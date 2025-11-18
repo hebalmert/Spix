@@ -58,11 +58,11 @@ public class CargueService : ICargueService
         }
     }
 
-    public async Task<ActionResponse<IEnumerable<Cargue>>> GetAsync(PaginationDTO pagination, string email)
+    public async Task<ActionResponse<IEnumerable<Cargue>>> GetAsync(PaginationDTO pagination, string username)
     {
         try
         {
-            var user = await _userHelper.GetUserAsync(email);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
                 return new ActionResponse<IEnumerable<Cargue>>

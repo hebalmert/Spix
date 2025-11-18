@@ -64,11 +64,11 @@ public class ProductStorageService : IProductStorageService
         }
     }
 
-    public async Task<ActionResponse<IEnumerable<ProductStorage>>> GetAsync(PaginationDTO pagination, string email)
+    public async Task<ActionResponse<IEnumerable<ProductStorage>>> GetAsync(PaginationDTO pagination, string username)
     {
         try
         {
-            var user = await _userHelper.GetUserAsync(email);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
                 return new ActionResponse<IEnumerable<ProductStorage>>
@@ -156,12 +156,12 @@ public class ProductStorageService : IProductStorageService
         }
     }
 
-    public async Task<ActionResponse<ProductStorage>> AddAsync(ProductStorage modelo, string email)
+    public async Task<ActionResponse<ProductStorage>> AddAsync(ProductStorage modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var user = await _userHelper.GetUserAsync(email);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
                 return new ActionResponse<ProductStorage>

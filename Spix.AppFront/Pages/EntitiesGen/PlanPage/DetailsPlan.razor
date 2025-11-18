@@ -31,7 +31,10 @@ else
                         <table class="table table-hover table-striped align-middle">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>@Localizer[nameof(Resource.Models)]</th>
+                                    <th>@Localizer[nameof(Resource.Plan)]</th>
+                                    <th>@Localizer[nameof(Resource.TasaRehuso)]</th>
+                                    <th>@Localizer[nameof(Resource.Active)]</th>
+                                    <th></th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -40,6 +43,7 @@ else
                                 {
                                     <tr>
                                         <td>@item.PlanName</td>
+                                        <td>@item.TasaReuso</td>
                                         <td>
                                             <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
                                         </td>

@@ -1,0 +1,87 @@
+﻿@page "/suppliers"
+@attribute [Authorize(Roles = "Administrator")]
+
+<div class="container shadow-lg mb-5 p-4 bg-white rounded">
+    <h3>Proveedores</h3>
+
+    <div class="row align-items-center mb-3">
+        <!-- Botón Nuevo -->
+        <div class="col-md-3 d-flex justify-content-start">
+            <button class="btn btn-dark w-100" style="max-width:130px;" @onclick="() => ShowModalAsync()">
+                <i class="bi bi-plus-circle me-1"></i> Nuevo
+            </button>
+        </div>
+
+        <!-- Filtro -->
+        <div class="col-md-9 d-flex justify-content-end">
+            <FilterComponent ApplyFilter="SetFilterValue" />
+        </div>
+    </div>
+
+    <hr class="border-top border-dark opacity-75 my-3" />
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+        <GenericList MyList="Suppliers">
+            <Body>
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Foto</th>
+                            <th>Proveedor</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Activo</th>
+                            <th></th>
+                            <th colspan="3" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Suppliers!)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@item.ImageFullPath" width="90" height="60" class="img-thumbnail" />
+                                </td>
+                                <td>@item.Name</td>
+                                <td>@($"({item.CodeCountry}) {item.CodeNumber}-{item.PhoneNumber}")</td>
+                                <td>@item.UserName</td>
+                                <td>@item.Active</td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-dark"
+                                            title="Editar"
+                                            @onclick="@(() => ShowModalAsync(item.SupplierId, true))">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-dark"
+                                            title="Detalles"
+                                            @onclick="@(() => ShowDetailsAsync(item.SupplierId))">
+                                        <i class="bi bi-card-checklist"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-danger"
+                                            title="Eliminar"
+                                            @onclick="@(() => DeleteAsync(item.SupplierId))">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </Body>
+        </GenericList>
+    </div>
+
+    <hr class="border-top border-dark opacity-75 my-3" />
+
+    <Pagination CurrentPage="CurrentPage"
+                SelectedPage="SelectedPage"
+                TotalPages="TotalPages" />
+</div>

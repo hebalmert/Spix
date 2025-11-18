@@ -15,7 +15,7 @@
         <div class="col-md-6 mb-2">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Up)]</span>
-                <select class="form-select" @onchange="UsertTypeUpChanged">
+                <select class="form-select" value="@SelectedUserTypeUp!.Value" @onchange="UsertTypeUpChanged">
                     @foreach (var item in ListUserTypeUp!)
                     {
                         <option value="@item.Value">@item.Name</option>
@@ -32,7 +32,7 @@
         <div class="col-md-6 mb-2">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Down)]</span>
-                <select class="form-select" @onchange="UsertTypeDownChanged">
+                <select class="form-select" value="@SelectedUserTypeDown!.Value" @onchange="UsertTypeDownChanged">
                     @foreach (var item in ListUserTypeDown!)
                     {
                         <option value="@item.Value">@item.Name</option>

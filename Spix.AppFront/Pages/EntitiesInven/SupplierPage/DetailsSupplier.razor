@@ -1,0 +1,83 @@
+﻿@page "/suppliers/details/{Id:guid}"
+@attribute [Authorize(Roles = "Administrator")]
+
+@if (Supplier is null)
+{
+    <Loading />
+}
+else
+{
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content p-4">
+            <div class="row justify-content-center mb-4">
+                <div class="col-auto">
+                    <img src="@Supplier.ImageFullPath" width="90" height="60" class="img-thumbnail" />
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Nombre y Contacto -->
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.Name)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.Name" readonly />
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.ContactName)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.ContactName" readonly />
+                </div>
+
+                <!-- Documento y Tipo -->
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.Document)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.Document" readonly />
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.DocumentType!.DocumentName)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.DocumentType!.DocumentName" readonly />
+                </div>
+
+                <!-- Teléfono -->
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">País</label>
+                    <InputText class="form-control" @bind-Value="Supplier.CodeCountry" readonly />
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">Área</label>
+                    <InputText class="form-control" @bind-Value="Supplier.CodeNumber" readonly />
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">Teléfono</label>
+                    <InputText class="form-control" @bind-Value="Supplier.PhoneNumber" readonly />
+                </div>
+
+                <!-- Dirección -->
+                <div class="col-md-12 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.Address)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.Address" readonly />
+                </div>
+
+                <!-- Estado y Ciudad -->
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.State!.Name)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.State!.Name" readonly />
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.City!.Name)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.City!.Name" readonly />
+                </div>
+
+                <!-- Usuario y Activo -->
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">@GetDisplayName(() => Supplier.UserName)</label>
+                    <InputText class="form-control" @bind-Value="Supplier.UserName" readonly />
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="form-check mt-4">
+                        <InputCheckbox class="form-check-input" @bind-Value="Supplier.Active" disabled />
+                        <label class="form-check-label">@GetDisplayName(() => Supplier.Active)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

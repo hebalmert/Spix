@@ -1,0 +1,21 @@
+﻿@page "/transfers/createTransDatails/{Id:guid}"
+@attribute [Authorize(Roles = "Administrator")]
+
+@if (TransferDetails is null)
+{
+    <Loading />
+}
+else
+{
+    ﻿<MudDialog>
+        <DialogContent>
+            <div class="container" style="width:300px">
+                <FormTransferDetails @ref=FormTransferDetails
+                              TransferDetails="TransferDetails"
+                              IsEditControl=false
+                              OnSubmit="Create"
+                              ReturnAction="Return" />
+            </div>
+        </DialogContent>
+    </MudDialog>
+}

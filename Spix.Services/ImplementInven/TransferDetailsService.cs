@@ -36,11 +36,11 @@ public class TransferDetailsService : ITransferDetailsService
         _httpErrorHandler = httpErrorHandle;
     }
 
-    public async Task<ActionResponse<IEnumerable<TransferDetails>>> GetAsync(PaginationDTO pagination, string email)
+    public async Task<ActionResponse<IEnumerable<TransferDetails>>> GetAsync(PaginationDTO pagination, string username)
     {
         try
         {
-            var user = await _userHelper.GetUserAsync(email);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
                 return new ActionResponse<IEnumerable<TransferDetails>>

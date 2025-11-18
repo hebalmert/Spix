@@ -69,11 +69,11 @@ public class SupplierService : ISupplierServices
         }
     }
 
-    public async Task<ActionResponse<IEnumerable<Supplier>>> GetAsync(PaginationDTO pagination, string email)
+    public async Task<ActionResponse<IEnumerable<Supplier>>> GetAsync(PaginationDTO pagination, string username)
     {
         try
         {
-            var user = await _userHelper.GetUserAsync(email);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
                 return new ActionResponse<IEnumerable<Supplier>>

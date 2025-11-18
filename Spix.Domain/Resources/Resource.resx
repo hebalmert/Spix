@@ -814,4 +814,55 @@
   <data name="TasaRehuso" xml:space="preserve">
     <value>Reuse Rate</value>
   </data>
+  <data name="Create_Mac" xml:space="preserve">
+    <value>Create Mac</value>
+  </data>
+  <data name="Edit_Mac" xml:space="preserve">
+    <value>Edit Mac</value>
+  </data>
+  <data name="Create_Charge" xml:space="preserve">
+    <value>Cheate Charge</value>
+  </data>
+  <data name="Edit_Charge" xml:space="preserve">
+    <value>Edit Charge</value>
+  </data>
+  <data name="Create_Storage" xml:space="preserve">
+    <value>Create Storage</value>
+  </data>
+  <data name="Edit_Storage" xml:space="preserve">
+    <value>Edit Storage</value>
+  </data>
+  <data name="Edit_Items" xml:space="preserve">
+    <value>Edit Items</value>
+  </data>
+  <data name="Create_Items" xml:space="preserve">
+    <value>Create Item</value>
+  </data>
+  <data name="Create_Purchase" xml:space="preserve">
+    <value>Create Purchase</value>
+  </data>
+  <data name="Edit_Purchase" xml:space="preserve">
+    <value>Edit Purchase</value>
+  </data>
+  <data name="Create_Serial" xml:space="preserve">
+    <value>Create Serial</value>
+  </data>
+  <data name="Edit_Serial" xml:space="preserve">
+    <value>Edit Serial</value>
+  </data>
+  <data name="Create_Supplier" xml:space="preserve">
+    <value>Create Supplier</value>
+  </data>
+  <data name="Edit_Supplier" xml:space="preserve">
+    <value>Edit Supplier</value>
+  </data>
+  <data name="Detail_Supplier" xml:space="preserve">
+    <value>Detail Supplier</value>
+  </data>
+  <data name="Edit_Transfer" xml:space="preserve">
+    <value>Edit Transfer</value>
+  </data>
+  <data name="Create_Transfer" xml:space="preserve">
+    <value>Create Transfer</value>
+  </data>
 </root>

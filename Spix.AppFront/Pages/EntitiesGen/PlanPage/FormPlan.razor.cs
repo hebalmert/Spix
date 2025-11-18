@@ -24,10 +24,10 @@ public partial class FormPlan
     private Tax? SelectedTax;
     private List<GuidItemModel>? Taxes;
 
-    private IntItemModel? SelectedUserTypeUp;
+    private IntItemModel? SelectedUserTypeUp = new();
     private List<IntItemModel>? ListUserTypeUp = new();
 
-    private IntItemModel? SelectedUserTypeDown;
+    private IntItemModel? SelectedUserTypeDown = new();
     private List<IntItemModel>? ListUserTypeDown = new();
 
     [Parameter, EditorRequired] public Plan Plan { get; set; } = null!;
@@ -76,14 +76,14 @@ public partial class FormPlan
         if (int.TryParse(e?.Value?.ToString(), out int modelo))
         {
             if (modelo == 1) { Plan.SpeedDownType = SpeedDownType.k; }
-            if (modelo == 1) { Plan.SpeedDownType = SpeedDownType.M; }
-            if (modelo == 1) { Plan.SpeedDownType = SpeedDownType.G; }
+            if (modelo == 2) { Plan.SpeedDownType = SpeedDownType.M; }
+            if (modelo == 3) { Plan.SpeedDownType = SpeedDownType.G; }
         }
     }
 
     private void TaxesChanged(ChangeEventArgs e)
     {
-        if (e?.Value is Guid selectedId)
+        if (Guid.TryParse(e?.Value?.ToString(), out Guid selectedId))
         {
             Plan.TaxId = selectedId;
         }

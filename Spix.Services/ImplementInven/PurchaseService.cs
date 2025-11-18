@@ -60,11 +60,11 @@ public class PurchaseService : IPurchaseService
         }
     }
 
-    public async Task<ActionResponse<IEnumerable<Purchase>>> GetReporteSellDates(ReportDataDTO pagination, string email)
+    public async Task<ActionResponse<IEnumerable<Purchase>>> GetReporteSellDates(ReportDataDTO pagination, string username)
     {
         try
         {
-            var user = await _userHelper.GetUserAsync(email);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
                 return new ActionResponse<IEnumerable<Purchase>>

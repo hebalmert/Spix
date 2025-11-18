@@ -22,31 +22,35 @@ public class Plan
     public string PlanName { get; set; } = null!;
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Range(1, double.MaxValue, ErrorMessage = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = "UpLoad")]
-    public int SpeedUp { get; set; }
+    public int? SpeedUp { get; set; }
 
     [Display(Name = "Medida")]
     public SpeedUpType SpeedUpType { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Range(1, double.MaxValue, ErrorMessage = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = "Download")]
-    public int SpeedDown { get; set; }
+    public int? SpeedDown { get; set; }
 
     [Display(Name = "Medida")]
     public SpeedDownType SpeedDownType { get; set; }
 
     [Range(1, 12, ErrorMessage = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = "Reuso 1 a 12")]
-    public int TasaReuso { get; set; }
+    public int? TasaReuso { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = "Impuesto")]
     public Guid TaxId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Range(1, double.MaxValue, ErrorMessage = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     [DisplayFormat(DataFormatString = "{0:C2}")]
     [Display(Name = "Precio Venta Sin Iva")]
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
 
     [Display(Name = "Activo")]
     public bool Active { get; set; }
