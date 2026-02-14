@@ -1,0 +1,532 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Active" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="Photo" xml:space="preserve">
+    <value>Foto</value>
+  </data>
+  <data name="ButtonSend" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="ButtonSave" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="ButtonLogout" xml:space="preserve">
+    <value>Cerrar Session</value>
+  </data>
+  <data name="ButtonLogin" xml:space="preserve">
+    <value>Entrar</value>
+  </data>
+  <data name="ButtonConfirmEmail" xml:space="preserve">
+    <value>Confirmar Correo</value>
+  </data>
+  <data name="ButtonCancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="ButtonBack" xml:space="preserve">
+    <value>Volver</value>
+  </data>
+  <data name="Context_Begin" xml:space="preserve">
+    <value>Ya hay una Transaccion Activa</value>
+  </data>
+  <data name="Context_Commit" xml:space="preserve">
+    <value>No hay Transaccion para Commit</value>
+  </data>
+  <data name="Context_RollBack" xml:space="preserve">
+    <value>No hay Transaccion para Devolver</value>
+  </data>
+  <data name="ControlAccess" xml:space="preserve">
+    <value>Sistema de Acceso</value>
+  </data>
+  <data name="Corporation" xml:space="preserve">
+    <value>Corporacion</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Pais</value>
+  </data>
+  <data name="CreateUser" xml:space="preserve">
+    <value>Crear Usuario</value>
+  </data>
+  <data name="Db_Concurrency" xml:space="preserve">
+    <value>Conflicto de concurrencia de datos</value>
+  </data>
+  <data name="Db_Duplicate" xml:space="preserve">
+    <value>Valor duplicado en la base de datos</value>
+  </data>
+  <data name="Db_Error" xml:space="preserve">
+    <value>Error general de base de datos</value>
+  </data>
+  <data name="Db_Reference" xml:space="preserve">
+    <value>Error de referencia, clave foránea inválida</value>
+  </data>
+  <data name="EditUser" xml:space="preserve">
+    <value>Editar Usuario</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Correo</value>
+  </data>
+  <data name="EmailConfirmation" xml:space="preserve">
+    <value>Confirmacion de Correo</value>
+  </data>
+  <data name="EmailConfirmationMsg" xml:space="preserve">
+    <value>Es necesario la confirmacion de su correo para activar su cuenta</value>
+  </data>
+  <data name="EmailConfirmed" xml:space="preserve">
+    <value>Correo Confirmado</value>
+  </data>
+  <data name="EmailConfirmedMsg" xml:space="preserve">
+    <value>Su uenta ha sido activada con exito</value>
+  </data>
+  <data name="EmailSentMsg" xml:space="preserve">
+    <value>Hemos enviado al correo las indicaciones para el reinicio de su clave</value>
+  </data>
+  <data name="EmailSentTitle" xml:space="preserve">
+    <value>Correo Enviado</value>
+  </data>
+  <data name="EmailSubject" xml:space="preserve">
+    <value>Recuperacion de Clave</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Fecha Fin</value>
+  </data>
+  <data name="file_CheckMime" xml:space="preserve">
+    <value>El tipo MIME no coincide con la extensión del archivo. Esperado:</value>
+  </data>
+  <data name="File_OnlyFiles" xml:space="preserve">
+    <value>Solo se permite estos documentos ( .doc .docx .PDF)</value>
+  </data>
+  <data name="File_OnlyImage" xml:space="preserve">
+    <value>Solo se permiten imágenes (.jpg, .jpeg, .png)</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Nombre Completo</value>
+  </data>
+  <data name="Generic_AccessDenied" xml:space="preserve">
+    <value>Lo sentimos, no tienes acceso al sistema</value>
+  </data>
+  <data name="Generic_AuthEmailFail" xml:space="preserve">
+    <value>Error al obtener el correo electrónico del usuario autenticado</value>
+  </data>
+  <data name="Generic_AuthIdFail" xml:space="preserve">
+    <value>Error al obtener el identificador del usuario</value>
+  </data>
+  <data name="Generic_AuthRequired" xml:space="preserve">
+    <value>Debes iniciar sesión para acceder a este recurso</value>
+  </data>
+  <data name="Generic_AuthRoleFail" xml:space="preserve">
+    <value>Error al obtener el rol del usuario</value>
+  </data>
+  <data name="Generic_CorporationInactive" xml:space="preserve">
+    <value>La corporación que intentas acceder está inactiva. Por favor, contacta al administrador del sistema</value>
+  </data>
+  <data name="Generic_EmailAlreadyUsed" xml:space="preserve">
+    <value>Este correo electrónico ya está asociado a otra cuenta</value>
+  </data>
+  <data name="Generic_Exception" xml:space="preserve">
+    <value>Excepción general sin causa específica</value>
+  </data>
+  <data name="Generic_Http_BadRequest" xml:space="preserve">
+    <value>Solicitud malformada o inválida</value>
+  </data>
+  <data name="Generic_IdNotFound" xml:space="preserve">
+    <value>No pudimos encontrar lo que estabas buscando</value>
+  </data>
+  <data name="Generic_InvalidCredentials" xml:space="preserve">
+    <value>Usuario o contraseña inválidos</value>
+  </data>
+  <data name="Generic_InvalidId" xml:space="preserve">
+    <value>Parece haber un problema con la información proporcionada</value>
+  </data>
+  <data name="Generic_InvalidModel" xml:space="preserve">
+    <value>Hubo un problema con los datos enviados</value>
+  </data>
+  <data name="Generic_NullException" xml:space="preserve">
+    <value>Se intentó acceder a un valor nulo</value>
+  </data>
+  <data name="Generic_PlanExpired" xml:space="preserve">
+    <value>Tu plan ha expirado, por favor renueva tu cuenta</value>
+  </data>
+  <data name="Generic_RecordDeletedNoImage" xml:space="preserve">
+    <value>El registro fue eliminado, pero la imagen no se eliminó</value>
+  </data>
+  <data name="Generic_RegisterNotFound" xml:space="preserve">
+    <value>Problemas para Encontrar el Registro Indicado</value>
+  </data>
+  <data name="Generic_Success" xml:space="preserve">
+    <value>Todo se completó exitosamente</value>
+  </data>
+  <data name="Generic_UnexpectedError" xml:space="preserve">
+    <value>Ocurrió un error inesperado. Por favor, intenta nuevamente más tarde</value>
+  </data>
+  <data name="Generic_UserBlocked" xml:space="preserve">
+    <value>La cuenta está bloqueada temporalmente</value>
+  </data>
+  <data name="Generic_UserCreationFail" xml:space="preserve">
+    <value>No se pudo crear el usuario. Por favor, intenta nuevamente</value>
+  </data>
+  <data name="Generic_UserFail" xml:space="preserve">
+    <value>Error al obtener los datos del usuario</value>
+  </data>
+  <data name="Generic_UserInactive" xml:space="preserve">
+    <value>El usuario está inactivo. Por favor, contacta al administrador del sistema</value>
+  </data>
+  <data name="Generic_UserNameAlreadyUsed" xml:space="preserve">
+    <value>El usuario ya está en uso, intenta nuevamente</value>
+  </data>
+  <data name="Generic_UserNoRoleAssigned" xml:space="preserve">
+    <value>Este usuario está activo pero no tiene ningún rol asignado</value>
+  </data>
+  <data name="httpCode_BadGatewayMsg" xml:space="preserve">
+    <value>La Puerta de Enlace rebio una respuesta invalida</value>
+  </data>
+  <data name="httpCode_BadGatewayTitle" xml:space="preserve">
+    <value>Error Puerta Enlace</value>
+  </data>
+  <data name="HttpCode_BadRequestMsg" xml:space="preserve">
+    <value>Algo salio mal</value>
+  </data>
+  <data name="HttpCode_BadRequestTitle" xml:space="preserve">
+    <value>Error de Respuesta</value>
+  </data>
+  <data name="HttpCode_ForbiddenMsg" xml:space="preserve">
+    <value>Usted no tiene permiso para acceder a este recurso</value>
+  </data>
+  <data name="HttpCode_ForbiddenTile" xml:space="preserve">
+    <value>Prohibido</value>
+  </data>
+  <data name="httpCode_GeteWayTimeMsg" xml:space="preserve">
+    <value>El Servidor ha tomado mucho tiempo para responder</value>
+  </data>
+  <data name="httpCode_GeteWayTimeTitle" xml:space="preserve">
+    <value>Puerta Enlace inalcanzable</value>
+  </data>
+  <data name="HttpCode_LoginMsg" xml:space="preserve">
+    <value>Usuario o Clave incorrectos</value>
+  </data>
+  <data name="HttpCode_LoginTitle" xml:space="preserve">
+    <value>Error de Login</value>
+  </data>
+  <data name="HttpCode_NotFoundMsg" xml:space="preserve">
+    <value>La busqueda solicitada no fue encontrada</value>
+  </data>
+  <data name="HttpCode_NotFoundTitle" xml:space="preserve">
+    <value>No Encontrado</value>
+  </data>
+  <data name="HttpCode_ServerErrorMsg" xml:space="preserve">
+    <value>Un error inesperado ha ocurrido en el Servidor</value>
+  </data>
+  <data name="HttpCode_ServerErrorTitle" xml:space="preserve">
+    <value>Error de Servidor</value>
+  </data>
+  <data name="httpCode_ServiceMsg" xml:space="preserve">
+    <value>El Servidor no esta actualmente habilitado</value>
+  </data>
+  <data name="httpCode_ServiceTitle" xml:space="preserve">
+    <value>Servicio no habilitado</value>
+  </data>
+  <data name="httpCode_TimeoutMsg" xml:space="preserve">
+    <value>La Respuesta vencio el tiempo</value>
+  </data>
+  <data name="httpCode_TimeoutTitle" xml:space="preserve">
+    <value>Fuera de Tiempo</value>
+  </data>
+  <data name="HttpCode_UnauthorizedDeniedMsg" xml:space="preserve">
+    <value>No esta Autorizado para acceder a este recurso</value>
+  </data>
+  <data name="HttpCode_UnauthorizedDeniedTitle" xml:space="preserve">
+    <value>Acceso Denegado</value>
+  </data>
+  <data name="HttpCode_UnauthorizedTokenMsg" xml:space="preserve">
+    <value>Su Session ha expirada, debe loguearse de Nuevo.</value>
+  </data>
+  <data name="HttpCode_UnauthorizedTokenTitle" xml:space="preserve">
+    <value>Sesion Expirada</value>
+  </data>
+  <data name="httpCode_UnprocessMsg" xml:space="preserve">
+    <value>El Servidor no pudo procesar los datos enviados</value>
+  </data>
+  <data name="httpCode_UnprocessTitle" xml:space="preserve">
+    <value>Datos Invalidos</value>
+  </data>
+  <data name="msg_CreateSuccessMessage" xml:space="preserve">
+    <value>El Registro se realizo con exito</value>
+  </data>
+  <data name="msg_CreateSuccessTitle" xml:space="preserve">
+    <value>Registrado</value>
+  </data>
+  <data name="msg_DeleteConfirmationText" xml:space="preserve">
+    <value>Esta seguro de borrar este registro?</value>
+  </data>
+  <data name="msg_DeleteConfirmationTitle" xml:space="preserve">
+    <value>Confirmar Borrado</value>
+  </data>
+  <data name="msg_DeleteConfirmButton" xml:space="preserve">
+    <value>Si, Borralo</value>
+  </data>
+  <data name="msg_DeleteMessage" xml:space="preserve">
+    <value>El registro borrado con exito</value>
+  </data>
+  <data name="msg_DeleteTitle" xml:space="preserve">
+    <value>Borrado</value>
+  </data>
+  <data name="msg_LoginSuccessTitle" xml:space="preserve">
+    <value>Bienvenido</value>
+  </data>
+  <data name="msg_LogoutConfirmationText" xml:space="preserve">
+    <value>Necesitara volver hacer login para continuar.</value>
+  </data>
+  <data name="msg_LogoutConfirmationTitle" xml:space="preserve">
+    <value>Relamente desea abandonar la sesion?</value>
+  </data>
+  <data name="msg_LogoutConfirmButton" xml:space="preserve">
+    <value>Cerrar Sesion</value>
+  </data>
+  <data name="msg_UpdateSuccessMessage" xml:space="preserve">
+    <value>El registro fue actualizado con exito</value>
+  </data>
+  <data name="msg_UpdateSuccessTitle" xml:space="preserve">
+    <value>Actualizado</value>
+  </data>
+  <data name="msg_ValidationWarningMessage" xml:space="preserve">
+    <value>Por favor complete todos los campos requeridos para continuar.</value>
+  </data>
+  <data name="msg_ValidationWarningTitle" xml:space="preserve">
+    <value>Formulario Incompleto</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Clave</value>
+  </data>
+  <data name="PasswordChangeMsg" xml:space="preserve">
+    <value>Ingrese su Correo, Usuario y la nueva Clave para actualizar su cuenta</value>
+  </data>
+  <data name="PasswordChangeTitle" xml:space="preserve">
+    <value>Cambio de Clave</value>
+  </data>
+  <data name="PasswordConfirm" xml:space="preserve">
+    <value>Confirmar Clave</value>
+  </data>
+  <data name="PasswordCurrent" xml:space="preserve">
+    <value>Clave Actual</value>
+  </data>
+  <data name="PasswordNew" xml:space="preserve">
+    <value>Nueva Clave</value>
+  </data>
+  <data name="PasswordRecovery" xml:space="preserve">
+    <value>Recuperar Clave</value>
+  </data>
+  <data name="PasswordUpdateMsg" xml:space="preserve">
+    <value>Su clave ha sido actualizada con exito</value>
+  </data>
+  <data name="PasswordUpdateTitle" xml:space="preserve">
+    <value>Actualizacion de Clave</value>
+  </data>
+  <data name="Validation_InvalidEmail" xml:space="preserve">
+    <value>{0} no es una dirección de correo electrónico válida</value>
+  </data>
+  <data name="Validation_MaxLength" xml:space="preserve">
+    <value>No puede tener más de {1} caracteres</value>
+  </data>
+  <data name="Validation_MinLength" xml:space="preserve">
+    <value>Debe tener al menos {1} caracteres</value>
+  </data>
+  <data name="Validation_PasswordMismatch" xml:space="preserve">
+    <value>Las contraseñas no coinciden</value>
+  </data>
+  <data name="Validation_Range" xml:space="preserve">
+    <value>Debes seleccionar un {0} válido</value>
+  </data>
+  <data name="Validation_Required" xml:space="preserve">
+    <value>El campo es obligatorio</value>
+  </data>
+  <data name="Validation_StringLength" xml:space="preserve">
+    <value>Entre  {2} y {1} caracteres</value>
+  </data>
+  <data name="Validation_UserNameFormat" xml:space="preserve">
+    <value>El nombre de usuario solo puede contener letras y números</value>
+  </data>
+  <data name="Validation_BetweenLength" xml:space="preserve">
+    <value>Debe tener entre {2} y {1} caracteres</value>
+  </data>
+  <data name="Validation_Combo" xml:space="preserve">
+    <value>No se ha seleccionado ningún elemento</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Apellido</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>Origen</value>
+  </data>
+  <data name="RoleUser" xml:space="preserve">
+    <value>Tipo Usuario</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Usuario</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>Ciudad</value>
+  </data>
+  <data name="Document" xml:space="preserve">
+    <value>Documento</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Direccion</value>
+  </data>
+  <data name="Logo" xml:space="preserve">
+    <value>Logo</value>
+  </data>
+  <data name="DateStart" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="DateEnd" xml:space="preserve">
+    <value>Fin</value>
+  </data>
+  <data name="States" xml:space="preserve">
+    <value>Estados</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Telefono</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Usuario</value>
+  </data>
+  <data name="JobPosition" xml:space="preserve">
+    <value>Puesto Trabajo</value>
+  </data>
+  <data name="UserType" xml:space="preserve">
+    <value>Tipo Usuario</value>
+  </data>
+  <data name="Cities" xml:space="preserve">
+    <value>Ciudades</value>
+  </data>
+  <data name="Select_Country" xml:space="preserve">
+    <value>[Seleccione Country]</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Producto</value>
+  </data>
+  <data name="Current_Password" xml:space="preserve">
+    <value>Clave Actual</value>
+  </data>
+  <data name="Fax_Number" xml:space="preserve">
+    <value>Telefono Fax</value>
+  </data>
+  <data name="Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Errors_InvalidFileExtension" xml:space="preserve">
+    <value>Error de Extension del Archvio</value>
+  </data>
+  <data name="Errors_InvalidMimeType" xml:space="preserve">
+    <value>Error de tipo Mime</value>
+  </data>
+  <data name="Password_Recovery" xml:space="preserve">
+    <value>Recuperacion de Clave</value>
+  </data>
+  <data name="Select_Plan" xml:space="preserve">
+    <value>[Seleccione Plan]</value>
+  </data>
+</root>

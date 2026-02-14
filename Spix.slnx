@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="Spix.AppBacken/Spix.AppBacken.csproj" Id="16206184-349d-4852-be34-ecb082acabce" />
+  <Project Path="Spix.AppFront/Spix.AppFront.csproj" Id="ebd7a163-537d-4e92-920e-aa296a3f46f0" />
+  <Project Path="Spix.AppInfra/Spix.AppInfra.csproj" Id="123bfbdc-8e58-40bc-925f-b12508d6c76c" />
+  <Project Path="Spix.AppService/Spix.AppService.csproj" Id="4b1146c6-c061-4441-a1a0-055d8878a889" />
+  <Project Path="Spix.AppServiceX/Spix.AppServiceX.csproj" Id="c98e711d-2641-4a97-97a6-9b3d2ed0057e" />
+  <Project Path="Spix.Domain/Spix.Domain.csproj" Id="30ab5239-884c-46b2-9064-6b6224bdcfae" />
+  <Project Path="Spix.DomainLogic/Spix.DomainLogic.csproj" Id="7f31eefc-c0db-4fab-8e6f-667bfc4e3689" />
+  <Project Path="Spix.xContracts/Spix.xContracts.csproj" Id="67eb328d-d216-4b88-99f0-b40549fadba3" />
+  <Project Path="Spix.xLanguage/Spix.xLanguage.csproj" Id="b964c6e1-bb3c-46e1-b450-5d323de2d6d8" />
+  <Project Path="Spix.xNotification/Spix.xNotification.csproj" Id="f3789404-5432-41a9-bfee-1165a7efa352" />
+  <Project Path="Spix.xPayments/Spix.xPayments.csproj" Id="cc4fe6a7-8f2e-48a0-8116-e468ea1f92dc" />
+</Solution>
