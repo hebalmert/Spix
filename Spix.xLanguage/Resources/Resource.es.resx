@@ -529,4 +529,13 @@
   <data name="Select_Plan" xml:space="preserve">
     <value>[Seleccione Plan]</value>
   </data>
+  <data name="Price" xml:space="preserve">
+    <value>Precio</value>
+  </data>
+  <data name="Months" xml:space="preserve">
+    <value>Meses</value>
+  </data>
+  <data name="Max_Clients" xml:space="preserve">
+    <value>Maximo Clientes</value>
+  </data>
 </root>

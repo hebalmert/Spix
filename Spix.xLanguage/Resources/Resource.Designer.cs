@@ -925,6 +925,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Max Clients.
+        /// </summary>
+        public static string Max_Clients {
+            get {
+                return ResourceManager.GetString("Max_Clients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Months.
+        /// </summary>
+        public static string Months {
+            get {
+                return ResourceManager.GetString("Months", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Record was successfully registered.
         /// </summary>
         public static string msg_CreateSuccessMessage {
@@ -1182,6 +1200,15 @@ namespace Spix.xLanguage.Resources {
         public static string Plan {
             get {
                 return ResourceManager.GetString("Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Price.
+        /// </summary>
+        public static string Price {
+            get {
+                return ResourceManager.GetString("Price", resourceCulture);
             }
         }
         
