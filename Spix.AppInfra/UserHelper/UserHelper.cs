@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Spin.AppInfra.UtilityTools;
+using Spix.AppInfra.UtilityTools;
 using Spix.Domain.Entities;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.EnumTypes;
@@ -230,7 +230,7 @@ public class UserHelper : IUserHelper
 
         var result = await _userManager.CreateAsync(user, clave);
         if (!result.Succeeded)
-            return null;
+            return null!;
 
         return await GetUserByUserNameAsync(username);
     }

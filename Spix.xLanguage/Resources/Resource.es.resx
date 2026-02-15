@@ -547,4 +547,10 @@
   <data name="Transaction_NoActiveToRollback" xml:space="preserve">
     <value>Transaccion No Activa para RollBack</value>
   </data>
+  <data name="Select_Role" xml:space="preserve">
+    <value>[Seleccione Role]</value>
+  </data>
+  <data name="Validation_InvalidFormat" xml:space="preserve">
+    <value>Formato Invalido</value>
+  </data>
 </root>

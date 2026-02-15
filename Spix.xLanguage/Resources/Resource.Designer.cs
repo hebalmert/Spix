@@ -1249,6 +1249,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select Role].
+        /// </summary>
+        public static string Select_Role {
+            get {
+                return ResourceManager.GetString("Select_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to State.
         /// </summary>
         public static string State {
@@ -1344,6 +1353,15 @@ namespace Spix.xLanguage.Resources {
         public static string Validation_InvalidEmail {
             get {
                 return ResourceManager.GetString("Validation_InvalidEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Format.
+        /// </summary>
+        public static string Validation_InvalidFormat {
+            get {
+                return ResourceManager.GetString("Validation_InvalidFormat", resourceCulture);
             }
         }
         

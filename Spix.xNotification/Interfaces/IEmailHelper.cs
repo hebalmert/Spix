@@ -2,7 +2,7 @@
 using Spix.DomainLogic.ModelUtility;
 
 
-namespace Spinx.xNotification.Interfaces;
+namespace Spix.xNotification.Interfaces;
 
 public interface IEmailHelper
 {

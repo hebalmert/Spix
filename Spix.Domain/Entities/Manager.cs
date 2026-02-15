@@ -1,4 +1,5 @@
-﻿using Spix.xLanguage.Resources;
+﻿using Spix.DomainLogic.EnumTypes;
+using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

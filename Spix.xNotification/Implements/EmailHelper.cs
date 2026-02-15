@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using Spinx.xNotification.Interfaces;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.SettingModels;
+using Spix.xNotification.Interfaces;
 using Response = Spix.DomainLogic.ModelUtility.Response;
 
-namespace Spinx.xNotification.Implements;
+namespace Spix.xNotification.Implements;
 
 public class EmailHelper : IEmailHelper
 {
