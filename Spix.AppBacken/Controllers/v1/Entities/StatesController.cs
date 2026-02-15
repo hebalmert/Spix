@@ -13,7 +13,7 @@ using Spix.DomainLogic.Pagination;
 namespace Spix.AppBack.Controllers.Entities;
 
 [ApiController]
-[ApiVersion("2.0")]
+[ApiVersion("1.0")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 [Route("api/v{version:apiVersion}/states")]
 public class StatesController : ControllerBase

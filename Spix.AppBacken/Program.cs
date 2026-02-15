@@ -89,27 +89,30 @@ builder.Services.AddSwaggerGen(options =>
     // JWT
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
+        Description = @"JWT Authorization header using the Bearer scheme. <br /> <br />
+                      Enter 'Bearer' [space] and then your token in the text input below.<br /> <br />
+                      Example: 'Bearer 12345abcdef'<br /> <br />",
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Bearer {token}"
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
     });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+      {
         {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
+          new OpenApiSecurityScheme
+          {
+            Reference = new OpenApiReference
+              {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+              },
+              Scheme = "oauth2",
+              Name = "Bearer",
+              In = ParameterLocation.Header,
+              },
+            new List<string>()
+          }
     });
 });
 
@@ -139,7 +142,7 @@ if (string.IsNullOrEmpty(connectionString))
 
 //Inyectamos el Contexto desde AppInfra y establecemos AppBack como el proyecto de migraciones y Update-Database
 builder.Services.AddDbContext<DataContext>(x =>
-    x.UseSqlServer(connectionString, option => option.MigrationsAssembly("Spix.AppBack")));
+    x.UseSqlServer(connectionString, option => option.MigrationsAssembly("Spix.AppBacken")));
 
 //Identity Como vamos a menajar los usuarios y roles dentro del sistema, las validaciones de los mismos
 builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
@@ -199,6 +202,19 @@ var app = builder.Build();
 //Aplicando el sistema de Localizacion para Multilenguaje
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
 app.UseRequestLocalization(localizationOptions);
+
+//Seeder con manejo de errores
+try
+{
+    using var scope = app.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<SeedDb>();
+    await seeder.SeedAsync();
+    Console.WriteLine("Seeder ejecutado correctamente");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error en Seeder: {ex.Message}");
+}
 
 // Pipeline
 if (app.Environment.IsDevelopment())

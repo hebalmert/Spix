@@ -25,9 +25,44 @@ public class SeedDb
         await _context.Database.EnsureCreatedAsync();
         await CheckRolesAsync();
         await CheckCountries();
+        await CheckSoftPlan();
         await CheckCorporationAsync();
-        await CheckUserAsync("Abantail", "TrialPro", "hebalmert", "merchanhebert@gmail.com", "+1 786 503", UserType.Admin);
+        await CheckUserAsync("Nexxtplanet", "TrialPro", "hebalmert", "merchanhebert@gmail.com", "+1 786 503", UserType.Admin);
     }
+
+    private async Task CheckSoftPlan()
+    {
+        if (!_context.SoftPlans.Any())
+        {
+            //Alimentando Planes
+            _context.SoftPlans.Add(new SoftPlan
+            {
+                Name = "Plan 1 Mes",
+                Price = 50,
+                Meses = 1,
+                ClientsCount = 2,
+                Active = true
+            });
+            _context.SoftPlans.Add(new SoftPlan
+            {
+                Name = "Plan 6 Mes",
+                Price = 300,
+                Meses = 6,
+                ClientsCount = 10,
+                Active = true
+            });
+            _context.SoftPlans.Add(new SoftPlan
+            {
+                Name = "Plan 12 Mes",
+                Price = 600,
+                Meses = 12,
+                ClientsCount = 100,
+                Active = true
+            });
+            await _context.SaveChangesAsync();
+        }
+    }
+
 
     private async Task CheckCorporationAsync()
     {
@@ -35,13 +70,14 @@ public class SeedDb
         {
             Corporation corporation = new()
             {
-                Name = "Abantail",
+                Name = "Nexxtplanet LLC",
                 NroDocument = "3445645645",
                 Phone = "786 503 4489",
                 Address = "Street 45",
                 CountryId = 1,
-                DateStart = DateTime.UtcNow,
-                DateEnd = DateTime.UtcNow.AddYears(10),
+                SoftPlanId = 3,
+                DateStart = DateTime.Now,
+                DateEnd = DateTime.Now.AddYears(10),
                 Active = true
             };
             _context.Corporations.Add(corporation);
@@ -62,6 +98,7 @@ public class SeedDb
                 Email = email,
                 UserName = username,
                 PhoneNumber = phone,
+                JobPosition = "Administrador",
                 UserFrom = "SeedDb",
                 UserRoleDetails = new List<UserRoleDetails> { new UserRoleDetails { UserType = userType } },
                 Active = true,
