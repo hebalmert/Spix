@@ -1,4 +1,4 @@
-﻿namespace Spix.xContracts.FileHandlerDTO;
+﻿namespace Spix.xFiles.Models;
 
 public class Base64Result
 {

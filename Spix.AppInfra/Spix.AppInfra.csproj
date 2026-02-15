@@ -6,4 +6,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Spix.DomainLogic\Spix.DomainLogic.csproj" />
+    <ProjectReference Include="..\Spix.Domain\Spix.Domain.csproj" />
+    <ProjectReference Include="..\Spix.xLanguage\Spix.xLanguage.csproj" />
+  </ItemGroup>
+
 </Project>

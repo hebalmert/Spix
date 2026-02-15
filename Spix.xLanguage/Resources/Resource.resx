@@ -538,4 +538,13 @@
   <data name="Max_Clients" xml:space="preserve">
     <value>Max Clients</value>
   </data>
+  <data name="Transaction_AlreadyActive" xml:space="preserve">
+    <value>Transaction Already Active</value>
+  </data>
+  <data name="Transaction_NoActiveToCommit" xml:space="preserve">
+    <value>Transaction No Active To Commit</value>
+  </data>
+  <data name="Transaction_NoActiveToRollback" xml:space="preserve">
+    <value>Transaction No Active To Rollback</value>
+  </data>
 </root>

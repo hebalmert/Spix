@@ -1267,6 +1267,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Transaction Already Active.
+        /// </summary>
+        public static string Transaction_AlreadyActive {
+            get {
+                return ResourceManager.GetString("Transaction_AlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transaction No Active To Commit.
+        /// </summary>
+        public static string Transaction_NoActiveToCommit {
+            get {
+                return ResourceManager.GetString("Transaction_NoActiveToCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transaction No Active To Rollback.
+        /// </summary>
+        public static string Transaction_NoActiveToRollback {
+            get {
+                return ResourceManager.GetString("Transaction_NoActiveToRollback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User.
         /// </summary>
         public static string User {
