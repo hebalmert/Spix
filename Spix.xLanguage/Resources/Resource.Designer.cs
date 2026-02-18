@@ -925,6 +925,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you want logout?.
+        /// </summary>
+        public static string LogoutMsg {
+            get {
+                return ResourceManager.GetString("LogoutMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logout System.
+        /// </summary>
+        public static string LogoutTitle {
+            get {
+                return ResourceManager.GetString("LogoutTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Max Clients.
         /// </summary>
         public static string Max_Clients {

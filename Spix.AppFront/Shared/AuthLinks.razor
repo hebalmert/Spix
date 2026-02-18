@@ -1,0 +1,44 @@
+﻿<AuthorizeView>
+    <Authorized>
+        <div class="p-3">
+            @if (!string.IsNullOrEmpty(LogoCorp) || !string.IsNullOrEmpty(photoUser))
+            {
+                <div class="d-flex justify-content-center mb-3">
+                    @if (!string.IsNullOrEmpty(LogoCorp))
+                    {
+                        <img src="@LogoCorp" class="rounded-circle mx-2" style="width:64px;height:64px;" />
+                    }
+                    @if (!string.IsNullOrEmpty(photoUser))
+                    {
+                        <img src="@photoUser" class="rounded-circle mx-2" style="width:64px;height:64px;" />
+                    }
+                </div>
+            }
+            <div class="text-center mb-3 fw-bold">@context.User.Identity!.Name</div>
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-secondary" @onclick="ShowModalCambiarClave">
+                    Change Password <i class="bi bi-shield-lock"></i>
+                </button>
+                <button class="btn btn-outline-secondary" @onclick="ShowModalLogOut">
+                    Sign Out <i class="bi bi-box-arrow-right"></i>
+                </button>
+
+            </div>
+        </div>
+    </Authorized>
+
+    <NotAuthorized>
+        <div class="p-3">
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-secondary" @onclick="ShowModalRecoverPassword">
+                    Recover Password <i class="bi bi-lock"></i>
+                </button>
+                <button class="btn btn-outline-secondary" @onclick="ShowModalLogIn">
+                    Sign In <i class="bi bi-box-arrow-in-right"></i>
+                </button>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+

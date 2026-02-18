@@ -553,4 +553,10 @@
   <data name="Validation_InvalidFormat" xml:space="preserve">
     <value>Formato Invalido</value>
   </data>
+  <data name="LogoutTitle" xml:space="preserve">
+    <value>Sistema de Logout</value>
+  </data>
+  <data name="LogoutMsg" xml:space="preserve">
+    <value>Desea Salir del Sistema?</value>
+  </data>
 </root>

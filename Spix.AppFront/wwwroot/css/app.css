@@ -10,6 +10,295 @@ a, .btn-link {
     color: #0071c1;
 }
 
+/* Para Checkbox se puedan ver */
+.form-check-input {
+    box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.4); /* sombra más profunda y amplia */
+    outline: none;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+/* Boton X para cerrar los Modal */
+.btn-close-modal {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: #212529; /* negro elegante */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+    .btn-close-modal:hover {
+        background-color: #000000;
+        transform: scale(1.1);
+    }
+
+    .btn-close-modal:active {
+        background-color: #121212;
+        transform: scale(0.95);
+    }
+
+    .btn-close-modal i {
+        color: white;
+    }
+
+/* Boton Danger para Index */
+.btn-shadow-danger {
+    background-color: #dc3545; /* rojo Bootstrap */
+    color: white !important;
+    font-size: 0.875rem; /* btn-sm */
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+    transition: all 0.2s ease;
+}
+
+    .btn-shadow-danger:hover {
+        background-color: #bb2d3b; /* rojo más profundo al hover */
+        box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+        transform: scale(1.02);
+        color: white !important;
+    }
+
+    .btn-shadow-danger:active {
+        background-color: #a12631; /* aún más profundo al click */
+        transform: scale(0.97);
+        box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.5);
+        color: white !important;
+    }
+
+    /* Forzar el ícono blanco */
+    .btn-shadow-danger i {
+        color: white !important;
+    }
+
+/* Boton Black para Index */
+.btn-shadowText-black {
+    background-color: #212529; /* negro Bootstrap */
+    color: white !important;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+    transition: all 0.2s ease;
+    min-width: 70px;
+}
+
+.btn-shadow-black:hover {
+    background-color: #000000; /* negro intenso al hover */
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+    transform: scale(1.02);
+    color: white !important;
+}
+
+.btn-shadow-black:active {
+    background-color: #121212; /* negro profundo al click */
+    transform: scale(0.97);
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.5);
+    color: white !important;
+}
+
+.btn-shadow-black i {
+    color: white !important;
+}
+
+/* Boton Black para Index */
+.btn-shadow-black {
+    background-color: #212529; /* negro Bootstrap */
+    color: white !important;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+    transition: all 0.2s ease;
+}
+
+    .btn-shadow-black:hover {
+        background-color: #000000; /* negro intenso al hover */
+        box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+        transform: scale(1.02);
+        color: white !important;
+    }
+
+    .btn-shadow-black:active {
+        background-color: #121212; /* negro profundo al click */
+        transform: scale(0.97);
+        box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.5);
+        color: white !important;
+    }
+
+    .btn-shadow-black i {
+        color: white !important;
+    }
+
+/* Boton Warning para Index */
+.btn-shadow-warning {
+    background-color: #ffc107; /* amarillo Bootstrap */
+    color: white !important;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+}
+
+    .btn-shadow-warning:hover {
+        background-color: #e0a800; /* dorado intenso */
+        box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.5);
+        transform: scale(1.02);
+        color: white !important;
+    }
+
+    .btn-shadow-warning:active {
+        background-color: #b8860b; /* dorado profundo al click */
+        transform: scale(0.97);
+        box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.3);
+        color: white !important;
+    }
+
+    .btn-shadow-warning i {
+        color: white !important;
+    }
+
+/* Fondo gris muy suave para el área principal */
+.main-content {
+    background-color: #f4f4f4;
+    padding: 2rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    min-height: 100vh; /* ocupa al menos toda la altura de la ventana */
+    box-sizing: border-box; /* asegura que el padding no agregue overflow */
+}
+
+/* Primary */
+.btn-gradient-primary {
+    background: linear-gradient(to right, #6f42c1, #0d6efd);
+    border: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+}
+
+    .btn-gradient-primary:hover {
+        background: linear-gradient(to right, #4b2b89, #0a53be);
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+        transform: scale(1.02);
+    }
+
+/* Secondary */
+.btn-gradient-secondary {
+    background: linear-gradient(to right, #6c757d, #adb5bd);
+    border: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+}
+
+    .btn-gradient-secondary:hover {
+        background: linear-gradient(to right, #545b62, #9099a1);
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+        transform: scale(1.02);
+    }
+
+/* Success */
+.btn-gradient-success {
+    background: linear-gradient(to right, #198754, #51d88a);
+    border: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+}
+
+    .btn-gradient-success:hover {
+        background: linear-gradient(to right, #146c44, #3fba72);
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+        transform: scale(1.02);
+    }
+
+/* Danger */
+.btn-gradient-danger {
+    background: linear-gradient(to right, #ff1e1e, #ffd1d1);
+    border: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+}
+
+    .btn-gradient-danger:hover {
+        background: linear-gradient(to right, #e60000, #ffaaaa);
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+        transform: scale(1.03);
+    }
+
+/* Warning */
+.btn-gradient-warning {
+    background: linear-gradient(to right, #ffc107, #ffdd57);
+    border: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+}
+
+    .btn-gradient-warning:hover {
+        background: linear-gradient(to right, #e6b106, #ffd13f);
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+        transform: scale(1.02);
+    }
+
+/* Info */
+.btn-gradient-info {
+    background: linear-gradient(to right, #0dcaf0, #3dd5f3);
+    border: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+}
+
+    .btn-gradient-info:hover {
+        background: linear-gradient(to right, #0aa1c0, #2bb9d9);
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+        transform: scale(1.02);
+    }
+
+/* Black */
+.btn-gradient-black {
+    background: linear-gradient(to right, #212529, #6c757d);
+    border: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.7);
+}
+
+    .btn-gradient-black:hover {
+        background: linear-gradient(to right, #000000, #495057);
+        box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+        transform: scale(1.03);
+    }
+
+.btn-gradient-primary,
+.btn-gradient-secondary,
+.btn-gradient-success,
+.btn-gradient-danger,
+.btn-gradient-warning,
+.btn-gradient-info,
+.btn-gradient-black {
+    box-shadow: 4px 6px 14px rgba(0, 0, 0, 0.5); /* sombra más profunda */
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
@@ -17,7 +306,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -68,12 +357,11 @@ a, .btn-link {
     }
 
 .loading-progress {
-    position: absolute;
+    position: relative;
     display: block;
     width: 8rem;
     height: 8rem;
-    inset: 20vh 0 auto 0;
-    margin: 0 auto 0 auto;
+    margin: 20vh auto 1rem auto;
 }
 
     .loading-progress circle {

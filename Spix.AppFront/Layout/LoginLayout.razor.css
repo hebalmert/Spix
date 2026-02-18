@@ -1,0 +1,28 @@
+﻿.authFull {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1b6ec2 0%, #5a2ea6 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+    .authFull > * {
+        position: absolute;
+        z-index: 1;
+    }
+
+    .authFull::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("/Images/bgCenterImg.jpg");
+        background-size: cover; /* Cambiado de contain a cover */
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.2;
+        z-index: 0;
+    }

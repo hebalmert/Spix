@@ -1,4 +1,9 @@
 ﻿@inherits LayoutComponentBase
+
+<AuthorizeView>
+    <IdleLogout />
+</AuthorizeView>
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,11 +11,29 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <div class="position-relative" @onmouseover="ShowMenu" @onmouseleave="HideMenu" style="display:inline-block;">
+                <button class="btn btn-link p-0" style="text-decoration: none;">
+                    Setting
+                    <i class="fa fa-cog"></i> <!-- Ícono de configuración -->
+                </button>
+
+                @if (isMenuVisible)
+                {
+                    <div class="dropdown-menu show shadow border bg-white" style="position: absolute; right: 0; top: 100%; min-width: 18rem; z-index: 1000;">
+                        <AuthLinks />
+                    </div>
+                }
+            </div>
+
+            <a href="https://optimususa.net" target="_blank">About</a>
         </div>
 
-        <article class="content px-4">
+        <article class="main-content px-4">
             @Body
+            @if (modalType != null)
+            {
+                <DynamicComponent Type="@modalType" Parameters="@modalParameters" />
+            }
         </article>
     </main>
 </div>

@@ -7,6 +7,7 @@
   <Project Path="Spix.Domain/Spix.Domain.csproj" Id="30ab5239-884c-46b2-9064-6b6224bdcfae" />
   <Project Path="Spix.DomainLogic/Spix.DomainLogic.csproj" Id="7f31eefc-c0db-4fab-8e6f-667bfc4e3689" />
   <Project Path="Spix.xFiles/Spix.xFiles.csproj" Id="31507d8e-23ab-4a9d-aeaa-b68f6ff4c134" />
+  <Project Path="Spix.xHttpService/Spix.xHttpService.csproj" Id="5568b054-02d2-48e1-9537-f34f5e47d7df" />
   <Project Path="Spix.xLanguage/Spix.xLanguage.csproj" Id="b964c6e1-bb3c-46e1-b450-5d323de2d6d8" />
   <Project Path="Spix.xNotification/Spix.xNotification.csproj" Id="f3789404-5432-41a9-bfee-1165a7efa352" />
   <Project Path="Spix.xPayments/Spix.xPayments.csproj" Id="cc4fe6a7-8f2e-48a0-8116-e468ea1f92dc" />
