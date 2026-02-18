@@ -1,0 +1,21 @@
+﻿<div class="row">
+    <div class="col-md-6">
+        <div class="camera-box me-3">
+            <video id="camera" autoplay playsinline style="border:1px solid red; width:100%; height:auto;"></video>
+        </div>
+        <div class="camera-box me-3">
+            <button type="button" class="btn btn-gradient-primary mt-2" style="width:150px" @onclick="CaptureImage">Capturar</button>
+        </div>
+    </div>
+    <div class="col-md-6" >
+        @if (!string.IsNullOrWhiteSpace(GetImageSource()))
+        {
+            <div class="camera-box me-3">
+                <img src="@GetImageSource()" alt="@Label" class="image-preview" style="border:1px solid red; width:100%; height:auto;" />
+            </div>
+        }
+    </div>
+</div>
+
+
+

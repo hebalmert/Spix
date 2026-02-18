@@ -79,6 +79,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Camara.
+        /// </summary>
+        public static string Button_Camara {
+            get {
+                return ResourceManager.GetString("Button_Camara", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capture.
+        /// </summary>
+        public static string Button_Capture {
+            get {
+                return ResourceManager.GetString("Button_Capture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disk.
+        /// </summary>
+        public static string Button_Disk {
+            get {
+                return ResourceManager.GetString("Button_Disk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
         public static string ButtonBack {
@@ -106,6 +133,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ButtonDelete {
+            get {
+                return ResourceManager.GetString("ButtonDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detail.
+        /// </summary>
+        public static string ButtonDetails {
+            get {
+                return ResourceManager.GetString("ButtonDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string ButtonEdit {
+            get {
+                return ResourceManager.GetString("ButtonEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Login.
         /// </summary>
         public static string ButtonLogin {
@@ -120,6 +174,15 @@ namespace Spix.xLanguage.Resources {
         public static string ButtonLogout {
             get {
                 return ResourceManager.GetString("ButtonLogout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roles.
+        /// </summary>
+        public static string ButtonRoles {
+            get {
+                return ResourceManager.GetString("ButtonRoles", resourceCulture);
             }
         }
         

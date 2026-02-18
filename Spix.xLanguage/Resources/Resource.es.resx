@@ -559,4 +559,25 @@
   <data name="LogoutMsg" xml:space="preserve">
     <value>Desea Salir del Sistema?</value>
   </data>
+  <data name="Button_Camara" xml:space="preserve">
+    <value>Camara</value>
+  </data>
+  <data name="Button_Capture" xml:space="preserve">
+    <value>Capturar</value>
+  </data>
+  <data name="Button_Disk" xml:space="preserve">
+    <value>Disco</value>
+  </data>
+  <data name="ButtonDelete" xml:space="preserve">
+    <value>Borrar</value>
+  </data>
+  <data name="ButtonDetails" xml:space="preserve">
+    <value>Detalle</value>
+  </data>
+  <data name="ButtonEdit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="ButtonRoles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
 </root>

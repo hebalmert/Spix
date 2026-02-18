@@ -1,0 +1,25 @@
+﻿<div class="d-flex flex-wrap align-items-center">
+    <!-- Campo de búsqueda -->
+    <div style="flex-grow: 1; width:300px;">
+        <div class="input-group">
+            <span class="input-group-text bg-light">
+                <i class="fa fa-search text-dark"></i>
+            </span>
+            <InputText class="form-control" placeholder="Search..." @bind-Value="FilterValue" />
+        </div>
+    </div>
+
+    <!-- Botón Buscar -->
+    <div style="padding-left:4px">
+        <button class="btn btn-gradient-primary d-flex align-items-center gap-2" @onclick="OnfilterApply">
+            <i class="fa fa-search"></i> @Localizer["Search"]
+        </button>
+    </div>
+
+    <!-- Botón Limpiar -->
+    <div style="padding-left:4px">
+        <button class="btn btn-gradient-black d-flex align-items-center gap-2" @onclick="ClearFilter">
+            <i class="fa fa-refresh"></i> @Localizer["Clear"]
+        </button>
+    </div>
+</div>

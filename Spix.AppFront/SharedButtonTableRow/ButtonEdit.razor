@@ -1,0 +1,20 @@
+﻿@* <button type="@Type" class="@CssClass" style="width:105px" @onclick="@OnClick" title="@TooTip">
+    <i class="@Icon" style="margin-right:5px;"></i><span>@TooTip</span>
+</button> *@
+<button type="@Type" class="@CssClass" @onclick="@OnClick" title="@TooTip">
+    <i class="@Icon"></i>
+</button>
+@code {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = default!;
+    [Parameter] public string Icon { get; set; } = "fa fa-edit";
+    [Parameter] public string CssClass { get; set; } = "btn-shadow-black";
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string? TooTip { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+
+    protected override void OnInitialized()
+    {
+        TooTip ??= Localizer[nameof(Resource.ButtonEdit)];
+    }
+}
+

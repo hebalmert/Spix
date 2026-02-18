@@ -1,0 +1,32 @@
+﻿<div class="input-group">
+    <span class="input-group-text" style="width: 150px">
+        @Label
+    </span>
+    <input type="text"
+           class="form-control"
+           placeholder="Seleccionar archivo"
+           readonly
+           value="@FileName" />
+    <label class="input-group-btn">
+        <span class="btn btn-dark px-3">
+            Search
+            <InputFile OnChange="OnChange" class="d-none" accept="@AcceptExtensions" />
+        </span>
+    </label>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(FileName))
+{
+    <div class="mt-2 text-muted text-truncate">
+        File: <strong>@FileName</strong>
+    </div>
+}
+@if (!string.IsNullOrEmpty(PreviewUrl))
+{
+    <div class="mt-3">
+        <iframe src="@PreviewUrl"
+                class="pdf-thumb-frame"
+                style="border-radius: 10px;">
+        </iframe>
+    </div>
+}

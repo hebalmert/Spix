@@ -1,0 +1,25 @@
+﻿.camera-container {
+    position: relative;
+    width: 200px; /* Fijo para formularios */
+    height: 240px; /* Relación 3:4 vertical */
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f8f8f8;
+}
+
+.camera-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+    .camera-layer video,
+    .camera-layer img {
+        object-fit: cover; /* Recorta sin distorsionar */
+        width: 100%;
+        height: 100%;
+    }

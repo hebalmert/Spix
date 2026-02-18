@@ -1,0 +1,17 @@
+﻿<a class="@CssClass" style="@Style" href="@Href">
+    <i class="@Icon" style="margin-right:5px;"></i><span>@TooTip</span>
+</a>
+
+@code {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = default!;
+    [Parameter, EditorRequired] public string Href { get; set; }
+    [Parameter] public string Icon { get; set; } = "fa fa-arrow-left";
+    [Parameter] public string CssClass { get; set; } = "btn btn-gradient-black d-flex align-items-center gap-2 ms-2";
+    [Parameter] public string? TooTip { get; set; }
+    [Parameter] public string? Style { get; set; } = "width:160px";
+
+    protected override void OnInitialized()
+    {
+        TooTip ??= Localizer[nameof(Resource.ButtonBack)];
+    }
+}
