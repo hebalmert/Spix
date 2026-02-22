@@ -191,7 +191,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("https://localhost:7140", "https://regixappfront-cngmebf8gsbyehd9.canadacentral-01.azurewebsites.net")
+        builder.WithOrigins("https://localhost:7137", "https://regixappfront-cngmebf8gsbyehd9.canadacentral-01.azurewebsites.net")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders(new[] { "Totalpages", "Counting" });
@@ -227,6 +227,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

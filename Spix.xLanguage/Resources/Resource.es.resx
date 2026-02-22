@@ -580,4 +580,7 @@
   <data name="ButtonRoles" xml:space="preserve">
     <value>Roles</value>
   </data>
+  <data name="New" xml:space="preserve">
+    <value>Nuevo</value>
+  </data>
 </root>

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace Regix.AppFront.Shared;
+namespace Spix.AppFront.Shared;
 
 public partial class InputImage
 {
@@ -14,7 +14,6 @@ public partial class InputImage
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
         if (string.IsNullOrWhiteSpace(Label))
         {
             Label = "Imagen";

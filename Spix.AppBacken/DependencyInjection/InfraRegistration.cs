@@ -5,6 +5,7 @@ using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppInfra.UtilityTools;
+using Spix.xFiles.ExcelHelper;
 using Spix.xFiles.FileHelper;
 using Spix.xFiles.QRgenerate;
 using Spix.xNotification.Implements;
@@ -25,8 +26,10 @@ namespace Spin.AppBack.DependencyInjection
             // Manejo de transacciones por request
             services.AddScoped<ITransactionManager, TransactionManager>();
 
-            // Utilidades para manejo de Imagenes o Archivos
+            // Utilidades para manejo de Imagenes o Archivos xFiles
             services.AddScoped<IFileStorage, FileStorage>();
+            services.AddScoped<IExcelParser, ExcelParser>();
+            services.AddScoped<IExcelExporter, ExcelExporter>();
 
             // Utilidades para autenticación y gestión de usuarios
             services.AddScoped<IUserHelper, UserHelper>();

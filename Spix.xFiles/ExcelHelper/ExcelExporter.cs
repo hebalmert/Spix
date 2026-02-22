@@ -1,4 +1,6 @@
 ﻿using ClosedXML.Excel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Spix.xFiles.ExcelHelper;
@@ -10,12 +12,18 @@ public class ExcelExporter : IExcelExporter
         using var workbook = new XLWorkbook();
         var ws = workbook.AddWorksheet("Data");
 
-        var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var props = typeof(T)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null)
+            .ToArray();
 
         // Encabezados
         for (int i = 0; i < props.Length; i++)
         {
-            ws.Cell(1, i + 1).Value = props[i].Name;
+            var display = props[i].GetCustomAttribute<DisplayAttribute>();
+            var header = display?.GetName() ?? props[i].Name;
+
+            ws.Cell(1, i + 1).Value = header;
             ws.Cell(1, i + 1).Style.Font.Bold = true;
         }
 
@@ -26,7 +34,11 @@ public class ExcelExporter : IExcelExporter
             for (int col = 0; col < props.Length; col++)
             {
                 var value = props[col].GetValue(item);
-                ws.Cell(row, col + 1).SetValue(value?.ToString() ?? "");
+
+                if (value is Enum)
+                    value = value.ToString();
+
+                ws.Cell(row, col + 1).Value = value?.ToString() ?? "";
             }
             row++;
         }
@@ -37,6 +49,5 @@ public class ExcelExporter : IExcelExporter
         workbook.SaveAs(stream);
         return stream.ToArray();
     }
-
 }
 

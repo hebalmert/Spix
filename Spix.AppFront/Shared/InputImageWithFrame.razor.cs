@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace Regix.AppFront.Shared;
+namespace Spix.AppFront.Shared;
 
 public partial class InputImageWithFrame
 {

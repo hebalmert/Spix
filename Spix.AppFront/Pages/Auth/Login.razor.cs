@@ -51,7 +51,7 @@ public partial class Login
         await _sessionModel.SetSessionAsync(sessionModelDTO, "SessionDTO");
 
         isProcessing = false;
-        _navigation.NavigateTo("/dashboard", forceLoad: true);
+        _navigation.NavigateTo("/dashboard");
     }
 
     private async Task OpenRecoverPasswordModal()

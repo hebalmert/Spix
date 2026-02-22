@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace Regix.AppFront.Shared;
+namespace Spix.AppFront.Shared;
 
 public partial class InputDocument
 {
@@ -15,7 +15,6 @@ public partial class InputDocument
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
         if (string.IsNullOrWhiteSpace(Label))
         {
             Label = "Documento";

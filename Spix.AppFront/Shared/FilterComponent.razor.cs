@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Regix.Domain.Resources;
+using Spix.xLanguage.Resources;
 
-namespace Regix.AppFront.Shared;
+namespace Spix.AppFront.Shared;
 
 public partial class FilterComponent
 {
