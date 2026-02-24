@@ -1,0 +1,135 @@
+﻿<EditForm Model="Corporation" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="mb-3">
+            <!-- Imagen -->
+            <InputImageGeneral ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+        </div>
+        <div class="row">
+            <!-- Primera columna -->
+            <div class="col-md-6">
+                <!-- Nombre -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Corporation)]
+                        </span>
+                        <InputText class="form-control" placeholder="Corporation name..." @bind-Value="Corporation.Name" />
+                    </div>
+                    <ValidationMessage For="@(() => Corporation.Name)" />
+                </div>
+
+                <!-- Documento -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.NroDocuement)]
+                        </span>
+                        <InputText class="form-control" placeholder="Document number..." @bind-Value="Corporation.NroDocument" />
+                    </div>
+                    <ValidationMessage For="@(() => Corporation.NroDocument)" />
+                </div>
+
+                <!-- Teléfono -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Phone)]
+                        </span>
+                        <InputText class="form-control" placeholder="Phone..." @bind-Value="Corporation.Phone" />
+                    </div>
+                    <ValidationMessage For="@(() => Corporation.Phone)" />
+                </div>
+
+                <!-- Dirección -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Address)]
+                        </span>
+                        <InputText class="form-control" placeholder="Address..." @bind-Value="Corporation.Address" />
+                    </div>
+                    <ValidationMessage For="@(() => Corporation.Address)" />
+                </div>
+            </div>
+
+            <!-- Segunda columna -->
+            <div class="col-md-6">
+                <!-- País -->
+                <div class="mb-0">
+                    <GenericSelectWrapper Tmodel="Country" Items="Countries">
+                        <Body>
+                            <div class="input-group">
+                                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Corporation)]</span>
+                                <select class="form-select" value="@Corporation.CountryId" @onchange="CountryChanged">
+                                    @foreach (var item in Countries!)
+                                    {
+                                        <option value="@item.CountryId">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </Body>
+                    </GenericSelectWrapper>
+                </div>
+                <!-- Plan -->
+                <div class="mb-0">
+                    <GenericSelectWrapper Tmodel="SoftPlan" Items="SoftPlans">
+                        <Body>
+                            <div class="input-group">
+                                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_Plan)]</span>
+                                <select class="form-select" value="@Corporation.SoftPlanId" @onchange="SoftPlanChanged">
+                                    @foreach (var item in SoftPlans!)
+                                    {
+                                        <option value="@item.SoftPlanId">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </Body>
+                    </GenericSelectWrapper>
+                </div>
+
+                <!-- Fecha inicio -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.StartDate)]</span>
+                        <input type="date" class="form-control"
+                               @bind="Corporation.DateStart"
+                               min="@DateMin?.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+
+                <!-- Fecha fin -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.EndDate)]</span>
+                        <input type="date" class="form-control"
+                               @bind="Corporation.DateEnd"
+                               min="@DateMin?.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+
+                <!-- Estado activo -->
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Active)]
+                        </span>
+                        <div class="d-flex align-items-center ps-3">
+                            <InputCheckbox @bind-Value="Corporation.Active" class="form-check-input me-2" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+
+</EditForm>
+
+

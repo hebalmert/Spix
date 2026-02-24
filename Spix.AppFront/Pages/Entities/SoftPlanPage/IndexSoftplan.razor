@@ -1,0 +1,74 @@
+﻿@page "/softplans"
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3 class="mb-4">@Localizer[nameof(Resource.SoftPlan)]</h3>
+
+        <!-- Botón + Filtro -->
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
+                </button>
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="SoftPlans">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>@Localizer[nameof(Resource.Plan)]</th>
+                                <th>@Localizer[nameof(Resource.Months)]</th>
+                                <th>@Localizer[nameof(Resource.Price)]</th>
+                                <th>@Localizer[nameof(Resource.Max_Clients)]</th>
+                                <th>@Localizer[nameof(Resource.Active)]</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in SoftPlans!)
+                            {
+                                <tr>
+                                    <td>@item.Name</td>
+                                    <td>@item.Meses</td>
+                                    <td>@item.Price</td>
+                                    <td>@item.ClientsCount</td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <button class="btn-shadow-black" @onclick="() => ShowModalAsync(item.SoftPlanId, true)">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                    </td>
+                                    <td style="width:1px;">
+                                        <button class="btn-shadow-danger" @onclick="() => DeleteAsync(item.SoftPlanId)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+        <!-- Tabla -->
+        <hr />
+        @if (SoftPlans is not null)
+        {
+            <!-- Paginación -->
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        }
+    </div>
+</div>

@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Spix.Domain\Spix.Domain.csproj" />
     <ProjectReference Include="..\Spix.xHttpService\Spix.xHttpService.csproj" />
     <ProjectReference Include="..\Spix.xLanguage\Spix.xLanguage.csproj" />
   </ItemGroup>

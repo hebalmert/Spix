@@ -583,4 +583,58 @@
   <data name="New" xml:space="preserve">
     <value>Nuevo</value>
   </data>
+  <data name="Month" xml:space="preserve">
+    <value>Mes</value>
+  </data>
+  <data name="SoftPlan" xml:space="preserve">
+    <value>Planes del Sistema</value>
+  </data>
+  <data name="UserRole" xml:space="preserve">
+    <value>Roles Usuario</value>
+  </data>
+  <data name="NewRole" xml:space="preserve">
+    <value>Nuevo Role</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Job" xml:space="preserve">
+    <value>Puesto</value>
+  </data>
+  <data name="NroDocuement" xml:space="preserve">
+    <value>#  Document</value>
+  </data>
+  <data name="Edit_SoftPlan" xml:space="preserve">
+    <value>Editar SoftPlan</value>
+  </data>
+  <data name="Create_SofPlan" xml:space="preserve">
+    <value>Nuevo SoftPlan</value>
+  </data>
+  <data name="Create_Manager" xml:space="preserve">
+    <value>Nuevo Manager</value>
+  </data>
+  <data name="Edit_Manager" xml:space="preserve">
+    <value>Editar Manager</value>
+  </data>
+  <data name="Edit_Corporation" xml:space="preserve">
+    <value>Editar Corporacion</value>
+  </data>
+  <data name="Create_Corportation" xml:space="preserve">
+    <value>Nueva Corporacion</value>
+  </data>
+  <data name="Edit_Usuario" xml:space="preserve">
+    <value>Editar Usuarios</value>
+  </data>
+  <data name="Create_Usuario" xml:space="preserve">
+    <value>Nuevo Usuario</value>
+  </data>
+  <data name="UserSetting" xml:space="preserve">
+    <value>Configuracin Usuarios</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Fecha Inicio</value>
+  </data>
 </root>

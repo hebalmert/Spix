@@ -1,0 +1,109 @@
+﻿<EditForm Model="Usuario" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <InputImageGeneral ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+            </div>
+            <div class="col-md-6">
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.FirstName)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Usuario.FirstName" />
+                    </div>
+                    <ValidationMessage For="@(() => Usuario.FirstName)" />
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.LastName)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Usuario.LastName" />
+                    </div>
+                    <ValidationMessage For="@(() => Usuario.LastName)" />
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.NroDocuement)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Usuario.Nro_Document" />
+                    </div>
+                    <ValidationMessage For="@(() => Usuario.Nro_Document)" />
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Phone)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Usuario.PhoneNumber" />
+                    </div>
+                    <ValidationMessage For="@(() => Usuario.PhoneNumber)" />
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Address)]
+                </span>
+                <InputTextArea class="form-control" placeholder="" @bind-Value="Usuario.Address" />
+            </div>
+            <ValidationMessage For="@(() => Usuario.Address)" />
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.UserName)]
+                    </span>
+                    <InputText class="form-control" placeholder="" @bind-Value="Usuario.UserName" />
+                </div>
+                <ValidationMessage For="@(() => Usuario.UserName)" />
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Email)]
+                    </span>
+                    <InputText class="form-control" placeholder="" @bind-Value="Usuario.Email" />
+                </div>
+                <ValidationMessage For="@(() => Usuario.Email)" />
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Job)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Usuario.Job" />
+                    </div>
+                    <ValidationMessage For="@(() => Usuario.Job)" />
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Active)]
+                    </span>
+                    <div class="d-flex align-items-center ps-3">
+                        <InputCheckbox @bind-Value="Usuario.Active" class="form-check-input me-2" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+
+</EditForm>

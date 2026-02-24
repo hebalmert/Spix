@@ -14,26 +14,77 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <!-- Grupo: Opciones -->
+                <div class="nav-item px-3">
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
+                            @onclick="submenu1"
+                            style="background: none; border: none;">
+                        <span class="fa fa-th-large" aria-hidden="true"></span> Configuration
+                        <span class="ms-auto fa @(expandSubMenu1 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                    </button>
+
+                    @if (expandSubMenu1)
+                    {
+                        <NavLink class="nav-link text-white ps-4" href="/softplans">
+                            <span class="fa fa-dot me-2" aria-hidden="true"></span> Sofplans
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/corporations">
+                            <span class="fa fa-dot me-2" aria-hidden="true"></span> Corporation
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/managers">
+                            <span class="fa fa-dot me-2" aria-hidden="true"></span> Manager
+                        </NavLink>
+                    }
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Administrator">
+            <Authorized>
+                <!-- Grupo: Configuración -->
+                <div class="nav-item px-3">
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
+                            @onclick="submenu2"
+                            style="background: none; border: none;">
+                        <span class="fa fa-gears" aria-hidden="true"></span> System Setting
+                        <span class="ms-auto fa @(expandSubMenu2 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                    </button>
+
+                    @if (expandSubMenu2)
+                    {
+                        <NavLink class="nav-link text-white ps-4" href="/usuarios">
+                            <span class="fa fa-dot me-2" aria-hidden="true"></span> User
+                        </NavLink>
+                        <hr class="border-top border-white opacity-25 my-2" />
+                    }
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
 
+    private bool expandSubMenu1;
+    private bool expandSubMenu2;
+
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    private void submenu1()
+    {
+        expandSubMenu1 = !expandSubMenu1;
+        expandSubMenu2 = false;
+    }
+
+    private void submenu2()
+    {
+        expandSubMenu2 = !expandSubMenu2;
+        expandSubMenu1 = false;
     }
 }

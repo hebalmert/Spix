@@ -3,8 +3,9 @@
 public enum UserTypeDTO
 {
     Administrator = 2,
-    Usuario = 3,
-    Auxiliar = 4,
-    Cachier = 5,
-    Technical = 6,
+    Auxiliar = 3,
+    Cachier = 4,
+    Collector = 5,
+    Technician = 7,
+    WarehouseLead = 9
 }

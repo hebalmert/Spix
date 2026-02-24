@@ -583,4 +583,58 @@
   <data name="New" xml:space="preserve">
     <value>New</value>
   </data>
+  <data name="Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="SoftPlan" xml:space="preserve">
+    <value>Software Plan</value>
+  </data>
+  <data name="UserRole" xml:space="preserve">
+    <value>User Role</value>
+  </data>
+  <data name="NewRole" xml:space="preserve">
+    <value>New Role</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Job" xml:space="preserve">
+    <value>Job</value>
+  </data>
+  <data name="NroDocuement" xml:space="preserve">
+    <value>Nro Docuement</value>
+  </data>
+  <data name="Edit_SoftPlan" xml:space="preserve">
+    <value>Edit SoftPlan</value>
+  </data>
+  <data name="Create_SofPlan" xml:space="preserve">
+    <value>Create SoftPlan</value>
+  </data>
+  <data name="Create_Manager" xml:space="preserve">
+    <value>Create Manager</value>
+  </data>
+  <data name="Edit_Manager" xml:space="preserve">
+    <value>Edit Manager</value>
+  </data>
+  <data name="Edit_Corporation" xml:space="preserve">
+    <value>Edit Corporation</value>
+  </data>
+  <data name="Create_Corportation" xml:space="preserve">
+    <value>Create Corporation</value>
+  </data>
+  <data name="Edit_Usuario" xml:space="preserve">
+    <value>Edit Users</value>
+  </data>
+  <data name="Create_Usuario" xml:space="preserve">
+    <value>Create Users</value>
+  </data>
+  <data name="UserSetting" xml:space="preserve">
+    <value>User Setting</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
 </root>

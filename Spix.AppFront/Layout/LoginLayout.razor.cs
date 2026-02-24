@@ -10,21 +10,24 @@ public partial class LoginLayout
     private Type? modalType;
     private Dictionary<string, object>? modalParameters;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        _modalService.OnShow += async (type, parameters) =>
-        {
-            modalType = type;
-            modalParameters = parameters;
-            StateHasChanged();
-        };
+        _modalService.OnShow += ShowModal;
+        _modalService.OnClose += CloseModal;
+    }
 
-        _modalService.OnClose += () =>
-        {
-            modalType = null;
-            modalParameters = null;
-            StateHasChanged();
-        };
+    private Task ShowModal(Type type, Dictionary<string, object>? parameters)
+    {
+        modalType = type;
+        modalParameters = parameters;
+        InvokeAsync(StateHasChanged);
+        return Task.CompletedTask;
+    }
 
+    private void CloseModal()
+    {
+        modalType = null;
+        modalParameters = null;
+        InvokeAsync(StateHasChanged);
     }
 }

@@ -1,0 +1,90 @@
+﻿@page "/usuarios"
+@attribute [Authorize(Roles = "Administrator")]
+
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3 class="mb-4">@Localizer[nameof(Resource.UserSetting)]</h3>
+
+        <!-- Botón + Filtro -->
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <ButtonFormNew OnClick="() => ShowModalAsync()" />
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="Usuarios">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Foto</th>
+                                <th>@Localizer[nameof(Resource.FullName)]</th>
+                                <th>@Localizer[nameof(Resource.NroDocuement)]</th>
+                                <th>@Localizer[nameof(Resource.Role)]</th>
+                                <th>@Localizer[nameof(Resource.Active)]</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Usuarios!)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ImageFullPath))
+                                        {
+                                            <img src="@item.ImageFullPath" alt="Picture" width="90" height="90" style="border-radius:50%" onerror="this.src='/Images/NoImage.png'" />
+                                        }
+                                        else
+                                        {
+                                            <img src="/Images/NoPicture.png" alt="NotPicture" width="90" height="90" style="border-radius:50%" />
+                                        }
+                                    </td>
+                                    <td>
+                                        @item.FirstName @item.LastName
+                                    </td>
+                                    <td>
+                                        @item.Nro_Document
+                                    </td>
+                                    <td>
+                                        @item.TotalRoles
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowModalAsync(item.UsuarioId, true)" />
+                                    </td>
+
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.UsuarioId)" TooTip="@Localizer[nameof(Resource.ButtonRoles)]"
+                                                       Icon="fa fa-users" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonDelete OnClick="() => DeleteAsync(item.UsuarioId)" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+        <!-- Tabla -->
+        <hr />
+        @if (Usuarios is not null)
+        {
+            <!-- Paginación -->
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        }
+    </div>
+</div>

@@ -33,7 +33,8 @@ namespace Spin.AppBack.DependencyInjection
             services.AddScoped<ICorporationService, CorporationService>();
             services.AddScoped<IManagerServiceX, ManagerServiceX>();
             services.AddScoped<IManagerService, ManagerService>();
-
+            services.AddScoped<ISoftPlanServiceX, SoftPlanServiceX>();
+            services.AddScoped<ISoftPlanService, SoftPlanService>();
         }
     }
 }

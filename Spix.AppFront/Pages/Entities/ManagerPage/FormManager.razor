@@ -1,0 +1,139 @@
+﻿<EditForm Model="Manager" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="mb-3">
+            <!-- Imagen -->
+            <InputImageGeneral ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+        </div>
+        <div class="row">
+            <!-- Primera columna -->
+            <div class="col-md-6">
+                <!-- Nombre -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.FirstName)]
+                        </span>
+                        <InputText class="form-control" placeholder="First name..." @bind-Value="Manager.FirstName" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.FirstName)" />
+                </div>
+
+                <!-- Apellido -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.LastName)]
+                        </span>
+                        <InputText class="form-control" placeholder="Last name..." @bind-Value="Manager.LastName" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.LastName)" />
+                </div>
+
+                <!-- Documento -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.NroDocuement)]
+                        </span>
+                        <InputText class="form-control" placeholder="Document number..." @bind-Value="Manager.NroDocument" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.NroDocument)" />
+                </div>
+
+                <!-- Teléfono -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Phone)]
+                        </span>
+                        <InputText class="form-control" placeholder="Phone..." @bind-Value="Manager.PhoneNumber" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.PhoneNumber)" />
+                </div>
+
+                <!-- Dirección -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Address)]
+                        </span>
+                        <InputText class="form-control" placeholder="Address..." @bind-Value="Manager.Address" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.Address)" />
+                </div>
+            </div>
+
+            <!-- Segunda columna -->
+            <div class="col-md-6">
+                <!-- Corporacion -->
+                <div class="mb-0">
+                    <GenericSelectWrapper Tmodel="Corporation" Items="Corporations">
+                        <Body>
+                            <div class="input-group">
+                                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Corporation)]</span>
+                                <select class="form-select" value="@Manager.CorporationId" @onchange="CorporationChanged">
+                                    @foreach (var item in Corporations!)
+                                    {
+                                        <option value="@item.CorporationId">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </Body>
+                    </GenericSelectWrapper>
+                </div>
+                <!-- Dirección -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Job)]
+                        </span>
+                        <InputText class="form-control" placeholder="Job..." @bind-Value="Manager.Job" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.Job)" />
+                </div>
+
+                <!-- Dirección -->
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.User)]
+                        </span>
+                        <InputText class="form-control" placeholder="UserName..." @bind-Value="Manager.UserName" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.UserName)" />
+                </div>
+
+                <div class="mb-0">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Email)]
+                        </span>
+                        <InputText class="form-control" placeholder="Email..." @bind-Value="Manager.Email" />
+                    </div>
+                    <ValidationMessage For="@(() => Manager.Email)" />
+                </div>
+
+                <!-- Estado activo -->
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Active)]
+                        </span>
+                        <div class="d-flex align-items-center ps-3">
+                            <InputCheckbox @bind-Value="Manager.Active" class="form-check-input me-2" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+
+</EditForm>

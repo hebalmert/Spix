@@ -1,0 +1,60 @@
+﻿<EditForm Model="SoftPlan" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-0">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Plan)]
+            </span>
+            <InputText class="form-control" placeholder="Plan name..." @bind-Value="SoftPlan.Name" />
+        </div>
+        <ValidationMessage For="@(() => SoftPlan.Name)" />
+    </div>
+
+    <div class="mb-0">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Month)]
+            </span>
+            <InputNumber class="form-control" placeholder="Number of months" @bind-Value="SoftPlan.Meses" />
+        </div>
+        <ValidationMessage For="@(() => SoftPlan.Meses)" />
+    </div>
+
+    <div class="mb-0">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Price)]
+            </span>
+            <InputNumber class="form-control" placeholder="$0.00" step="0.01" @bind-Value="SoftPlan.Price" />
+        </div>
+        <ValidationMessage For="@(() => SoftPlan.Price)" />
+    </div>
+
+    <div class="mb-0">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Max_Clients)]
+            </span>
+            <InputNumber class="form-control" placeholder="Trial clients..." @bind-Value="SoftPlan.ClientsCount" />
+        </div>
+        <ValidationMessage For="@(() => SoftPlan.ClientsCount)" />
+    </div>
+
+    <div class="mb-3">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Active)]
+            </span>
+            <div class="d-flex align-items-center ps-3">
+                <InputCheckbox @bind-Value="SoftPlan.Active" class="form-check-input me-2" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

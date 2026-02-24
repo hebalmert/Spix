@@ -1,0 +1,25 @@
+﻿<EditForm Model="UsuarioRole" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <div class="mb-0">
+        <GenericSelectWrapper Tmodel="IntItemModel" Items="ListUserType">
+            <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.UserRole)]</span>
+                    <select class="form-select" @onchange="UsertTypeChanged">
+                        @foreach (var item in ListUserType!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </Body>
+        </GenericSelectWrapper>
+    </div>
+
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

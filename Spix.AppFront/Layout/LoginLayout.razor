@@ -1,10 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
+
 <article class="authFull">
     @Body
-    @if (modalType != null)
-    {
 
+    @if (modalType is not null)
+    {
         <DynamicComponent Type="@modalType" Parameters="@modalParameters" />
     }
 </article>

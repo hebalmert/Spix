@@ -277,6 +277,42 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Corporation.
+        /// </summary>
+        public static string Create_Corportation {
+            get {
+                return ResourceManager.GetString("Create_Corportation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Manager.
+        /// </summary>
+        public static string Create_Manager {
+            get {
+                return ResourceManager.GetString("Create_Manager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create SoftPlan.
+        /// </summary>
+        public static string Create_SofPlan {
+            get {
+                return ResourceManager.GetString("Create_SofPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Users.
+        /// </summary>
+        public static string Create_Usuario {
+            get {
+                return ResourceManager.GetString("Create_Usuario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create User.
         /// </summary>
         public static string CreateUser {
@@ -354,6 +390,42 @@ namespace Spix.xLanguage.Resources {
         public static string Document {
             get {
                 return ResourceManager.GetString("Document", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Corporation.
+        /// </summary>
+        public static string Edit_Corporation {
+            get {
+                return ResourceManager.GetString("Edit_Corporation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Manager.
+        /// </summary>
+        public static string Edit_Manager {
+            get {
+                return ResourceManager.GetString("Edit_Manager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit SoftPlan.
+        /// </summary>
+        public static string Edit_SoftPlan {
+            get {
+                return ResourceManager.GetString("Edit_SoftPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Users.
+        /// </summary>
+        public static string Edit_Usuario {
+            get {
+                return ResourceManager.GetString("Edit_Usuario", resourceCulture);
             }
         }
         
@@ -961,6 +1033,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Job.
+        /// </summary>
+        public static string Job {
+            get {
+                return ResourceManager.GetString("Job", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Job Position.
         /// </summary>
         public static string JobPosition {
@@ -1006,11 +1087,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manager.
+        /// </summary>
+        public static string Manager {
+            get {
+                return ResourceManager.GetString("Manager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Max Clients.
         /// </summary>
         public static string Max_Clients {
             get {
                 return ResourceManager.GetString("Max_Clients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Month.
+        /// </summary>
+        public static string Month {
+            get {
+                return ResourceManager.GetString("Month", resourceCulture);
             }
         }
         
@@ -1168,6 +1267,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New Role.
+        /// </summary>
+        public static string NewRole {
+            get {
+                return ResourceManager.GetString("NewRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nro Docuement.
+        /// </summary>
+        public static string NroDocuement {
+            get {
+                return ResourceManager.GetString("NroDocuement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Origin.
         /// </summary>
         public static string Origin {
@@ -1312,6 +1429,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Role.
+        /// </summary>
+        public static string Role {
+            get {
+                return ResourceManager.GetString("Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Role User.
         /// </summary>
         public static string RoleUser {
@@ -1344,6 +1470,24 @@ namespace Spix.xLanguage.Resources {
         public static string Select_Role {
             get {
                 return ResourceManager.GetString("Select_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software Plan.
+        /// </summary>
+        public static string SoftPlan {
+            get {
+                return ResourceManager.GetString("SoftPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Date.
+        /// </summary>
+        public static string StartDate {
+            get {
+                return ResourceManager.GetString("StartDate", resourceCulture);
             }
         }
         
@@ -1407,6 +1551,24 @@ namespace Spix.xLanguage.Resources {
         public static string UserName {
             get {
                 return ResourceManager.GetString("UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User Role.
+        /// </summary>
+        public static string UserRole {
+            get {
+                return ResourceManager.GetString("UserRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User Setting.
+        /// </summary>
+        public static string UserSetting {
+            get {
+                return ResourceManager.GetString("UserSetting", resourceCulture);
             }
         }
         
