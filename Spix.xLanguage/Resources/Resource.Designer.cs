@@ -808,6 +808,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The UserName cannot be changed.
+        /// </summary>
+        public static string Generic_UserNameCanNotChangeIt {
+            get {
+                return ResourceManager.GetString("Generic_UserNameCanNotChangeIt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This user is active but has no role assigned.
         /// </summary>
         public static string Generic_UserNoRoleAssigned {

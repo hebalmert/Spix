@@ -13,7 +13,6 @@ public partial class CreateManager
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
-    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
@@ -26,7 +25,6 @@ public partial class CreateManager
     private bool isLoading = false;
 
     private string BaseUrl = "/api/v1/managers";
-    private string BaseView = "/managers";
 
     private async Task Create()
     {

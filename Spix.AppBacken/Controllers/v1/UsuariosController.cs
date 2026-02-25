@@ -14,7 +14,7 @@ namespace Spix.AppBack.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/usuarios")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Coordinator")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {

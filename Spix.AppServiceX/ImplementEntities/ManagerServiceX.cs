@@ -1,6 +1,7 @@
 ﻿using Spix.AppService.InterfaceEntities;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.Domain.Entities;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 

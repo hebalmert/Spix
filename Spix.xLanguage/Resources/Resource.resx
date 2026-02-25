@@ -637,4 +637,7 @@
   <data name="StartDate" xml:space="preserve">
     <value>Start Date</value>
   </data>
+  <data name="Generic_UserNameCanNotChangeIt" xml:space="preserve">
+    <value>The UserName cannot be changed</value>
+  </data>
 </root>

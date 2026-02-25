@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 

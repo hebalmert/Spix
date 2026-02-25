@@ -99,7 +99,7 @@ public partial class IndexUsuarios
         });
     }
 
-    private void ShowModalDetailsAsync(Guid? id = null)
+    private void ShowModalDetailsAsync(Guid id)
     {
         _navigationManager.NavigateTo($"/usuarios/detailusuario/{id}");
     }

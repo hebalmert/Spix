@@ -10,6 +10,14 @@ public class ImgSetting
 
     public string ImgProduct { get; set; } = null!;
 
+    public string ImgContractor { get; set; } = null!;
+
+    public string ImgSuppliers { get; set; } = null!;
+
+    public string ImgClient { get; set; } = null!;
+
+    public string ImgTechnicians { get; set; } = null!;
+
     public string LogoSoftware { get; set; } = null!;
 
     public string ImgNoImage { get; set; } = null!;

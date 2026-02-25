@@ -40,14 +40,10 @@ public partial class CreateUsuarioRole
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());
-        _navigationManager.NavigateTo("/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}/{Id}");
     }
 
     private async Task Return()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
-        _navigationManager.NavigateTo("/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}/{Id}");
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,7 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceEntities;
 using Spix.Domain.Entities;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
@@ -138,23 +140,28 @@ public class ManagerService : IManagerService
 
     public async Task<ActionResponse<Manager>> UpdateAsync(Manager modelo, string frontUrl)
     {
-        User CheckUserName = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
-        if (CheckUserName != null)
+        var CurrentUser = await _context.Managers.AsNoTracking().Where(x => x.ManagerId == modelo.ManagerId).FirstOrDefaultAsync();
+        if (CurrentUser!.UserName != modelo.UserName)
         {
             return new ActionResponse<Manager>
             {
-                WasSuccess = true,
-                Message = _localizer["Generic_UserNameAlreadyUsed"]
+                WasSuccess = false,
+                Message = _localizer["Generic_UserNameCanNotChangeIt"]
             };
         }
-        User CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.Email);
-        if (CheckEmail != null)
+        if (CurrentUser.Email != modelo.Email)
         {
-            return new ActionResponse<Manager>
+            var CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.Email);
             {
-                WasSuccess = true,
-                Message = _localizer["Generic_EmailAlreadyUsed"]
-            };
+                if (CheckEmail != null)
+                {
+                    return new ActionResponse<Manager>
+                    {
+                        WasSuccess = false,
+                        Message = _localizer["Generic_EmailAlreadyUsed"]
+                    };
+                }
+            }
         }
 
         await _transactionManager.BeginTransactionAsync();
@@ -194,7 +201,6 @@ public class ManagerService : IManagerService
                     guid = modelo.Imagen;
                 }
                 var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                //NewModelo.Imagen = await _fileStorage.UploadImage(imageId, _imgOption.ImgManager!, guid);
                 NewModelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgManager);
             }
             _context.Managers.Update(NewModelo);
@@ -253,7 +259,7 @@ public class ManagerService : IManagerService
         {
             return new ActionResponse<Manager>
             {
-                WasSuccess = true,
+                WasSuccess = false,
                 Message = _localizer["Generic_UserNameAlreadyUsed"]
             };
         }
@@ -262,7 +268,7 @@ public class ManagerService : IManagerService
         {
             return new ActionResponse<Manager>
             {
-                WasSuccess = true,
+                WasSuccess = false,
                 Message = _localizer["Generic_EmailAlreadyUsed"]
             };
         }

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.Domain.Entities;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppBack.Controllers.Entities;
@@ -69,6 +71,7 @@ public class ManagersController : ControllerBase
     {
         try
         {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             var response = await _managerUnitOfWork.UpdateAsync(modelo, _configuration["UrlFrontend"]!);
             return ResponseHelper.Format(response);
         }

@@ -1,4 +1,5 @@
 using CurrieTechnologies.Razor.SweetAlert2;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -50,6 +51,7 @@ public partial class DetailsRoles
         Type component = typeof(CreateUsuarioRole);
         parameters = new Dictionary<string, object>
         {
+            { "Id", Id! },
             { "Title", $"{Localizer[nameof(Resource.NewRole)]}" }
         };
         await _modalService.ShowAsync(component, parameters, async result =>
@@ -61,7 +63,7 @@ public partial class DetailsRoles
 
     private async Task Cargar(int page = 1)
     {
-        var url = $"{baseUrl}?id={Id}&page={page}&recordsnumber={PageSize}";
+        var url = $"{baseUrl}?guidid={Id}&page={page}&recordsnumber={PageSize}";
         if (!string.IsNullOrWhiteSpace(Filter))
         {
             url += $"&filter={Filter}";
@@ -92,6 +94,8 @@ public partial class DetailsRoles
             return;
         }
         Usuario = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)
