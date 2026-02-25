@@ -8,7 +8,7 @@ using Spix.ServiceX.ImplementSecure;
 using Spix.UnitOfWork.ImplementEntities;
 using Spix.UnitOfWork.ImplementSecure;
 
-namespace Spin.AppBack.DependencyInjection
+namespace Spix.AppBack.DependencyInjection
 {
     public class UnitOfWorkRegistration
     {

@@ -129,6 +129,15 @@ public class UsuarioService : IUsuarioService
 
     public async Task<ActionResponse<Usuario>> UpdateAsync(Usuario modelo, string urlFront)
     {
+        if (modelo == null || modelo.CorporationId <= 0)
+        {
+            return new ActionResponse<Usuario>
+            {
+                WasSuccess = false,
+                Message = _localizer["Generic_InvalidId"]
+            };
+        }
+        await _transactionManager.BeginTransactionAsync();
         try
         {
             if (!string.IsNullOrEmpty(modelo.ImgBase64))

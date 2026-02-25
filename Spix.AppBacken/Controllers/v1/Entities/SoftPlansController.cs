@@ -8,7 +8,7 @@ using Spix.AppServiceX.InterfaceEntities;
 using Spix.Domain.Entities;
 using Spix.DomainLogic.Pagination;
 
-namespace Regix.AppBack.Controllers.Entities
+namespace Spix.AppBack.Controllers.Entities
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/softplans")]

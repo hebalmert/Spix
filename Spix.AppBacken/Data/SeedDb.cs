@@ -5,6 +5,7 @@ using Spix.AppInfra.UserHelper;
 using Spix.Domain.Entities;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
+
 namespace Spix.AppBack.Data;
 
 public class SeedDb

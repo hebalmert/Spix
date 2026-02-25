@@ -11,7 +11,7 @@ using Spix.xFiles.QRgenerate;
 using Spix.xNotification.Implements;
 using Spix.xNotification.Interfaces;
 
-namespace Spin.AppBack.DependencyInjection
+namespace Spix.AppBack.DependencyInjection
 {
     public class InfraRegistration
     {
