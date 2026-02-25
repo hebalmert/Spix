@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.Domain.EntitiesGen;
-using Spix.Domain.Resources;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
-using System.Reflection;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesGen.ServicePage;
 

@@ -608,10 +608,10 @@
     <value>Editar SoftPlan</value>
   </data>
   <data name="Create_SofPlan" xml:space="preserve">
-    <value>Nuevo SoftPlan</value>
+    <value>Crear SoftPlan</value>
   </data>
   <data name="Create_Manager" xml:space="preserve">
-    <value>Nuevo Manager</value>
+    <value>Crear Manager</value>
   </data>
   <data name="Edit_Manager" xml:space="preserve">
     <value>Editar Manager</value>
@@ -620,13 +620,13 @@
     <value>Editar Corporacion</value>
   </data>
   <data name="Create_Corportation" xml:space="preserve">
-    <value>Nueva Corporacion</value>
+    <value>Crear Corporacion</value>
   </data>
   <data name="Edit_Usuario" xml:space="preserve">
     <value>Editar Usuarios</value>
   </data>
   <data name="Create_Usuario" xml:space="preserve">
-    <value>Nuevo Usuario</value>
+    <value>Crear Usuario</value>
   </data>
   <data name="UserSetting" xml:space="preserve">
     <value>Configuracin Usuarios</value>
@@ -678,5 +678,53 @@
   </data>
   <data name="DocumentType" xml:space="preserve">
     <value>Tipo Documento</value>
+  </data>
+  <data name="Edit_Mark" xml:space="preserve">
+    <value>Editar Marca</value>
+  </data>
+  <data name="Create_Mark" xml:space="preserve">
+    <value>Crear Marca</value>
+  </data>
+  <data name="Edit_Plan" xml:space="preserve">
+    <value>Editar Plan</value>
+  </data>
+  <data name="Create_Plan" xml:space="preserve">
+    <value>Crear Plan</value>
+  </data>
+  <data name="Edit_Category" xml:space="preserve">
+    <value>Editar Categoria</value>
+  </data>
+  <data name="Create_Category" xml:space="preserve">
+    <value>Crear Categoria</value>
+  </data>
+  <data name="Edit_Product" xml:space="preserve">
+    <value>Editar Producto</value>
+  </data>
+  <data name="Create_Product" xml:space="preserve">
+    <value>Crear Producto</value>
+  </data>
+  <data name="Edit_Register" xml:space="preserve">
+    <value>Editar Registro</value>
+  </data>
+  <data name="Create_Register" xml:space="preserve">
+    <value>Crear Registro</value>
+  </data>
+  <data name="Edit_Service" xml:space="preserve">
+    <value>Editar Servicio</value>
+  </data>
+  <data name="Create_Service" xml:space="preserve">
+    <value>Crear Servicio</value>
+  </data>
+  <data name="Edit_Tax" xml:space="preserve">
+    <value>Editar Tax</value>
+  </data>
+  <data name="Create_Tax" xml:space="preserve">
+    <value>Crear Tax</value>
+  </data>
+  <data name="Edit_Zone" xml:space="preserve">
+    <value>Editar Zona</value>
+  </data>
+  <data name="Create_Zone" xml:space="preserve">
+    <value>Crear Zona</value>
   </data>
 </root>

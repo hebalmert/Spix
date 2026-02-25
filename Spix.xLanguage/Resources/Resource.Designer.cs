@@ -295,6 +295,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Category.
+        /// </summary>
+        public static string Create_Category {
+            get {
+                return ResourceManager.GetString("Create_Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Corporation.
         /// </summary>
         public static string Create_Corportation {
@@ -313,6 +322,51 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Mark.
+        /// </summary>
+        public static string Create_Mark {
+            get {
+                return ResourceManager.GetString("Create_Mark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Plan.
+        /// </summary>
+        public static string Create_Plan {
+            get {
+                return ResourceManager.GetString("Create_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Product.
+        /// </summary>
+        public static string Create_Product {
+            get {
+                return ResourceManager.GetString("Create_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Register.
+        /// </summary>
+        public static string Create_Register {
+            get {
+                return ResourceManager.GetString("Create_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Service.
+        /// </summary>
+        public static string Create_Service {
+            get {
+                return ResourceManager.GetString("Create_Service", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create SoftPlan.
         /// </summary>
         public static string Create_SofPlan {
@@ -322,11 +376,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Tax.
+        /// </summary>
+        public static string Create_Tax {
+            get {
+                return ResourceManager.GetString("Create_Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Users.
         /// </summary>
         public static string Create_Usuario {
             get {
                 return ResourceManager.GetString("Create_Usuario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Zone.
+        /// </summary>
+        public static string Create_Zone {
+            get {
+                return ResourceManager.GetString("Create_Zone", resourceCulture);
             }
         }
         
@@ -430,6 +502,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Category.
+        /// </summary>
+        public static string Edit_Category {
+            get {
+                return ResourceManager.GetString("Edit_Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Corporation.
         /// </summary>
         public static string Edit_Corporation {
@@ -448,6 +529,51 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Mark.
+        /// </summary>
+        public static string Edit_Mark {
+            get {
+                return ResourceManager.GetString("Edit_Mark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Plan.
+        /// </summary>
+        public static string Edit_Plan {
+            get {
+                return ResourceManager.GetString("Edit_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Product.
+        /// </summary>
+        public static string Edit_Product {
+            get {
+                return ResourceManager.GetString("Edit_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Register.
+        /// </summary>
+        public static string Edit_Register {
+            get {
+                return ResourceManager.GetString("Edit_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Service.
+        /// </summary>
+        public static string Edit_Service {
+            get {
+                return ResourceManager.GetString("Edit_Service", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit SoftPlan.
         /// </summary>
         public static string Edit_SoftPlan {
@@ -457,11 +583,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Tax.
+        /// </summary>
+        public static string Edit_Tax {
+            get {
+                return ResourceManager.GetString("Edit_Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Users.
         /// </summary>
         public static string Edit_Usuario {
             get {
                 return ResourceManager.GetString("Edit_Usuario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Zone.
+        /// </summary>
+        public static string Edit_Zone {
+            get {
+                return ResourceManager.GetString("Edit_Zone", resourceCulture);
             }
         }
         

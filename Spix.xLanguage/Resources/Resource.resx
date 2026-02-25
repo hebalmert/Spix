@@ -682,4 +682,52 @@
   <data name="DocumentType" xml:space="preserve">
     <value>Document Type</value>
   </data>
+  <data name="Edit_Mark" xml:space="preserve">
+    <value>Edit Mark</value>
+  </data>
+  <data name="Create_Mark" xml:space="preserve">
+    <value>Create Mark</value>
+  </data>
+  <data name="Edit_Plan" xml:space="preserve">
+    <value>Edit Plan</value>
+  </data>
+  <data name="Create_Plan" xml:space="preserve">
+    <value>Create Plan</value>
+  </data>
+  <data name="Edit_Category" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="Create_Category" xml:space="preserve">
+    <value>Create Category</value>
+  </data>
+  <data name="Edit_Product" xml:space="preserve">
+    <value>Edit Product</value>
+  </data>
+  <data name="Create_Product" xml:space="preserve">
+    <value>Create Product</value>
+  </data>
+  <data name="Edit_Register" xml:space="preserve">
+    <value>Edit Register</value>
+  </data>
+  <data name="Create_Register" xml:space="preserve">
+    <value>Create Register</value>
+  </data>
+  <data name="Edit_Service" xml:space="preserve">
+    <value>Edit Service</value>
+  </data>
+  <data name="Create_Service" xml:space="preserve">
+    <value>Create Service</value>
+  </data>
+  <data name="Edit_Tax" xml:space="preserve">
+    <value>Edit Tax</value>
+  </data>
+  <data name="Create_Tax" xml:space="preserve">
+    <value>Create Tax</value>
+  </data>
+  <data name="Edit_Zone" xml:space="preserve">
+    <value>Edit Zone</value>
+  </data>
+  <data name="Create_Zone" xml:space="preserve">
+    <value>Create Zone</value>
+  </data>
 </root>

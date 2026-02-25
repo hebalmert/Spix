@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.Domain.EntitiesGen;
-using Spix.Domain.Resources;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesGen.MarkPage;
 
