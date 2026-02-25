@@ -1,0 +1,30 @@
+﻿<EditForm Model="Mark" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Mark)]
+            </span>
+            <InputText class="form-control" @bind-Value="Mark.MarkName" />
+        </div>
+        <ValidationMessage For="@(() => Mark.MarkName)" />
+    </div>
+
+    <div class="mb-3">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Active)]
+            </span>
+            <div class="d-flex align-items-center ps-3">
+                <InputCheckbox @bind-Value="Mark.Active" class="form-check-input me-2" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

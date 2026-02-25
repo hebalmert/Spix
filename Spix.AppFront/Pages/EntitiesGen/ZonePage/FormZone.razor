@@ -1,0 +1,81 @@
+﻿<EditForm Model="Zone" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <!-- Estado -->
+    @if (States is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.State)]</span>
+                    <select class="form-select" value="@Zone.StateId" @onchange="StateChanged">
+                        @foreach (var item in States!)
+                        {
+                            <option value="@item.StateId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Ciudad -->
+    @if (Cities is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.City)]</span>
+                    <select class="form-select" value="@Zone.CityId" @onchange="CityChanged">
+                        @foreach (var item in Cities!)
+                        {
+                            <option value="@item.CityId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Nombre de zona -->
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Zone)]
+                </span>
+                <InputText class="form-control" @bind-Value="Zone.ZoneName" />
+            </div>
+            <ValidationMessage For="@(() => Zone.ZoneName)" />
+        </div>
+    </div>
+
+    <!-- Activo -->
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Active)]
+                </span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="Zone.Active" class="form-check-input me-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>
+

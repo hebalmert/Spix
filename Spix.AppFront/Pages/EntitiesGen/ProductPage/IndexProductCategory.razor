@@ -1,0 +1,76 @@
+﻿@page "/productcategories"
+@attribute [Authorize(Roles = "Administrator")]
+
+@if (ProductCategories is null)
+{
+    <FullScreenSpinner IsVisible=true />
+}
+else
+{
+    <div class="container pt-4">
+        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+            <h3 class="mb-4">@Localizer[nameof(Resource.ProductCategory)]</h3>
+
+            <!-- Botón + Filtro -->
+            <div class="row align-items-center mb-3">
+                <div class="col-md-3 d-flex justify-content-start">
+                    <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                        <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
+                    </button>
+                </div>
+                <div class="col-md-9 d-flex justify-content-end">
+                    <FilterComponent ApplyFilter="SetFilterValue" />
+                </div>
+            </div>
+
+            <hr />
+            <GenericList MyList="ProductCategories">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>@Localizer[nameof(Resource.ProductCategory)]</th>
+                                    <th>@Localizer[nameof(Resource.Product)]</th>
+                                    <th>@Localizer[nameof(Resource.Active)]</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ProductCategories!)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.ProductsNumer</td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.ProductCategoryId)" TooTip="@Localizer[nameof(Resource.Product)]"
+                                                           Icon="fa fa-wifi" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonEdit OnClick="() => ShowModalAsync(item.ProductCategoryId, true)" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.ProductCategoryId)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+            <!-- Tabla -->
+            <hr />
+                <!-- Paginación -->
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+        </div>
+    </div>
+}
+

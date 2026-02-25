@@ -1,0 +1,114 @@
+﻿<EditForm Model="Plan" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Plan)]
+                </span>
+                <InputText class="form-control" @bind-Value="Plan.PlanName" />
+            </div>
+            <ValidationMessage For="@(() => Plan.PlanName)" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Up)]</span>
+                <select class="form-select" value="@SelectedUserTypeUp!.Value" @onchange="UsertTypeUpChanged">
+                    @foreach (var item in ListUserTypeUp!)
+                    {
+                        <option value="@item.Value">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@GetDisplayName(() => Plan.SpeedUp)</span>
+                <InputNumber class="form-control" @bind-Value="Plan.SpeedUp" />
+            </div>
+            <ValidationMessage For="@(() => Plan.SpeedUp)" />
+
+        </div>
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Down)]</span>
+                <select class="form-select" value="@SelectedUserTypeDown!.Value" @onchange="UsertTypeDownChanged">
+                    @foreach (var item in ListUserTypeDown!)
+                    {
+                        <option value="@item.Value">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@GetDisplayName(() => Plan.SpeedDown)</span>
+                <InputNumber class="form-control" @bind-Value="Plan.SpeedDown" />
+            </div>
+            <ValidationMessage For="@(() => Plan.SpeedDown)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.TasaRehuso)]
+                </span>
+                <InputNumber class="form-control" @bind-Value="Plan.TasaReuso" />
+            </div>
+            <ValidationMessage For="@(() => Plan.TasaReuso)" />
+        </div>
+        <div class="col-md-6 mb-2">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-2">
+        </div>
+        <div class="col-md-6 mb-2">
+            @if (Taxes is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Tax)]</span>
+                    <select class="form-select" value="@Plan.TaxId" @onchange="TaxesChanged">
+                        @foreach (var item in Taxes)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+            <div class="mb-0">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Price)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Plan.Price" />
+                </div>
+                <ValidationMessage For="@(() => Plan.Price)" />
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Active)]
+                    </span>
+                    <div class="d-flex align-items-center ps-3">
+                        <InputCheckbox @bind-Value="Plan.Active" class="form-check-input me-2" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+        </div>
+    </div>
+
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

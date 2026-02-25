@@ -1,0 +1,73 @@
+﻿@page "/zones"
+@attribute [Authorize(Roles = "Administrator")]
+
+@if (Zones is null)
+{
+    <FullScreenSpinner IsVisible=true />
+}
+else
+{
+    <div class="container pt-4">
+        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+            <h3 class="mb-4">Zonas</h3>
+
+            <!-- Botón + Filtro -->
+            <div class="row align-items-center mb-3">
+                <div class="col-md-3 d-flex justify-content-start">
+                    <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                        <i class="fa fa-plus-circle"></i> Zona
+                    </button>
+                </div>
+                <div class="col-md-9 d-flex justify-content-end">
+                    <FilterComponent ApplyFilter="SetFilterValue" />
+                </div>
+            </div>
+
+            <hr />
+            <GenericList MyList="Zones">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Estado</th>
+                                    <th>Ciudad</th>
+                                    <th>Activo</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Zones!)
+                                {
+                                    <tr>
+                                        <td>@item.ZoneName</td>
+                                        <td>@item.state!.Name</td>
+                                        <td>@item.city!.Name</td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonEdit OnClick="() => ShowModalAsync(item.ZoneId, true)" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.ZoneId)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+
+            <hr />
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        </div>
+    </div>
+}
+
+

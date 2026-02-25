@@ -1,0 +1,35 @@
+﻿<EditForm Model="ServiceCategory" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Category)]
+                </span>
+                <InputText class="form-control" @bind-Value="ServiceCategory.Name" />
+            </div>
+            <ValidationMessage For="@(() => ServiceCategory.Name)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Active)]
+                </span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="ServiceCategory.Active" class="form-check-input me-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>
+

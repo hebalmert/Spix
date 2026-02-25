@@ -1,0 +1,77 @@
+﻿@page "/plancategories"
+@attribute [Authorize(Roles = "Administrator")]
+
+
+@if (PlanCategories is null)
+{
+    <FullScreenSpinner IsVisible=true />
+}
+else
+{
+    <div class="container pt-4">
+        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+            <h3 class="mb-4">@Localizer[nameof(Resource.PlanCategory)]</h3>
+
+            <!-- Botón + Filtro -->
+            <div class="row align-items-center mb-3">
+                <div class="col-md-3 d-flex justify-content-start">
+                    <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                        <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
+                    </button>
+                </div>
+                <div class="col-md-9 d-flex justify-content-end">
+                    <FilterComponent ApplyFilter="SetFilterValue" />
+                </div>
+            </div>
+
+            <hr />
+            <GenericList MyList="PlanCategories">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>@Localizer[nameof(Resource.Category)]</th>
+                                    <th>@Localizer[nameof(Resource.Plans)]</th>
+                                    <th>@Localizer[nameof(Resource.Active)]</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in PlanCategories!)
+                                {
+                                    <tr>
+                                        <td>@item.PlanCategoryName</td>
+                                        <td>@item.PlanesNumer</td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.PlanCategoryId)" TooTip="@Localizer[nameof(Resource.Plan)]"
+                                                           Icon="fa fa-wifi" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonEdit OnClick="() => ShowModalAsync(item.PlanCategoryId, true)" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.PlanCategoryId)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+            <!-- Tabla -->
+            <hr />
+            <!-- Paginación -->
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        </div>
+    </div>
+}
+

@@ -1,0 +1,80 @@
+﻿<EditForm Model="ServiceClient" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Service)]
+            </span>
+            <InputText class="form-control" @bind-Value="ServiceClient.ServiceName" />
+        </div>
+        <ValidationMessage For="@(() => ServiceClient.ServiceName)" />
+    </div>
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Description)]
+            </span>
+            <InputTextArea class="form-control" @bind-Value="ServiceClient.Description" />
+        </div>
+        <ValidationMessage For="@(() => ServiceClient.Description)" />
+    </div>
+
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Cost)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="ServiceClient.Costo" />
+        </div>
+        <ValidationMessage For="@(() => ServiceClient.Costo)" />
+    </div>
+    <div class="mb-2">
+        @if (Taxes is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px"> @Localizer[nameof(Resource.Tax)]</span>
+                <select class="form-select" value="@ServiceClient.TaxId" @onchange="TaxesChanged">
+                    @foreach (var item in Taxes!)
+                    {
+                        <option value="@item.Value">@item.Name</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Price)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="ServiceClient.Price" />
+        </div>
+        <ValidationMessage For="@(() => ServiceClient.Price)" />
+    </div>
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Active)]
+            </span>
+            <div class="d-flex align-items-center ps-3">
+                <InputCheckbox @bind-Value="ServiceClient.Active" class="form-check-input me-2" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>
+

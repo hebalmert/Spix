@@ -1,0 +1,76 @@
+﻿@page "/products/details/{Id:guid}"
+@attribute [Authorize(Roles = "Administrator")]
+
+@if (ProductCategory is null || Products is null)
+{
+    <FullScreenSpinner IsVisible=true />
+}
+else
+{
+    <div class="container pt-4">
+        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+            <h3 class="mb-4">@Localizer[nameof(Resource.Product)]</h3>
+
+            <h3>@ProductCategory.Name</h3>
+
+            <div class="col-sm-12">
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-3 d-flex justify-content-start">
+                        <ButtonFormNew CssClass="btn btn-gradient-primary d-flex align-items-center gap-2" Style="width:130px" OnClick="() => ShowModalAsync()" />
+                        <AnchorFormBack Style="width:130px" Href="@($"/productcategories")" />
+                    </div>
+                </div>
+                <br />
+            </div>
+
+            <hr />
+            <GenericList MyList="Products">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>@Localizer[nameof(Resource.Product)]</th>
+                                    <th>@Localizer[nameof(Resource.Stock)]</th>
+                                    <th>@Localizer[nameof(Resource.WithSerials)]</th>
+                                    <th>@Localizer[nameof(Resource.Active)]</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Products!)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.TotalInventario</td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" checked="@item.WithSerials" disabled />
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonEdit OnClick="() => ShowModalAsync(item.ProductId, true)" />
+                                        </td>
+                                        <td style="width:1px;">
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.ProductId)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+            <!-- Tabla -->
+            <hr />
+            <!-- Paginación -->
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        </div>
+    </div>
+}
+
+

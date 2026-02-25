@@ -1,0 +1,89 @@
+﻿<EditForm Model="Product" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Product)]
+            </span>
+            <InputText class="form-control" @bind-Value="Product.ProductName" />
+        </div>
+        <ValidationMessage For="@(() => Product.ProductName)" />
+    </div>
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Description)]
+            </span>
+            <InputTextArea class="form-control" @bind-Value="Product.Description" />
+        </div>
+        <ValidationMessage For="@(() => Product.Description)" />
+    </div>
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Cost)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="Product.Costo" />
+        </div>
+        <ValidationMessage For="@(() => Product.Costo)" />
+    </div>
+
+    <div class="mb-2">
+        @if (Taxes is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Tax)]</span>
+                <select class="form-select" value="@Product.TaxId" @onchange="TaxChanged">
+                    @foreach (var item in Taxes)
+                    {
+                        <option value="@item.Value">@item.Name</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Price)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="Product.Price" />
+        </div>
+        <ValidationMessage For="@(() => Product.Price)" />
+    </div>
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.WithSerials)]
+            </span>
+            <div class="d-flex align-items-center ps-3">
+                <InputCheckbox @bind-Value="Product.WithSerials" class="form-check-input me-2" />
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Active)]
+            </span>
+            <div class="d-flex align-items-center ps-3">
+                <InputCheckbox @bind-Value="Product.Active" class="form-check-input me-2" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

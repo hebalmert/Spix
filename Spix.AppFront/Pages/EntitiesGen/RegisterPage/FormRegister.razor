@@ -1,0 +1,107 @@
+﻿<EditForm Model="Register" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="Row">
+        <!-- Columna izquierda -->
+        <div class="col-md-6">
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.Contracts)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.Contratos" />
+                </div>
+                <ValidationMessage For="@(() => Register.Contratos)" />
+            </div>
+
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.ItSupport)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.Solicitudes" />
+                </div>
+                <ValidationMessage For="@(() => Register.Solicitudes)" />
+            </div>
+
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.StockLoad)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.Cargue" />
+                </div>
+                <ValidationMessage For="@(() => Register.Cargue)" />
+            </div>
+
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.CashOut)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.Egresos" />
+                </div>
+                <ValidationMessage For="@(() => Register.Egresos)" />
+            </div>
+
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.ContractorPay)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.PagoContratista" />
+                </div>
+                <ValidationMessage For="@(() => Register.PagoContratista)" />
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-md-6">
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.Prepayment)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.Adelantado" />
+                </div>
+                <ValidationMessage For="@(() => Register.Adelantado)" />
+            </div>
+
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.Exempt)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.Exonerado" />
+                </div>
+                <ValidationMessage For="@(() => Register.Exonerado)" />
+            </div>
+
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.InvoiceNote)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.NotaCobro" />
+                </div>
+                <ValidationMessage For="@(() => Register.NotaCobro)" />
+            </div>
+
+            <div class="mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 180px">
+                        @Localizer[nameof(Resource.Invoice)]
+                    </span>
+                    <InputNumber class="form-control" @bind-Value="Register.Factura" />
+                </div>
+                <ValidationMessage For="@(() => Register.Factura)" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormBack OnClick="ReturnAction" />
+        <ButtonFormSave />
+    </div>
+</EditForm>
