@@ -640,4 +640,43 @@
   <data name="Generic_UserNameCanNotChangeIt" xml:space="preserve">
     <value>El UserName no puede ser Cambiado</value>
   </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripcion</value>
+  </data>
+  <data name="Mark" xml:space="preserve">
+    <value>Marca</value>
+  </data>
+  <data name="MarkModels" xml:space="preserve">
+    <value>Modelos</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="Plans" xml:space="preserve">
+    <value>Planes</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="Cost_Price" xml:space="preserve">
+    <value>Precio Costo</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>Tax</value>
+  </data>
+  <data name="Serials" xml:space="preserve">
+    <value>Seriales</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Productos</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Tasa</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zona</value>
+  </data>
+  <data name="DocumentType" xml:space="preserve">
+    <value>Tipo Documento</value>
+  </data>
 </root>

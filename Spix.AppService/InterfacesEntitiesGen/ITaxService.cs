@@ -1,0 +1,21 @@
+﻿using Spix.Domain.EntitiesGen;
+using Spix.Domain.Enum;
+using Spix.DomainLogic.ModelUtility;
+using Spix.DomainLogic.Pagination;
+
+namespace Spix.AppService.InterfacesEntitiesGen;
+
+public interface ITaxService
+{
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username);
+
+    Task<ActionResponse<IEnumerable<Tax>>> GetAsync(PaginationDTO pagination, string username);
+
+    Task<ActionResponse<Tax>> GetAsync(Guid id);
+
+    Task<ActionResponse<Tax>> UpdateAsync(Tax modelo);
+
+    Task<ActionResponse<Tax>> AddAsync(Tax modelo, string username);
+
+    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+}
