@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -27,9 +28,12 @@ public partial class IndexPlanCategory
     private const string baseUrl = "api/v1/plancategories";
     public List<PlanCategory>? PlanCategories { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -46,23 +50,31 @@ public partial class IndexPlanCategory
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Category)]}"   }
-            };
-            await _modalService.ShowAsync<EditPlanCategory>(parameters);
+            component = typeof(EditPlanCategory);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Category)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Title",$"{Localizer[nameof(Resource.Create_Category)]}"   }
-            };
-            await _modalService.ShowAsync<CreatePlanCategory>(parameters);
+            component = typeof(CreatePlanCategory);
+            parameters = new Dictionary<string, object>
+        {
+            { "Title", $"{Localizer[nameof(Resource.Create_Category)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private void ShowModalDetailsAsync(Guid? id = null)
@@ -88,6 +100,8 @@ public partial class IndexPlanCategory
 
         PlanCategories = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)

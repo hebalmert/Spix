@@ -27,9 +27,12 @@ public partial class IndexDocumentType
     private const string baseUrl = "api/v1/documenttypes";
     public List<DocumentType>? DocumentTypes { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -62,27 +65,37 @@ public partial class IndexDocumentType
 
         DocumentTypes = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_DocumentType)]}"   }
-            };
-            await _modalService.ShowAsync<EditDocumentType>(parameters);
+            component = typeof(EditDocumentType);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_DocumentType)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Title",$"{Localizer[nameof(Resource.Create_DocumentType)]}"   }
-            };
-            await _modalService.ShowAsync<CreateDocumentType>(parameters);
+            component = typeof(CreateDocumentType);
+            parameters = new Dictionary<string, object>
+        {
+            { "Title", $"{Localizer[nameof(Resource.Create_DocumentType)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task DeleteAsync(Guid id)

@@ -31,9 +31,12 @@ public partial class DetailsProducts
 
     [Parameter] public Guid Id { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -50,24 +53,31 @@ public partial class DetailsProducts
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Product)]}"   }
-            };
-            await _modalService.ShowAsync<EditProduct>(parameters);
+            component = typeof(EditProduct);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Product)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", Id },
-                { "Title",$"{Localizer[nameof(Resource.Create_Product)]}"   }
-            };
-            await _modalService.ShowAsync<CreateProduct>(parameters);
+            component = typeof(CreateProduct);
+            parameters = new Dictionary<string, object>
+        {
+            { "Title", $"{Localizer[nameof(Resource.Create_Product)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task Cargar(int page = 1)
@@ -90,6 +100,8 @@ public partial class DetailsProducts
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
         await LoadProductCategory();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadProductCategory()
@@ -102,6 +114,8 @@ public partial class DetailsProducts
             return;
         }
         ProductCategory = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)

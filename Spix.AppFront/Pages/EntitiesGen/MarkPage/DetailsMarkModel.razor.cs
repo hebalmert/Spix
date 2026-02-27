@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -31,9 +32,12 @@ public partial class DetailsMarkModel
 
     [Parameter] public Guid Id { get; set; }  //MarkId
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -50,24 +54,31 @@ public partial class DetailsMarkModel
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Models)]}"   }
-            };
-            await _modalService.ShowAsync<EditMarkModel>(parameters);
+            component = typeof(EditMarkModel);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Models)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", Id },
-                { "Title",$"{Localizer[nameof(Resource.Create_Model)]}"   }
-            };
-            await _modalService.ShowAsync<CreateMarkModel>(parameters);
+            component = typeof(CreateMarkModel);
+            parameters = new Dictionary<string, object>
+        {
+            { "Title", $"{Localizer[nameof(Resource.Create_Model)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task Cargar(int page = 1)
@@ -90,6 +101,8 @@ public partial class DetailsMarkModel
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
         await LoadMark();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadMark()
@@ -102,6 +115,8 @@ public partial class DetailsMarkModel
             return;
         }
         Mark = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)

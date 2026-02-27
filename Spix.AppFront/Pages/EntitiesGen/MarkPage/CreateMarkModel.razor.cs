@@ -35,20 +35,16 @@ public partial class CreateMarkModel
         if (errorHandler)
         {
             IsVisible = false;
-            _modalService.Close();
-            _navigationManager.NavigateTo($"/marks");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         IsVisible = false;
-        _modalService.Close();
+        await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        _navigationManager.NavigateTo($"/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}/{Id}");
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}/{Id}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

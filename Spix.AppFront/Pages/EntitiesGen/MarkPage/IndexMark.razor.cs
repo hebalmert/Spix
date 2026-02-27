@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -27,9 +28,12 @@ public partial class IndexMark
     private const string baseUrl = "api/v1/marks";
     public List<Mark>? Marks { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -46,22 +50,32 @@ public partial class IndexMark
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
-        if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
+            Type component;
+            Dictionary<string, object> parameters;
+            if (isEdit)
             {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Mark)]}"   }
-            };
-            await _modalService.ShowAsync<EditMark>(parameters);
-        }
-        else
+                component = typeof(EditMark);
+                parameters = new Dictionary<string, object>
         {
-            var parameters = new Dictionary<string, object>
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Mark)]}"  }
+        };
+            }
+            else
             {
-                { "Title",$"{Localizer[nameof(Resource.Create_Mark)]}"   }
-            };
-            await _modalService.ShowAsync<CreateMark>(parameters);
+                component = typeof(CreateMark);
+                parameters = new Dictionary<string, object>
+        {
+            { "Title", $"{Localizer[nameof(Resource.Create_Mark)]}"  }
+        };
+            }
+
+            await _modalService.ShowAsync(component, parameters, async result =>
+            {
+                if (result.Succeeded)
+                    await Cargar();   //solo refresca si hubo cambios
+            });
         }
     }
 
@@ -88,6 +102,8 @@ public partial class IndexMark
 
         Marks = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)

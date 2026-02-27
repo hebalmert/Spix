@@ -313,6 +313,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create DocumentType.
+        /// </summary>
+        public static string Create_DocumentType {
+            get {
+                return ResourceManager.GetString("Create_DocumentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Manager.
         /// </summary>
         public static string Create_Manager {
@@ -327,6 +336,15 @@ namespace Spix.xLanguage.Resources {
         public static string Create_Mark {
             get {
                 return ResourceManager.GetString("Create_Mark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Model.
+        /// </summary>
+        public static string Create_Model {
+            get {
+                return ResourceManager.GetString("Create_Model", resourceCulture);
             }
         }
         
@@ -520,6 +538,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit DocumentType.
+        /// </summary>
+        public static string Edit_DocumentType {
+            get {
+                return ResourceManager.GetString("Edit_DocumentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Manager.
         /// </summary>
         public static string Edit_Manager {
@@ -534,6 +561,15 @@ namespace Spix.xLanguage.Resources {
         public static string Edit_Mark {
             get {
                 return ResourceManager.GetString("Edit_Mark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Models.
+        /// </summary>
+        public static string Edit_Models {
+            get {
+                return ResourceManager.GetString("Edit_Models", resourceCulture);
             }
         }
         

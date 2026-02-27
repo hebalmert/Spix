@@ -13,7 +13,6 @@ public partial class CreateProduct
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
-    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
@@ -21,7 +20,6 @@ public partial class CreateProduct
     private Product Product = new() { Active = true };
 
     private string BaseUrl = "/api/v1/products";
-    private string BaseView = "/products/details";
     private bool IsVisible = false;
     [Parameter] public Guid Id { get; set; }  //ProductCategoryId
 
@@ -36,20 +34,16 @@ public partial class CreateProduct
         if (errorHandler)
         {
             IsVisible = false;
-            _modalService.Close();
-            _navigationManager.NavigateTo($"/productcategories");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         IsVisible = false;
-        _modalService.Close();
+        await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        _navigationManager.NavigateTo($"/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}/{Id}");
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}/{Id}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

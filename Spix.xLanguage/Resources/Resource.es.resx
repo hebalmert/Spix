@@ -727,4 +727,16 @@
   <data name="Create_Zone" xml:space="preserve">
     <value>Crear Zona</value>
   </data>
+  <data name="Edit_DocumentType" xml:space="preserve">
+    <value>Editar Tipo Documento</value>
+  </data>
+  <data name="Create_DocumentType" xml:space="preserve">
+    <value>Crear Tipo Documento</value>
+  </data>
+  <data name="Edit_Models" xml:space="preserve">
+    <value>Editar Modelos</value>
+  </data>
+  <data name="Create_Model" xml:space="preserve">
+    <value>Crear Modelos</value>
+  </data>
 </root>

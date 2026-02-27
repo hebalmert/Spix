@@ -13,7 +13,6 @@ public partial class CreateDocumentType
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
-    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
@@ -23,7 +22,6 @@ public partial class CreateDocumentType
     private DocumentType DocumentType = new();
 
     private string BaseUrl = "/api/v1/documenttypes";
-    private string BaseView = "/documenttypes";
     private bool IsVisible = false;
 
     protected override void OnInitialized()
@@ -38,20 +36,17 @@ public partial class CreateDocumentType
         bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandler)
         {
-            IsVisible = false; _modalService.Close();
-            _navigationManager.NavigateTo($"{BaseView}");
+            IsVisible = false;
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         IsVisible = false;
-        _modalService.Close();
+        await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        _navigationManager.NavigateTo("/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}");
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

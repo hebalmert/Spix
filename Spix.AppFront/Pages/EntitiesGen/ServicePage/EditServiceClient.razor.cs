@@ -49,20 +49,16 @@ public partial class EditServiceClient
         if (errorHandler)
         {
             IsVisible = false;
-            _modalService.Close();
-            _navigationManager.NavigateTo($"{BaseView}/{Id}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         IsVisible = false;
-        _modalService.Close();
+        await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
-        _navigationManager.NavigateTo("/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}/{ServiceClient!.ServiceCategoryId}");
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}/{ServiceClient!.ServiceCategoryId}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

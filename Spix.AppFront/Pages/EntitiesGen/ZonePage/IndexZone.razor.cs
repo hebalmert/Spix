@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -27,9 +28,12 @@ public partial class IndexZone
     private const string baseUrl = "api/v1/zones";
     public List<Zone>? Zones { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -62,29 +66,38 @@ public partial class IndexZone
 
         Zones = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Zone)]}"   }
-            };
-            await _modalService.ShowAsync<EditZone>(parameters);
+            component = typeof(EditZone);
+            parameters = new Dictionary<string, object>
+                {
+                    { "Id", id! },
+                    { "Title", $"{Localizer[nameof(Resource.Edit_Zone)]}"  }
+                };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Title",$"{Localizer[nameof(Resource.Create_Zone)]}"   }
-            };
-            await _modalService.ShowAsync<CreateZone>(parameters);
+            component = typeof(CreateZone);
+            parameters = new Dictionary<string, object>
+                {
+                    { "Title", $"{Localizer[nameof(Resource.Create_Zone)]}"  }
+                };
         }
-    }
 
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
+    }
     private async Task DeleteAsync(Guid id)
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions

@@ -28,9 +28,12 @@ public partial class DetailProductStock
     public List<ProductStock>? ProductStocks { get; set; }
     public Product? Product { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -68,6 +71,8 @@ public partial class DetailProductStock
         Product = responseHttp2.Response;
 
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)
