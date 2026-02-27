@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Spix.Domain.EntitiesInven;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -40,4 +41,5 @@ public class User : IdentityUser
     public Corporation? Corporation { get; set; }
 
     public ICollection<UserRoleDetails>? UserRoleDetails { get; set; }
+    public ICollection<Transfer>? Transfers { get; set; }
 }

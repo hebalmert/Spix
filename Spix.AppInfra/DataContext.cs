@@ -2,7 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
+using Spix.Domain.EntitiesContratos;
+using Spix.Domain.EntitiesData;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.EntitiesInven;
+using Spix.Domain.EntitiesNet;
+using Spix.Domain.EntitiesOper;
 using System.Reflection;
 
 namespace Spix.AppInfra;
@@ -33,6 +38,16 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Corporation> Corporations => Set<Corporation>();
 
 
+    //EntitiesData
+
+    public DbSet<FrecuencyType> FrecuencyTypes => Set<FrecuencyType>();
+    public DbSet<Frecuency> Frecuencies => Set<Frecuency>();
+    public DbSet<Operation> Operations => Set<Operation>();
+    public DbSet<Channel> Channels => Set<Channel>();
+    public DbSet<Security> Securities => Set<Security>();
+    public DbSet<HotSpotType> HotSpotTypes => Set<HotSpotType>();
+    public DbSet<ChainType> ChainTypes => Set<ChainType>();
+
     //EntitiesGen
     public DbSet<DocumentType> DocumentTypes => Set<DocumentType>();
     public DbSet<Mark> Marks => Set<Mark>();
@@ -47,7 +62,42 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Tax> Taxes => Set<Tax>();
     public DbSet<Zone> Zones => Set<Zone>();
 
-    
+
+    //EntitiesInven
+
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<ProductStorage> ProductStorages => Set<ProductStorage>();
+    public DbSet<ProductStock> ProductStocks => Set<ProductStock>();
+    public DbSet<Purchase> Purchases => Set<Purchase>();
+    public DbSet<PurchaseDetail> PurchaseDetails => Set<PurchaseDetail>();
+    public DbSet<Transfer> Transfers => Set<Transfer>();
+    public DbSet<TransferDetails> TransferDetails => Set<TransferDetails>();
+    public DbSet<Cargue> Cargues => Set<Cargue>();
+    public DbSet<CargueDetail> CargueDetails => Set<CargueDetail>();
+
+
+    //EntitiesNet
+
+    public DbSet<IpNetwork> IpNetworks => Set<IpNetwork>();
+    public DbSet<IpNet> IpNets => Set<IpNet>();
+    public DbSet<Node> Nodes => Set<Node>();
+    public DbSet<Server> Servers => Set<Server>();
+
+
+    //EntitiesOper
+
+    public DbSet<Contractor> Contractors => Set<Contractor>();
+    public DbSet<Technician> Technicians => Set<Technician>();
+    public DbSet<Client> Clients => Set<Client>();
+
+    //EntitiesContratos
+
+    public DbSet<ContractIp> ContractIps => Set<ContractIp>();
+    public DbSet<ContractServer> ContractServers => Set<ContractServer>();
+    public DbSet<ContractPlan> ContractPlans => Set<ContractPlan>();
+    public DbSet<ContractNode> ContractNodes => Set<ContractNode>();
+    public DbSet<ContractQue> ContractQues => Set<ContractQue>();
+    public DbSet<ContractClient> ContractClients => Set<ContractClient>();
 
 
     //Esta parte nos permite tomar las configuraciones desde otra ubicacion, para mantener el codigo mas ordenado

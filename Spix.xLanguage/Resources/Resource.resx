@@ -814,4 +814,118 @@
   <data name="Transfer" xml:space="preserve">
     <value>Transfer</value>
   </data>
+  <data name="MAC" xml:space="preserve">
+    <value>MAC</value>
+  </data>
+  <data name="Detail" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Assigned" xml:space="preserve">
+    <value>Assigned</value>
+  </data>
+  <data name="Excluded" xml:space="preserve">
+    <value>Excluded</value>
+  </data>
+  <data name="IPAddress" xml:space="preserve">
+    <value>IP Address</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>Latitude</value>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>Longitude</value>
+  </data>
+  <data name="FrequencyType" xml:space="preserve">
+    <value>Frequency Type</value>
+  </data>
+  <data name="Frequency" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="Channel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="SecurityPhrase" xml:space="preserve">
+    <value>Security Phrase</value>
+  </data>
+  <data name="Server" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="IpNetwork" xml:space="preserve">
+    <value>Ip Network</value>
+  </data>
+  <data name="WanName" xml:space="preserve">
+    <value>Wan Name</value>
+  </data>
+  <data name="ApiPort" xml:space="preserve">
+    <value>Api Port</value>
+  </data>
+  <data name="SecurityType" xml:space="preserve">
+    <value>Security Type</value>
+  </data>
+  <data name="OperationType" xml:space="preserve">
+    <value>Operation Type</value>
+  </data>
+  <data name="HotSpotType" xml:space="preserve">
+    <value>HotSpot Type</value>
+  </data>
+  <data name="Frequencies" xml:space="preserve">
+    <value>Frequencies</value>
+  </data>
+  <data name="WirelessChannel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="ChainType" xml:space="preserve">
+    <value>Chain Type</value>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="UseHotSpotControl" xml:space="preserve">
+    <value>Use HotSpot Control</value>
+  </data>
+  <data name="InvoiceClient" xml:space="preserve">
+    <value>Invoice Client</value>
+  </data>
+  <data name="CompanyAntenna" xml:space="preserve">
+    <value>Company Antenna</value>
+  </data>
+  <data name="Contractor" xml:space="preserve">
+    <value>Contractor</value>
+  </data>
+  <data name="ContractNumber" xml:space="preserve">
+    <value>Contract Number</value>
+  </data>
+  <data name="SavePayment" xml:space="preserve">
+    <value>Save Payment</value>
+  </data>
+  <data name="ServiceCategory" xml:space="preserve">
+    <value>Service Category</value>
+  </data>
+  <data name="ClientService" xml:space="preserve">
+    <value>Client Service</value>
+  </data>
+  <data name="Contract" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="ClientIp" xml:space="preserve">
+    <value>Client Ip</value>
+  </data>
+  <data name="ClientAP" xml:space="preserve">
+    <value>Client AP</value>
+  </data>
+  <data name="ClientPlan" xml:space="preserve">
+    <value>Client Plan</value>
+  </data>
 </root>
