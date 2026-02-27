@@ -10,7 +10,7 @@ using Spix.AppInfra.Validations;
 using Spix.AppService.InterfacesEntitiesGen;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesGen;
-using Spix.Domain.Enum;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;

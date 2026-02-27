@@ -205,6 +205,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cargue.
+        /// </summary>
+        public static string Cargue {
+            get {
+                return ResourceManager.GetString("Cargue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CargueNro.
+        /// </summary>
+        public static string CargueNro {
+            get {
+                return ResourceManager.GetString("CargueNro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string Category {
@@ -228,6 +246,24 @@ namespace Spix.xLanguage.Resources {
         public static string City {
             get {
                 return ResourceManager.GetString("City", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comment.
+        /// </summary>
+        public static string Comment {
+            get {
+                return ResourceManager.GetString("Comment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact.
+        /// </summary>
+        public static string Contact {
+            get {
+                return ResourceManager.GetString("Contact", resourceCulture);
             }
         }
         
@@ -435,6 +471,15 @@ namespace Spix.xLanguage.Resources {
         public static string Current_Password {
             get {
                 return ResourceManager.GetString("Current_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        public static string Date {
+            get {
+                return ResourceManager.GetString("Date", resourceCulture);
             }
         }
         
@@ -795,6 +840,15 @@ namespace Spix.xLanguage.Resources {
         public static string FirstName {
             get {
                 return ResourceManager.GetString("FirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From Storage.
+        /// </summary>
+        public static string FromStorage {
+            get {
+                return ResourceManager.GetString("FromStorage", resourceCulture);
             }
         }
         
@@ -1258,6 +1312,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invoice.
+        /// </summary>
+        public static string Invoice {
+            get {
+                return ResourceManager.GetString("Invoice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice Date.
+        /// </summary>
+        public static string InvoiceDate {
+            get {
+                return ResourceManager.GetString("InvoiceDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice Number.
+        /// </summary>
+        public static string InvoiceNumber {
+            get {
+                return ResourceManager.GetString("InvoiceNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Job.
         /// </summary>
         public static string Job {
@@ -1699,6 +1780,42 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Purchase.
+        /// </summary>
+        public static string Purchase {
+            get {
+                return ResourceManager.GetString("Purchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchase Date.
+        /// </summary>
+        public static string PurchaseDate {
+            get {
+                return ResourceManager.GetString("PurchaseDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchase Number.
+        /// </summary>
+        public static string PurchaseNumber {
+            get {
+                return ResourceManager.GetString("PurchaseNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quantity.
+        /// </summary>
+        public static string Quantity {
+            get {
+                return ResourceManager.GetString("Quantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rate.
         /// </summary>
         public static string Rate {
@@ -1762,7 +1879,7 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Service.
         /// </summary>
         public static string Service {
             get {
@@ -1807,11 +1924,74 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Storage.
+        /// </summary>
+        public static string Storage {
+            get {
+                return ResourceManager.GetString("Storage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sub total.
+        /// </summary>
+        public static string Subtotal {
+            get {
+                return ResourceManager.GetString("Subtotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier.
+        /// </summary>
+        public static string Supplier {
+            get {
+                return ResourceManager.GetString("Supplier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier.
+        /// </summary>
+        public static string SupplierName {
+            get {
+                return ResourceManager.GetString("SupplierName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tax.
         /// </summary>
         public static string Tax {
             get {
                 return ResourceManager.GetString("Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Storage.
+        /// </summary>
+        public static string ToStorage {
+            get {
+                return ResourceManager.GetString("ToStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total.
+        /// </summary>
+        public static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
             }
         }
         
@@ -1839,6 +2019,42 @@ namespace Spix.xLanguage.Resources {
         public static string Transaction_NoActiveToRollback {
             get {
                 return ResourceManager.GetString("Transaction_NoActiveToRollback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer.
+        /// </summary>
+        public static string Transfer {
+            get {
+                return ResourceManager.GetString("Transfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer Date.
+        /// </summary>
+        public static string TransferDate {
+            get {
+                return ResourceManager.GetString("TransferDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer N.
+        /// </summary>
+        public static string TransferNumber {
+            get {
+                return ResourceManager.GetString("TransferNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit Cost.
+        /// </summary>
+        public static string UnitCost {
+            get {
+                return ResourceManager.GetString("UnitCost", resourceCulture);
             }
         }
         

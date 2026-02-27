@@ -12,7 +12,7 @@ public class ZoneConfig : IEntityTypeConfiguration<Zone>
         builder.Property(x => x.ZoneId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.StateId, e.CityId, e.ZoneName }).IsUnique();
         //Evitar el Borrado en Cascada
-        //builder.HasOne(e => e.state).WithMany(e => e.Zones).OnDelete(DeleteBehavior.Restrict);
-        //builder.HasOne(e => e.city).WithMany(e => e.Zones).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.state).WithMany(e => e.Zones).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.city).WithMany(e => e.Zones).OnDelete(DeleteBehavior.Restrict);
     }
 }

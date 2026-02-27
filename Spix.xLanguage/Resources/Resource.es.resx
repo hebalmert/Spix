@@ -739,4 +739,79 @@
   <data name="Create_Model" xml:space="preserve">
     <value>Crear Modelos</value>
   </data>
+  <data name="CargueNro" xml:space="preserve">
+    <value>CargueNro</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Servicio</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Cantidad</value>
+  </data>
+  <data name="Invoice" xml:space="preserve">
+    <value>Factura</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Fecha</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Comentario</value>
+  </data>
+  <data name="Cargue" xml:space="preserve">
+    <value>Cargue</value>
+  </data>
+  <data name="Storage" xml:space="preserve">
+    <value>Almacen</value>
+  </data>
+  <data name="PurchaseDate" xml:space="preserve">
+    <value>Fecha Compra</value>
+  </data>
+  <data name="PurchaseNumber" xml:space="preserve">
+    <value>Nro Compra</value>
+  </data>
+  <data name="Supplier" xml:space="preserve">
+    <value>Proveedor</value>
+  </data>
+  <data name="InvoiceDate" xml:space="preserve">
+    <value>Fecha Factura</value>
+  </data>
+  <data name="InvoiceNumber" xml:space="preserve">
+    <value>Nro Factura</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>Sub total</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Purchase" xml:space="preserve">
+    <value>Compra</value>
+  </data>
+  <data name="UnitCost" xml:space="preserve">
+    <value>Unit Costo</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Contacto</value>
+  </data>
+  <data name="SupplierName" xml:space="preserve">
+    <value>Proveedor</value>
+  </data>
+  <data name="TransferDate" xml:space="preserve">
+    <value>Fecha Transferencia</value>
+  </data>
+  <data name="TransferNumber" xml:space="preserve">
+    <value>Nro Transferencia</value>
+  </data>
+  <data name="FromStorage" xml:space="preserve">
+    <value>Bodega Origen</value>
+  </data>
+  <data name="ToStorage" xml:space="preserve">
+    <value>Bodega Destino</value>
+  </data>
+  <data name="Transfer" xml:space="preserve">
+    <value>Transferencia</value>
+  </data>
 </root>

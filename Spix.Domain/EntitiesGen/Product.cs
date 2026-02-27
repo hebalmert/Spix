@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesInven;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -58,15 +59,15 @@ public class Product
 
     //Propiedades Virtuales
 
-    //public decimal TotalInventario => ProductStocks == null ? 0 : ProductStocks.Sum(x => x.Stock);
+    public decimal TotalInventario => ProductStocks == null ? 0 : ProductStocks.Sum(x => x.Stock);
 
     //Releaciones en dos vias
 
-    //public ICollection<ProductStock>? ProductStocks { get; set; }
+    public ICollection<ProductStock>? ProductStocks { get; set; }
 
-    //public ICollection<PurchaseDetail>? PurchaseDetails { get; set; }
+    public ICollection<PurchaseDetail>? PurchaseDetails { get; set; }
 
-    //public ICollection<TransferDetails>? TransferDetails { get; set; }
+    public ICollection<TransferDetails>? TransferDetails { get; set; }
 
-    //public ICollection<Cargue>? Cargue { get; set; }
+    public ICollection<Cargue>? Cargue { get; set; }
 }

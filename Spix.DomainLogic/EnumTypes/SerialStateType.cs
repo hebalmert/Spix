@@ -1,4 +1,4 @@
-﻿namespace Spix.DomainLogic.Enum;
+﻿namespace Spix.DomainLogic.EnumTypes;
 
 public enum SerialStateType
 {

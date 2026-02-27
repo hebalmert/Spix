@@ -1,4 +1,4 @@
-﻿namespace Spix.Domain.Enum;
+﻿namespace Spix.DomainLogic.ItemsGeneric;
 
 public class GuidItemModel
 {
