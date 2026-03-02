@@ -584,7 +584,7 @@
     <value>Nuevo</value>
   </data>
   <data name="Month" xml:space="preserve">
-    <value>Mes</value>
+    <value>Meses</value>
   </data>
   <data name="SoftPlan" xml:space="preserve">
     <value>Planes del Sistema</value>
@@ -704,7 +704,7 @@
     <value>Crear Producto</value>
   </data>
   <data name="Edit_Register" xml:space="preserve">
-    <value>Editar Registro</value>
+    <value>Editar Register</value>
   </data>
   <data name="Create_Register" xml:space="preserve">
     <value>Crear Registro</value>
@@ -716,10 +716,10 @@
     <value>Crear Servicio</value>
   </data>
   <data name="Edit_Tax" xml:space="preserve">
-    <value>Editar Tax</value>
+    <value>Editar Impuesto</value>
   </data>
   <data name="Create_Tax" xml:space="preserve">
-    <value>Crear Tax</value>
+    <value>Crear Impuesto</value>
   </data>
   <data name="Edit_Zone" xml:space="preserve">
     <value>Editar Zona</value>
@@ -737,7 +737,7 @@
     <value>Editar Modelos</value>
   </data>
   <data name="Create_Model" xml:space="preserve">
-    <value>Crear Modelos</value>
+    <value>Crear Modelo</value>
   </data>
   <data name="CargueNro" xml:space="preserve">
     <value>CargueNro</value>
@@ -764,7 +764,7 @@
     <value>Cargue</value>
   </data>
   <data name="Storage" xml:space="preserve">
-    <value>Almacen</value>
+    <value>Bodega</value>
   </data>
   <data name="PurchaseDate" xml:space="preserve">
     <value>Fecha Compra</value>
@@ -845,7 +845,7 @@
     <value>Frecuencia</value>
   </data>
   <data name="Channel" xml:space="preserve">
-    <value>Channel</value>
+    <value>Canal</value>
   </data>
   <data name="Security" xml:space="preserve">
     <value>Seguridad</value>
@@ -942,5 +942,182 @@
   </data>
   <data name="Generic_Error_Ip_Delete" xml:space="preserve">
     <value>Error al Borrar la Direccion IP</value>
+  </data>
+  <data name="ContractorPay" xml:space="preserve">
+    <value>Pago Contratista</value>
+  </data>
+  <data name="Contracts" xml:space="preserve">
+    <value>Contratos</value>
+  </data>
+  <data name="Create_Mac" xml:space="preserve">
+    <value>Nueva Mac</value>
+  </data>
+  <data name="Create_Items" xml:space="preserve">
+    <value>Crear Items</value>
+  </data>
+  <data name="Create_Hotspot" xml:space="preserve">
+    <value>Crear HotSpot</value>
+  </data>
+  <data name="Create_FrecuencyType" xml:space="preserve">
+    <value>Crear Tipo de Frecuencia</value>
+  </data>
+  <data name="Create_Frecuency" xml:space="preserve">
+    <value>Crear Frecuencia</value>
+  </data>
+  <data name="Create_Charge" xml:space="preserve">
+    <value>Crear Cargue</value>
+  </data>
+  <data name="Create_Channel" xml:space="preserve">
+    <value>Crear Canal</value>
+  </data>
+  <data name="Create_ChainType" xml:space="preserve">
+    <value>Crear ChainType</value>
+  </data>
+  <data name="Create_Transfer" xml:space="preserve">
+    <value>Crear Transferencia</value>
+  </data>
+  <data name="Create_Supplier" xml:space="preserve">
+    <value>Crear Proveedor</value>
+  </data>
+  <data name="Create_Storage" xml:space="preserve">
+    <value>Crear Almacen</value>
+  </data>
+  <data name="Create_Serial" xml:space="preserve">
+    <value>Crear Serial</value>
+  </data>
+  <data name="Create_Security" xml:space="preserve">
+    <value>Crear Seguridad</value>
+  </data>
+  <data name="Create_Purchase" xml:space="preserve">
+    <value>Crear Compra</value>
+  </data>
+  <data name="Create_Operation" xml:space="preserve">
+    <value>Crear Operacion</value>
+  </data>
+  <data name="Edit_Transfer" xml:space="preserve">
+    <value>Edit Tranferencia</value>
+  </data>
+  <data name="Edit_Supplier" xml:space="preserve">
+    <value>Editar Proveedor</value>
+  </data>
+  <data name="Edit_Storage" xml:space="preserve">
+    <value>Editar Almacen</value>
+  </data>
+  <data name="Edit_Serial" xml:space="preserve">
+    <value>Create Serial</value>
+  </data>
+  <data name="Edit_Security" xml:space="preserve">
+    <value>Editar Seguridad</value>
+  </data>
+  <data name="Edit_Purchase" xml:space="preserve">
+    <value>Editar Compra</value>
+  </data>
+  <data name="Edit_Operation" xml:space="preserve">
+    <value>Editar Operacion</value>
+  </data>
+  <data name="Edit_Mac" xml:space="preserve">
+    <value>Editar Mac</value>
+  </data>
+  <data name="Edit_Items" xml:space="preserve">
+    <value>Editar Items</value>
+  </data>
+  <data name="Edit_Hotspot" xml:space="preserve">
+    <value>Editar Hotspot</value>
+  </data>
+  <data name="Edit_Frecuency" xml:space="preserve">
+    <value>Editar Frecuencia</value>
+  </data>
+  <data name="Edit_Charge" xml:space="preserve">
+    <value>Editar Cargue</value>
+  </data>
+  <data name="Edit_Channel" xml:space="preserve">
+    <value>Editar Canal</value>
+  </data>
+  <data name="Edit_ChainType" xml:space="preserve">
+    <value>Editar ChainType</value>
+  </data>
+  <data name="Edit_FrecuencyType" xml:space="preserve">
+    <value>Editar Tipo de Frecuencia</value>
+  </data>
+  <data name="Frecuencies" xml:space="preserve">
+    <value>Frecuencias</value>
+  </data>
+  <data name="Frecuency" xml:space="preserve">
+    <value>Frecuencia</value>
+  </data>
+  <data name="FrecuencyType" xml:space="preserve">
+    <value>Tipo de Frecuencia</value>
+  </data>
+  <data name="FromProductStorage" xml:space="preserve">
+    <value>Desde</value>
+  </data>
+  <data name="InvoiceNote" xml:space="preserve">
+    <value>Nota Cobro</value>
+  </data>
+  <data name="ItSupport" xml:space="preserve">
+    <value>Soportes</value>
+  </data>
+  <data name="Models" xml:space="preserve">
+    <value>Modelos</value>
+  </data>
+  <data name="Select_B_Corporation" xml:space="preserve">
+    <value>[Seleccione Corporation]</value>
+  </data>
+  <data name="Select_B_Country" xml:space="preserve">
+    <value>[Seleccione Pais]</value>
+  </data>
+  <data name="Select_B_Document" xml:space="preserve">
+    <value>[Seleccione Document]</value>
+  </data>
+  <data name="Select_B_Down" xml:space="preserve">
+    <value>[-- Down --]</value>
+  </data>
+  <data name="Select_B_Frecuency" xml:space="preserve">
+    <value>[Seleccione Frecuencia]</value>
+  </data>
+  <data name="Select_B_FrecuencyType" xml:space="preserve">
+    <value>[Seleccione Tipo Frecuencia]</value>
+  </data>
+  <data name="Select_B_HotSpot" xml:space="preserve">
+    <value>[Seleccione HotSpot]</value>
+  </data>
+  <data name="Select_B_Plan" xml:space="preserve">
+    <value>[Seleccione Plan]</value>
+  </data>
+  <data name="Select_B_Operation" xml:space="preserve">
+    <value>[Seleccione Operacion]</value>
+  </data>
+  <data name="Select_B_Role" xml:space="preserve">
+    <value>[Seleccione Role]</value>
+  </data>
+  <data name="Select_B_Secutiry" xml:space="preserve">
+    <value>[Seleccione Seguridad]</value>
+  </data>
+  <data name="Select_B_Up" xml:space="preserve">
+    <value>[-- Up --]</value>
+  </data>
+  <data name="Select_F_Role" xml:space="preserve">
+    <value>Seleccione Role</value>
+  </data>
+  <data name="Select_F_Plan" xml:space="preserve">
+    <value>Seleccione Plan</value>
+  </data>
+  <data name="Select_F_Corporation" xml:space="preserve">
+    <value>Seleccione Corporacion</value>
+  </data>
+  <data name="StockLoad" xml:space="preserve">
+    <value>Cargue Inventario</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>Inventario</value>
+  </data>
+  <data name="TasaRehuso" xml:space="preserve">
+    <value>Tasa de rehuso</value>
+  </data>
+  <data name="ToProductStorage" xml:space="preserve">
+    <value>Para</value>
+  </data>
+  <data name="WithSerials" xml:space="preserve">
+    <value>Con Seriales</value>
   </data>
 </root>
