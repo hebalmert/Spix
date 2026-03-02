@@ -25,7 +25,6 @@ public partial class CreateUsuario
 
     private Usuario Usuario = new() { Active = true };
     private string BaseUrl = "/api/v1/usuarios";
-    private string BaseView = "/usuarios";
     private bool isLoading = false;
 
     private async Task Create()

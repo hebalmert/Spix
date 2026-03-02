@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesData.HotspotPage;
 
@@ -28,23 +28,22 @@ public partial class CreateHotspot
 
     private HotSpotType HotSpotType = new() { Active = true };
     private string BaseUrl = "/api/v1/hotspots";
-    private string BaseView = "/hotspots";
+    private bool isLoading = false;
 
     private async Task Create()
     {
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", HotSpotType);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) return;
+        if (errorHandled) { isLoading = false; return; }
+
+        isLoading = false;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        _modalService.Close();
-        _navigationManager.NavigateTo("/dashboard");
-        _navigationManager.NavigateTo(BaseView);
+        await _modalService.CloseAsync(ModalResult.Ok());
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }
