@@ -45,6 +45,12 @@ public class TransactionManager : ITransactionManager
         return await _context.SaveChangesAsync();
     }
 
+    public IDbContextTransaction? GetCurrentTransaction()
+    {
+        return _transaction;
+    }
+
+
     public void Dispose()
     {
         _transaction?.Dispose();

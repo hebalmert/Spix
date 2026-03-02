@@ -17,4 +17,4 @@ public interface IDocumentServiceX
     Task<ActionResponse<DocumentType>> AddAsync(DocumentType modelo, string username);
 
     Task<ActionResponse<bool>> DeleteAsync(Guid id);
-}
+}1

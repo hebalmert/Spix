@@ -1,10 +1,10 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesContratos;
+using Spix.Domain.EntitiesData;
 using Spix.Domain.EntitiesGen;
 using Spix.xLanguage.Resources;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Channels;
 
 namespace Spix.Domain.EntitiesNet;
 

@@ -928,4 +928,19 @@
   <data name="ClientAP" xml:space="preserve">
     <value>Cliente AP</value>
   </data>
+  <data name="Operation" xml:space="preserve">
+    <value>Operacion</value>
+  </data>
+  <data name="NodeSSID" xml:space="preserve">
+    <value>SSID Nombre</value>
+  </data>
+  <data name="Generic_Error_Ip_Update" xml:space="preserve">
+    <value>Error en la Actualizacion de la Direccion IP</value>
+  </data>
+  <data name="Generic_Error_Ip_Add" xml:space="preserve">
+    <value>Error en Creacion de Direccion IP</value>
+  </data>
+  <data name="Generic_Error_Ip_Delete" xml:space="preserve">
+    <value>Error al Borrar la Direccion IP</value>
+  </data>
 </root>

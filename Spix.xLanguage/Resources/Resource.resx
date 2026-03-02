@@ -928,4 +928,19 @@
   <data name="ClientPlan" xml:space="preserve">
     <value>Client Plan</value>
   </data>
+  <data name="Operation" xml:space="preserve">
+    <value>Operation</value>
+  </data>
+  <data name="NodeSSID" xml:space="preserve">
+    <value>SSID Name</value>
+  </data>
+  <data name="Generic_Error_Ip_Update" xml:space="preserve">
+    <value>Error to Update the IP Address</value>
+  </data>
+  <data name="Generic_Error_Ip_Add" xml:space="preserve">
+    <value>Error to Add IP Address</value>
+  </data>
+  <data name="Generic_Error_Ip_Delete" xml:space="preserve">
+    <value>Error to Delete IP Address</value>
+  </data>
 </root>

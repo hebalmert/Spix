@@ -1,4 +1,6 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesContratos;
+using Spix.Domain.EntitiesGen;
 using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +11,10 @@ namespace Spix.Domain.EntitiesOper;
 public class Contractor
 {
     public Guid ContractorId { get; set; }
+
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    [Display(Name = nameof(Resource.Created), ResourceType = typeof(Resource))]
+    public DateTime? DateCreated { get; set; }
 
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
@@ -24,15 +30,14 @@ public class Contractor
     [Display(Name = nameof(Resource.FullName), ResourceType = typeof(Resource))]
     public string? FullName { get; set; }
 
-    [MaxLength(5, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.DocumentType), ResourceType = typeof(Resource))]
-    public string? TypeDocument { get; set; }
+    public Guid DocumentTypeId { get; set; }
 
     [MaxLength(15, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Document), ResourceType = typeof(Resource))]
-    public string? NroDocument { get; set; }
+    public string? Document { get; set; }
 
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
@@ -84,6 +89,8 @@ public class Contractor
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
+
+    public DocumentType? DocumentType { get; set; }
 
     public ICollection<ContractClient>? ContractClients { get; set; }
 

@@ -1,4 +1,6 @@
-﻿namespace Spix.AppInfra.Transactions;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Spix.AppInfra.Transactions;
 
 public interface ITransactionManager : IDisposable
 {
@@ -6,4 +8,6 @@ public interface ITransactionManager : IDisposable
     Task CommitTransactionAsync();
     Task RollbackTransactionAsync();
     Task<int> SaveChangesAsync();
+    IDbContextTransaction? GetCurrentTransaction();
+
 }

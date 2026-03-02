@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Spix.DomainLogic\Spix.DomainLogic.csproj" />
     <ProjectReference Include="..\Spix.Domain\Spix.Domain.csproj" />
     <ProjectReference Include="..\Spix.xFiles\Spix.xFiles.csproj" />
+    <ProjectReference Include="..\Spix.xNetwork\Spix.xNetwork.csproj" />
     <ProjectReference Include="..\Spix.xNotification\Spix.xNotification.csproj" />
   </ItemGroup>
 

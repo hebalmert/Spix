@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesContratos;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 

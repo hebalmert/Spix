@@ -1,5 +1,6 @@
 ﻿using Spix.Domain.Entities;
 using Spix.Domain.EntitiesInven;
+using Spix.Domain.EntitiesOper;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -29,7 +30,7 @@ public class DocumentType
 
     public ICollection<Supplier>? Suppliers { get; set; }
 
-    //public ICollection<Client>? Clients { get; set; }
+    public ICollection<Client>? Clients { get; set; }
 
-    //public ICollection<Contractor>? Contractors { get; set; }
+    public ICollection<Contractor>? Contractors { get; set; }
 }

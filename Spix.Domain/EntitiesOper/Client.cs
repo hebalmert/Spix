@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesGen;
 using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;

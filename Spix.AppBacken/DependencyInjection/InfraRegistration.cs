@@ -8,6 +8,7 @@ using Spix.AppInfra.UtilityTools;
 using Spix.xFiles.ExcelHelper;
 using Spix.xFiles.FileHelper;
 using Spix.xFiles.QRgenerate;
+using Spix.xNetwork.IpHelper;
 using Spix.xNotification.Implements;
 using Spix.xNotification.Interfaces;
 
@@ -30,6 +31,9 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IFileStorage, FileStorage>();
             services.AddScoped<IExcelParser, ExcelParser>();
             services.AddScoped<IExcelExporter, ExcelExporter>();
+
+            // Manejo de Procesos para el Network
+            services.AddScoped<IIpControl, IpControl>();
 
             // Utilidades para autenticación y gestión de usuarios
             services.AddScoped<IUserHelper, UserHelper>();

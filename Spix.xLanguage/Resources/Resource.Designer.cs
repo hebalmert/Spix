@@ -1105,6 +1105,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error to Add IP Address.
+        /// </summary>
+        public static string Generic_Error_Ip_Add {
+            get {
+                return ResourceManager.GetString("Generic_Error_Ip_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error to Delete IP Address.
+        /// </summary>
+        public static string Generic_Error_Ip_Delete {
+            get {
+                return ResourceManager.GetString("Generic_Error_Ip_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error to Update the IP Address.
+        /// </summary>
+        public static string Generic_Error_Ip_Update {
+            get {
+                return ResourceManager.GetString("Generic_Error_Ip_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to General exception with no specific cause.
         /// </summary>
         public static string Generic_Exception {
@@ -1861,11 +1888,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SSID Name.
+        /// </summary>
+        public static string NodeSSID {
+            get {
+                return ResourceManager.GetString("NodeSSID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Nro Docuement.
         /// </summary>
         public static string NroDocuement {
             get {
                 return ResourceManager.GetString("NroDocuement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation.
+        /// </summary>
+        public static string Operation {
+            get {
+                return ResourceManager.GetString("Operation", resourceCulture);
             }
         }
         
