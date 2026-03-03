@@ -1,20 +1,38 @@
-﻿/* Cambiar color de fondo del botón activo */
+﻿/* Estilo general del paginador */
+.pagination .page-item .page-link {
+    color: #6c757d; /* gris elegante */
+    border-radius: 8px; /* bordes redondeados */
+    border: 1px solid #dee2e6;
+    margin: 0 3px;
+    transition: all 0.2s ease-in-out;
+}
+
+    /* Hover */
+    .pagination .page-item .page-link:hover {
+        background-color: #e9ecef;
+        color: #495057;
+        border-color: #ced4da;
+    }
+
+/* Active */
 .pagination .page-item.active .page-link {
-    background-color: #6c757d; /* Gris */
+    background-color: #6c757d;
     border-color: #6c757d;
     color: white;
+    font-weight: bold;
 }
 
-/* Cambiar color del botón al pasar el mouse (opcional) */
-.pagination .page-item .page-link:hover {
-    background-color: #5a6268; /* Gris oscuro */
-    border-color: #5a6268;
-    color: white;
-}
-
-/* Botones deshabilitados */
+/* Disabled */
 .pagination .page-item.disabled .page-link {
-    background-color: #e9ecef;
+    color: #adb5bd;
+    background-color: #f8f9fa;
     border-color: #dee2e6;
-    color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Botones especiales (<< < > >>) */
+.pagination .page-item.special .page-link {
+    font-weight: 600;
+    padding-left: 14px;
+    padding-right: 14px;
 }

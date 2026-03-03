@@ -1,85 +1,88 @@
-﻿﻿<nav>
+﻿<nav>
     <ul class="pagination">
+
         @foreach (var link in Links)
         {
-            <li @onclick=@(() => InternalSelectedPage(link)) style="cursor: pointer" class="page-item @(link.Enable ? null : "disabled") @(link.Enable ? "active" : null)">
+            <li @onclick=@(() => InternalSelectedPage(link))
+                class="page-item @(link.Active ? "active" : null) @(link.Enable ? null : "disabled") @(link.IsSpecial ? "special" : null)"
+                style="cursor: pointer">
                 <a class="page-link">@link.Text</a>
             </li>
+
         }
+
     </ul>
 </nav>
 
 @code {
-    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Parameter] public int CurrentPage { get; set; } = 1;
     [Parameter] public int TotalPages { get; set; }
-    [Parameter] public int Radio { get; set; } = 15;
+    [Parameter] public int Radio { get; set; } = 5;
     [Parameter] public EventCallback<int> SelectedPage { get; set; }
+
     List<PageModel> Links = new();
 
     private async Task InternalSelectedPage(PageModel pageModel)
     {
-        if (pageModel.Page == CurrentPage || pageModel.Page == 0)
-        {
+        if (!pageModel.Enable || pageModel.Page == CurrentPage)
             return;
-        }
 
         await SelectedPage.InvokeAsync(pageModel.Page);
     }
 
     protected override void OnParametersSet()
     {
-        Links = new List<PageModel>();
-        var previousLinkEnable = CurrentPage != 1;
-        var previousLinkPage = CurrentPage - 1;
+        Links = new();
 
+        // PRIMERO
         Links.Add(new PageModel
         {
-            Text = Localizer["Previous"],
-            Page = previousLinkPage,
-            Enable = previousLinkEnable
+            Text = "<<",
+            Page = 1,
+            Enable = CurrentPage > 1,
+            IsSpecial = true
         });
 
-        for (int i = 1; i <= TotalPages; i++)
-        {
-            if (TotalPages <= Radio)
-            {
-                Links.Add(new PageModel
-                {
-                    Page = i,
-                    Enable = CurrentPage == i,
-                    Text = $"{i}"
-                });
-            }
-
-            if (TotalPages > Radio && i <= Radio && CurrentPage <= Radio)
-            {
-                Links.Add(new PageModel
-                {
-                    Page = i,
-                    Enable = CurrentPage == i,
-                    Text = $"{i}"
-                });
-            }
-
-            if (CurrentPage > Radio && i > CurrentPage - Radio && i <= CurrentPage)
-            {
-                Links.Add(new PageModel
-                {
-                    Page = i,
-                    Enable = CurrentPage == i,
-                    Text = $"{i}"
-                });
-            }
-        }
-
-        var linkNextEnable = CurrentPage != TotalPages;
-        var linkNextPage = CurrentPage != TotalPages ? CurrentPage + 1 : CurrentPage;
+        // ANTERIOR
         Links.Add(new PageModel
         {
-            Text = Localizer["Next"],
-            Page = linkNextPage,
-            Enable = linkNextEnable
+            Text = "<",
+            Page = CurrentPage - 1,
+            Enable = CurrentPage > 1,
+            IsSpecial = true
+        });
+
+        // RANGO DE PAGINAS
+        int start = Math.Max(1, CurrentPage - Radio);
+        int end = Math.Min(TotalPages, CurrentPage + Radio);
+
+        for (int i = start; i <= end; i++)
+        {
+            Links.Add(new PageModel
+            {
+                Page = i,
+                Text = i.ToString(),
+                Enable = true,
+                Active = (i == CurrentPage)
+            });
+        }
+
+        // SIGUIENTE
+        Links.Add(new PageModel
+        {
+            Text = ">",
+            Page = CurrentPage + 1,
+            Enable = CurrentPage < TotalPages,
+            IsSpecial = true
+        });
+
+        // ÚLTIMO
+        Links.Add(new PageModel
+        {
+            Text = ">>",
+            Page = TotalPages,
+            Enable = CurrentPage < TotalPages,
+            IsSpecial = true
         });
     }
 
@@ -89,5 +92,7 @@
         public int Page { get; set; }
         public bool Enable { get; set; } = true;
         public bool Active { get; set; } = false;
+        public bool IsSpecial { get; set; } = false;
+
     }
 }
