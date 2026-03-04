@@ -1,12 +1,12 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.AppFront.Pages.Entities.SoftSecPage;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesData.FrecuencyTypePage;
 
@@ -31,9 +31,12 @@ public partial class DetailFrecuency
     public FrecuencyType? FrecuencyType { get; set; }
     public List<Frecuency>? Frecuencies { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -44,23 +47,31 @@ public partial class DetailFrecuency
 
     private async Task ShowModalAsync(int id = 0, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(EditFrecuencyType);
+            parameters = new Dictionary<string, object>
             {
-                { "Id", id },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Frecuency)]}"   }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Frecuency)]}" }
             };
-            await _modalService.ShowAsync<EditFrecuencyType>(parameters);
         }
         else
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(CreateFrecuencyType);
+            parameters = new Dictionary<string, object>
             {
-                { "Title",$"{Localizer[nameof(Resource.Create_Frecuency)]}"   }
+                { "Title", $"{Localizer[nameof(Resource.Create_Frecuency)]}" }
             };
-            await _modalService.ShowAsync<CreateFrecuencyType>(parameters);
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task Cargar(int page = 1)
@@ -83,6 +94,8 @@ public partial class DetailFrecuency
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
         await LoadFrecuencyType();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadFrecuencyType()
@@ -95,6 +108,8 @@ public partial class DetailFrecuency
             return;
         }
         FrecuencyType = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(int id)

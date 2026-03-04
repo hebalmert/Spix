@@ -41,11 +41,13 @@ public partial class EditHotspot
 
     private async Task Edit()
     {
+        isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", HotSpotType);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) { isLoading = false; return; }
-
         isLoading = false;
+
+        if (errorHandled)
+            return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());

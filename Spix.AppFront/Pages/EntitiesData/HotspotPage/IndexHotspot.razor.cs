@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesData.HotspotPage;
 
@@ -27,9 +27,12 @@ public partial class IndexHotspot
     private const string baseUrl = "api/v1/hotspots";
     public List<HotSpotType>? HotSpotTypes { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -62,27 +65,37 @@ public partial class IndexHotspot
 
         HotSpotTypes = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(int id = 0, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(EditHotspot);
+            parameters = new Dictionary<string, object>
             {
-                { "Id", id },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Hotspot)]}"   }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Hotspot)]}" }
             };
-            await _modalService.ShowAsync<EditHotspot>(parameters);
         }
         else
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(CreateHotspot);
+            parameters = new Dictionary<string, object>
             {
-                { "Title",$"{Localizer[nameof(Resource.Create_Hotspot)]}"   }
+                { "Title", $"{Localizer[nameof(Resource.Create_Hotspot)]}" }
             };
-            await _modalService.ShowAsync<CreateHotspot>(parameters);
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task DeleteAsync(int id)

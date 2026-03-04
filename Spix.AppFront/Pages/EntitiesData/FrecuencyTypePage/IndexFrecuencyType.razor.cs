@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesData.FrecuencyTypePage;
 
@@ -27,9 +27,12 @@ public partial class IndexFrecuencyType
     private const string baseUrl = "api/v1/frecuencytypes";
     public List<FrecuencyType>? FrecuencyTypes { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -62,27 +65,37 @@ public partial class IndexFrecuencyType
 
         FrecuencyTypes = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(int id = 0, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(EditFrecuencyType);
+            parameters = new Dictionary<string, object>
             {
-                { "Id", id },
-                { "Title", $"{Localizer[nameof(Resource.Edit_FrecuencyType)]}"   }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_FrecuencyType)]}" }
             };
-            await _modalService.ShowAsync<EditFrecuencyType>(parameters);
         }
         else
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(CreateFrecuencyType);
+            parameters = new Dictionary<string, object>
             {
-                { "Title",$"{Localizer[nameof(Resource.Create_FrecuencyType)]}"   }
+                { "Title", $"{Localizer[nameof(Resource.Create_FrecuencyType)]}" }
             };
-            await _modalService.ShowAsync<CreateFrecuencyType>(parameters);
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private void ShowModalDetailsAsync(int id = 0)

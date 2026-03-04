@@ -1,11 +1,12 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.Entities.SoftSecPage;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesData.ChannelPage;
 
@@ -27,9 +28,12 @@ public partial class IndexChannel
     private const string baseUrl = "api/v1/channels";
     public List<Channel>? Channels { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -62,27 +66,37 @@ public partial class IndexChannel
 
         Channels = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(int id = 0, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(EditChannel);
+            parameters = new Dictionary<string, object>
             {
-                { "Id", id },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Channel)]}"   }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Channel)]}" }
             };
-            await _modalService.ShowAsync<EditChannel>(parameters);
         }
         else
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(CreateChannel);
+            parameters = new Dictionary<string, object>
             {
-                { "Title",$"{Localizer[nameof(Resource.Create_Channel)]}"   }
+                { "Title", $"{Localizer[nameof(Resource.Create_Channel)]}" }
             };
-            await _modalService.ShowAsync<CreateChannel>(parameters);
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task DeleteAsync(int id)

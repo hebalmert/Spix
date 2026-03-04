@@ -26,7 +26,6 @@ public class IpControl : IIpControl
             ip.Assigned = true;
             ip.Description = description;
 
-            _context.Update(ip);
             await _context.SaveChangesAsync();
 
             return new ActionResponse<IpNetwork> { WasSuccess = true, Result = ip };
@@ -53,7 +52,6 @@ public class IpControl : IIpControl
                 {
                     oldIp.Assigned = false;
                     oldIp.Description = "";
-                    _context.Update(oldIp);
                 }
 
                 var newIp = await _context.IpNetworks.FindAsync(id);
@@ -61,7 +59,6 @@ public class IpControl : IIpControl
                 {
                     newIp.Assigned = true;
                     newIp.Description = description;
-                    _context.Update(newIp);
                 }
             }
 
@@ -86,8 +83,6 @@ public class IpControl : IIpControl
 
             ip.Assigned = false;
             ip.Description = "";
-
-            _context.Update(ip);
             await _context.SaveChangesAsync();
 
             return new ActionResponse<IpNetwork> { WasSuccess = true, Result = ip };
@@ -115,7 +110,6 @@ public class IpControl : IIpControl
                 {
                     oldIp.Assigned = false;
                     oldIp.Description = "";
-                    _context.Update(oldIp);
                 }
 
                 var newIp = await _context.IpNetworks.FindAsync(id);
@@ -123,10 +117,8 @@ public class IpControl : IIpControl
                 {
                     newIp.Assigned = true;
                     newIp.Description = Descrip;
-                    _context.Update(newIp);
                 }
             }
-
             await _context.SaveChangesAsync();
 
             return new ActionResponse<IpNetwork> { WasSuccess = true };

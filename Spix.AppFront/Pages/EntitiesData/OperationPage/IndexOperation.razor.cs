@@ -1,11 +1,12 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.Entities.SoftSecPage;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesData.OperationPage;
 
@@ -27,9 +28,12 @@ public partial class IndexOperation
     private const string baseUrl = "api/v1/operations";
     public List<Operation>? Operations { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -62,27 +66,37 @@ public partial class IndexOperation
 
         Operations = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(int id = 0, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(EditOperation);
+            parameters = new Dictionary<string, object>
             {
-                { "Id", id },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Operation)]}"   }
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Operation)]}" }
             };
-            await _modalService.ShowAsync<EditOperation>(parameters);
         }
         else
         {
-            var parameters = new Dictionary<string, object>
+            component = typeof(CreateOperation);
+            parameters = new Dictionary<string, object>
             {
-                { "Title",$"{Localizer[nameof(Resource.Create_Operation)]}"   }
+                { "Title", $"{Localizer[nameof(Resource.Create_Operation)]}" }
             };
-            await _modalService.ShowAsync<CreateOperation>(parameters);
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task DeleteAsync(int id)
