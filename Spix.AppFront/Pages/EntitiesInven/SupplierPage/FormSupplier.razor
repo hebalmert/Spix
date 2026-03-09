@@ -1,0 +1,157 @@
+﻿<EditForm Model="Supplier" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <!-- Nombre y Contacto -->
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.Name)]
+                </span>
+                <InputText class="form-control" @bind-Value="Supplier.Name" />
+            </div>
+            <ValidationMessage For="@(() => Supplier.Name)" />
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.Contact)]
+                </span>
+                <InputText class="form-control" @bind-Value="Supplier.ContactName" />
+            </div>
+            <ValidationMessage For="@(() => Supplier.ContactName)" />
+        </div>
+
+        <!-- Estado / Departamento -->
+        <div class="col-md-6 mb-2">
+            @if (DocumentTypes is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.DocumentType)]</span>
+                    <select class="form-select" value="@Supplier.DocumentTypeId" @onchange="DocumentChanged">
+                        @foreach (var item in DocumentTypes)
+                        {
+                            <option value="@item.DocumentTypeId">@item.DocumentName</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.NroDocuement)]
+                </span>
+                <InputText class="form-control" @bind-Value="Supplier.Document" />
+            </div>
+            <ValidationMessage For="@(() => Supplier.Document)" />
+        </div>
+
+
+        <!-- Teléfono -->
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.Phone)]
+                </span>
+                <InputText class="form-control" placeholder="+1" @bind-Value="Supplier.CodeCountry" />
+                <InputText class="form-control" placeholder="555" @bind-Value="Supplier.CodeNumber" />
+                <InputText class="form-control" placeholder="555 4545" @bind-Value="Supplier.PhoneNumber" />
+            </div>
+
+            <!-- Validaciones -->
+            <div class="d-flex gap-2 mt-1">
+                <ValidationMessage For="@(() => Supplier.CodeCountry)" />
+                <ValidationMessage For="@(() => Supplier.CodeNumber)" />
+                <ValidationMessage For="@(() => Supplier.PhoneNumber)" />
+            </div>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.Address)]
+                </span>
+                <InputText class="form-control" @bind-Value="Supplier.Address" />
+            </div>
+            <ValidationMessage For="@(() => Supplier.Address)" />
+        </div>
+
+
+        <!-- Estado / Departamento -->
+        <div class="col-md-6 mb-4">
+            @if (States is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.State)]</span>
+                    <select class="form-select" value="@Supplier.StateId" @onchange="StateChanged">
+                        @foreach (var item in States)
+                        {
+                            <option value="@item.StateId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <!-- Ciudad -->
+        <div class="col-md-6 mb-4">
+            @if (Cities is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.City)]</span>
+                    <select class="form-select" value="@Supplier.CityId" @onchange="CityChanged">
+                        @foreach (var item in Cities)
+                        {
+                            <option value="@item.CityId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.Email)]
+                </span>
+                <InputText class="form-control" @bind-Value="Supplier.Email " />
+            </div>
+            <ValidationMessage For="@(() => Supplier.Email)" />
+        </div>
+        <div class="mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.Active)]
+                </span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="Supplier.Active" class="form-check-input me-2" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Imagen -->
+        <div class="col-md-12 mb-4 text-center">
+            <InputImage ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <ButtonFormBack OnClick="ReturnAction" />
+        <ButtonFormSave />
+    </div>
+</EditForm>

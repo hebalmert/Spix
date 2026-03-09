@@ -36,9 +36,11 @@ public partial class CreateSecurity
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Security);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         isLoading = false;
-
         if (errorHandled)
+        {
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
+        }
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());

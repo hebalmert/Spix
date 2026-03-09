@@ -1,0 +1,56 @@
+﻿<EditForm Model="Transfer" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Date)]</span>
+            <input type="date" class="form-control"
+                   @bind="Transfer.DateTransfer"
+                   min="@DateMin?.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-2">
+        @if (ProductStorages1 is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.FromProductStorage)]</span>
+                <select class="form-select" value="@Transfer.FromProductStorageId" @onchange="ProductStorageChanged1">
+                    @foreach (var item in ProductStorages1)
+                    {
+                        <option value="@item.ProductStorageId">@item.ProductStocks</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-6 mb-2">
+        @if (ProductStorages2 is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.ToProductStorage)]</span>
+                <select class="form-select" value="@Transfer.ToProductStorageId" @onchange="ProductStorageChanged2">
+                    @foreach (var item in ProductStorages2)
+                    {
+                        <option value="@item.ProductStorageId">@item.ProductStocks</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <ButtonFormBack OnClick="ReturnAction" />
+        <ButtonFormSave />
+    </div>
+</EditForm>

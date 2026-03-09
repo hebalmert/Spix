@@ -1,0 +1,65 @@
+﻿<EditForm Model="TransferDetails" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="col-md-6 mb-2">
+        @if (Categories is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Category)]</span>
+                <select class="form-select" value="@TransferDetails.ProductCategoryId" @onchange="CategoryChanged">
+                    @foreach (var item in Categories)
+                    {
+                        <option value="@item.ProductCategoryId">@item.Name</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-6 mb-2">
+        @if (Products is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Product)]</span>
+                <select class="form-select" value="@TransferDetails.ProductId" @onchange="ProductsChanged">
+                    @foreach (var item in Products)
+                    {
+                        <option value="@item.ProductId">@item.ProductName</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    <!-- Disponible -->
+    <div class="mb-4">
+        <label class="form-label">Disponible</label>
+        <InputNumber class="form-control"
+                     @bind-Value="StockAvaible"
+                     readonly />
+    </div>
+
+    <!-- Cantidad Transferir -->
+    <div class="mb-4">
+        <label class="form-label">Cantidad Transferir</label>
+        <InputNumber class="form-control"
+                     @bind-Value="TransferDetails.Quantity"
+                     @oninput="@(e => CalculoTotalCant(decimal.Parse(e.Value?.ToString() ?? "0")))" />
+        <ValidationMessage For="@(() => TransferDetails.Quantity)" />
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <ButtonFormBack OnClick="ReturnAction" />
+        <ButtonFormSave />
+    </div>
+</EditForm>
+

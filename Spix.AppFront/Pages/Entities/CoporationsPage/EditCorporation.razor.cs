@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.ShareLoading;
 using Spix.Domain.Entities;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -42,10 +43,12 @@ public partial class EditCorporation
         }
         IsVisible = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", _Corporation);
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) { IsVisible = false; return; }
-
         IsVisible = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            await _modalService.CloseAsync(ModalResult.Cancel());
+            return;
+        }
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());
     }

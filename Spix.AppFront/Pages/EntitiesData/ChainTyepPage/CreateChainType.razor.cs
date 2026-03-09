@@ -1,4 +1,5 @@
 using CurrieTechnologies.Razor.SweetAlert2;
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -35,10 +36,13 @@ public partial class CreateChainType
         isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", ChainType);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        isLoading = false;
 
+        isLoading = false;
         if (errorHandled)
+        {
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
+        }
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());

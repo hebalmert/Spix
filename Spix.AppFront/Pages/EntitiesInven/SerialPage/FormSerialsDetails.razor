@@ -1,0 +1,45 @@
+﻿<EditForm Model="CargueDetail" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <!-- MAC Equipo -->
+    <div class="mb-4">
+        <label class="form-label">MAC Equipo</label>
+        <InputText class="form-control" @bind-Value="CargueDetail.MacWlan" />
+        <ValidationMessage For="@(() => CargueDetail.MacWlan)" />
+    </div>
+
+    <!-- Comentario -->
+    <div class="mb-4">
+        <label class="form-label">Comentario</label>
+        <InputText class="form-control" @bind-Value="CargueDetail.Comment" />
+        <ValidationMessage For="@(() => CargueDetail.Comment)" />
+    </div>
+
+    <!-- Selección de Rol -->
+    @if (ListUserType is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="mb-4">
+            <label class="form-label">--Seleccione Role--</label>
+            <InputSelect class="form-select"
+                         @bind-Value="SelectedUserType"
+                         @onchange="UsertTypeChanged">
+                <option value="">Seleccione...</option>
+                @foreach (var item in ListUserType!)
+                {
+                    <option value="@item.Value">@item.Name</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => SelectedUserType)" />
+        </div>
+    }
+
+    <!-- Botones -->
+    <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
+        <ButtonFormBack OnClick="ReturnAction" />
+        <ButtonFormSave />
+    </div>
+</EditForm>

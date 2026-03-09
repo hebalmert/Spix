@@ -1,0 +1,130 @@
+﻿@page "/transfers/details/{Id:guid}"
+@attribute [Authorize(Roles = "Administrator")]
+
+<div class="container shadow-lg mb-5 p-4 bg-white rounded">
+    @if (Transfer is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <h3>Detalle de Transferencia</h3>
+
+        <!-- Datos de la transferencia -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold" style="font-size: 1.2rem;">Usuario:</td>
+                            <td class="text-end" style="font-size: 1.2rem;">@Transfer.NombreUsuario</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold" style="font-size: 1.2rem;">Fecha:</td>
+                            <td class="text-end" style="font-size: 1.2rem;">@Transfer.DateTransfer.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold" style="font-size: 1.2rem;">Desde:</td>
+                            <td class="text-end" style="font-size: 1.2rem;">@Transfer.FromStorageName</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold" style="font-size: 1.2rem;">Hacia:</td>
+                            <td class="text-end" style="font-size: 1.2rem;">@Transfer.ToStorageName</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="row mb-4">
+            <div class="col-md-9 d-flex justify-content-start gap-2">
+                <a class="btn btn-secondary" style="width:150px;" href="/transfers">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Volver
+                </a>
+
+                @if (Transfer.Status == TransferType.Pendiente)
+                {
+                    <button class="btn btn-dark" style="width:150px;" @onclick="()=> ShowModalAsync()">
+                        <i class="bi bi-box-arrow-in-down me-1"></i> Producto
+                    </button>
+
+                    <button class="btn btn-success" style="width:150px;" @onclick="() => ClosePurchaseAsync(Transfer.TransferId)">
+                        <i class="bi bi-check2-circle me-1"></i> Cerrar
+                    </button>
+                }
+            </div>
+        </div>
+    }
+
+    <hr class="border-top border-dark opacity-75 my-3" />
+
+    <!-- Tabla de productos -->
+    <div class="table-responsive">
+        @if (TransferDetails is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <GenericList MyList="TransferDetails">
+                <Body>
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Cantidad</th>
+                                <th colspan="2" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in TransferDetails!)
+                            {
+                                <tr>
+                                    <td>@item.Product!.ProductName</td>
+                                    <td>@item.Product!.ProductCategory!.Name</td>
+                                    <td>@item.Quantity</td>
+                                    <td class="text-center">
+                                        @if (Transfer.Status == TransferType.Pendiente)
+                                        {
+                                            <button class="btn btn-sm btn-dark"
+                                                    title="Editar"
+                                                    @onclick="@(() => ShowModalAsync(item.TransferDetailsId, true))">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (Transfer.Status == TransferType.Pendiente)
+                                        {
+                                            <button class="btn btn-sm btn-danger"
+                                                    title="Eliminar"
+                                                    @onclick="@(() => DeleteAsync(item.TransferDetailsId))">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </Body>
+            </GenericList>
+        }
+    </div>
+
+    <hr class="border-top border-dark opacity-75 my-3" />
+
+    <!-- Paginación -->
+    @if (TransferDetails is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    }
+</div>

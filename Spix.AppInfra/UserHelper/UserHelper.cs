@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Spix.AppInfra.UtilityTools;
 using Spix.Domain.Entities;
 using Spix.DomainLogic.AppResponses;
@@ -9,17 +10,19 @@ namespace Spix.AppInfra.UserHelper;
 
 public class UserHelper : IUserHelper
 {
+    private readonly DataContext _context;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IUtilityTools _utilityTools;
 
-    public UserHelper(
+    public UserHelper(DataContext context,
         UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<User> signInManager,
         IUtilityTools utilityTools)
     {
+        _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
         _signInManager = signInManager;
@@ -65,6 +68,19 @@ public class UserHelper : IUserHelper
         User? user = await _userManager.FindByNameAsync(username);
         if (user == null) return false;
 
+        // 1. Buscar roles del usuario
+        var roles = await _context.UserRoleDetails
+            .Where(x => x.UserId == user.Id)
+            .ToListAsync();
+
+        // 2. Eliminarlos si existen
+        if (roles.Any())
+        {
+            _context.UserRoleDetails.RemoveRange(roles);
+            await _context.SaveChangesAsync();
+        }
+
+        // 3. Eliminar el usuario de Identity
         IdentityResult result = await _userManager.DeleteAsync(user);
         return result.Succeeded;
     }

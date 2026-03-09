@@ -1,0 +1,155 @@
+﻿@page "/purchases/details/{Id:guid}"
+@attribute [Authorize(Roles = "Administrator")]
+
+@if (Purchase is null)
+{
+    <Loading />
+}
+else
+{
+    <div class="container shadow-lg mb-5 p-4 rounded">
+        <h3>Detalle de la Compra</h3>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Proveedor:</strong></td>
+                        <td class="text-end">@Purchase.Supplier!.Name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Factura:</strong></td>
+                        <td class="text-end">@Purchase.NroFactura</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fecha Fac:</strong></td>
+                        <td class="text-end">@Purchase.FacuraDate.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bodega:</strong></td>
+                        <td class="text-end">@Purchase.ProductStorage!.StorageName</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Totales Factura:</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Subtotal:</strong></td>
+                        <td class="text-end">@Purchase.SubTotalCompra.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Impuesto:</strong></td>
+                        <td class="text-end">@Purchase.ImpuestoTotalCompra.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total:</strong></td>
+                        <td class="text-end">@Purchase.TotalCompra.ToString("N2")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-9 d-flex gap-2">
+                <a class="btn btn-secondary" style="width:150px" href="/purchases">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+
+                @if (Purchase.Status == PurchaseStatus.Pendiente)
+                {
+                    <button class="btn btn-dark" style="width:150px" @onclick="@(() => ShowModalAsync())">
+                        <i class="bi bi-plus-square"></i> Producto
+                    </button>
+
+                    <button class="btn btn-success" style="width:150px" @onclick="() => ClosePurchaseAsync(Purchase.PurchaseId)">
+                        <i class="bi bi-check-square"></i> Cerrar
+                    </button>
+                }
+            </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <div class="row">
+            <div class="col-md-12 table-responsive">
+                @if (PurchaseDetails is null)
+                {
+                    <Loading />
+                }
+                else
+                {
+                    <GenericList MyList="PurchaseDetails">
+                        <Body>
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Impuesto</th>
+                                        <th>Unitario</th>
+                                        <th>Cantidad</th>
+                                        <th>SubTotal</th>
+                                        <th>Impuesto</th>
+                                        <th>Total</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in PurchaseDetails!)
+                                    {
+                                        <tr>
+                                            <td>@item.Product!.ProductName</td>
+                                            <td>@item.RateTax</td>
+                                            <td>@item.UnitCost.ToString("N2")</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.SubTotal.ToString("N2")</td>
+                                            <td>@item.Impuesto.ToString("N2")</td>
+                                            <td>@item.TotalGeneral.ToString("N2")</td>
+                                            <td style="width:1px;">
+                                                @if (Purchase!.Status == PurchaseStatus.Pendiente)
+                                                {
+                                                    <button class="btn btn-outline-dark btn-sm"
+                                                            @onclick="() => ShowModalAsync(item.PurchaseDetailId, true)"
+                                                            title="Editar">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                }
+                                            </td>
+                                            <td style="width:1px;">
+                                                @if (Purchase.Status == PurchaseStatus.Pendiente)
+                                                {
+                                                    <button class="btn btn-outline-danger btn-sm"
+                                                            @onclick="() => DeleteAsync(item.PurchaseDetailId)"
+                                                            title="Eliminar">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </Body>
+                    </GenericList>
+                }
+            </div>
+        </div>
+
+        <hr class="my-4" />
+
+        @if (PurchaseDetails is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        }
+    </div>
+}

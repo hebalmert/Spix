@@ -1,7 +1,7 @@
 ﻿using Spix.AppService.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.Domain.EntitiesGen;
-using Spix.Domain.Enum;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 

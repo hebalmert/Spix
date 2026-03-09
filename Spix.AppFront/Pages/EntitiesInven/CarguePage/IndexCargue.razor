@@ -1,0 +1,80 @@
+﻿@page "/cargues"
+@attribute [Authorize(Roles = "Administrator")]
+
+<div class="container shadow-lg mb-5 p-4 rounded">
+    <h3>Cargue de Seriales</h3>
+
+    <div class="row align-items-center mb-3">
+        <!-- Columna para el botón -->
+        <div class="col-md-3 d-flex justify-content-start">
+            <!-- Si decides reactivar el botón "Nuevo", usa tu componente personalizado -->
+            @* <ButtonFormNew CssClass="btn btn-dark d-flex align-items-center gap-2" Style="width:130px" OnClick="ShowModalAsync" /> *@
+        </div>
+
+        <!-- Columna para el filtro -->
+        <div class="col-md-9 d-flex justify-content-end">
+            <FilterComponent ApplyFilter="SetFilterValue" />
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <GenericList MyList="Cargues">
+                <Body>
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Control</th>
+                                <th>Factura</th>
+                                <th>A Subir</th>
+                                <th>Subidos</th>
+                                <th>Estatus</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Cargues!)
+                            {
+                                <tr>
+                                    <td>@item.DateCargue</td>
+                                    <td>@item.ControlCargue</td>
+                                    <td>@item.Purchase!.NroFactura</td>
+                                    <td>@item.CantToUp</td>
+                                    <td>@item.TotalSeriales</td>
+                                    <td>@item.Status.ToString()</td>
+                                    <td style="width:1px;">
+                                        <a class="btn btn-outline-dark btn-sm"
+                                           href="@($"/cargues/details/{item.CargueId}")"
+                                           title="Ver detalles">
+                                            <i class="bi bi-columns-gap"></i>
+                                        </a>
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (item.Status == CargueType.Pendiente)
+                                        {
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    @onclick="() => DeleteAsync(item.CargueId)"
+                                                    title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </Body>
+            </GenericList>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <Pagination CurrentPage="CurrentPage"
+                SelectedPage="SelectedPage"
+                TotalPages="TotalPages" />
+</div>

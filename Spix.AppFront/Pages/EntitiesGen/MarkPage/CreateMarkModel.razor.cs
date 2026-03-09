@@ -21,7 +21,6 @@ public partial class CreateMarkModel
     private MarkModel MarkModel = new() { Active = true };
 
     private string BaseUrl = "/api/v1/marksmodels";
-    private string BaseView = "/marksmodels/details";
     private bool IsVisible = false;
     [Parameter] public Guid Id { get; set; }  //MarkId
     [Parameter] public string? Title { get; set; }
@@ -32,13 +31,12 @@ public partial class CreateMarkModel
         MarkModel.MarkId = Id;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", MarkModel);
         bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        IsVisible = false;
         if (errorHandler)
         {
-            IsVisible = false;
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
         await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }

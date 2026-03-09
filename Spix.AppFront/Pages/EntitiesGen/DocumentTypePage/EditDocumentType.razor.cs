@@ -45,13 +45,12 @@ public partial class EditDocumentType
         IsVisible = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", DocumentType);
         bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        IsVisible = false;
         if (errorHandler)
         {
-            IsVisible = false;
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
         await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
     }

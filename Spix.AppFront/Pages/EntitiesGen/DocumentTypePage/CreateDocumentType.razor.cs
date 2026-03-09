@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -34,13 +35,12 @@ public partial class CreateDocumentType
         IsVisible = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", DocumentType);
         bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        IsVisible = false;
         if (errorHandler)
         {
-            IsVisible = false;
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
         await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }

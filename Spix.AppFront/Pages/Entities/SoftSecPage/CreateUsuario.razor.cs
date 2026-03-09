@@ -31,10 +31,12 @@ public partial class CreateUsuario
     {
         isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Usuario);
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) { isLoading = false; return; }
-
         isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            await _modalService.CloseAsync(ModalResult.Cancel());
+            return;
+        }
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());

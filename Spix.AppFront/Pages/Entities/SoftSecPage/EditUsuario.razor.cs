@@ -36,9 +36,12 @@ public partial class EditUsuario
     {
         isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", Usuario);
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled) { isLoading = false; return; }
         isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            await _modalService.CloseAsync(ModalResult.Cancel());
+            return;
+        }
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());

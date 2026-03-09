@@ -1,0 +1,74 @@
+﻿<EditForm Model="ProductStorage" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <!-- Nombre de la bodega -->
+        <div class="col-12 mb-4">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">
+                    @Localizer[nameof(Resource.Storage)]
+                </span>
+                <InputText class="form-control" @bind-Value="ProductStorage.StorageName" />
+            </div>
+            <ValidationMessage For="@(() => ProductStorage.StorageName)" />
+        </div>
+
+        <!-- Estado / Departamento -->
+        <div class="col-md-6 mb-4">
+            @if (States is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.State)]</span>
+                    <select class="form-select" value="@ProductStorage.StateId" @onchange="StateChanged">
+                        @foreach (var item in States)
+                        {
+                            <option value="@item.StateId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <!-- Ciudad -->
+        <div class="col-md-6 mb-4">
+            @if (Cities is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.City)]</span>
+                    <select class="form-select" value="@ProductStorage.CityId" @onchange="CityChanged">
+                        @foreach (var item in Cities)
+                        {
+                            <option value="@item.CityId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <!-- Activo -->
+        <div class="col-md-6 mb-4">
+            <div class="form-check">
+                <InputCheckbox class="form-check-input" @bind-Value="ProductStorage.Active" />
+                <label class="form-check-label">@Localizer[nameof(Resource.Active)]</label>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <!-- Espacio reservado -->
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>
