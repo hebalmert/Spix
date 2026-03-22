@@ -123,28 +123,23 @@ public partial class DetailsServiceClient
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Confirmación",
-            Text = "¿Realmente deseas eliminar el registro?",
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
             Icon = SweetAlertIcon.Question,
             ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Si"
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
-        {
+        if (result.IsDismissed || result.Value != "true")
             return;
-        }
 
         var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
-        {
-            _navigationManager.NavigateTo("/usuarios");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
             return;
-        }
 
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
     }
 }

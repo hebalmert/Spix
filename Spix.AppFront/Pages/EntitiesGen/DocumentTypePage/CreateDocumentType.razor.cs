@@ -23,7 +23,7 @@ public partial class CreateDocumentType
     private DocumentType DocumentType = new();
 
     private string BaseUrl = "/api/v1/documenttypes";
-    private bool IsVisible = false;
+    private bool isLoading = false;
 
     protected override void OnInitialized()
     {
@@ -32,11 +32,10 @@ public partial class CreateDocumentType
 
     private async Task Create()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", DocumentType);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

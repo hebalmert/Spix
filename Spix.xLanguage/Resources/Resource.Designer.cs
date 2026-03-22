@@ -457,6 +457,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Price.
+        /// </summary>
+        public static string Cost {
+            get {
+                return ResourceManager.GetString("Cost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cost Price.
         /// </summary>
         public static string Cost_Price {
@@ -2023,6 +2032,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mark.
+        /// </summary>
+        public static string MarkEquipment {
+            get {
+                return ResourceManager.GetString("MarkEquipment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Models.
         /// </summary>
         public static string MarkModels {
@@ -2401,6 +2419,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plan Category.
+        /// </summary>
+        public static string PlanCategory {
+            get {
+                return ResourceManager.GetString("PlanCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plans.
         /// </summary>
         public static string Plans {
@@ -2424,6 +2451,15 @@ namespace Spix.xLanguage.Resources {
         public static string Product {
             get {
                 return ResourceManager.GetString("Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product Category.
+        /// </summary>
+        public static string ProductCategory {
+            get {
+                return ResourceManager.GetString("ProductCategory", resourceCulture);
             }
         }
         
@@ -2928,6 +2964,15 @@ namespace Spix.xLanguage.Resources {
         public static string TransferNumber {
             get {
                 return ResourceManager.GetString("TransferNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type Document.
+        /// </summary>
+        public static string TypeDocument {
+            get {
+                return ResourceManager.GetString("TypeDocument", resourceCulture);
             }
         }
         

@@ -59,15 +59,11 @@
                 <span class="input-group-text" style="width: 100px">
                     @Localizer[nameof(Resource.Phone)]
                 </span>
-                <InputText class="form-control" placeholder="+1" @bind-Value="Supplier.CodeCountry" />
-                <InputText class="form-control" placeholder="555" @bind-Value="Supplier.CodeNumber" />
                 <InputText class="form-control" placeholder="555 4545" @bind-Value="Supplier.PhoneNumber" />
             </div>
 
             <!-- Validaciones -->
             <div class="d-flex gap-2 mt-1">
-                <ValidationMessage For="@(() => Supplier.CodeCountry)" />
-                <ValidationMessage For="@(() => Supplier.CodeNumber)" />
                 <ValidationMessage For="@(() => Supplier.PhoneNumber)" />
             </div>
         </div>

@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.SupplierPage;
 
@@ -18,39 +18,30 @@ public partial class CreateSupplier
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
 
-    private Supplier Supplier = new();
+    private Supplier Supplier = new() { Active = true};
 
     private string BaseUrl = "/api/v1/suppliers";
     private string BaseView = "/suppliers";
-    private bool IsVisible = false;
+    private bool isLoading = false;
     [Parameter] public string? Title { get; set; }
 
-    protected override void OnInitialized()
-    {
-        Supplier.Active = true;
-    }
 
     private async Task Create()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Supplier);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            IsVisible = false;
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
+        await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        _modalService.Close();
-        _navigationManager.NavigateTo("/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}");
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

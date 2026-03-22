@@ -26,6 +26,7 @@ public partial class IndexDocumentType
 
     private const string baseUrl = "api/v1/documenttypes";
     public List<DocumentType>? DocumentTypes { get; set; }
+    private bool IsVisible = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

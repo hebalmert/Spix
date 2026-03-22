@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.ProductStoragePage;
 
@@ -22,27 +22,26 @@ public partial class CreatePStorage
 
     private string BaseUrl = "/api/v1/productstorages";
     private string BaseView = "/productstorages";
+    private bool isLoading = false;
 
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
+        isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", ProductStorage);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        _modalService.Close();
+        await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        _navigationManager.NavigateTo($"/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}");
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

@@ -21,18 +21,17 @@ public partial class CreateMarkModel
     private MarkModel MarkModel = new() { Active = true };
 
     private string BaseUrl = "/api/v1/marksmodels";
-    private bool IsVisible = false;
+    private bool isLoading = false;
     [Parameter] public Guid Id { get; set; }  //MarkId
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
-        IsVisible = true;
+        isLoading = true;
         MarkModel.MarkId = Id;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", MarkModel);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

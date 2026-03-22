@@ -1120,4 +1120,19 @@
   <data name="WithSerials" xml:space="preserve">
     <value>Con Seriales</value>
   </data>
+  <data name="TypeDocument" xml:space="preserve">
+    <value>Tipo Documento</value>
+  </data>
+  <data name="MarkEquipment" xml:space="preserve">
+    <value>Marca</value>
+  </data>
+  <data name="PlanCategory" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="ProductCategory" xml:space="preserve">
+    <value>Categoria Producto</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Costo</value>
+  </data>
 </root>

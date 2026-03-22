@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -22,32 +23,29 @@ public partial class EditProductCategory
 
     private string BaseUrl = "/api/v1/productcategories";
     private string BaseView = "/productcategories";
-    private bool IsVisible = false;
+    private bool isLoading = false;
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.GetAsync<ProductCategory>($"{BaseUrl}/{Id}");
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            IsVisible = false;
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
         ProductCategory = responseHttp.Response;
     }
 
     private async Task Edit()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", ProductCategory);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

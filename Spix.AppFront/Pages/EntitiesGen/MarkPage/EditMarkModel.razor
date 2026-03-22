@@ -11,9 +11,11 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (MarkModel is null)
+            @if (isLoading || MarkModel is null)
             {
-                <FullScreenSpinner IsVisible="IsVisible" />
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
             }
             else
             {

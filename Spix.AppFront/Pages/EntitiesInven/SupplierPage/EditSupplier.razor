@@ -1,5 +1,4 @@
-﻿@page "/suppliers/edit/{Id:guid}"
-@attribute [Authorize(Roles = "Administrator")]
+﻿@inherits ComponentBase
 
 <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -12,9 +11,11 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (Supplier is null)
+            @if (isLoading || Supplier is null)
             {
-                <FullScreenSpinner IsVisible="IsVisible" />
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
             }
             else
             {

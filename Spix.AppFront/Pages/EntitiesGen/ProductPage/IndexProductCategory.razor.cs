@@ -94,7 +94,7 @@ public partial class IndexProductCategory
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
         {
-            _navigationManager.NavigateTo("/");
+            _navigationManager.NavigateTo("/dasboard");
             return;
         }
 

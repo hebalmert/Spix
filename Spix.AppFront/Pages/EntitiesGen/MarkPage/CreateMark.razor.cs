@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -21,16 +22,15 @@ public partial class CreateMark
     private Mark Mark = new() { Active = true };
 
     private string BaseUrl = "/api/v1/marks";
-    private bool IsVisible = false;
+    private bool isLoading = false;
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Mark);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

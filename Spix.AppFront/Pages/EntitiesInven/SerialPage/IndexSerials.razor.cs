@@ -1,12 +1,13 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.ProductPage;
 using Spix.AppFront.Pages.EntitiesInven.CarguePage;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.SerialPage;
 
@@ -29,9 +30,12 @@ public partial class IndexSerials
     [Parameter] public Guid Id { get; set; }  //Codigo del CargueId
     private string Filter { get; set; } = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SetFilterValue(string value)
@@ -64,29 +68,38 @@ public partial class IndexSerials
         }
 
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
-
         CargueDetails = responseHttp.Response;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Serial)]}"   }
-            };
-            await _modalService.ShowAsync<EditSerialsDetails>(parameters);
+            component = typeof(EditSerialsDetails);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Serial)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", Id },
-                { "Title",$"{Localizer[nameof(Resource.Create_Serial)]}"   }
-            };
-            await _modalService.ShowAsync<CreateCargueDetails>(parameters);
+            component = typeof(CreateCargueDetails);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", Id },
+            { "Title", $"{Localizer[nameof(Resource.Create_Serial)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 }

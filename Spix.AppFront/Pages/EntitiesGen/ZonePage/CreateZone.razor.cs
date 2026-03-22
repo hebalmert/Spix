@@ -20,21 +20,19 @@ public partial class CreateZone
     private Zone Zone = new() { Active = true };
 
     private string BaseUrl = "/api/v1/zones";
-    private bool IsVisible = false;
+    private bool isLoading = false;
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Zone);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-
         await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }

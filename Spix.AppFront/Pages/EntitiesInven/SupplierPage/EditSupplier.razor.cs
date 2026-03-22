@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.SupplierPage;
 
@@ -19,7 +19,7 @@ public partial class EditSupplier
     [Inject] private ModalService _modalService { get; set; } = null!;
 
     private Supplier? Supplier;
-    private bool IsVisible = false;
+    private bool isLoading = false;
     private string BaseUrl = "/api/v1/suppliers";
     private string BaseView = "/suppliers";
 
@@ -28,41 +28,33 @@ public partial class EditSupplier
 
     protected override async Task OnInitializedAsync()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.GetAsync<Supplier>($"{BaseUrl}/{Id}");
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            IsVisible = false;
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
         Supplier = responseHttp.Response;
     }
 
     private async Task Edit()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", Supplier);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            IsVisible = false;
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-
-        IsVisible = false;
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
-        _modalService.Close();
-        _navigationManager.NavigateTo("/dashboard");
-        _navigationManager.NavigateTo($"{BaseView}");
+        await _modalService.CloseAsync(ModalResult.Ok());
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
-    private void Return()
+    private async Task Return()
     {
-        _modalService.Close();
-        _navigationManager.NavigateTo($"{BaseView}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

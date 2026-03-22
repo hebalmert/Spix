@@ -1,11 +1,12 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesGen.ProductPage;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.CarguePage;
 
@@ -15,7 +16,7 @@ public partial class DetailsCargueDetails
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
-    [Inject] private SweetAlertService _SweetAlert { get; set; } = null!;
+    [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
     private int CurrentPage = 1;
@@ -29,9 +30,12 @@ public partial class DetailsCargueDetails
     [Parameter] public Guid Id { get; set; }  //Codigo del CargueId
     private string Filter { get; set; } = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SetFilterValue(string value)
@@ -75,33 +79,43 @@ public partial class DetailsCargueDetails
 
         Cargue = responseHttpCountry.Response;
         CargueDetails = responseHttp.Response;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Service)]}"   }
-            };
-            await _modalService.ShowAsync<EditCargueDetails>(parameters);
+            component = typeof(EditCargueDetails);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Service)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", Id },
-                { "Title",$"{Localizer[nameof(Resource.Edit_Mac)]}"   }
-            };
-            await _modalService.ShowAsync<CreateCargueDetails>(parameters);
+            component = typeof(CreateCargueDetails);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", Id },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Mac)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task CloseCargueAsync(Guid id)
     {
-        var result = await _SweetAlert.FireAsync(new SweetAlertOptions
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
             Title = "Desea Cerrar Tranferencia",
             Text = "¿Al Cerrar la Transferencia, no podra volver editar y los Inventarios se actualizaran, Continuar?",
@@ -131,30 +145,25 @@ public partial class DetailsCargueDetails
 
     private async Task DeleteAsync(Guid id)
     {
-        var result = await _SweetAlert.FireAsync(new SweetAlertOptions
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Confirmación",
-            Text = "¿Realmente deseas eliminar el registro?",
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
             Icon = SweetAlertIcon.Question,
             ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Si"
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
-        {
+        if (result.IsDismissed || result.Value != "true")
             return;
-        }
 
-        var responseHTTP = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
-        {
-            await Cargar();
+        var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
             return;
-        }
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
     }
 }

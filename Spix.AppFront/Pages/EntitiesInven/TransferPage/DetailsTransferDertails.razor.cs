@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.TransferPage;
 
@@ -15,6 +15,7 @@ public partial class DetailsTransferDertails
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
+    [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private SweetAlertService _SweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
@@ -29,9 +30,12 @@ public partial class DetailsTransferDertails
     [Parameter] public Guid Id { get; set; }  //Codigo del TransferId
     [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SetFilterValue(string value)
@@ -75,28 +79,38 @@ public partial class DetailsTransferDertails
 
         Transfer = responseHttpCountry.Response;
         TransferDetails = responseHttp.Response;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Items)]}"   }
-            };
-            await _modalService.ShowAsync<CreateTransferDetails>(parameters);
+            component = typeof(CreateTransferDetails);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Items)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", Id },
-                { "Title",$"{Localizer[nameof(Resource.Create_Items)]}"   }
-            };
-            await _modalService.ShowAsync<CreateTransferDetails>(parameters);
+            component = typeof(CreateTransferDetails);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", Id },
+            { "Title", $"{Localizer[nameof(Resource.Create_Items)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task ClosePurchaseAsync(Guid id)
@@ -131,7 +145,7 @@ public partial class DetailsTransferDertails
 
     private async Task DeleteAsync(Guid id)
     {
-        var result = await _SweetAlert.FireAsync(new SweetAlertOptions
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
             Title = "Confirmación",
             Text = "¿Realmente deseas eliminar el registro?",
@@ -147,14 +161,14 @@ public partial class DetailsTransferDertails
             return;
         }
 
-        var responseHTTP = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
+        var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
+        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
         {
-            await Cargar();
+            _navigationManager.NavigateTo("/usuarios");
             return;
         }
+
         await Cargar();
     }
 }

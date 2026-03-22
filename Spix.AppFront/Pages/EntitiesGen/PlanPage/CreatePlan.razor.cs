@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -20,7 +21,7 @@ public partial class CreatePlan
     private Plan Plan = new() { Active = true };
 
     private string BaseUrl = "/api/v1/plans";
-    private bool IsVisible = false;
+    private bool isLoading = false;
     [Parameter] public Guid Id { get; set; }  //ProductCategoryId
     [Parameter] public string? Title { get; set; }
 
@@ -31,12 +32,11 @@ public partial class CreatePlan
             await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_ValidationWarningTitle)], Localizer[nameof(Resource.msg_ValidationWarningMessage)], SweetAlertIcon.Warning);
             return;
         }
-        IsVisible = true;
+        isLoading = true;
         Plan.PlanCategoryId = Id;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Plan);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

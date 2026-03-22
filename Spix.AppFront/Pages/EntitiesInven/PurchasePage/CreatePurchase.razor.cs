@@ -1,48 +1,50 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Enum;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 
 public partial class CreatePurchase
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
-
+    [Inject] private ModalService _modalService { get; set; } = null!;
     private Purchase Purchase = new();
 
     private FormPurchase? FormPurchase { get; set; }
 
     private string BaseUrl = "/api/v1/purchases";
     private string BaseView = "/purchases";
+    private bool isLoading = false;
 
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
         Purchase.Status = PurchaseStatus.Pendiente;
+        isLoading = true;
         var responseHttp = await _repository.PostAsync<Purchase, Purchase>($"{BaseUrl}", Purchase);
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-
-        Purchase = responseHttp.Response!;
-        FormPurchase!.FormPostedSuccessfully = true;
-        _navigationManager.NavigateTo($"{BaseView}/details/{Purchase.PurchaseId}");
+        await _modalService.CloseAsync(ModalResult.Ok());
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
-    private void Return()
+    private async Task Return()
     {
-        FormPurchase!.FormPostedSuccessfully = true;
-        _navigationManager.NavigateTo($"{BaseView}");
+        await _modalService.CloseAsync(ModalResult.Cancel());
     }
 }

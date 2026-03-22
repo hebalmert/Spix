@@ -1,11 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.SupplierPage;
 
@@ -27,9 +27,12 @@ public partial class IndexSupplier
     private const string baseUrl = "api/v1/suppliers";
     public List<Supplier>? Suppliers { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SelectedPage(int page)
@@ -46,23 +49,31 @@ public partial class IndexSupplier
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Supplier)]}"   }
-            };
-            await _modalService.ShowAsync<EditSupplier>(parameters);
+            component = typeof(EditSupplier);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Supplier)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Title",$"{Localizer[nameof(Resource.Create_Supplier)]}"   }
-            };
-            await _modalService.ShowAsync<CreateSupplier>(parameters);
+            component = typeof(CreateSupplier);
+            parameters = new Dictionary<string, object>
+        {
+            { "Title", $"{Localizer[nameof(Resource.Create_Supplier)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task Cargar(int page = 1)
@@ -77,46 +88,42 @@ public partial class IndexSupplier
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
         {
-            _navigationManager.NavigateTo("/");
+            _navigationManager.NavigateTo("/dashboard");
             return;
         }
 
         Suppliers = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowDetailsAsync(Guid id)
     {
-        var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Detail_Supplier)]}"   }
-            };
-        await _modalService.ShowAsync<DetailsSupplier>(parameters);
+        _navigationManager.NavigateTo($"/suppliers/details/{id}");
     }
 
     private async Task DeleteAsync(Guid id)
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Confirmacion",
-            Text = "Estas Seguro de Borrar el Registro",
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
             Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
-        {
+
+        if (result.IsDismissed || result.Value != "true")
             return;
-        }
 
         var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
         var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandler)
-        {
-            _navigationManager.NavigateTo("/");
             return;
-        }
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
     }
 }

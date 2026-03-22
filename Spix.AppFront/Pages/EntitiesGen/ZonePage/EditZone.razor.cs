@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -21,33 +22,30 @@ public partial class EditZone
     private Zone? Zone;
     private string BaseUrl = "/api/v1/zones";
     private string BaseView = "/zones";
-    private bool IsVisible = false;
+    private bool isLoading = false;
 
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.GetAsync<Zone>($"{BaseUrl}/{Id}");
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            IsVisible = false;
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
         Zone = responseHttp.Response;
     }
 
     private async Task Edit()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", Zone);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

@@ -1,12 +1,12 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModal;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.CarguePage;
 
@@ -28,9 +28,12 @@ public partial class IndexCargue
 
     public List<Cargue>? Cargues { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Cargar();
+        if (firstRender)
+        {
+            await Cargar();
+        }
     }
 
     private async Task SetFilterValue(string value)
@@ -47,23 +50,31 @@ public partial class IndexCargue
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
+        Type component;
+        Dictionary<string, object> parameters;
         if (isEdit)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Charge)]}"   }
-            };
-            await _modalService.ShowAsync<EditPurchases>(parameters);
+            component = typeof(EditPurchases);
+            parameters = new Dictionary<string, object>
+        {
+            { "Id", id! },
+            { "Title", $"{Localizer[nameof(Resource.Edit_Charge)]}"  }
+        };
         }
         else
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Title",$"{Localizer[nameof(Resource.Create_Charge)]}"   }
-            };
-            await _modalService.ShowAsync<CreateCargue>(parameters);
+            component = typeof(CreateCargue);
+            parameters = new Dictionary<string, object>
+        {
+            { "Title", $"{Localizer[nameof(Resource.Create_Charge)]}"  }
+        };
         }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar();   //solo refresca si hubo cambios
+        });
     }
 
     private async Task Cargar(int page = 1)
@@ -84,33 +95,31 @@ public partial class IndexCargue
 
         Cargues = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Confirmaction",
-            Text = "Estas Seguro de Borrar el Registro",
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
             Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
-        var confirm = string.IsNullOrEmpty(result.Value);
-
-        if (confirm)
-        {
+        if (result.IsDismissed || result.Value != "true")
             return;
-        }
 
-        var responseHTTP = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
-        {
-            await Cargar();
+        var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
             return;
-        }
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
     }
 }

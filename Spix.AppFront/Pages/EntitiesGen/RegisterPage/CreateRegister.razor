@@ -12,9 +12,11 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (Register is null)
+            @if (isLoading || Register is null)
             {
-                <FullScreenSpinner IsVisible="IsVisible" />
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
             }
             else
             {

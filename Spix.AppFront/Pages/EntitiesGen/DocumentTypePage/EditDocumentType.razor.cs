@@ -21,32 +21,29 @@ public partial class EditDocumentType
     private DocumentType? DocumentType;
     private string BaseUrl = "/api/v1/documenttypes";
     private string BaseView = "/documenttypes";
-    private bool IsVisible = false;
+    private bool isLoading = false;
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.GetAsync<DocumentType>($"{BaseUrl}/{Id}");
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            IsVisible = false;
-            _navigationManager.NavigateTo($"{BaseView}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
-        IsVisible = false;
         DocumentType = responseHttp.Response;
     }
 
     private async Task Edit()
     {
-        IsVisible = true;
+        isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", DocumentType);
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        IsVisible = false;
-        if (errorHandler)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
