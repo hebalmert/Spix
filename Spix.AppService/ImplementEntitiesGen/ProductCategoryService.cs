@@ -190,7 +190,7 @@ public class ProductCategoryService : IProductCategoryService
                 return new ActionResponse<ProductCategory>
                 {
                     WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
             modelo.CorporationId = Convert.ToInt32(user.CorporationId);

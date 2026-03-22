@@ -95,7 +95,7 @@ public class ChainTypesService : IChainTypesService
                 return new ActionResponse<ChainType>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 

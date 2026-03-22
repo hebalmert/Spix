@@ -128,7 +128,7 @@ public class ProductService : IProductService
                 return new ActionResponse<Product>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 

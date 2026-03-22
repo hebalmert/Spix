@@ -11,7 +11,7 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/ipnets")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Usuario")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
 [ApiController]
 public class IpNetsController : ControllerBase
 {

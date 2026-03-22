@@ -137,7 +137,7 @@ public class PlanService : IPlanService
                 return new ActionResponse<Plan>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 

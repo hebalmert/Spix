@@ -10,6 +10,7 @@ using Spix.AppService.InterfacesEntitiesGen;
 using Spix.Domain.EntitiesGen;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppService.ImplementEntitiesGen;
 
@@ -43,7 +44,7 @@ public class RegisterService : IRegisterService
                 return new ActionResponse<IEnumerable<Register>>
                 {
                     WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
+                    Message = _localizer[nameof(Resource.Generic_InvalidId)]
                 };
             }
 
@@ -74,7 +75,7 @@ public class RegisterService : IRegisterService
                 return new ActionResponse<Register>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 
@@ -125,7 +126,7 @@ public class RegisterService : IRegisterService
                 return new ActionResponse<Register>
                 {
                     WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
+                    Message = _localizer[nameof(Resource.Generic_InvalidId)]
                 };
             }
             modelo.CorporationId = Convert.ToInt32(user.CorporationId);
@@ -157,7 +158,7 @@ public class RegisterService : IRegisterService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_InvalidId)]
                 };
             }
 

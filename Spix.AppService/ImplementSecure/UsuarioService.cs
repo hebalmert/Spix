@@ -134,7 +134,7 @@ public class UsuarioService : IUsuarioService
             return new ActionResponse<Usuario>
             {
                 WasSuccess = false,
-                Message = _localizer["Generic_InvalidId"]
+                Message = _localizer[nameof(Resource.Generic_InvalidId)]
             };
         }
         await _transactionManager.BeginTransactionAsync();

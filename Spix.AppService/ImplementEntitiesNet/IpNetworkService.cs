@@ -203,7 +203,7 @@ public class IpNetworkService : IIpNetworkService
                 return new ActionResponse<IpNetwork>
                 {
                     WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
+                    Message = _localizer[nameof(Resource.Generic_InvalidId)]
                 };
             }
             modelo.CorporationId = Convert.ToInt32(user.CorporationId);

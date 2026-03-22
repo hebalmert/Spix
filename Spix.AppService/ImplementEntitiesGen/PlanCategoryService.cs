@@ -159,7 +159,7 @@ public class PlanCategoryService : IPlanCategoryService
                 return new ActionResponse<PlanCategory>
                 {
                     WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
             modelo.CorporationId = Convert.ToInt32(user.CorporationId);
@@ -191,7 +191,7 @@ public class PlanCategoryService : IPlanCategoryService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 
