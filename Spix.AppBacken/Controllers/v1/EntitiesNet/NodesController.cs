@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.Pagination;
-using Spix.UnitOfWork.InterfaceEntitiesNet;
 using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.EntitiesNet;
@@ -15,9 +15,9 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 [ApiController]
 public class NodesController : ControllerBase
 {
-    private readonly INodeUnitOfWork _nodeUnitOfWork;
+    private readonly INodeServiceX _nodeUnitOfWork;
 
-    public NodesController(INodeUnitOfWork nodeUnitOfWork)
+    public NodesController(INodeServiceX nodeUnitOfWork)
     {
         _nodeUnitOfWork = nodeUnitOfWork;
     }

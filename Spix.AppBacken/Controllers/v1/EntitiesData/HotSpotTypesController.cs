@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
 using Spix.DomainLogic.Pagination;
-using Spix.UnitOfWork.InterfacesEntitiesData;
 
 namespace Spix.AppBack.Controllers.EntitiesData;
 
@@ -14,9 +14,9 @@ namespace Spix.AppBack.Controllers.EntitiesData;
 [ApiController]
 public class HotSpotTypesController : ControllerBase
 {
-    private readonly IHotSpotTypeUnitOfWork _hotSpotTypeUnitOfWork;
+    private readonly IHotSpotTypeServiceX _hotSpotTypeUnitOfWork;
 
-    public HotSpotTypesController(IHotSpotTypeUnitOfWork hotSpotTypeUnitOfWork)
+    public HotSpotTypesController(IHotSpotTypeServiceX hotSpotTypeUnitOfWork)
     {
         _hotSpotTypeUnitOfWork = hotSpotTypeUnitOfWork;
     }

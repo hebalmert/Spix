@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.Pagination;
-using Spix.UnitOfWork.InterfaceEntitiesNet;
 using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.EntitiesNet;
@@ -16,9 +16,9 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 [ApiController]
 public class IpNetworksController : ControllerBase
 {
-    private readonly IIpNetworkUnitOfWork _ipNetworkUnitOfWork;
+    private readonly IIpNetworkServiceX _ipNetworkUnitOfWork;
 
-    public IpNetworksController(IIpNetworkUnitOfWork ipNetworkUnitOfWork)
+    public IpNetworksController(IIpNetworkServiceX ipNetworkUnitOfWork)
     {
         _ipNetworkUnitOfWork = ipNetworkUnitOfWork;
     }

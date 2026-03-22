@@ -4,9 +4,9 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.DomainLogic.EntitiesDTO;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -53,9 +53,7 @@ public partial class FormTransferDetails
     private async Task LoadCategory()
     {
         var responseHTTP = await _repository.GetAsync<List<ProductCategory>>($"api/v1/productcategories/loadCombo");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/sells");
             return;
@@ -83,6 +81,7 @@ public partial class FormTransferDetails
     private async Task LoadProducts(Guid Id) //Recibe la CategoryId
     {
         var responseHTTP = await _repository.GetAsync<List<Product>>($"api/v1/products/loadCombo/{Id}");
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/sells");
             return;
@@ -104,9 +103,7 @@ public partial class FormTransferDetails
 
         //Traerme el dato del producto
         var responseHTTP = await _repository.GetAsync<TransferStockDTO>($"api/v1/productStocks/transferStock?TransferId={TransferDetails.TransferId}&ProductId={selectedId}");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo($"/transfers/details/{TransferDetails.TransferId}");
             return;

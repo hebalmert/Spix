@@ -34,9 +34,8 @@ public partial class CreateOperation
     {
         isLoading = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Operation);
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         isLoading = false;
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

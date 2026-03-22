@@ -8,9 +8,12 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.Validations;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
+using System.Collections.Immutable;
 
 namespace Spix.AppService.ImplementEntitiesData;
 
@@ -32,13 +35,17 @@ public class ChainTypesService : IChainTypesService
         _localizer = localizer;
     }
 
-    public async Task<ActionResponse<IEnumerable<ChainType>>> ComboAsync()
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboAsync()
     {
         try
         {
-            var ListModel = await _context.ChainTypes.Where(x => x.Active).ToListAsync();
+            List<IntItemModel> ListModel = await _context.ChainTypes.Where(x => x.Active).Select(c => new IntItemModel()
+            {
+                Name = c.ToString(),
+                Value = c.ChainTypeId
+            }).ToListAsync(); ;
 
-            return new ActionResponse<IEnumerable<ChainType>>
+            return new ActionResponse<IEnumerable<IntItemModel>>
             {
                 WasSuccess = true,
                 Result = ListModel
@@ -46,7 +53,7 @@ public class ChainTypesService : IChainTypesService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ChainType>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
         }
     }
 

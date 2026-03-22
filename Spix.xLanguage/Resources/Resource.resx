@@ -1135,4 +1135,25 @@
   <data name="Cost" xml:space="preserve">
     <value>Price</value>
   </data>
+  <data name="ServerIp" xml:space="preserve">
+    <value>Server Ip</value>
+  </data>
+  <data name="DownUp" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="MikrotikId" xml:space="preserve">
+    <value>Mikrotik Id</value>
+  </data>
+  <data name="Hotspot" xml:space="preserve">
+    <value>Hotspot</value>
+  </data>
+  <data name="CashOut" xml:space="preserve">
+    <value>CashOut</value>
+  </data>
+  <data name="Prepayment" xml:space="preserve">
+    <value>Prepayment</value>
+  </data>
+  <data name="Exempt" xml:space="preserve">
+    <value>Exempt</value>
+  </data>
 </root>

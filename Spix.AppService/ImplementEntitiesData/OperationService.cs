@@ -8,6 +8,7 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.Validations;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
@@ -32,13 +33,17 @@ public class OperationService : IOperationService
         _httpErrorHandler = httpErrorHandler;
     }
 
-    public async Task<ActionResponse<IEnumerable<Operation>>> ComboAsync()
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboAsync()
     {
         try
         {
-            var ListModel = await _context.Operations.Where(x => x.Active).ToListAsync();
+            List<IntItemModel> ListModel = await _context.Operations.Where(x => x.Active).Select(c => new IntItemModel()
+            {
+                Name = c.ToString(),
+                Value = c.OperationId
+            }).ToListAsync(); ;
 
-            return new ActionResponse<IEnumerable<Operation>>
+            return new ActionResponse<IEnumerable<IntItemModel>>
             {
                 WasSuccess = true,
                 Result = ListModel
@@ -46,7 +51,7 @@ public class OperationService : IOperationService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Operation>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); 
         }
     }
 

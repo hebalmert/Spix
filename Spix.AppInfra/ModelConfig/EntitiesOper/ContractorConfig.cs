@@ -9,6 +9,7 @@ public class ContractorConfig : IEntityTypeConfiguration<Contractor>
     public void Configure(EntityTypeBuilder<Contractor> builder)
     {
         builder.HasKey(e => e.ContractorId);
+        builder.Property(x => x.ContractorId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => e.UserName).IsUnique();
         builder.HasIndex(e => new { e.CorporationId, e.DocumentTypeId, e.Document }).IsUnique();
         builder.HasIndex(e => new { e.CorporationId, e.FirstName, e.LastName }).IsUnique();

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Enum;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
@@ -64,9 +64,7 @@ public partial class FormPurchase
     private async Task LoadSupplier()
     {
         var responseHTTP = await _repository.GetAsync<List<Supplier>>($"api/v1/suppliers/loadCombo");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/purchases");
             return;
@@ -83,9 +81,7 @@ public partial class FormPurchase
     private async Task LoadProductStorage()
     {
         var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/productStorages/loadCombo");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/purchases");
             return;

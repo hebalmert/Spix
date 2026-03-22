@@ -49,9 +49,7 @@ public partial class FormPurchaseDetails
     private async Task LoadCategory()
     {
         var responseHTTP = await _repository.GetAsync<List<ProductCategory>>($"api/v1/productcategories/loadCombo");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/purchases");
             return;
@@ -79,9 +77,7 @@ public partial class FormPurchaseDetails
     private async Task LoadProducts(Guid Id) //Recibe la CategoryId
     {
         var responseHTTP = await _repository.GetAsync<List<Product>>($"api/v1/products/loadCombo/{Id}");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/purchases");
             return;
@@ -158,38 +154,6 @@ public partial class FormPurchaseDetails
             return;
         }
         return;
-    }
-
-    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
-    {
-        var formWasEdited = _editContext.IsModified();
-
-        if (!formWasEdited)
-        {
-            return;
-        }
-
-        if (FormPostedSuccessfully)
-        {
-            return;
-        }
-
-        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
-        {
-            Title = "Confirmación",
-            Text = "¿Deseas abandonar la página y perder los cambios?",
-            Icon = SweetAlertIcon.Warning,
-            ShowCancelButton = true
-        });
-
-        var confirm = !string.IsNullOrEmpty(result.Value);
-
-        if (confirm)
-        {
-            return;
-        }
-
-        context.PreventNavigation();
     }
 
     private string GetDisplayName<T>(Expression<Func<T>> expression)

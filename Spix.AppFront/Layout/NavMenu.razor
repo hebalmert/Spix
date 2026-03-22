@@ -45,6 +45,63 @@
                 <!-- Grupo: Configuración -->
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
+                            @onclick="submenu3"
+                            style="background: none; border: none;">
+                        <span class="fa fa-cogs" aria-hidden="true"></span> Configuración
+                        <span class="ms-auto fa @(expandSubMenu3 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                    </button>
+
+                    @if (expandSubMenu3)
+                    {
+                        <NavLink class="nav-link text-white ps-4" href="/documenttypes">
+                            <span class="fa fa-file me-2"></span> Tipo Documento
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/taxes">
+                            <span class="fa fa-percent me-2"></span> Impuestos
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/registers">
+                            <span class="fa fa-book me-2"></span> Registros
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/contractor">
+                            <span class="fa fa-user-tie me-2"></span> Contratistas
+                        </NavLink>
+                        <hr class="border-top border-light opacity-50 my-2" />
+                        //Linea de Division
+                        <NavLink class="nav-link text-white ps-4" href="/zones">
+                            <span class="fa fa-map-marker-alt me-2"></span> Zonas
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/marks">
+                            <span class="fa fa-tags me-2"></span> Marca Modelo
+                        </NavLink>
+                        <hr class="border-top border-light opacity-50 my-2" />
+                        //Linea de Division
+                        <NavLink class="nav-link text-white ps-4" href="/productcategories">
+                            <span class="fa fa-boxes me-2"></span> Categoria/Productos
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/servicecategories">
+                            <span class="fa fa-concierge-bell me-2"></span> Categoria/Servicios
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/plancategories">
+                            <span class="fa fa-sitemap me-2"></span> Categoria/Planes
+                        </NavLink>
+                        <hr class="border-top border-light opacity-50 my-2" />
+                        //Linea de Division
+                        <NavLink class="nav-link text-white ps-4" href="/productstorages">
+                            <span class="fa fa-boxes me-2"></span> Bodegas
+                        </NavLink>
+                        <NavLink class="nav-link text-white ps-4" href="/suppliers">
+                            <span class="fa fa-concierge-bell me-2"></span> Proveedores
+                        </NavLink>
+                    }
+                </div>
+
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Administrator">
+            <Authorized>
+                <!-- Grupo: Configuración -->
+                <div class="nav-item px-3">
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
                             @onclick="submenu2"
                             style="background: none; border: none;">
                         <span class="fa fa-gears" aria-hidden="true"></span> System Setting
@@ -69,6 +126,7 @@
 
     private bool expandSubMenu1;
     private bool expandSubMenu2;
+    private bool expandSubMenu3;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -80,11 +138,19 @@
     {
         expandSubMenu1 = !expandSubMenu1;
         expandSubMenu2 = false;
+        expandSubMenu3 = false;
     }
 
     private void submenu2()
     {
         expandSubMenu2 = !expandSubMenu2;
         expandSubMenu1 = false;
+        expandSubMenu3 = false;
+    }
+    private void submenu3()
+    {
+        expandSubMenu3 = !expandSubMenu3;
+        expandSubMenu1 = false;
+        expandSubMenu2 = false;
     }
 }

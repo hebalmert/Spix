@@ -8,6 +8,7 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.Validations;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
@@ -32,13 +33,17 @@ public class SecurityService : ISecurityService
         _localizer = localizer;
     }
 
-    public async Task<ActionResponse<IEnumerable<Security>>> ComboAsync()
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboAsync()
     {
         try
         {
-            var ListModel = await _context.Securities.Where(x => x.Active).ToListAsync();
+            List<IntItemModel> ListModel = await _context.Securities.Where(x => x.Active).Select(c => new IntItemModel()
+            {
+                Name = c.ToString(),
+                Value = c.SecurityId
+            }).ToListAsync(); ;
 
-            return new ActionResponse<IEnumerable<Security>>
+            return new ActionResponse<IEnumerable<IntItemModel>>
             {
                 WasSuccess = true,
                 Result = ListModel
@@ -46,7 +51,7 @@ public class SecurityService : ISecurityService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Security>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); 
         }
     }
 

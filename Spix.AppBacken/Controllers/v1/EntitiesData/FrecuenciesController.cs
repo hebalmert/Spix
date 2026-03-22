@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
 using Spix.DomainLogic.Pagination;
-using Spix.UnitOfWork.InterfacesEntitiesData;
 
 namespace Spix.AppBack.Controllers.Entities;
 
@@ -14,9 +14,9 @@ namespace Spix.AppBack.Controllers.Entities;
 [ApiController]
 public class FrecuenciesController : ControllerBase
 {
-    private readonly IFrecuencyUnitOfWork _frecuencyUnitOfWork;
+    private readonly IFrecuencyServiceX _frecuencyUnitOfWork;
 
-    public FrecuenciesController(IFrecuencyUnitOfWork frecuencyUnitOfWork)
+    public FrecuenciesController(IFrecuencyServiceX frecuencyUnitOfWork)
     {
         _frecuencyUnitOfWork = frecuencyUnitOfWork;
     }

@@ -4,8 +4,8 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.TransferPage;
 
@@ -53,9 +53,7 @@ public partial class FormTransfer
     private async Task LoadProductStorage1()
     {
         var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/productStorages/loadCombo");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/transfers");
             return;
@@ -80,9 +78,7 @@ public partial class FormTransfer
     private async Task LoadProductStorage2()
     {
         var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/productStorages/loadCombo");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/transfers");
             return;

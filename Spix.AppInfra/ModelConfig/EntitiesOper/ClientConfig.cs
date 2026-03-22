@@ -9,6 +9,7 @@ public class ClientConfig : IEntityTypeConfiguration<Client>
     public void Configure(EntityTypeBuilder<Client> builder)
     {
         builder.HasKey(e => e.ClientId);
+        builder.Property(x => x.ClientId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => e.UserName).IsUnique();
         builder.HasIndex(e => new { e.CorporationId, e.DocumentTypeId, e.Document }).IsUnique();
         builder.HasIndex(e => new { e.CorporationId, e.FirstName, e.LastName }).IsUnique();

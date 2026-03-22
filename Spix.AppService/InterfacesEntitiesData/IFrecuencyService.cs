@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -6,7 +7,7 @@ namespace Spix.AppService.InterfacesEntitiesData;
 
 public interface IFrecuencyService
 {
-    Task<ActionResponse<IEnumerable<Frecuency>>> ComboAsync(int id);
+    Task<ActionResponse<IEnumerable<IntItemModel>>> ComboAsync(int id);
 
     Task<ActionResponse<IEnumerable<Frecuency>>> GetAsync(PaginationDTO pagination);
 

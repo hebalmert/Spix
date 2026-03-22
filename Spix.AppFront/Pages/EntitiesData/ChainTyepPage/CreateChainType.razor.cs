@@ -1,5 +1,4 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;

@@ -43,9 +43,8 @@ public partial class EditFrecuencyType
     {
         isLoading = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", FrecuencyType);
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         isLoading = false;
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;

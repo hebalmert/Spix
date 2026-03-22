@@ -8,6 +8,7 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.Validations;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
@@ -32,13 +33,17 @@ public class HotSpotTypeService : IHotSpotTypeService
         _httpErrorHandler = httpErrorHandler;
     }
 
-    public async Task<ActionResponse<IEnumerable<HotSpotType>>> ComboAsync()
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboAsync()
     {
         try
         {
-            var ListModel = await _context.HotSpotTypes.Where(x => x.Active).ToListAsync();
+            List<IntItemModel> ListModel = await _context.HotSpotTypes.Where(x => x.Active).Select(c => new IntItemModel()
+            {
+                Name = c.ToString(),
+                Value = c.HotSpotTypeId
+            }).ToListAsync(); ;
 
-            return new ActionResponse<IEnumerable<HotSpotType>>
+            return new ActionResponse<IEnumerable<IntItemModel>>
             {
                 WasSuccess = true,
                 Result = ListModel
@@ -46,7 +51,7 @@ public class HotSpotTypeService : IHotSpotTypeService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<HotSpotType>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); 
         }
     }
 

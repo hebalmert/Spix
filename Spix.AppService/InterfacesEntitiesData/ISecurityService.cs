@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -6,7 +7,7 @@ namespace Spix.AppService.InterfacesEntitiesData;
 
 public interface ISecurityService
 {
-    Task<ActionResponse<IEnumerable<Security>>> ComboAsync();
+    Task<ActionResponse<IEnumerable<IntItemModel>>> ComboAsync();
 
     Task<ActionResponse<IEnumerable<Security>>> GetAsync(PaginationDTO pagination);
 

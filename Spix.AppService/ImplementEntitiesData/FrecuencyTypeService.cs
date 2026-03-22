@@ -8,6 +8,7 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.Validations;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
@@ -32,13 +33,17 @@ public class FrecuencyTypeService : IFrecuencyTypeService
         _localizer = localizer;
     }
 
-    public async Task<ActionResponse<IEnumerable<FrecuencyType>>> ComboAsync()
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboAsync()
     {
         try
         {
-            var ListModel = await _context.FrecuencyTypes.Where(x => x.Active).ToListAsync();
+            List<IntItemModel> ListModel = await _context.FrecuencyTypes.Where(x => x.Active).Select(c => new IntItemModel()
+            {
+                Name = c.ToString(),
+                Value = c.FrecuencyTypeId
+            }).ToListAsync(); ;
 
-            return new ActionResponse<IEnumerable<FrecuencyType>>
+            return new ActionResponse<IEnumerable<IntItemModel>>
             {
                 WasSuccess = true,
                 Result = ListModel
@@ -46,7 +51,7 @@ public class FrecuencyTypeService : IFrecuencyTypeService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<FrecuencyType>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); 
         }
     }
 

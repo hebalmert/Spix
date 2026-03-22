@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.Pagination;
-using Spix.UnitOfWork.InterfaceEntitiesNet;
 using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.EntitiesNet;
@@ -15,9 +15,9 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 [ApiController]
 public class ServersController : ControllerBase
 {
-    private readonly IServerUnitOfWork _serverUnitOfWork;
+    private readonly IServerServiceX _serverUnitOfWork;
 
-    public ServersController(IServerUnitOfWork serverUnitOfWork)
+    public ServersController(IServerServiceX serverUnitOfWork)
     {
         _serverUnitOfWork = serverUnitOfWork;
     }

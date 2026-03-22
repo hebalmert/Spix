@@ -4,8 +4,8 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesInven;
-using Spix.Domain.Resources;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.ProductStoragePage;
 
@@ -37,8 +37,7 @@ public partial class FormPStorage
     private async Task LoadState()
     {
         var responseHttp = await _repository.GetAsync<List<State>>($"{BaseComboState}");
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             _navigationManager.NavigateTo($"{BaseView}");
             return;
@@ -63,8 +62,7 @@ public partial class FormPStorage
     private async Task LoadCity(int id)
     {
         var responseHttp = await _repository.GetAsync<List<City>>($"{BaseComboCity}/{id}");
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             _navigationManager.NavigateTo($"{BaseView}");
             return;

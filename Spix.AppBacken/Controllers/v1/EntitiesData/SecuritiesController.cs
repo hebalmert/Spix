@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.Domain.EntitiesData;
 using Spix.DomainLogic.Pagination;
-using Spix.UnitOfWork.InterfacesEntitiesData;
 
 namespace Spix.AppBack.Controllers.EntitiesData;
 
@@ -14,9 +14,9 @@ namespace Spix.AppBack.Controllers.EntitiesData;
 [ApiController]
 public class SecuritiesController : ControllerBase
 {
-    private readonly ISecurityUnitOfWork _securityUnitOfWork;
+    private readonly ISecurityServiceX _securityUnitOfWork;
 
-    public SecuritiesController(ISecurityUnitOfWork securityUnitOfWork)
+    public SecuritiesController(ISecurityServiceX securityUnitOfWork)
     {
         _securityUnitOfWork = securityUnitOfWork;
     }

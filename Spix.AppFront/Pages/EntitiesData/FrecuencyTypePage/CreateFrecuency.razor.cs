@@ -33,9 +33,8 @@ public partial class CreateFrecuency
         isLoading = true;
         Frecuency.FrecuencyTypeId = Id;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Frecuency);
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         isLoading = false;
-        if (errorHandled)
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
