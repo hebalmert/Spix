@@ -83,9 +83,6 @@ public partial class FormTransferDetails
     private async Task LoadProducts(Guid Id) //Recibe la CategoryId
     {
         var responseHTTP = await _repository.GetAsync<List<Product>>($"api/v1/products/loadCombo/{Id}");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
         {
             _navigationManager.NavigateTo("/sells");
             return;
