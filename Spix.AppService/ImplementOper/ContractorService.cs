@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.ExtendedProperties;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,8 +11,9 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
-using Spix.AppService.InterfaceEntities;
+using Spix.AppService.InterfacesOper;
 using Spix.Domain.Entities;
+using Spix.Domain.EntitiesOper;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
@@ -19,43 +21,79 @@ using Spix.DomainLogic.SettingModels;
 using Spix.xFiles.FileHelper;
 using Spix.xNotification.Interfaces;
 
-namespace Spix.Services.ImplementEntties;
+namespace Spix.Services.ImplementOper;
 
-public class ManagerService : IManagerService
+public class ContractorService : IContractorService
 {
     private readonly DataContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IMapperService _mapperService;
     private readonly ITransactionManager _transactionManager;
+    private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IFileStorage _fileStorage;
     private readonly IUserHelper _userHelper;
     private readonly IEmailHelper _emailHelper;
-    private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
-    private readonly IMapperService _mapperService;
     private readonly ImgSetting _imgOption;
 
-    public ManagerService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, IMemoryCache cache, IFileStorage fileStorage,
-        IUserHelper userHelper, IEmailHelper emailHelper, IOptions<ImgSetting> ImgOption,
-        HttpErrorHandler httpErrorHandler, IStringLocalizer localizer, IMapperService mapperService)
+    public ContractorService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
+        ITransactionManager transactionManager, IMemoryCache cache, IFileStorage fileStorage, HttpErrorHandler httpErrorHandler,
+        IUserHelper userHelper, IEmailHelper emailHelper, IOptions<ImgSetting> ImgOption, IStringLocalizer localizer)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
+        _mapperService = mapperService;
         _transactionManager = transactionManager;
         _fileStorage = fileStorage;
         _userHelper = userHelper;
         _emailHelper = emailHelper;
-        _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
-        _mapperService = mapperService;
         _imgOption = ImgOption.Value;
+        _httpErrorHandler = httpErrorHandler;
     }
 
-    public async Task<ActionResponse<IEnumerable<Manager>>> GetAsync(PaginationDTO pagination)
+    public async Task<ActionResponse<IEnumerable<Contractor>>> ComboAsync(string username)
     {
         try
         {
-            var queryable = _context.Managers.Include(x => x.Corporation).AsQueryable();
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<Contractor>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+            var ListModel = await _context.Contractors.Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
+
+            return new ActionResponse<IEnumerable<Contractor>>
+            {
+                WasSuccess = true,
+                Result = ListModel
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Contractor>>(ex); // ✅ Manejo de errores automático
+        }
+    }
+
+    public async Task<ActionResponse<IEnumerable<Contractor>>> GetAsync(PaginationDTO pagination, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<Contractor>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var queryable = _context.Contractors.Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -69,16 +107,7 @@ public class ManagerService : IManagerService
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
             var modelo = await queryable.OrderBy(x => x.FirstName).Paginate(pagination).ToListAsync();
 
-            await Task.WhenAll(modelo.Select(async option =>
-            {
-                if (!string.IsNullOrWhiteSpace(option.Imagen))
-                {
-                    var FileResult = await _fileStorage.GetBlobSasUrlAsync(option.Imagen, _imgOption.ImgManager, TimeSpan.FromMinutes(3));
-                    option.ImageFullPath = FileResult;
-                }
-            }));
-
-            return new ActionResponse<IEnumerable<Manager>>
+            return new ActionResponse<IEnumerable<Contractor>>
             {
                 WasSuccess = true,
                 Result = modelo
@@ -86,45 +115,25 @@ public class ManagerService : IManagerService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Manager>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Contractor>>(ex); // ✅ Manejo de errores automático
         }
     }
 
-    public async Task<ActionResponse<Manager>> GetAsync(int id)
+    public async Task<ActionResponse<Contractor>> GetAsync(Guid id)
     {
         try
         {
-            if (id <= 0)
-            {
-                return new ActionResponse<Manager>
-                {
-                    WasSuccess = false,
-                    Message = _localizer["Generic_InvalidId"]
-                };
-            }
-            var modelo = await _context.Managers
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(x => x.ManagerId == id);
+            var modelo = await _context.Contractors.Include(x => x.DocumentType).FirstOrDefaultAsync(x => x.ContractorId == id);
             if (modelo == null)
             {
-                return new ActionResponse<Manager>
+                return new ActionResponse<Contractor>
                 {
                     WasSuccess = false,
-                    Message = _localizer["Generic_IdNotFound"]
+                    Message = "Problemas para Enconstrar el Registro Indicado"
                 };
             }
-            //Manejo de las imagenes desde Azure Private
-            if (!string.IsNullOrWhiteSpace(modelo.Imagen))
-            {
-                var FileResult = await _fileStorage.GetBlobSasUrlAsync(modelo.Imagen, _imgOption.ImgManager, TimeSpan.FromMinutes(2));
-                modelo.ImageFullPath = FileResult;
-            }
-            else
-            {
-                modelo.ImageFullPath = _imgOption.ImgNoImage;
-            }
 
-            return new ActionResponse<Manager>
+            return new ActionResponse<Contractor>
             {
                 WasSuccess = true,
                 Result = modelo
@@ -132,56 +141,17 @@ public class ManagerService : IManagerService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<Manager>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Contractor>(ex); // ✅ Manejo de errores automático
         }
     }
 
-    public async Task<ActionResponse<Manager>> UpdateAsync(Manager modelo, string frontUrl)
+    public async Task<ActionResponse<Contractor>> UpdateAsync(Contractor modelo, string frontUrl)
     {
-        var CurrentUser = await _context.Managers.AsNoTracking().Where(x => x.ManagerId == modelo.ManagerId).FirstOrDefaultAsync();
-        if (CurrentUser!.UserName != modelo.UserName)
-        {
-            return new ActionResponse<Manager>
-            {
-                WasSuccess = false,
-                Message = _localizer["Generic_UserNameCanNotChangeIt"]
-            };
-        }
-        if (CurrentUser.Email != modelo.Email)
-        {
-            var CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.Email);
-            {
-                if (CheckEmail != null)
-                {
-                    return new ActionResponse<Manager>
-                    {
-                        WasSuccess = false,
-                        Message = _localizer["Generic_EmailAlreadyUsed"]
-                    };
-                }
-            }
-        }
-
         await _transactionManager.BeginTransactionAsync();
 
         try
         {
-            Manager NewModelo = new()
-            {
-                ManagerId = modelo.ManagerId,
-                FirstName = modelo.FirstName,
-                LastName = modelo.LastName,
-                NroDocument = modelo.NroDocument,
-                PhoneNumber = modelo.PhoneNumber,
-                Address = modelo.Address,
-                Email = modelo.Email,
-                UserName = modelo.UserName,
-                CorporationId = modelo.CorporationId,
-                Job = modelo.Job,
-                UserType = modelo.UserType,
-                Imagen = modelo.Imagen,
-                Active = modelo.Active,
-            };
+            Contractor NewModelo = _mapperService.Map<Contractor, Contractor>(modelo);
             if (modelo.ImgBase64 != null)
             {
                 NewModelo.ImgBase64 = modelo.ImgBase64;
@@ -199,9 +169,9 @@ public class ManagerService : IManagerService
                     guid = modelo.Imagen;
                 }
                 var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                NewModelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgManager);
+                NewModelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgContractor!);
             }
-            _context.Managers.Update(NewModelo);
+            _context.Contractors.Update(NewModelo);
             await _transactionManager.SaveChangesAsync();
 
             User UserCurrent = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
@@ -210,9 +180,8 @@ public class ManagerService : IManagerService
                 UserCurrent.FirstName = modelo.FirstName;
                 UserCurrent.LastName = modelo.LastName;
                 UserCurrent.PhoneNumber = modelo.PhoneNumber;
-                UserCurrent.Email = modelo.Email;
                 UserCurrent.PhotoUser = modelo.Imagen;
-                UserCurrent.JobPosition = modelo.Job;
+                UserCurrent.JobPosition = "Client";
                 UserCurrent.Active = modelo.Active;
                 IdentityResult result = await _userHelper.UpdateUserAsync(UserCurrent);
             }
@@ -224,9 +193,9 @@ public class ManagerService : IManagerService
                     if (response.IsSuccess == false)
                     {
                         var guid = modelo.Imagen;
-                        await _fileStorage.RemoveFileAsync(_imgOption.ImgManager!, guid!);
+                        _fileStorage.DeleteImage(_imgOption.ImgContractor!, guid!);
                         await _transactionManager.RollbackTransactionAsync();
-                        return new ActionResponse<Manager>
+                        return new ActionResponse<Contractor>
                         {
                             WasSuccess = false,
                             Message = _localizer["Generic_UserCreationFail"]
@@ -237,7 +206,7 @@ public class ManagerService : IManagerService
 
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<Manager>
+            return new ActionResponse<Contractor>
             {
                 WasSuccess = true,
                 Result = modelo
@@ -246,63 +215,46 @@ public class ManagerService : IManagerService
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<Manager>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Contractor>(ex); // ✅ Manejo de errores automático
         }
     }
 
-    public async Task<ActionResponse<Manager>> AddAsync(Manager Newmodelo, string frontUrl)
+    public async Task<ActionResponse<Contractor>> AddAsync(Contractor modelo, string username, string frontUrl)
     {
-        User CheckUserName = await _userHelper.GetUserByUserNameAsync(Newmodelo.UserName);
-        if (CheckUserName != null)
-        {
-            return new ActionResponse<Manager>
-            {
-                WasSuccess = false,
-                Message = _localizer["Generic_UserNameAlreadyUsed"]
-            };
-        }
-        User CheckEmail = await _userHelper.GetUserByEmailAsync(Newmodelo.Email);
-        if (CheckEmail != null)
-        {
-            return new ActionResponse<Manager>
-            {
-                WasSuccess = false,
-                Message = _localizer["Generic_EmailAlreadyUsed"]
-            };
-        }
-
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            Manager modelo = new()
+            User CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.UserName);
+            if (CheckEmail != null)
             {
-                ManagerId = Newmodelo.ManagerId,
-                FirstName = Newmodelo.FirstName,
-                LastName = Newmodelo.LastName,
-                NroDocument = Newmodelo.NroDocument,
-                PhoneNumber = Newmodelo.PhoneNumber,
-                Address = Newmodelo.Address,
-                Email = Newmodelo.Email,
-                UserName = Newmodelo.UserName,
-                CorporationId = Newmodelo.CorporationId,
-                Job = Newmodelo.Job,
-                UserType = UserType.Administrator,  //Tipo de UserRole
-                Imagen = Newmodelo.Imagen,
-                Active = Newmodelo.Active,
-            };
-            if (Newmodelo.ImgBase64 != null)
-            {
-                modelo.ImgBase64 = Newmodelo.ImgBase64;
+                return new ActionResponse<Contractor>
+                {
+                    WasSuccess = true,
+                    Message = "El Correo ingresado ya se encuentra reservado, debe cambiarlo."
+                };
             }
+
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<Contractor>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            modelo.DateCreated = DateTime.Now;
+            modelo.UserType = UserType.Contractor;
+            modelo.CorporationId = Convert.ToInt32(user.CorporationId);
             if (!string.IsNullOrEmpty(modelo.ImgBase64))
             {
                 string guid = Guid.NewGuid().ToString() + ".jpg";
                 var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                //modelo.Imagen = await _fileStorage.UploadImage(imageId, _imgOption.ImgManager!, guid);
-                modelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgManager);
+                modelo.Imagen = await _fileStorage.UploadImage(imageId, _imgOption.ImgContractor!, guid);
             }
 
-            _context.Managers.Add(modelo);
+            _context.Contractors.Add(modelo);
             await _transactionManager.SaveChangesAsync();
 
             //Registro del Usuario en User
@@ -312,19 +264,19 @@ public class ManagerService : IManagerService
                 if (!response.IsSuccess)
                 {
                     var guid = modelo.Imagen;
-                    await _fileStorage.RemoveFileAsync(_imgOption.ImgManager!, guid!);
+                    _fileStorage.DeleteImage(_imgOption.ImgManager!, guid!);
                     await _transactionManager.RollbackTransactionAsync();
-                    return new ActionResponse<Manager>
+                    return new ActionResponse<Contractor>
                     {
                         WasSuccess = true,
-                        Message = _localizer["Generic_UserCreationFail"]
+                        Message = "No se ha podido crear el Usuario, Intentelo de nuevo"
                     };
                 }
             }
 
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<Manager>
+            return new ActionResponse<Contractor>
             {
                 WasSuccess = true,
                 Result = modelo
@@ -333,22 +285,22 @@ public class ManagerService : IManagerService
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<Manager>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Contractor>(ex); // ✅ Manejo de errores automático
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(int id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var DataRemove = await _context.Managers.FindAsync(id);
+            var DataRemove = await _context.Contractors.FindAsync(id);
             if (DataRemove == null)
             {
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = _localizer["Generic_IdNotFound"]
+                    Message = "Problemas para Enconstrar el Registro Indicado"
                 };
             }
             var user = await _userHelper.GetUserByUserNameAsync(DataRemove.UserName);
@@ -359,17 +311,17 @@ public class ManagerService : IManagerService
             }
             await _userHelper.DeleteUser(DataRemove.UserName);
 
-            _context.Managers.Remove(DataRemove);
+            _context.Contractors.Remove(DataRemove);
 
             if (DataRemove.Imagen is not null)
             {
-                bool response = await _fileStorage.RemoveFileAsync(_imgOption.ImgManager!, DataRemove.Imagen);
+                var response = await _fileStorage.RemoveFileAsync(_imgOption.ImgContractor!, DataRemove.Imagen);
                 if (!response)
                 {
                     return new ActionResponse<bool>
                     {
                         WasSuccess = false,
-                        Message = _localizer["Generic_RecordDeletedNoImage"]
+                        Message = "Se Elimino el Registro pero Sin la Imagen"
                     };
                 }
             }
@@ -390,10 +342,10 @@ public class ManagerService : IManagerService
         }
     }
 
-    private async Task<Response> AcivateUser(Manager manager, string frontUrl)
+    private async Task<Response> AcivateUser(Contractor modelo, string frontUrl)
     {
-        User user = await _userHelper.AddUserUsuarioAsync(manager.FirstName, manager.LastName, manager.UserName, manager.Email,
-            manager.PhoneNumber, manager.Address, manager.Job, manager.CorporationId, manager.Imagen!, "Manager", manager.Active, manager.UserType);
+        User user = await _userHelper.AddUserUsuarioAsync(modelo.FirstName, modelo.LastName, modelo.UserName, modelo.Email,
+            modelo.PhoneNumber, modelo.Address, "Contractor", modelo.CorporationId, modelo.Imagen!, "Contractor", modelo.Active, modelo.UserType);
 
         //Envio de Correo con Token de seguridad para Verificar el correo
         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
@@ -410,7 +362,7 @@ public class ManagerService : IManagerService
             $"Para Activar su vuenta, " +
             $"Has Click en el siguiente Link:</br></br><strong><a href = \"{tokenLink}\">Confirmar Correo</a></strong>");
 
-        Response response = await _emailHelper.ConfirmarCuenta(user.Email!, $"{user.FirstName} {user.LastName}", subject, body);
+        Response response = await _emailHelper.ConfirmarCuenta(user.UserName!, $"{user.FirstName} {user.LastName}", subject, body);
         if (response.IsSuccess == false)
         {
             return response;

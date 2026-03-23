@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesContratos;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -48,5 +49,5 @@ public class ServiceClient
 
     public Tax? Tax { get; set; }
 
-    //public ICollection<ContractClient>? ContractClients { get; set; }
+    public ICollection<ContractClient>? ContractClients { get; set; }
 }

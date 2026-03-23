@@ -26,10 +26,6 @@ public class Contractor
     [Display(Name = nameof(Resource.LastName), ResourceType = typeof(Resource))]
     public string LastName { get; set; } = null!;
 
-    [MaxLength(101, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
-    [Display(Name = nameof(Resource.FullName), ResourceType = typeof(Resource))]
-    public string? FullName { get; set; }
-
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.DocumentType), ResourceType = typeof(Resource))]
     public Guid DocumentTypeId { get; set; }

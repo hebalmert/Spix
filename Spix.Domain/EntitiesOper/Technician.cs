@@ -31,10 +31,6 @@ public class Technician
     [Display(Name = nameof(Resource.LastName), ResourceType = typeof(Resource))]
     public string LastName { get; set; } = null!;
 
-    [MaxLength(101, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
-    [Display(Name = nameof(Resource.Name), ResourceType = typeof(Resource))]
-    public string? FullName { get; set; }
-
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
     public string PhoneNumber { get; set; } = null!;

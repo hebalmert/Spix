@@ -127,7 +127,7 @@ public class SeedDb
         await _userHelper.CheckRoleAsync(UserType.Collector.ToString());
         await _userHelper.CheckRoleAsync(UserType.Contractor.ToString());
         await _userHelper.CheckRoleAsync(UserType.Technician.ToString());
-        await _userHelper.CheckRoleAsync(UserType.Usuario.ToString());
+        await _userHelper.CheckRoleAsync(UserType.Client.ToString());
         await _userHelper.CheckRoleAsync(UserType.WarehouseLead.ToString());
     }
 

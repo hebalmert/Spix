@@ -9,6 +9,6 @@ public enum UserType
     Collector = 5,
     Contractor = 6,
     Technician = 7,
-    Usuario = 8,
+    Client = 8,
     WarehouseLead= 9 
 }

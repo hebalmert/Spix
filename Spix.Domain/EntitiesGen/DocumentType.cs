@@ -32,5 +32,8 @@ public class DocumentType
 
     public ICollection<Client>? Clients { get; set; }
 
+    public ICollection<Technician>? Technicians { get; set; }
+
     public ICollection<Contractor>? Contractors { get; set; }
+
 }

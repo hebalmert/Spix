@@ -32,10 +32,6 @@ public class Client
     [Display(Name = nameof(Resource.LastName), ResourceType = typeof(Resource))]
     public string LastName { get; set; } = null!;
 
-    [MaxLength(101, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
-    [Display(Name = nameof(Resource.Name), ResourceType = typeof(Resource))]
-    public string? FullName { get; set; }
-
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [MaxLength(7, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
     [Display(Name = nameof(Resource.Country), ResourceType = typeof(Resource))]

@@ -8,8 +8,6 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppInfra.Validations;
 using Spix.AppService.InterfaceEntitiesNet;
-using Spix.Domain.Entities;
-using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
