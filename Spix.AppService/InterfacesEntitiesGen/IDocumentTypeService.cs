@@ -2,9 +2,9 @@
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
-namespace Spix.AppServiceX.InterfacesEntitiesGen;
+namespace Spix.AppService.InterfacesEntitiesGen;
 
-public interface IDocumentServiceX
+public interface IDocumentTypeService
 {
     Task<ActionResponse<IEnumerable<DocumentType>>> ComboAsync(string username);
 

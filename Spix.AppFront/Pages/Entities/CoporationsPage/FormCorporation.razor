@@ -61,7 +61,7 @@
                     <GenericSelectWrapper Tmodel="Country" Items="Countries">
                         <Body>
                             <div class="input-group">
-                                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Corporation)]</span>
+                                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Country)]</span>
                                 <select class="form-select" value="@Corporation.CountryId" @onchange="CountryChanged">
                                     @foreach (var item in Countries!)
                                     {

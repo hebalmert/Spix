@@ -1,11 +1,19 @@
-﻿using Spix.AppService.InterfaceEntities;
+﻿using Spix.AppService.ImplementEntitiesData;
+using Spix.AppService.ImplementEntitiesGen;
+using Spix.AppService.InterfaceEntities;
+using Spix.AppService.InterfacesEntitiesData;
+using Spix.AppService.InterfacesEntitiesGen;
 using Spix.AppService.InterfacesSecure;
+using Spix.AppServiceX.ImplementEntitiesGen;
 using Spix.AppServiceX.InterfaceEntities;
+using Spix.AppServiceX.InterfacesEntitiesData;
+using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesSecure;
 using Spix.Services.ImplementEntties;
 using Spix.Services.ImplementSecure;
 using Spix.ServiceX.ImplementSecure;
 using Spix.UnitOfWork.ImplementEntities;
+using Spix.UnitOfWork.ImplementEntitiesData;
 using Spix.UnitOfWork.ImplementSecure;
 
 namespace Spix.AppBack.DependencyInjection
@@ -35,6 +43,50 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IManagerService, ManagerService>();
             services.AddScoped<ISoftPlanServiceX, SoftPlanServiceX>();
             services.AddScoped<ISoftPlanService, SoftPlanService>();
+
+            //EntitiesData
+            services.AddScoped<IChainTypesServiceX, ChainTypesServiceX>();
+            services.AddScoped<IChainTypesService, ChainTypesService>();
+            services.AddScoped<IChannelServiceX, ChannelServiceX>();
+            services.AddScoped<IChannelService, ChannelService>();
+            services.AddScoped<IFrecuencyServiceX, FrecuencyServiceX>();
+            services.AddScoped<IFrecuencyService, FrecuencyService>();
+            services.AddScoped<IFrecuencyTypeServiceX, FrecuencyTypeServiceX>();
+            services.AddScoped<IFrecuencyTypeService, FrecuencyTypeService>();
+            services.AddScoped<IHotSpotTypeServiceX, HotSpotTypeServiceX>();
+            services.AddScoped<IHotSpotTypeService, HotSpotTypeService>();
+            services.AddScoped<IOperationServiceX, OperationServiceX>();
+            services.AddScoped<IOperationService, OperationService>();
+            services.AddScoped<ISecurityServiceX, SecurityServiceX>();
+            services.AddScoped<ISecurityService, SecurityService>();
+
+
+            //EntitiesGen
+            services.AddScoped<IDocumentTypeServiceX, DocumentTypeServiceX>();
+            services.AddScoped<IDocumentTypeService, DocumentTypeService>();
+            services.AddScoped<IMarkModelServiceX, MarkModelServiceX>();
+            services.AddScoped<IMarkModelService, MarkModelService>();
+            services.AddScoped<IMarkServiceX, MarkServiceX>();
+            services.AddScoped<IMarkService, MarkService>();
+            services.AddScoped<IPlanCategoryServiceX, PlanCategoryServiceX>();
+            services.AddScoped<IPlanCategoryService, PlanCategoryService>();
+            services.AddScoped<IPlanServiceX, PlanServiceX>();
+            services.AddScoped<IPlanService, PlanService>();
+            services.AddScoped<IProductCategoryServiceX, ProductCategoryServiceX>();
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IProductServiceX, ProductServiceX>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IRegisterServiceX, RegisterServiceX>();
+            services.AddScoped<IRegisterService, RegisterService>();
+            services.AddScoped<IServiceCategoryServiceX, ServiceCategoryServiceX>();
+            services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
+            services.AddScoped<IServiceClientServiceX, ServiceClientServiceX>();
+            services.AddScoped<IServiceClientService, ServiceClientService>();
+            services.AddScoped<ITaxServiceX, TaxServiceX>();
+            services.AddScoped<ITaxService, TaxService>();
+            services.AddScoped<IZoneServiceX, ZoneServiceX>();
+            services.AddScoped<IZoneService, ZoneService>();
+
         }
     }
 }

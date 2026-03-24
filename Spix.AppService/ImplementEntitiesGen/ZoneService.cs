@@ -79,7 +79,9 @@ public class ZoneService : IZoneService
                 };
             }
 
-            var queryable = _context.Zones.Include(x => x.state).ThenInclude(x => x!.Cities).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.Zones
+                .Include(x => x.state).ThenInclude(x => x!.Cities)
+                .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

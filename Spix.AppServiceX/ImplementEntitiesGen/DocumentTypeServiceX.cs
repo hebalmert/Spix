@@ -6,11 +6,11 @@ using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppServiceX.ImplementEntitiesGen;
 
-public class DocumentTypeServiceX : IDocumentServiceX
+public class DocumentTypeServiceX : IDocumentTypeServiceX
 {
-    private readonly IDocumentService _documentTypeService;
+    private readonly IDocumentTypeService _documentTypeService;
 
-    public DocumentTypeServiceX(IDocumentService documentTypeService)
+    public DocumentTypeServiceX(IDocumentTypeService documentTypeService)
     {
         _documentTypeService = documentTypeService;
     }

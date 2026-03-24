@@ -16,7 +16,7 @@ using Spix.xLanguage.Resources;
 
 namespace Spix.AppService.ImplementEntitiesGen;
 
-public class DocumentTypeService : IDocumentService
+public class DocumentTypeService : IDocumentTypeService
 {
     private readonly DataContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;

@@ -6,11 +6,11 @@ using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppServiceX.ImplementEntitiesGen;
 
-public class MarkUnitOfWork : IMarkServiceX
+public class MarkServiceX : IMarkServiceX
 {
     private readonly IMarkService _markService;
 
-    public MarkUnitOfWork(IMarkService markService)
+    public MarkServiceX(IMarkService markService)
     {
         _markService = markService;
     }

@@ -18,10 +18,10 @@ namespace Spix.AppBacken.Controllers.v1.EntitiesGen;
 [ApiController]
 public class DocumentTypesController : ControllerBase
 {
-    private readonly IDocumentServiceX _unitOfWork;
+    private readonly IDocumentTypeServiceX _unitOfWork;
     private readonly IStringLocalizer _localizer;
 
-    public DocumentTypesController(IDocumentServiceX documentTypeUnitOfWork, IStringLocalizer localizer)
+    public DocumentTypesController(IDocumentTypeServiceX documentTypeUnitOfWork, IStringLocalizer localizer)
     {
         _unitOfWork = documentTypeUnitOfWork;
         _localizer = localizer;
