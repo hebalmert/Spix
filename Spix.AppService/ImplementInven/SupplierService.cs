@@ -93,6 +93,15 @@ public class SupplierService : ISupplierService
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
             var modelo = await queryable.OrderBy(x => x.Name).Paginate(pagination).ToListAsync();
 
+            await Task.WhenAll(modelo.Select(async option =>
+            {
+                if (!string.IsNullOrWhiteSpace(option.Photo))
+                {
+                    var FileResult = await _fileStorage.GetBlobSasUrlAsync(option.Photo, _imgOption.ImgSuppliers, TimeSpan.FromMinutes(3));
+                    option.ImageFullPath = FileResult;
+                }
+
+            }));
             return new ActionResponse<IEnumerable<Supplier>>
             {
                 WasSuccess = true,
@@ -120,6 +129,16 @@ public class SupplierService : ISupplierService
                     WasSuccess = false,
                     Message = "Problemas para Enconstrar el Registro Indicado"
                 };
+            }
+            //Manejo de las imagenes desde Azure Private
+            if (!string.IsNullOrWhiteSpace(modelo.Photo))
+            {
+                var FileResult = await _fileStorage.GetBlobSasUrlAsync(modelo.Photo, _imgOption.ImgSuppliers, TimeSpan.FromMinutes(2));
+                modelo.ImageFullPath = FileResult;
+            }
+            else
+            {
+                modelo.ImageFullPath = _imgOption.ImgNoImage;
             }
 
             return new ActionResponse<Supplier>
@@ -158,7 +177,7 @@ public class SupplierService : ISupplierService
                     guid = modelo.Photo;
                 }
                 var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                NewModelo.Photo = await _fileStorage.SaveImageAsync(imageId, _imgOption.ImgSuppliers!, guid);
+                NewModelo.Photo = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgSuppliers);
             }
             _context.Suppliers.Update(NewModelo);
             await _transactionManager.SaveChangesAsync();
@@ -198,7 +217,7 @@ public class SupplierService : ISupplierService
             {
                 string guid = Guid.NewGuid().ToString() + ".jpg";
                 var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                modelo.Photo = await _fileStorage.SaveImageAsync(imageId, _imgOption.ImgSuppliers!, guid);
+                modelo.Photo = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgSuppliers);
             }
 
             _context.Suppliers.Add(modelo);

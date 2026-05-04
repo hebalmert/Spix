@@ -29,23 +29,6 @@ namespace Spix.AppBack.Controllers.EntitiesInven
             _localizer = localizer;
         }
 
-        [HttpGet("loadCombo")]
-        public async Task<ActionResult<IEnumerable<IntItemModel>>> GetCombo()
-        {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
-            {
-                return BadRequest("Erro en el sistema de Usuarios");
-            }
-
-            var response = await _productStorageUnitOfWork.ComboAsync(email);
-            if (response.WasSuccess)
-            {
-                return Ok(response.Result);
-            }
-            return BadRequest(response.Message);
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
         {

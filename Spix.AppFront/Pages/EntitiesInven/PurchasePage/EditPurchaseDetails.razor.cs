@@ -20,17 +20,21 @@ public partial class EditPurchaseDetails
     private PurchaseDetail? PurchaseDetail;
     private FormPurchaseDetails? FormPurchaseDetails { get; set; }
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public int Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+        StateHasChanged(); // fuerza mostrar el modal con spinner inmediatamente
+
         var responseHTTP = await _repository.GetAsync<PurchaseDetail>($"/api/purchaseDetails/{Id}");
         // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
-        if (errorHandled)
+        isLoading = false;
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
-            _navigationManager.NavigateTo($"/purchases/details/{Id}");
+            await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         PurchaseDetail = responseHTTP.Response;
@@ -38,16 +42,15 @@ public partial class EditPurchaseDetails
 
     private async Task Edit()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHTTP = await _repository.PutAsync("/api/purchaseDetails", PurchaseDetail);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

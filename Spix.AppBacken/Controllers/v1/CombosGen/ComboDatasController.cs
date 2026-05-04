@@ -8,10 +8,13 @@ using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
+using Spix.AppServiceX.InterfacesInven;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ItemsGeneric;
+using System.Security.Claims;
 
 namespace Spix.AppBacken.Controllers.v1.CombosGen;
 
@@ -35,13 +38,16 @@ public class ComboDatasController : ControllerBase
     private readonly IProductCategoryServiceX _productCategory;
     private readonly IProductServiceX _productService;
     private readonly IPlanServiceX _planServiceX;
+    private readonly ISupplierServiceX _supplierServiceX;
+    private readonly IProductStorageServiceX _productStorageService;
     private readonly IStringLocalizer _localizer;
 
     public ComboDatasController(ISecurityServiceX securityUnitOfWork, IOperationServiceX operationUnitOfWork,
         IHotSpotTypeServiceX hotSpotTypeUnitOfWork, IFrecuencyTypeServiceX frecuencyTypeUnitOfWork,
         IFrecuencyServiceX frecuencyUnitOfWork, IChannelServiceX channelUnitOfWork, IStateServiceX stateUnitOfWork,
         ICityServiceX cityUnitOfWork, IDocumentTypeServiceX documentTypeUnitOfWork, ITaxServiceX taxServiceX,
-                IProductCategoryServiceX productCategory, IProductServiceX productService, IPlanServiceX planServiceX,
+        IProductCategoryServiceX productCategory, IProductServiceX productService, IPlanServiceX planServiceX,
+        ISupplierServiceX supplierServiceX, IProductStorageServiceX productStorageService,
         IChainTypesServiceX chainTypesUnitOfWork, IStringLocalizer localizer)
     {
         _securityUnitOfWork = securityUnitOfWork;
@@ -58,7 +64,45 @@ public class ComboDatasController : ControllerBase
         _productCategory = productCategory;
         _productService = productService;
         _planServiceX = planServiceX;
+        _supplierServiceX = supplierServiceX;
+        _productStorageService = productStorageService;
         _localizer = localizer;
+    }
+
+    [HttpGet("ComboStorage")]
+    public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStorage()
+    {
+        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+        if (email == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _productStorageService.ComboAsync(email);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
+    [HttpGet("ComboSupplier")]
+    public async Task<IActionResult> GetComboSupplierAsync(Guid id)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _supplierServiceX.ComboAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 
     [HttpGet("ComboUp")]
@@ -100,7 +144,7 @@ public class ComboDatasController : ControllerBase
     }
 
     [HttpGet("ComboProducts/{id}")]
-    public async Task<IActionResult> GetComboAsync(Guid id)
+    public async Task<IActionResult> GetComboProductsAsync(Guid id)
     {
         try
         {

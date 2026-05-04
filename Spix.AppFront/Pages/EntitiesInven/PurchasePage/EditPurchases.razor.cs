@@ -20,6 +20,7 @@ public partial class EditPurchases
     private string BaseUrl = "api/v1/purchases";
     private Purchase? Purchase;
     private bool isLoading = false;
+    private bool IsSaving = false;
     private FormPurchase? FormPurchase { get; set; }
 
     [Parameter] public Guid Id { get; set; }
@@ -28,6 +29,8 @@ public partial class EditPurchases
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        StateHasChanged(); // fuerza mostrar el modal con spinner inmediatamente
+
         var responseHTTP = await _repository.GetAsync<Purchase>($"{BaseUrl}/{Id}");
         isLoading = false;
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
@@ -40,16 +43,15 @@ public partial class EditPurchases
 
     private async Task Edit()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHTTP = await _repository.PutAsync($"{BaseUrl}", Purchase);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

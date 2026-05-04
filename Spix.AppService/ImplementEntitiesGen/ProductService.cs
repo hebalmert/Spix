@@ -56,6 +56,12 @@ public class ProductService : IProductService
             var ListModel = await _context.Products
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.ProductCategoryId == id)
                 .ToListAsync();
+            var defaultItem = new Product
+            {
+                ProductId = Guid.Empty,
+                ProductName = $"[{_localizer[nameof(Resource.Product)]}]"
+            };
+            ListModel.Insert(0, defaultItem);
 
             return new ActionResponse<IEnumerable<Product>>
             {

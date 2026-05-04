@@ -1,86 +1,94 @@
 ﻿<EditForm Model="PurchaseDetail" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
-    <!-- Categoría -->
-    @if (Categories is null)
-    {
-        <Loading />
-    }
-    else
-    {
-        <div class="mb-5">
-            <label class="form-label">Categoría</label>
-            <InputSelect class="form-select"
-                         @bind-Value="SelectedCategory"
-                         @onchange="CategoryChanged">
-                <option value="">Seleccione...</option>
-                @foreach (var item in Categories!)
-                {
-                    <option value="@item">@item.Name</option>
-                }
-            </InputSelect>
-        </div>
-    }
+    <div class="mb-2">
+        @if (Categories is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Category)]</span>
+                <select class="form-select" value="@PurchaseDetail.ProductCategoryId" @onchange="CategoryChanged">
+                    @foreach (var item in Categories)
+                    {
+                        <option value="@item.ProductCategoryId">@item.Name</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
 
-    <!-- Producto -->
-    @if (Products is null)
-    {
-        <Loading />
-    }
-    else
-    {
-        <div class="mb-5">
-            <label class="form-label">Producto</label>
-            <InputSelect class="form-select"
-                         @bind-Value="SelectedProduct"
-                         @onchange="ProductsChanged">
-                <option value="">Seleccione...</option>
-                @foreach (var item in Products!)
-                {
-                    <option value="@item">@item.ProductName</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => PurchaseDetail.Product)" />
-        </div>
-    }
+    <div class="mb-2">
+        @if (Products is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Product)]</span>
+                <select class="form-select" value="@PurchaseDetail.ProductId" @onchange="ProductsChanged">
+                    @foreach (var item in Products)
+                    {
+                        <option value="@item.ProductId">@item.ProductName</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+
+
 
     <!-- Impuesto -->
-    <div class="mb-4">
-        <label class="form-label">@GetDisplayName(() => PurchaseDetail.RateTax)</label>
-        <InputNumber class="form-control"
-                     @bind-Value="PurchaseDetail.RateTax"
-                     readonly />
+    <div class="col-12 mb-4">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 100px">
+                @Localizer[nameof(Resource.Rate)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="PurchaseDetail.RateTax" readonly="true" />
+        </div>
         <ValidationMessage For="@(() => PurchaseDetail.RateTax)" />
     </div>
 
     <!-- Costo Unitario -->
-    <div class="mb-4">
-        <label class="form-label">@GetDisplayName(() => PurchaseDetail.UnitCost)</label>
-        <InputNumber class="form-control"
-                     @bind-Value="PurchaseDetail.UnitCost"
-                     @oninput="@(e => CalculoTotalUnit(decimal.Parse(e.Value?.ToString() ?? "0")))" />
+    <div class="col-12 mb-4">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 100px">
+                @Localizer[nameof(Resource.UnitCost)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="PurchaseDetail.UnitCost" @oninput="@(e => CalculoTotalUnit(decimal.Parse(e.Value?.ToString() ?? "0")))" />
+        </div>
         <ValidationMessage For="@(() => PurchaseDetail.UnitCost)" />
     </div>
 
     <!-- Cantidad -->
-    <div class="mb-4">
-        <label class="form-label">@GetDisplayName(() => PurchaseDetail.Quantity)</label>
-        <InputNumber class="form-control"
-                     @bind-Value="PurchaseDetail.Quantity"
-                     @oninput="@(e => CalculoTotalCant(decimal.Parse(e.Value?.ToString() ?? "0")))" />
+    <div class="col-12 mb-4">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 100px">
+                @Localizer[nameof(Resource.Quantity)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="PurchaseDetail.Quantity" @oninput="@(e => CalculoTotalCant(decimal.Parse(e.Value?.ToString() ?? "0")))" />
+        </div>
         <ValidationMessage For="@(() => PurchaseDetail.Quantity)" />
     </div>
 
     <!-- Subtotal -->
-    <div class="mb-4">
-        <label class="form-label">@GetDisplayName(() => PurchaseDetail.SubTotal)</label>
-        <InputNumber class="form-control" @bind-Value="Total" readonly="true" />
+    <div class="col-12 mb-4">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 100px">
+                @Localizer[nameof(Resource.Subtotal)]
+            </span>
+            <InputNumber class="form-control" @bind-Value="Total" readonly="true" />
+        </div>
         <ValidationMessage For="@(() => Total)" />
     </div>
 
     <!-- Botones -->
     <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
+        <ButtonFormSave IsSaving="IsSaving" />
         <ButtonFormBack OnClick="ReturnAction" />
-        <ButtonFormSave />
     </div>
 </EditForm>

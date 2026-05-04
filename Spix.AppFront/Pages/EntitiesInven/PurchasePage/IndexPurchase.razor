@@ -1,85 +1,69 @@
 ﻿@page "/purchases"
 @attribute [Authorize(Roles = "Administrator")]
 
-<div class="container shadow-lg mb-5 p-4 bg-white rounded">
-    <h3>Compras</h3>
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Compras</h3>
 
-    <div class="row align-items-center mb-3">
-        <!-- Botón Nueva -->
-        <div class="col-md-3 d-flex justify-content-start">
-            <button class="btn btn-dark w-100" style="max-width:130px;" @onclick="() => ShowModalAsync()">
-                <i class="bi bi-plus-circle me-1"></i> Nueva
-            </button>
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
+                </button>
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
         </div>
 
-        <!-- Filtro -->
-        <div class="col-md-9 d-flex justify-content-end">
-            <FilterComponent ApplyFilter="SetFilterValue" />
-        </div>
-    </div>
-
-    <hr class="border-top border-dark opacity-75 my-3" />
-
-    <!-- Tabla -->
-    <div class="table-responsive">
+        <hr />
+        <!-- Tabla -->
         <GenericList MyList="Purchases">
             <Body>
-                <table class="table table-hover table-striped align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Proveedor</th>
-                            <th>Factura</th>
-                            <th>Fecha Fact</th>
-                            <th>Status</th>
-                            <th colspan="3" class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Purchases!)
-                        {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
                             <tr>
-                                <td>@item.Supplier!.Name</td>
-                                <td>@item.NroFactura</td>
-                                <td>@item.FacuraDate.ToString("dd/MM/yyyy")</td>
-                                <td>@item.Status.ToString()</td>
-                                <td class="text-center">
-                                    @if (item.Status == PurchaseStatus.Pendiente)
-                                    {
-                                        <button class="btn btn-sm btn-dark"
-                                                title="Editar"
-                                                @onclick="@(() => ShowModalAsync(item.PurchaseId, true))">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <a class="btn btn-sm btn-dark"
-                                       title="Detalles"
-                                       href="@($"/purchases/details/{item.PurchaseId}")">
-                                        <i class="bi bi-columns-gap"></i>
-                                    </a>
-                                </td>
-                                <td class="text-center">
-                                    @if (item.Status == PurchaseStatus.Pendiente)
-                                    {
-                                        <button class="btn btn-sm btn-danger"
-                                                title="Eliminar"
-                                                @onclick="@(() => DeleteAsync(item.PurchaseId))">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    }
-                                </td>
+                                <th>Proveedor</th>
+                                <th>Factura</th>
+                                <th>Fecha Fact</th>
+                                <th>Status</th>
+                                <th colspan="4" class="text-center">Acciones</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Purchases!)
+                            {
+                                <tr>
+                                    <td>@item.Supplier!.Name</td>
+                                    <td>@item.NroFactura</td>
+                                    <td>@item.FacuraDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Status.ToString()</td>
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.PurchaseId)" TooTip="@Localizer[nameof(Resource.Purchase)]"
+                                                       Icon="fa fa-table-list" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        |
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowModalAsync(item.PurchaseId, true)" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonDelete OnClick="() => DeleteAsync(item.PurchaseId)" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </Body>
         </GenericList>
+        <!-- Tabla -->
+        <hr />
+        <!-- Paginación -->
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
     </div>
-
-    <hr class="border-top border-dark opacity-75 my-3" />
-
-    <Pagination CurrentPage="CurrentPage"
-                SelectedPage="SelectedPage"
-                TotalPages="TotalPages" />
 </div>

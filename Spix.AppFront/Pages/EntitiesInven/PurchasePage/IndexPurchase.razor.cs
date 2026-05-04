@@ -46,6 +46,11 @@ public partial class IndexPurchase
         await Cargar(page);
     }
 
+    private void ShowModalDetailsAsync(Guid? id = null)
+    {
+        _navigationManager.NavigateTo($"/purchases/details/{id}");
+    }
+
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
         Type component;

@@ -1,13 +1,13 @@
 using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
+using Spix.AppInfra.UtilityTools;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
-using System.Reflection;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 
@@ -28,12 +28,13 @@ public partial class FormPurchaseDetails
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
 
     [Parameter, EditorRequired] public PurchaseDetail PurchaseDetail { get; set; } = null!;
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
-
+    [Parameter] public bool IsSaving { get; set; }
     public bool FormPostedSuccessfully { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
@@ -69,7 +70,6 @@ public partial class FormPurchaseDetails
             PurchaseDetail.ProductCategoryId = selectedId;
         }
         Products = new();
-        SelectedProduct = new();
         await LoadProducts(selectedId);
     }
 
@@ -87,7 +87,7 @@ public partial class FormPurchaseDetails
         {
             SelectedProduct = Products!.Where(x => x.ProductId == PurchaseDetail.ProductId)
                 .Select(x => new Product { ProductId = x.ProductId, ProductName = x.ProductName }).FirstOrDefault();
-            Total = PurchaseDetail.SubTotal;
+            Total = DecimalHelper.FormatDecimal(PurchaseDetail.SubTotal);
         }
     }
 
@@ -110,14 +110,14 @@ public partial class FormPurchaseDetails
 
         ItemProducto = responseHTTP.Response;
         //Igualamos datos
-        PurchaseDetail.RateTax = ItemProducto!.Tax!.Rate;
+        PurchaseDetail.RateTax = DecimalHelper.FormatDecimal(ItemProducto!.Tax!.Rate);
         if (PurchaseDetail.RateTax == 0)
         {
             if (ItemProducto.Costo > 0)
             {
                 PurchaseDetail.UnitCost = ItemProducto.Costo;
                 PurchaseDetail.Quantity = 1;
-                Total = (decimal)(PurchaseDetail.UnitCost * PurchaseDetail.Quantity);
+                Total = DecimalHelper.FormatDecimal(PurchaseDetail.UnitCost * PurchaseDetail.Quantity);
             }
         }
         else
@@ -125,9 +125,9 @@ public partial class FormPurchaseDetails
             decimal impuesto = ItemProducto!.Tax!.Rate;
             decimal costo = ItemProducto.Costo;
             decimal Precio = costo / ((impuesto / 100) + 1);
-            PurchaseDetail.UnitCost = Precio;
+            PurchaseDetail.UnitCost = DecimalHelper.FormatDecimal(Precio);
             PurchaseDetail.Quantity = 1;
-            Total = (decimal)(Precio * PurchaseDetail.Quantity);
+            Total = DecimalHelper.FormatDecimal(Precio * PurchaseDetail.Quantity);
         }
     }
 
@@ -136,8 +136,8 @@ public partial class FormPurchaseDetails
         decimal costo = PurchaseDetail.Quantity;
         if (PurchaseDetail.Quantity > 0 && valor > 0)
         {
-            Total = (costo * valor);
-            PurchaseDetail.UnitCost = valor;
+            Total = DecimalHelper.FormatDecimal(costo * valor);
+            PurchaseDetail.UnitCost = DecimalHelper.FormatDecimal(valor);
             return;
         }
         return;
@@ -148,27 +148,10 @@ public partial class FormPurchaseDetails
         decimal costo = PurchaseDetail.UnitCost;
         if (PurchaseDetail.UnitCost > 0 && valor > 0)
         {
-            Total = (costo * valor);
-            PurchaseDetail.Quantity = valor;
+            Total = DecimalHelper.FormatDecimal(costo * valor);
+            PurchaseDetail.Quantity = DecimalHelper.FormatDecimal(valor);
             return;
         }
         return;
-    }
-
-    private string GetDisplayName<T>(Expression<Func<T>> expression)
-    {
-        if (expression.Body is MemberExpression memberExpression)
-        {
-            var property = memberExpression.Member as PropertyInfo;
-            if (property != null)
-            {
-                var displayAttribute = property.GetCustomAttribute<DisplayAttribute>();
-                if (displayAttribute != null)
-                {
-                    return displayAttribute.Name!;
-                }
-            }
-        }
-        return "Texto no definido";
     }
 }
