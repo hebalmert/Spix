@@ -22,14 +22,16 @@ public partial class EditServiceCategory
     private ServiceCategory? ServiceCategory;
 
     private string BaseUrl = "/api/v1/servicecategories";
-    private string BaseView = "/servicecategories";
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        StateHasChanged(); // fuerza mostrar el modal con spinner inmediatamente
+
         var responseHttp = await _repository.GetAsync<ServiceCategory>($"{BaseUrl}/{Id}");
         isLoading = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
@@ -42,16 +44,15 @@ public partial class EditServiceCategory
 
     private async Task Edit()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", ServiceCategory);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

@@ -13,7 +13,7 @@ public class SupplierConfig : IEntityTypeConfiguration<Supplier>
         builder.HasIndex(e => new { e.CorporationId, e.Name }).IsUnique();
         builder.HasIndex(e => new { e.CorporationId, e.Document, e.DocumentTypeId }).IsUnique();
         //Evitar el borrado en cascada
-        builder.HasOne(e => e.State).WithMany(c => c.Suppliers).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.State).WithMany().OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.City).WithMany(c => c.Suppliers).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.DocumentType).WithMany(c => c.Suppliers).OnDelete(DeleteBehavior.Restrict);
     }

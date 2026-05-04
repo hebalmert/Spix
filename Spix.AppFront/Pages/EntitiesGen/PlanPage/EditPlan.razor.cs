@@ -22,14 +22,16 @@ public partial class EditPlan
     private Plan? Plan;
 
     private string BaseUrl = "/api/v1/plans";
-    private string BaseView = "/plans/details";
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        StateHasChanged(); // fuerza mostrar el modal con spinner inmediatamente
+
         var responseHttp = await _repository.GetAsync<Plan>($"{BaseUrl}/{Id}");
         isLoading = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
@@ -47,16 +49,15 @@ public partial class EditPlan
             await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_ValidationWarningTitle)], Localizer[nameof(Resource.msg_ValidationWarningMessage)], SweetAlertIcon.Warning);
             return;
         }
-        isLoading = true;
+        IsSaving = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", Plan);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

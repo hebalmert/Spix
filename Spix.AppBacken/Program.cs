@@ -191,7 +191,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("https://localhost:7137", "https://regixappfront-cngmebf8gsbyehd9.canadacentral-01.azurewebsites.net")
+        builder.WithOrigins("https://localhost:7137", 
+            "https://regixappfront-cngmebf8gsbyehd9.canadacentral-01.azurewebsites.net",
+            "http://localhost:3034")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders(new[] { "Totalpages", "Counting" });
@@ -199,7 +201,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-//Aplicando el sistema de Localizacion para Multilenguaje
+
+// Localización
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
 app.UseRequestLocalization(localizationOptions);
 
@@ -214,9 +217,10 @@ try
 catch (Exception ex)
 {
     Console.WriteLine($"Error en Seeder: {ex.Message}");
+
 }
 
-// Pipeline
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -232,6 +236,5 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.Run();
 
 app.Run();

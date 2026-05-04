@@ -34,6 +34,7 @@ public partial class FormPlan
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,7 +44,7 @@ public partial class FormPlan
 
     private async Task LoadSpeedUp()
     {
-        var responseHTTP = await _repository.GetAsync<List<IntItemModel>>($"api/v1/plans/ComboUp");
+        var responseHTTP = await _repository.GetAsync<List<IntItemModel>>($"api/v1/combosData/ComboUp");
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
         if (errorHandled)
         {
@@ -52,13 +53,6 @@ public partial class FormPlan
         }
         ListUserTypeUp = responseHTTP.Response;
         ListUserTypeDown = responseHTTP.Response;
-
-        if (IsEditControl == true)
-        {
-            SelectedUserTypeUp = ListUserTypeUp!.Where(x => x.Name == Plan.SpeedUpType.ToString()).FirstOrDefault();
-
-            SelectedUserTypeDown = ListUserTypeDown!.Where(x => x.Name == Plan.SpeedDownType.ToString()).FirstOrDefault();
-        }
     }
 
     private void UsertTypeUpChanged(ChangeEventArgs e)
@@ -91,7 +85,7 @@ public partial class FormPlan
 
     private async Task LoadTaxes()
     {
-        var responseHTTP = await _repository.GetAsync<List<GuidItemModel>>($"api/v1/taxes/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<GuidItemModel>>($"api/v1/combosData/ComboTaxes");
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHTTP);
         if (errorHandled)

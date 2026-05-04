@@ -16,7 +16,7 @@
             <span class="input-group-text" style="width: 150px">
                 @Localizer[nameof(Resource.Active)]
             </span>
-            <div class="d-flex align-items-center ps-3">
+            <div class="d-flex align-items-center ps-3 form-control">
                 <InputCheckbox @bind-Value="Mark.Active" class="form-check-input me-2" />
             </div>
         </div>
@@ -24,7 +24,7 @@
 
     <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-5">
-        <ButtonFormSave />
+        <ButtonFormSave IsSaving="IsSaving" />
         <ButtonFormBack OnClick="ReturnAction" />
     </div>
 </EditForm>

@@ -1,13 +1,11 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 namespace Spix.AppFront.Pages.EntitiesGen.ProductPage;
 
 public partial class IndexProductCategory
@@ -58,7 +56,7 @@ public partial class IndexProductCategory
             parameters = new Dictionary<string, object>
         {
             { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Category)]}"  }
+            { "Title", $"{Localizer[nameof(Resource.Edit_Product)]}"  }
         };
         }
         else
@@ -66,14 +64,21 @@ public partial class IndexProductCategory
             component = typeof(CreateProductCategory);
             parameters = new Dictionary<string, object>
         {
-            { "Title", $"{Localizer[nameof(Resource.Create_Category)]}"  }
+            { "Title", $"{Localizer[nameof(Resource.Create_Product)]}"  }
         };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+            {
+                await Cargar(CurrentPage);   // refresca la tabla
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
         });
     }
 
@@ -125,6 +130,6 @@ public partial class IndexProductCategory
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

@@ -1,27 +1,19 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
-using System.Reflection;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 
 public partial class FormPurchase
 {
-    private EditContext _editContext = null!;
-
     private IntItemModel? SelectedStatus;
     private List<IntItemModel>? ListStatus;
-
-    private Supplier? SelectedSupplier;
     private List<Supplier>? Suppliers;
-
-    private ProductStorage? SelectedProductStorage;
     private List<ProductStorage>? ProductStorages;
 
     private DateTime? DateMin = new DateTime(2020, 1, 1);
@@ -31,13 +23,13 @@ public partial class FormPurchase
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
 
     [Parameter, EditorRequired] public Purchase Purchase { get; set; } = null!;
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
 
-    public bool FormPostedSuccessfully { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,36 +55,24 @@ public partial class FormPurchase
 
     private async Task LoadSupplier()
     {
-        var responseHTTP = await _repository.GetAsync<List<Supplier>>($"api/v1/suppliers/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<Supplier>>($"api/v1/combosData/ComboSupplier");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
-            _navigationManager.NavigateTo("/purchases");
             return;
         }
 
         Suppliers = responseHTTP.Response;
-        if (IsEditControl == true)
-        {
-            SelectedSupplier = Suppliers!.Where(x => x.SupplierId == Purchase.SupplierId)
-                .Select(x => new Supplier { SupplierId = x.SupplierId, Name = x.Name }).FirstOrDefault();
-        }
     }
 
     private async Task LoadProductStorage()
     {
-        var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/productStorages/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/combosData/ComboStorage");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
-            _navigationManager.NavigateTo("/purchases");
             return;
         }
 
         ProductStorages = responseHTTP.Response;
-        if (IsEditControl == true)
-        {
-            SelectedProductStorage = ProductStorages!.Where(x => x.ProductStorageId == Purchase.ProductStorageId)
-                .Select(x => new ProductStorage { ProductStorageId = x.ProductStorageId, StorageName = x.StorageName }).FirstOrDefault();
-        }
     }
 
     private void ProductStorageChanged(ChangeEventArgs e)
@@ -109,22 +89,5 @@ public partial class FormPurchase
         {
             Purchase.SupplierId = selectedId;
         }
-    }
-
-    private string GetDisplayName<T>(Expression<Func<T>> expression)
-    {
-        if (expression.Body is MemberExpression memberExpression)
-        {
-            var property = memberExpression.Member as PropertyInfo;
-            if (property != null)
-            {
-                var displayAttribute = property.GetCustomAttribute<DisplayAttribute>();
-                if (displayAttribute != null)
-                {
-                    return displayAttribute.Name!;
-                }
-            }
-        }
-        return "Texto no definido";
     }
 }

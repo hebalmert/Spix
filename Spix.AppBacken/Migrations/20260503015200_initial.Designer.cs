@@ -12,8 +12,8 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260323154620_InitialDB")]
-    partial class InitialDB
+    [Migration("20260503015200_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1187,7 +1187,8 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("TaxId");
 
-                    b.HasIndex("CorporationId", "PlanName");
+                    b.HasIndex("CorporationId", "PlanName")
+                        .IsUnique();
 
                     b.ToTable("Plans");
                 });
@@ -1544,10 +1545,6 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PurchaseId")
-                        .HasMaxLength(20)
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -1558,8 +1555,6 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ProductId");
 
                     b.HasIndex("PurchaseDetailId");
-
-                    b.HasIndex("PurchaseId");
 
                     b.ToTable("Cargues");
                 });
@@ -1733,9 +1728,6 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("ProductCategoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1752,8 +1744,6 @@ namespace Spix.AppBacken.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PurchaseDetailId");
-
-                    b.HasIndex("ProductCategoryId");
 
                     b.HasIndex("ProductId");
 
@@ -1873,6 +1863,10 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasKey("TransferId");
 
+                    b.HasIndex("FromProductStorageId");
+
+                    b.HasIndex("ToProductStorageId");
+
                     b.HasIndex("UserId");
 
                     b.HasIndex("CorporationId", "NroTransfer")
@@ -1895,9 +1889,6 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("ProductCategoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1908,8 +1899,6 @@ namespace Spix.AppBacken.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("TransferDetailsId");
-
-                    b.HasIndex("ProductCategoryId");
 
                     b.HasIndex("ProductId");
 
@@ -2910,7 +2899,7 @@ namespace Spix.AppBacken.Migrations
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Zone", b =>
                 {
-                    b.HasOne("Spix.Domain.Entities.City", "city")
+                    b.HasOne("Spix.Domain.Entities.City", "City")
                         .WithMany("Zones")
                         .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2922,17 +2911,17 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Spix.Domain.Entities.State", "state")
-                        .WithMany("Zones")
+                    b.HasOne("Spix.Domain.Entities.State", "State")
+                        .WithMany()
                         .HasForeignKey("StateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("City");
+
                     b.Navigation("Corporation");
 
-                    b.Navigation("city");
-
-                    b.Navigation("state");
+                    b.Navigation("State");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.Cargue", b =>
@@ -2944,28 +2933,20 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesGen.Product", "Product")
-                        .WithMany("Cargue")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesInven.PurchaseDetail", "PurchaseDetail")
-                        .WithMany("Cargue")
+                        .WithMany()
                         .HasForeignKey("PurchaseDetailId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.EntitiesInven.Purchase", "Purchase")
-                        .WithMany("Cargue")
-                        .HasForeignKey("PurchaseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Corporation");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Purchase");
 
                     b.Navigation("PurchaseDetail");
                 });
@@ -3031,7 +3012,7 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.Entities.State", "State")
-                        .WithMany("ProductStorages")
+                        .WithMany()
                         .HasForeignKey("StateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -3052,7 +3033,7 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesInven.ProductStorage", "ProductStorage")
-                        .WithMany("Purchases")
+                        .WithMany()
                         .HasForeignKey("ProductStorageId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -3078,12 +3059,6 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Spix.Domain.EntitiesGen.ProductCategory", "ProductCategory")
-                        .WithMany("PurchaseDetails")
-                        .HasForeignKey("ProductCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Spix.Domain.EntitiesGen.Product", "Product")
                         .WithMany("PurchaseDetails")
                         .HasForeignKey("ProductId")
@@ -3099,8 +3074,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Corporation");
 
                     b.Navigation("Product");
-
-                    b.Navigation("ProductCategory");
 
                     b.Navigation("Purchase");
                 });
@@ -3126,7 +3099,7 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.Entities.State", "State")
-                        .WithMany("Suppliers")
+                        .WithMany()
                         .HasForeignKey("StateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -3148,8 +3121,20 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Spix.Domain.EntitiesInven.ProductStorage", null)
+                        .WithMany()
+                        .HasForeignKey("FromProductStorageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesInven.ProductStorage", null)
+                        .WithMany()
+                        .HasForeignKey("ToProductStorageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Spix.Domain.Entities.User", "User")
-                        .WithMany("Transfers")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -3164,12 +3149,6 @@ namespace Spix.AppBacken.Migrations
                         .WithMany()
                         .HasForeignKey("CorporationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.EntitiesGen.ProductCategory", "ProductCategory")
-                        .WithMany("TransferDetails")
-                        .HasForeignKey("ProductCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesGen.Product", "Product")
@@ -3187,8 +3166,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Corporation");
 
                     b.Navigation("Product");
-
-                    b.Navigation("ProductCategory");
 
                     b.Navigation("Transfer");
                 });
@@ -3245,13 +3222,13 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesGen.Mark", "Mark")
-                        .WithMany("Nodes")
+                        .WithMany()
                         .HasForeignKey("MarkId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesGen.MarkModel", "MarkModel")
-                        .WithMany("Nodes")
+                        .WithMany()
                         .HasForeignKey("MarkModelId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -3309,13 +3286,13 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesGen.Mark", "Mark")
-                        .WithMany("Servers")
+                        .WithMany()
                         .HasForeignKey("MarkId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Spix.Domain.EntitiesGen.MarkModel", "MarkModel")
-                        .WithMany("Servers")
+                        .WithMany()
                         .HasForeignKey("MarkModelId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -3432,18 +3409,10 @@ namespace Spix.AppBacken.Migrations
             modelBuilder.Entity("Spix.Domain.Entities.State", b =>
                 {
                     b.Navigation("Cities");
-
-                    b.Navigation("ProductStorages");
-
-                    b.Navigation("Suppliers");
-
-                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.User", b =>
                 {
-                    b.Navigation("Transfers");
-
                     b.Navigation("UserRoleDetails");
                 });
 
@@ -3501,17 +3470,6 @@ namespace Spix.AppBacken.Migrations
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Mark", b =>
                 {
                     b.Navigation("MarkModels");
-
-                    b.Navigation("Nodes");
-
-                    b.Navigation("Servers");
-                });
-
-            modelBuilder.Entity("Spix.Domain.EntitiesGen.MarkModel", b =>
-                {
-                    b.Navigation("Nodes");
-
-                    b.Navigation("Servers");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Plan", b =>
@@ -3528,8 +3486,6 @@ namespace Spix.AppBacken.Migrations
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Product", b =>
                 {
-                    b.Navigation("Cargue");
-
                     b.Navigation("ProductStocks");
 
                     b.Navigation("PurchaseDetails");
@@ -3540,10 +3496,6 @@ namespace Spix.AppBacken.Migrations
             modelBuilder.Entity("Spix.Domain.EntitiesGen.ProductCategory", b =>
                 {
                     b.Navigation("Products");
-
-                    b.Navigation("PurchaseDetails");
-
-                    b.Navigation("TransferDetails");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.ServiceCategory", b =>
@@ -3584,20 +3536,11 @@ namespace Spix.AppBacken.Migrations
             modelBuilder.Entity("Spix.Domain.EntitiesInven.ProductStorage", b =>
                 {
                     b.Navigation("ProductStocks");
-
-                    b.Navigation("Purchases");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.Purchase", b =>
                 {
-                    b.Navigation("Cargue");
-
                     b.Navigation("PurchaseDetails");
-                });
-
-            modelBuilder.Entity("Spix.Domain.EntitiesInven.PurchaseDetail", b =>
-                {
-                    b.Navigation("Cargue");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.Supplier", b =>

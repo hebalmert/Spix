@@ -6,7 +6,6 @@ using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-
 namespace Spix.AppFront.Pages.EntitiesInven.SupplierPage;
 
 public partial class EditSupplier
@@ -21,7 +20,6 @@ public partial class EditSupplier
     private Supplier? Supplier;
     private bool isLoading = false;
     private string BaseUrl = "/api/v1/suppliers";
-    private string BaseView = "/suppliers";
 
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }

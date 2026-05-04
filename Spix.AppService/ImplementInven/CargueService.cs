@@ -74,7 +74,8 @@ public class CargueService : ICargueService
             }
 
             var queryable = _context.Cargues
-                .Include(x => x.Purchase).Include(x => x.CargueDetails)
+                .Include(x => x.PurchaseDetail).ThenInclude(x => x!.Purchase)
+                .Include(x => x.CargueDetails)
                 .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
@@ -98,7 +99,7 @@ public class CargueService : ICargueService
         {
             var modelo = await _context.Cargues
                 .Include(x => x.Product)
-                .Include(x => x.Purchase)
+                .Include(x => x.PurchaseDetail).ThenInclude(x => x!.Purchase)
                 .Include(x => x.CargueDetails)
             .FirstOrDefaultAsync(x => x.CargueId == id);
             if (modelo == null)

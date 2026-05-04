@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -27,10 +26,10 @@ public partial class DetailsServiceClient
 
     private const string baseUrl = "api/v1/serviceclients";
 
-    public ServiceCategory? ServiceCategory { get; set; }
+    public ServiceCategory? ServiceCategory { get; set; } = new();
     public List<ServiceClient>? ServiceClients { get; set; }
 
-    [Parameter] public Guid Id { get; set; }  //ProductCategoryId
+    [Parameter] public Guid Id { get; set; }  //ServiceCategoryId
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -70,6 +69,7 @@ public partial class DetailsServiceClient
             component = typeof(CreateServiceClient);
             parameters = new Dictionary<string, object>
         {
+            { "Id", Id! },
             { "Title", $"{Localizer[nameof(Resource.Create_Service)]}"  }
         };
         }
@@ -77,7 +77,14 @@ public partial class DetailsServiceClient
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+            {
+                await Cargar(CurrentPage);   // refresca la tabla
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
         });
     }
 
@@ -140,6 +147,6 @@ public partial class DetailsServiceClient
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

@@ -9,6 +9,7 @@ using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.Domain.EntitiesData;
+using Spix.Domain.EntitiesGen;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ItemsGeneric;
 
@@ -29,13 +30,18 @@ public class ComboDatasController : ControllerBase
     private readonly IStateServiceX _stateUnitOfWork;
     private readonly ICityServiceX _cityUnitOfWork;
     private readonly IDocumentTypeServiceX _documentTypeUnitOfWork;
+    private readonly ITaxServiceX _taxServiceX;
     private readonly IChainTypesServiceX _chainTypesUnitOfWork;
+    private readonly IProductCategoryServiceX _productCategory;
+    private readonly IProductServiceX _productService;
+    private readonly IPlanServiceX _planServiceX;
     private readonly IStringLocalizer _localizer;
 
     public ComboDatasController(ISecurityServiceX securityUnitOfWork, IOperationServiceX operationUnitOfWork,
         IHotSpotTypeServiceX hotSpotTypeUnitOfWork, IFrecuencyTypeServiceX frecuencyTypeUnitOfWork,
         IFrecuencyServiceX frecuencyUnitOfWork, IChannelServiceX channelUnitOfWork, IStateServiceX stateUnitOfWork,
-        ICityServiceX cityUnitOfWork, IDocumentTypeServiceX documentTypeUnitOfWork,
+        ICityServiceX cityUnitOfWork, IDocumentTypeServiceX documentTypeUnitOfWork, ITaxServiceX taxServiceX,
+                IProductCategoryServiceX productCategory, IProductServiceX productService, IPlanServiceX planServiceX,
         IChainTypesServiceX chainTypesUnitOfWork, IStringLocalizer localizer)
     {
         _securityUnitOfWork = securityUnitOfWork;
@@ -47,8 +53,88 @@ public class ComboDatasController : ControllerBase
         _stateUnitOfWork = stateUnitOfWork;
         _cityUnitOfWork = cityUnitOfWork;
         _documentTypeUnitOfWork = documentTypeUnitOfWork;
+        _taxServiceX = taxServiceX;
         _chainTypesUnitOfWork = chainTypesUnitOfWork;
+        _productCategory = productCategory;
+        _productService = productService;
+        _planServiceX = planServiceX;
         _localizer = localizer;
+    }
+
+    [HttpGet("ComboUp")]
+    public async Task<IActionResult> GetComboUpAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _planServiceX.GetComboUpAsync();
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpGet("ComboDown")]
+    public async Task<IActionResult> GetComboDownAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _planServiceX.GetComboDownAsync();
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpGet("ComboProducts/{id}")]
+    public async Task<IActionResult> GetComboAsync(Guid id)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _productService.ComboAsync(userClaimsInfo.UserName, id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpGet("ComboProCategory")]
+    public async Task<IActionResult> GetComboProCategoryAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _productCategory.ComboAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 
     [HttpGet("ComboCity/{id}")]
@@ -177,5 +263,24 @@ public class ComboDatasController : ControllerBase
             return BadRequest(response.Message);
         }
         return Ok(response.Result);
+    }
+
+    [HttpGet("ComboTaxes")]  //CorporationId
+    public async Task<IActionResult> GetComboTaxesAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _taxServiceX.ComboAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
     }
 }

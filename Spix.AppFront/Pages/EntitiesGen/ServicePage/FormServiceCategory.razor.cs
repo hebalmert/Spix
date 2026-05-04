@@ -11,5 +11,6 @@ public partial class FormServiceCategory
     [Parameter, EditorRequired] public ServiceCategory ServiceCategory { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
 
 }

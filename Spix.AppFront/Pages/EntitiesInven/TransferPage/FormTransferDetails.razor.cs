@@ -46,7 +46,7 @@ public partial class FormTransferDetails
         await LoadCategory();
         if (IsEditControl)
         {
-            await LoadProducts(TransferDetails.ProductCategoryId);
+            await LoadProducts(TransferDetails.Product!.ProductCategoryId);
         }
     }
 
@@ -62,7 +62,7 @@ public partial class FormTransferDetails
         Categories = responseHTTP.Response;
         if (IsEditControl)
         {
-            SelectedCategory = Categories!.Where(x => x.ProductCategoryId == TransferDetails.ProductCategoryId)
+            SelectedCategory = Categories!.Where(x => x.ProductCategoryId == TransferDetails.Product!.ProductCategoryId)
                 .Select(x => new ProductCategory { ProductCategoryId = x.ProductCategoryId, Name = x.Name }).FirstOrDefault();
         }
     }
@@ -71,7 +71,7 @@ public partial class FormTransferDetails
     {
         if (Guid.TryParse(e?.Value?.ToString(), out Guid selectedId))
         {
-            TransferDetails.ProductCategoryId = selectedId;
+            TransferDetails.Product!.ProductCategoryId = selectedId;
         }
         Products = new();
         SelectedProduct = new();

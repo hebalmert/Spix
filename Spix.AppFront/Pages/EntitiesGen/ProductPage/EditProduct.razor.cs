@@ -1,15 +1,13 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 
 namespace Spix.AppFront.Pages.EntitiesGen.ProductPage;
-
 public partial class EditProduct
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
@@ -22,14 +20,16 @@ public partial class EditProduct
     private Product? Product;
 
     private string BaseUrl = "/api/v1/products";
-    private string BaseView = "/products/details";
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public Guid Id { get; set; }  //ProductId
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        StateHasChanged(); // fuerza mostrar el modal con spinner inmediatamente
+
         var responseHttp = await _repository.GetAsync<Product>($"{BaseUrl}/{Id}");
         isLoading = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
@@ -42,16 +42,15 @@ public partial class EditProduct
 
     private async Task Edit()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", Product);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

@@ -124,6 +124,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Button_Save {
+            get {
+                return ResourceManager.GetString("Button_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
         public static string ButtonBack {
@@ -2239,6 +2248,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The record was saved successfully.
+        /// </summary>
+        public static string msg_SuccessMessage {
+            get {
+                return ResourceManager.GetString("msg_SuccessMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success.
+        /// </summary>
+        public static string msg_SuccessTitle {
+            get {
+                return ResourceManager.GetString("msg_SuccessTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The record was successfully updated.
         /// </summary>
         public static string msg_UpdateSuccessMessage {
@@ -2523,6 +2550,15 @@ namespace Spix.xLanguage.Resources {
         public static string Products {
             get {
                 return ResourceManager.GetString("Products", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider.
+        /// </summary>
+        public static string Provider {
+            get {
+                return ResourceManager.GetString("Provider", resourceCulture);
             }
         }
         

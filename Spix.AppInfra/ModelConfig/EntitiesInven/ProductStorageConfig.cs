@@ -13,7 +13,7 @@ public class ProductStorageConfig : IEntityTypeConfiguration<ProductStorage>
         builder.HasIndex(e => new { e.CorporationId, e.StorageName }).IsUnique();
         //Borrado En Cascada
         //Evitar el borrado en cascada
-        builder.HasOne(e => e.State).WithMany(c => c.ProductStorages).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.City).WithMany(c => c.ProductStorages).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.State).WithMany().OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.City) .WithMany(x => x.ProductStorages).OnDelete(DeleteBehavior.Restrict);
     }
 }

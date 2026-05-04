@@ -13,6 +13,8 @@ public class TransferConfig : IEntityTypeConfiguration<Transfer>
         builder.HasIndex(e => new { e.CorporationId, e.NroTransfer }).IsUnique();
         builder.Property(e => e.DateTransfer).HasColumnType("date");
         //Evitar el borrado en cascada
-        builder.HasOne(e => e.User).WithMany(c => c.Transfers).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.User).WithMany().OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<ProductStorage>() .WithMany().HasForeignKey(e => e.FromProductStorageId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<ProductStorage>().WithMany().HasForeignKey(e => e.ToProductStorageId).OnDelete(DeleteBehavior.Restrict);
     }
 }

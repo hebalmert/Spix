@@ -20,7 +20,7 @@ public partial class EditDocumentType
 
     private DocumentType? DocumentType;
     private string BaseUrl = "/api/v1/documenttypes";
-    private string BaseView = "/documenttypes";
+    private bool IsSaving = false;
     private bool isLoading = false;
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
@@ -28,28 +28,31 @@ public partial class EditDocumentType
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        StateHasChanged(); // fuerza mostrar el modal con spinner inmediatamente
+
         var responseHttp = await _repository.GetAsync<DocumentType>($"{BaseUrl}/{Id}");
-        isLoading = false;
+
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
+
         DocumentType = responseHttp.Response;
+        isLoading = false;
     }
 
     private async Task Edit()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", DocumentType);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

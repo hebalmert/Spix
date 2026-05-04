@@ -75,7 +75,8 @@ public class PurchaseDetailsService : IPurchaseDetailsService
             }
 
             var queryable = _context.PurchaseDetails
-                .Include(x => x.Product).Include(x => x.ProductCategory)
+                .Include(x => x.Product)
+                .Include(x => x.Product).ThenInclude(x => x!.ProductCategory)
                 .Where(x => x.CorporationId == user.CorporationId && x.PurchaseId == pagination.GuidId).AsQueryable();
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
@@ -257,7 +258,6 @@ public class PurchaseDetailsService : IPurchaseDetailsService
                     {
                         DateCargue = DateTime.Now,
                         ControlCargue = Convert.ToString(CheckRegister.Cargue),
-                        PurchaseId = modelo.PurchaseId,
                         PurchaseDetailId = IdPurchaseDetails!.PurchaseDetailId,
                         ProductId = IdPurchaseDetails.ProductId,
                         CantToUp = IdPurchaseDetails.Quantity,

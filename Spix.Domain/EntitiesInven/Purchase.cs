@@ -57,6 +57,5 @@ public class Purchase
     public Supplier? Supplier { get; set; }
     public ProductStorage? ProductStorage { get; set; }
     public ICollection<PurchaseDetail>? PurchaseDetails { get; set; }
-    public ICollection<Cargue>? Cargue { get; set; }
 
 }

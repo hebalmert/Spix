@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Spix.AppBacken.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDB : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -705,38 +705,6 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transfers",
-                columns: table => new
-                {
-                    TransferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
-                    DateTransfer = table.Column<DateTime>(type: "date", nullable: false),
-                    NroTransfer = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FromStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    FromProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ToStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ToProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: true),
-                    CorporationId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transfers", x => x.TransferId);
-                    table.ForeignKey(
-                        name: "FK_Transfers_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transfers_Corporations_CorporationId",
-                        column: x => x.CorporationId,
-                        principalTable: "Corporations",
-                        principalColumn: "CorporationId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserRoleDetails",
                 columns: table => new
                 {
@@ -1084,6 +1052,50 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Transfers",
+                columns: table => new
+                {
+                    TransferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    DateTransfer = table.Column<DateTime>(type: "date", nullable: false),
+                    NroTransfer = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FromStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    FromProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ToStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ToProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: true),
+                    CorporationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transfers", x => x.TransferId);
+                    table.ForeignKey(
+                        name: "FK_Transfers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transfers_Corporations_CorporationId",
+                        column: x => x.CorporationId,
+                        principalTable: "Corporations",
+                        principalColumn: "CorporationId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transfers_ProductStorages_FromProductStorageId",
+                        column: x => x.FromProductStorageId,
+                        principalTable: "ProductStorages",
+                        principalColumn: "ProductStorageId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transfers_ProductStorages_ToProductStorageId",
+                        column: x => x.ToProductStorageId,
+                        principalTable: "ProductStorages",
+                        principalColumn: "ProductStorageId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Purchases",
                 columns: table => new
                 {
@@ -1295,47 +1307,6 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TransferDetails",
-                columns: table => new
-                {
-                    TransferDetailsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
-                    TransferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    NameProduct = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CorporationId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TransferDetails", x => x.TransferDetailsId);
-                    table.ForeignKey(
-                        name: "FK_TransferDetails_Corporations_CorporationId",
-                        column: x => x.CorporationId,
-                        principalTable: "Corporations",
-                        principalColumn: "CorporationId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TransferDetails_ProductCategories_ProductCategoryId",
-                        column: x => x.ProductCategoryId,
-                        principalTable: "ProductCategories",
-                        principalColumn: "ProductCategoryId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_TransferDetails_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_TransferDetails_Transfers_TransferId",
-                        column: x => x.TransferId,
-                        principalTable: "Transfers",
-                        principalColumn: "TransferId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ContractClients",
                 columns: table => new
                 {
@@ -1401,12 +1372,45 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TransferDetails",
+                columns: table => new
+                {
+                    TransferDetailsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    TransferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NameProduct = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CorporationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransferDetails", x => x.TransferDetailsId);
+                    table.ForeignKey(
+                        name: "FK_TransferDetails_Corporations_CorporationId",
+                        column: x => x.CorporationId,
+                        principalTable: "Corporations",
+                        principalColumn: "CorporationId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TransferDetails_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TransferDetails_Transfers_TransferId",
+                        column: x => x.TransferId,
+                        principalTable: "Transfers",
+                        principalColumn: "TransferId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PurchaseDetails",
                 columns: table => new
                 {
                     PurchaseDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     PurchaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NameProduct = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     RateTax = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -1423,12 +1427,6 @@ namespace Spix.AppBacken.Migrations
                         principalTable: "Corporations",
                         principalColumn: "CorporationId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PurchaseDetails_ProductCategories_ProductCategoryId",
-                        column: x => x.ProductCategoryId,
-                        principalTable: "ProductCategories",
-                        principalColumn: "ProductCategoryId",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PurchaseDetails_Products_ProductId",
                         column: x => x.ProductId,
@@ -1596,7 +1594,6 @@ namespace Spix.AppBacken.Migrations
                     CargueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     DateCargue = table.Column<DateTime>(type: "date", nullable: false),
                     ControlCargue = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PurchaseId = table.Column<Guid>(type: "uniqueidentifier", maxLength: 20, nullable: false),
                     PurchaseDetailId = table.Column<Guid>(type: "uniqueidentifier", maxLength: 20, nullable: false),
                     CantToUp = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -1623,12 +1620,6 @@ namespace Spix.AppBacken.Migrations
                         column: x => x.PurchaseDetailId,
                         principalTable: "PurchaseDetails",
                         principalColumn: "PurchaseDetailId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Cargues_Purchases_PurchaseId",
-                        column: x => x.PurchaseId,
-                        principalTable: "Purchases",
-                        principalColumn: "PurchaseId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -1735,11 +1726,6 @@ namespace Spix.AppBacken.Migrations
                 name: "IX_Cargues_PurchaseDetailId",
                 table: "Cargues",
                 column: "PurchaseDetailId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Cargues_PurchaseId",
-                table: "Cargues",
-                column: "PurchaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChainTypes_ChainName",
@@ -2111,7 +2097,8 @@ namespace Spix.AppBacken.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Plans_CorporationId_PlanName",
                 table: "Plans",
-                columns: new[] { "CorporationId", "PlanName" });
+                columns: new[] { "CorporationId", "PlanName" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Plans_PlanCategoryId",
@@ -2187,11 +2174,6 @@ namespace Spix.AppBacken.Migrations
                 table: "PurchaseDetails",
                 columns: new[] { "CorporationId", "ProductId", "PurchaseId" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PurchaseDetails_ProductCategoryId",
-                table: "PurchaseDetails",
-                column: "ProductCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchaseDetails_ProductId",
@@ -2430,11 +2412,6 @@ namespace Spix.AppBacken.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransferDetails_ProductCategoryId",
-                table: "TransferDetails",
-                column: "ProductCategoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TransferDetails_ProductId",
                 table: "TransferDetails",
                 column: "ProductId");
@@ -2449,6 +2426,16 @@ namespace Spix.AppBacken.Migrations
                 table: "Transfers",
                 columns: new[] { "CorporationId", "NroTransfer" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transfers_FromProductStorageId",
+                table: "Transfers",
+                column: "FromProductStorageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transfers_ToProductStorageId",
+                table: "Transfers",
+                column: "ToProductStorageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transfers_UserId",

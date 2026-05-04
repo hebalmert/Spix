@@ -14,6 +14,25 @@ public static class MapsterConfig
     {
         var config = TypeAdapterConfig.GlobalSettings;
 
+        config.NewConfig<MarkModel, MarkModel>()
+            .Ignore(dest => dest.Corporation!)
+            .Ignore(dest => dest.Mark!);
+
+        config.NewConfig<Product, Product>()
+            .Ignore(dest => dest.Corporation!)
+            .Ignore(dest => dest.ProductCategory!)
+            .Ignore(dest => dest.Tax!);
+
+        config.NewConfig<ServiceClient, ServiceClient>()
+            .Ignore(dest => dest.Corporation!)
+            .Ignore(dest => dest.ServiceCategory!)
+            .Ignore(dest => dest.Tax!);
+
+        config.NewConfig <Plan, Plan>()
+            .Ignore(dest => dest.Corporation!)
+            .Ignore(dest => dest.PlanCategory!)
+            .Ignore(dest => dest.Tax!);
+
         config.NewConfig<Node, Node>()
             .Ignore(dest => dest.Corporation!)
             .Ignore(dest => dest.IpNetwork!)
@@ -65,11 +84,6 @@ public static class MapsterConfig
             .Ignore(dest => dest.Supplier!)
             .Ignore(dest => dest.ProductStorage!);
 
-        config.NewConfig<Product, Product>()
-            .Ignore(dest => dest.Corporation!)
-            .Ignore(dest => dest.ProductCategory!)
-            .Ignore(dest => dest.Tax!);
-
         config.NewConfig<Transfer, Transfer>()
             .Ignore(dest => dest.Corporation!)
             .Ignore(dest => dest.User!);
@@ -77,8 +91,7 @@ public static class MapsterConfig
         config.NewConfig<Cargue, Cargue>()
             .Ignore(dest => dest.Corporation!)
             .Ignore(dest => dest.Product!)
-            .Ignore(dest => dest.PurchaseDetail!)
-            .Ignore(dest => dest.Purchase!);
+            .Ignore(dest => dest.PurchaseDetail!);
 
         config.NewConfig<CargueDetail, CargueDetail>()
             .Ignore(dest => dest.Cargue!);

@@ -22,6 +22,7 @@ public partial class CreatePlan
 
     private string BaseUrl = "/api/v1/plans";
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public Guid Id { get; set; }  //ProductCategoryId
     [Parameter] public string? Title { get; set; }
 
@@ -32,17 +33,16 @@ public partial class CreatePlan
             await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_ValidationWarningTitle)], Localizer[nameof(Resource.msg_ValidationWarningMessage)], SweetAlertIcon.Warning);
             return;
         }
-        isLoading = true;
+        IsSaving = true;
         Plan.PlanCategoryId = Id;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Plan);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

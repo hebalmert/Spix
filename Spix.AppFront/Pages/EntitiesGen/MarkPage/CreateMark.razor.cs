@@ -23,20 +23,20 @@ public partial class CreateMark
 
     private string BaseUrl = "/api/v1/marks";
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Mark);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

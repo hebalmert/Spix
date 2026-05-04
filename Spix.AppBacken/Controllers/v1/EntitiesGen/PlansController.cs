@@ -27,43 +27,6 @@ public class PlansController : ControllerBase
         _localizer = localizer;
     }
 
-    [HttpGet("ComboUp")]
-    public async Task<IActionResult> GetComboUpAsync()
-    {
-        try
-        {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-            var response = await _unitOfWork.GetComboUpAsync();
-            return ResponseHelper.Format(response);
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(ex.Message); // Ya está localizado
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
-        }
-    }
-
-    [HttpGet("ComboDown")]
-    public async Task<IActionResult> GetComboDownAsync()
-    {
-        try
-        {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-            var response = await _unitOfWork.GetComboDownAsync();
-            return ResponseHelper.Format(response);
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(ex.Message); // Ya está localizado
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
-        }
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)

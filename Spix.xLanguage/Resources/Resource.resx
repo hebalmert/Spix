@@ -1156,4 +1156,16 @@
   <data name="Exempt" xml:space="preserve">
     <value>Exempt</value>
   </data>
+  <data name="Provider" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="Button_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="msg_SuccessTitle" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="msg_SuccessMessage" xml:space="preserve">
+    <value>The record was saved successfully</value>
+  </data>
 </root>

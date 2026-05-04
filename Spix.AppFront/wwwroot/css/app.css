@@ -2,6 +2,27 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.modal-content {
+    animation: modalFadeIn 0.18s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        transform: scale(0.97);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+.modal-create-shadow {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+    border-radius: 10px;
+}
+
+
 /* sobre poner el spinner en los modales */
 .loading-overlay {
     position: absolute;

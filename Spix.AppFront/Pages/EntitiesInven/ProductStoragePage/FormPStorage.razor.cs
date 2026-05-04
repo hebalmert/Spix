@@ -1,14 +1,13 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 
 namespace Spix.AppFront.Pages.EntitiesInven.ProductStoragePage;
-
 public partial class FormPStorage
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;

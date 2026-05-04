@@ -3,8 +3,6 @@ using Spix.Domain.EntitiesInven;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.AccessControl;
-using System.Xml.Linq;
 
 namespace Spix.Domain.EntitiesGen;
 
@@ -68,6 +66,4 @@ public class Product
     public ICollection<PurchaseDetail>? PurchaseDetails { get; set; }
 
     public ICollection<TransferDetails>? TransferDetails { get; set; }
-
-    public ICollection<Cargue>? Cargue { get; set; }
 }

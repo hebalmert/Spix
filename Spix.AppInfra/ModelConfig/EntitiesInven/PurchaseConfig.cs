@@ -16,6 +16,6 @@ public class PurchaseConfig : IEntityTypeConfiguration<Purchase>
         builder.Property(e => e.PurchaseDate).HasColumnType("date");
         //Evitar el borrado en cascada
         builder.HasOne(e => e.Supplier).WithMany(c => c.Purchases).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.ProductStorage).WithMany(c => c.Purchases).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.ProductStorage).WithMany().OnDelete(DeleteBehavior.Restrict);
     }
 }

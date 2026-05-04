@@ -27,7 +27,7 @@ public partial class DetailsMarkModel
 
     private const string baseUrl = "api/v1/marksmodels";
 
-    public Mark? Mark { get; set; }
+    public Mark? Mark { get; set; } = new();
     public List<MarkModel>? MarkModels { get; set; }
 
     [Parameter] public Guid Id { get; set; }  //MarkId
@@ -70,6 +70,7 @@ public partial class DetailsMarkModel
             component = typeof(CreateMarkModel);
             parameters = new Dictionary<string, object>
         {
+            { "Id", Id! },
             { "Title", $"{Localizer[nameof(Resource.Create_Model)]}"  }
         };
         }
@@ -77,7 +78,14 @@ public partial class DetailsMarkModel
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+            {
+                await Cargar(CurrentPage);   // refresca la tabla
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
         });
     }
 
@@ -140,6 +148,6 @@ public partial class DetailsMarkModel
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

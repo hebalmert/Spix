@@ -6,7 +6,6 @@ using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 
 public partial class CreatePurchaseDetails
@@ -22,7 +21,6 @@ public partial class CreatePurchaseDetails
     private FormPurchaseDetails? FormPurchaseDetails { get; set; }
 
     private string BaseUrl = "/api/v1/purchaseDetails";
-    private string BaseView = "/purchases/details";
     private bool isLoading = false;
     [Parameter] public Guid Id { get; set; }  //PurchaseId
     [Parameter] public string? Title { get; set; }

@@ -30,6 +30,7 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,7 +44,10 @@
                                     </td>
                                     <td style="width:1px;">
                                         <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.MarkId)" TooTip="@Localizer[nameof(Resource.Models)]"
-                                                       Icon="fa fa-wifi" />
+                                                       Icon="fa fa-tags" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        |
                                     </td>
                                     <td style="width:1px;">
                                         <ButtonEdit OnClick="() => ShowModalAsync(item.MarkId, true)" />

@@ -31,6 +31,7 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,7 +45,10 @@
                                     </td>
                                     <td style="width:1px;">
                                         <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.PlanCategoryId)" TooTip="@Localizer[nameof(Resource.Plan)]"
-                                                       Icon="fa fa-wifi" />
+                                                       Icon="fa fa-warehouse" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        |
                                     </td>
                                     <td style="width:1px;">
                                         <ButtonEdit OnClick="() => ShowModalAsync(item.PlanCategoryId, true)" />

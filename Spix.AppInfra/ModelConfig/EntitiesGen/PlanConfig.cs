@@ -10,10 +10,12 @@ public class PlanConfig : IEntityTypeConfiguration<Plan>
     {
         builder.HasIndex(x => x.PlanId);
         builder.Property(x => x.PlanId).HasDefaultValueSql("NEWSEQUENTIALID()");
-        builder.HasIndex(x => new { x.CorporationId, x.PlanName });
+        builder.HasIndex(x => new { x.CorporationId, x.PlanName }).IsUnique();
         builder.Property(e => e.Price).HasPrecision(18, 2);
         //Evitar el borrado en cascada
         builder.HasOne(e => e.PlanCategory).WithMany(c => c.Plans).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.Tax).WithMany(c => c.Plans).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.Tax) .WithMany(c => c.Plans).OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(e => e.ContractPlans) .WithOne(e => e.Plan).OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(e => e.ContractQues).WithOne(e => e.Plan).OnDelete(DeleteBehavior.Restrict);
     }
 }

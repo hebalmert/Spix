@@ -1,5 +1,18 @@
-﻿<button type="@Type" class="@CssClass" style="@Style">
-    <i class="@Icon" style="margin-right:5px;"></i><span>@TooTip</span>
+﻿<button type="@Type"
+        class="@CssClass"
+        style="@Style"
+        disabled="@IsSaving">
+
+    @if (IsSaving)
+    {
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        <span>@Localizer[nameof(Resource.Button_Save)]</span>
+    }
+    else
+    {
+        <i class="@Icon" style="margin-right:5px;"></i>
+        <span>@TooTip</span>
+    }
 </button>
 
 @code {
@@ -9,6 +22,7 @@
     [Parameter] public string? TooTip { get; set; }
     [Parameter] public string Type { get; set; } = "submit";
     [Parameter] public string? Style { get; set; } = "width:160px";
+    [Parameter] public bool IsSaving { get; set; }
 
     protected override void OnInitialized()
     {

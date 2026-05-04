@@ -1,14 +1,13 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 
 namespace Spix.AppFront.Pages.EntitiesInven.ProductStoragePage;
-
 public partial class CreatePStorage
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
@@ -21,7 +20,6 @@ public partial class CreatePStorage
     private ProductStorage ProductStorage = new();
 
     private string BaseUrl = "/api/v1/productstorages";
-    private string BaseView = "/productstorages";
     private bool isLoading = false;
 
     [Parameter] public string? Title { get; set; }

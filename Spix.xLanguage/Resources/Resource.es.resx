@@ -1127,7 +1127,7 @@
     <value>Marca</value>
   </data>
   <data name="PlanCategory" xml:space="preserve">
-    <value>Category</value>
+    <value>Categoria Plan</value>
   </data>
   <data name="ProductCategory" xml:space="preserve">
     <value>Categoria Producto</value>
@@ -1155,5 +1155,17 @@
   </data>
   <data name="Exempt" xml:space="preserve">
     <value>Excento</value>
+  </data>
+  <data name="Provider" xml:space="preserve">
+    <value>Proveedor</value>
+  </data>
+  <data name="Button_Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="msg_SuccessTitle" xml:space="preserve">
+    <value>Exitoso</value>
+  </data>
+  <data name="msg_SuccessMessage" xml:space="preserve">
+    <value>El registro se guardó correctamente</value>
   </data>
 </root>

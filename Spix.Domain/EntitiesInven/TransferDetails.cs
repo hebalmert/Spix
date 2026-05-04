@@ -16,10 +16,6 @@ public class TransferDetails
     public Guid TransferId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
-    [Display(Name = nameof(Resource.Category), ResourceType = typeof(Resource))]
-    public Guid ProductCategoryId { get; set; }
-
-    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Product), ResourceType = typeof(Resource))]
     public Guid ProductId { get; set; }
 
@@ -35,7 +31,6 @@ public class TransferDetails
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
-    public ProductCategory? ProductCategory { get; set; }
     public Product? Product { get; set; }
     public Transfer? Transfer { get; set; }
 

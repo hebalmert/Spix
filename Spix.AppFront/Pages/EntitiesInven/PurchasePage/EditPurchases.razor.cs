@@ -6,7 +6,6 @@ using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 
 public partial class EditPurchases
@@ -17,8 +16,8 @@ public partial class EditPurchases
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
+
     private string BaseUrl = "api/v1/purchases";
-    private string BaseView = "/purchases";
     private Purchase? Purchase;
     private bool isLoading = false;
     private FormPurchase? FormPurchase { get; set; }

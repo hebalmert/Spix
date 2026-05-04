@@ -14,8 +14,8 @@ public class ServerConfig : IEntityTypeConfiguration<Server>
         builder.HasIndex(e => new { e.IpNetworkId, e.CorporationId }).IsUnique();
         //Evitar el borrado en cascada
         builder.HasOne(e => e.IpNetwork).WithMany(c => c.Servers).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.Mark).WithMany(c => c.Servers).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.MarkModel).WithMany(c => c.Servers).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.Mark).WithMany().OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.MarkModel).WithMany().OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Zone).WithMany(c => c.Servers).OnDelete(DeleteBehavior.Restrict);
     }
 }

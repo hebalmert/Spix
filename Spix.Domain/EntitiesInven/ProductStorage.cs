@@ -32,6 +32,5 @@ public class ProductStorage
     public City? City { get; set; }
 
     public ICollection<ProductStock>? ProductStocks { get; set; }
-    public ICollection<Purchase>? Purchases { get; set; }
 
 }

@@ -72,7 +72,7 @@ public partial class IndexSupplier
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+                await Cargar(CurrentPage);   //solo refresca si hubo cambios
         });
     }
 
@@ -124,6 +124,6 @@ public partial class IndexSupplier
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

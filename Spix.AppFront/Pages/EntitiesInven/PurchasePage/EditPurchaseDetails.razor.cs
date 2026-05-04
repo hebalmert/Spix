@@ -1,15 +1,13 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
-
 public partial class EditPurchaseDetails
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;

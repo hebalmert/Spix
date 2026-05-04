@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.ShareLoading;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-
 namespace Spix.AppFront.Pages.EntitiesGen.ProductPage;
 
 public partial class CreateProductCategory
@@ -22,20 +20,20 @@ public partial class CreateProductCategory
 
     private string BaseUrl = "/api/v1/productcategories";
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", ProductCategory);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

@@ -21,7 +21,6 @@ public partial class CreateSupplier
     private Supplier Supplier = new() { Active = true};
 
     private string BaseUrl = "/api/v1/suppliers";
-    private string BaseView = "/suppliers";
     private bool isLoading = false;
     [Parameter] public string? Title { get; set; }
 

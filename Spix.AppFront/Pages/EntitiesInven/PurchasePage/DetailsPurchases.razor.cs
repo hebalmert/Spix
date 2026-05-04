@@ -108,7 +108,7 @@ public partial class DetailsPurchases
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+                await Cargar(CurrentPage);   //solo refresca si hubo cambios
         });
     }
 
@@ -168,6 +168,6 @@ public partial class DetailsPurchases
             return;
         }
 
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

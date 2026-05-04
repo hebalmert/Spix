@@ -27,7 +27,7 @@ public partial class DetailProductStock
     private const string baseUrl = "/api/v1/productStocks";
 
     public List<ProductStock>? ProductStocks { get; set; }
-    public Product? Product { get; set; }
+    public Product? Product { get; set; } = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

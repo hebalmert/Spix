@@ -26,10 +26,16 @@ public partial class DetailsProducts
 
     private const string baseUrl = "api/v1/products";
 
-    public ProductCategory? ProductCategory { get; set; }
+    public ProductCategory? ProductCategory { get; set; } = new();
     public List<Product>? Products { get; set; }
 
-    [Parameter] public Guid Id { get; set; }
+    [Parameter] public Guid Id { get; set; }  //ProductCategoryId
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProductCategory();
+    }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -51,6 +57,11 @@ public partial class DetailsProducts
         await Cargar();
     }
 
+    private void ShowModalStockAsync(Guid? id = null)
+    {
+        _navigationManager.NavigateTo($"/products/detailsProductStocks/{id}");
+    }
+
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
         Type component;
@@ -69,6 +80,7 @@ public partial class DetailsProducts
             component = typeof(CreateProduct);
             parameters = new Dictionary<string, object>
         {
+            { "Id", Id! },
             { "Title", $"{Localizer[nameof(Resource.Create_Product)]}"  }
         };
         }
@@ -76,7 +88,14 @@ public partial class DetailsProducts
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+            {
+                await Cargar(CurrentPage);   // refresca la tabla
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
         });
     }
 
@@ -139,6 +158,6 @@ public partial class DetailsProducts
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

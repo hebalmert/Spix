@@ -74,7 +74,14 @@ public partial class IndexMark
             await _modalService.ShowAsync(component, parameters, async result =>
             {
                 if (result.Succeeded)
-                    await Cargar();   //solo refresca si hubo cambios
+                {
+                    await Cargar(CurrentPage);   // refresca la tabla
+                    await _sweetAlert.FireAsync(
+                        Localizer[nameof(Resource.msg_SuccessTitle)],
+                        Localizer[nameof(Resource.msg_SuccessMessage)],
+                        SweetAlertIcon.Success
+                    );
+                }
             });
         }
     }
@@ -127,6 +134,6 @@ public partial class IndexMark
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

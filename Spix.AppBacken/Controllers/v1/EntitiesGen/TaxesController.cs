@@ -27,25 +27,6 @@ public class TaxesController : ControllerBase
         _localizer = localizer;
     }
 
-    [HttpGet("loadCombo")]  //CorporationId
-    public async Task<IActionResult> GetComboAsync()
-    {
-        try
-        {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-            var response = await _unitOfWork.ComboAsync(userClaimsInfo.UserName);
-            return ResponseHelper.Format(response);
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(ex.Message); // Ya está localizado
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
-        }
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
     {

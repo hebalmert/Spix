@@ -20,7 +20,6 @@ public partial class EditPStorage
 
     private ProductStorage? ProductStorage;
     private string BaseUrl = "/api/v1/productstorages";
-    private string BaseView = "/productstorages";
     private bool isLoading = false;
 
     [Parameter] public Guid Id { get; set; }

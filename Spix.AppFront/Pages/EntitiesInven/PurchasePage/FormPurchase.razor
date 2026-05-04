@@ -1,74 +1,61 @@
 ﻿<EditForm Model="Purchase" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-
-    <!-- Fecha de Registro -->
-    <div class="mb-4">
-        <label class="form-label">Registro</label>
-        <InputDate class="form-control"
-                   @bind-Value="Purchase.PurchaseDate"
-                   min="@DateMin"
-                   @onchange="DatePurchaseChanged" />
-        <ValidationMessage For="@(() => Purchase.PurchaseDate)" />
+    <div class="mb-2">
+        <GenericSelectWrapper Items="Suppliers">
+            <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Provider)]</span>
+                    <select class="form-select" value="@Purchase.SupplierId" @onchange="SuplierChanged">
+                        @foreach (var item in Suppliers!)
+                        {
+                            <option value="@item.SupplierId">@item.Name</option>
+                        }
+                    </select>
+                    <ValidationMessage For="@(() => Purchase.Supplier)" />
+                </div>
+            </Body>
+        </GenericSelectWrapper>
     </div>
 
-    <!-- Proveedores -->
-    @if (Suppliers is null)
-    {
-        <Loading />
-    }
-    else
-    {
-        <div class="mb-5">
-            <label class="form-label">Proveedores</label>
-            <InputSelect class="form-select"
-                         @bind-Value="SelectedSupplier"
-                         @onchange="SuplierChanged">
-                <option value="">Seleccione...</option>
-                @foreach (var item in Suppliers!)
-                {
-                    <option value="@item">@item.Name</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => Purchase.Supplier)" />
-        </div>
-    }
-
-    <!-- Bodega -->
-    @if (ProductStorages is null)
-    {
-        <Loading />
-    }
-    else
-    {
-        <div class="mb-5">
-            <label class="form-label">Bodega</label>
-            <InputSelect class="form-select"
-                         @bind-Value="SelectedProductStorage"
-                         @onchange="ProductStorageChanged">
-                <option value="">Seleccione...</option>
-                @foreach (var item in ProductStorages!)
-                {
-                    <option value="@item">@item.StorageName</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => Purchase.ProductStorage)" />
-        </div>
-    }
+   
+    <div class="mb-2">
+        <GenericSelectWrapper Items="ProductStorages">
+            <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Storage)]</span>
+                    <select class="form-select" value="@Purchase.ProductStorageId" @onchange="ProductStorageChanged">
+                        @foreach (var item in ProductStorages!)
+                        {
+                            <option value="@item.ProductStorageId">@item.StorageName</option>
+                        }
+                    </select>
+                    <ValidationMessage For="@(() => Purchase.ProductStorage)" />
+                </div>
+            </Body>
+        </GenericSelectWrapper>
+    </div>
 
     <!-- Fecha Factura -->
-    <div class="mb-4">
-        <label class="form-label">Fecha Factura</label>
-        <InputDate class="form-control"
-                   @bind-Value="Purchase.FacuraDate"
-                   min="@DateMin"
-                   @onchange="DateFacturaChanged" />
+    <div class="mb-2">
+        <div class="input-group">
+
+            <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Date)]</span>
+            <input type="date" class="form-control"
+                   @bind="Purchase.FacuraDate"
+                   @bind:format="yyyy-MM-dd"
+                   min="@DateMin?.ToString("yyyy-MM-dd")" />
+        </div>
         <ValidationMessage For="@(() => Purchase.FacuraDate)" />
     </div>
 
     <!-- Número de Factura -->
-    <div class="mb-4">
-        <label class="form-label">@GetDisplayName(() => Purchase.NroFactura)</label>
-        <InputText class="form-control" @bind-Value="Purchase.NroFactura" />
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.Purchase)]#
+            </span>
+            <InputText class="form-control" @bind-Value="Purchase.NroFactura" />
+        </div>
         <ValidationMessage For="@(() => Purchase.NroFactura)" />
     </div>
 

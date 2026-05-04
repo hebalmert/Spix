@@ -24,11 +24,6 @@ public class Cargue
     [Display(Name = nameof(Resource.Invoice), ResourceType = typeof(Resource))]
     [MaxLength(20, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
-    public Guid PurchaseId { get; set; }
-
-    [Display(Name = nameof(Resource.Invoice), ResourceType = typeof(Resource))]
-    [MaxLength(20, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
-    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     public Guid PurchaseDetailId { get; set; }
 
     [Column(TypeName = "decimal(18,2)")]
@@ -47,7 +42,6 @@ public class Cargue
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
-    public Purchase? Purchase { get; set; }
     public PurchaseDetail? PurchaseDetail { get; set; }
     public Product? Product { get; set; }
 

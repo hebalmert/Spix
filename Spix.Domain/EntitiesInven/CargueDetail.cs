@@ -1,7 +1,6 @@
 ﻿using Spix.Domain.Entities;
 using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Spix.Domain.EntitiesInven;

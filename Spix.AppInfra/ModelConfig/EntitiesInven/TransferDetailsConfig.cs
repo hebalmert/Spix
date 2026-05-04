@@ -14,6 +14,5 @@ public class TransferDetailsConfig : IEntityTypeConfiguration<TransferDetails>
         //Evitar el borrado en cascada
         builder.HasOne(e => e.Product).WithMany(c => c.TransferDetails).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Transfer).WithMany(c => c.TransferDetails).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.ProductCategory).WithMany(c => c.TransferDetails).OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -14,8 +14,8 @@ public class NodeConfig : IEntityTypeConfiguration<Node>
         //Evitar el borrado en cascada
         builder.HasOne(e => e.IpNetwork).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Operation).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.Mark).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne(e => e.MarkModel).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.Mark).WithMany().OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.MarkModel).WithMany().OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Zone).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.FrecuencyType).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Frecuency).WithMany(c => c.Nodes).OnDelete(DeleteBehavior.Restrict);

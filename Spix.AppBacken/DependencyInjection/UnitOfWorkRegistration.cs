@@ -3,13 +3,18 @@ using Spix.AppService.ImplementEntitiesGen;
 using Spix.AppService.InterfaceEntities;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.AppService.InterfacesEntitiesGen;
+using Spix.AppService.InterfacesInven;
 using Spix.AppService.InterfacesSecure;
 using Spix.AppServiceX.ImplementEntitiesGen;
+using Spix.AppServiceX.ImplementInven;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
+using Spix.AppServiceX.InterfacesInven;
 using Spix.AppServiceX.InterfacesSecure;
+using Spix.Domain.EntitiesInven;
 using Spix.Services.ImplementEntties;
+using Spix.Services.ImplementInven;
 using Spix.Services.ImplementSecure;
 using Spix.ServiceX.ImplementSecure;
 using Spix.UnitOfWork.ImplementEntities;
@@ -87,6 +92,11 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IZoneServiceX, ZoneServiceX>();
             services.AddScoped<IZoneService, ZoneService>();
 
+            //EntitiesInven
+            services.AddScoped<IProductStockServiceX, ProductStockServiceX>();
+            services.AddScoped<IProductStockService, ProductStockService>();
+            services.AddScoped<IProductStorageServiceX, ProductStorageServiceX>();
+            services.AddScoped<IProductStorageService, ProductStorageService>();
         }
     }
 }

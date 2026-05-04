@@ -11,5 +11,7 @@ public class PlanCategoryConfig : IEntityTypeConfiguration<PlanCategory>
         builder.HasKey(X => X.PlanCategoryId);
         builder.Property(x => x.PlanCategoryId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(x => new { x.PlanCategoryName, x.CorporationId }).IsUnique();
+        //Ralaciones
+        builder.HasMany(x => x.Plans).WithOne(x => x.PlanCategory).OnDelete(DeleteBehavior.Restrict);
     }
 }

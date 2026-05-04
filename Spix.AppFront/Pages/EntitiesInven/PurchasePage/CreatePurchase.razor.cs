@@ -23,7 +23,6 @@ public partial class CreatePurchase
     private FormPurchase? FormPurchase { get; set; }
 
     private string BaseUrl = "/api/v1/purchases";
-    private string BaseView = "/purchases";
     private bool isLoading = false;
 
     [Parameter] public string? Title { get; set; }

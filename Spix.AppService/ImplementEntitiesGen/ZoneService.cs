@@ -80,7 +80,7 @@ public class ZoneService : IZoneService
             }
 
             var queryable = _context.Zones
-                .Include(x => x.state).ThenInclude(x => x!.Cities)
+                .Include(x => x.State).ThenInclude(x => x!.Cities)
                 .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -89,7 +89,7 @@ public class ZoneService : IZoneService
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.state!.Name).ThenBy(x => x.city!.Name)
+            var modelo = await queryable.OrderBy(x => x.State!.Name).ThenBy(x => x.City!.Name)
                 .ThenBy(x => x.ZoneName).Paginate(pagination).ToListAsync();
 
             return new ActionResponse<IEnumerable<Zone>>

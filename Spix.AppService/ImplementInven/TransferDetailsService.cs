@@ -51,7 +51,8 @@ public class TransferDetailsService : ITransferDetailsService
             }
 
             var queryable = _context.TransferDetails.Where(x => x.CorporationId == user.CorporationId && x.TransferId == pagination.GuidId)
-                .Include(x => x.Product).Include(x => x.ProductCategory).AsQueryable();
+                .Include(x => x.Product)
+                .Include(x => x.Product).ThenInclude(x => x!.ProductCategory).AsQueryable();
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
             var modelo = await queryable.OrderBy(x => x.TransferDetailsId).Paginate(pagination).ToListAsync();

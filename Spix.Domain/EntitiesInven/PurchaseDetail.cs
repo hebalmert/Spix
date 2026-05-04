@@ -15,8 +15,7 @@ public class PurchaseDetail
     [Display(Name = nameof(Resource.Purchase), ResourceType = typeof(Resource))]
     public Guid PurchaseId { get; set; }
 
-    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
-    [Display(Name = nameof(Resource.Category), ResourceType = typeof(Resource))]
+    [NotMapped]
     public Guid ProductCategoryId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
@@ -57,8 +56,6 @@ public class PurchaseDetail
 
     public Corporation? Corporation { get; set; }
     public Purchase? Purchase { get; set; }
-    public ProductCategory? ProductCategory { get; set; }
     public Product? Product { get; set; }
-    public ICollection<Cargue>? Cargue { get; set; }
 
 }

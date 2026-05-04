@@ -1,15 +1,13 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.Pages.EntitiesGen.ProductPage;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
-
 public partial class IndexPurchase
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
@@ -73,7 +71,7 @@ public partial class IndexPurchase
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+                await Cargar(CurrentPage);   //solo refresca si hubo cambios
         });
     }
 
@@ -120,6 +118,6 @@ public partial class IndexPurchase
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
+        await Cargar(CurrentPage);
     }
 }

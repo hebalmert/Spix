@@ -27,10 +27,10 @@ public partial class DetailsPlan
 
     private const string baseUrl = "api/v1/plans";
 
-    public PlanCategory? PlanCategory { get; set; }
+    public PlanCategory? PlanCategory { get; set; } = new();
     public List<Plan>? Plans { get; set; }
 
-    [Parameter] public Guid Id { get; set; }  //ProductCategoryId
+    [Parameter] public Guid Id { get; set; }  //PlanCategoryId
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -70,6 +70,7 @@ public partial class DetailsPlan
             component = typeof(CreatePlan);
             parameters = new Dictionary<string, object>
         {
+            { "Id", Id! },
             { "Title", $"{Localizer[nameof(Resource.Create_Plan)]}"  }
         };
         }
@@ -77,7 +78,14 @@ public partial class DetailsPlan
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+            {
+                await Cargar(CurrentPage);   // refresca la tabla
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
         });
     }
 
@@ -123,28 +131,23 @@ public partial class DetailsPlan
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Confirmación",
-            Text = "¿Realmente deseas eliminar el registro?",
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
             Icon = SweetAlertIcon.Question,
             ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Si"
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
-        {
+        if (result.IsDismissed || result.Value != "true")
             return;
-        }
 
         var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
-        {
-            _navigationManager.NavigateTo("/usuarios");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
             return;
-        }
 
-        await Cargar();
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await Cargar(CurrentPage);
     }
 }

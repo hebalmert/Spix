@@ -31,6 +31,7 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,11 +44,14 @@
                                         <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
                                     </td>
                                     <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceCategoryId, true)" />
+                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.ServiceCategoryId)" TooTip="@Localizer[nameof(Resource.Service)]"
+                                                       Icon="fa fa-warehouse" />
                                     </td>
                                     <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.ServiceCategoryId)" TooTip="@Localizer[nameof(Resource.Service)]"
-                                                       Icon="fa fa-wifi" />
+                                        |
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceCategoryId, true)" />
                                     </td>
                                     <td style="width:1px;">
                                         <ButtonDelete OnClick="() => DeleteAsync(item.ServiceCategoryId)" />

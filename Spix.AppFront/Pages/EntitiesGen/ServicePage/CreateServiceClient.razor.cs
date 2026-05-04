@@ -22,22 +22,22 @@ public partial class CreateServiceClient
 
     private string BaseUrl = "/api/v1/serviceclients";
     private bool isLoading = false;
+    private bool IsSaving = false;
     [Parameter] public Guid Id { get; set; }  //ServiceCategoryId
     [Parameter] public string? Title { get; set; }
 
     private async Task Create()
     {
-        isLoading = true;
+        IsSaving = true;
         ServiceClient.ServiceCategoryId = Id;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", ServiceClient);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
         }
         await _modalService.CloseAsync(ModalResult.Ok());
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
     }
 
     private async Task Return()

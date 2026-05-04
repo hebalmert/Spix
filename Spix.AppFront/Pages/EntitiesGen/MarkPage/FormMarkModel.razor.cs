@@ -11,4 +11,5 @@ public partial class FormMarkModel
     [Parameter, EditorRequired] public MarkModel MarkModel { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
 }

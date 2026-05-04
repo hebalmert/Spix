@@ -3,9 +3,9 @@
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">@Localizer[nameof(Resource.Product)]</h3>
-
-        <h3>@ProductCategory!.Name</h3>
+        <h3 class="mb-4">
+            @Localizer[nameof(Resource.Product)] - @ProductCategory!.Name
+        </h3>
 
         <div class="col-sm-12">
             <div class="row align-items-center mb-3">
@@ -30,6 +30,8 @@
                                 <th>@Localizer[nameof(Resource.Active)]</th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,6 +45,13 @@
                                     </td>
                                     <td>
                                         <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ShowModalStockAsync(item.ProductId)" TooTip="@Localizer[nameof(Resource.Stock)]"
+                                                       Icon="fa fa-warehouse" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        |
                                     </td>
                                     <td style="width:1px;">
                                         <ButtonEdit OnClick="() => ShowModalAsync(item.ProductId, true)" />
