@@ -26,14 +26,13 @@
                                 <th>@Localizer[nameof(Resource.Product)]</th>
                                 <th>@Localizer[nameof(Resource.Storage)]</th>
                                 <th>@Localizer[nameof(Resource.Stock)]</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in ProductStocks!)
                             {
                                 <tr>
-                                    <td>@item.Product </td>
+                                    <td>@item.Product!.ProductName </td>
                                     <td>@item.ProductStorage!.StorageName</td>
                                     <td>@item.Stock</td>
                                 </tr>

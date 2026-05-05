@@ -10,8 +10,8 @@
         {
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Category)]</span>
-                <select class="form-select" value="@PurchaseDetail.ProductCategoryId" @onchange="CategoryChanged">
-                    @foreach (var item in Categories)
+                <select class="form-select" value="@PurchaseDetail.Product!.ProductCategoryId.ToString()" @onchange="CategoryChanged">
+                    @foreach (var item in Categories!)
                     {
                         <option value="@item.ProductCategoryId">@item.Name</option>
                     }
@@ -29,8 +29,8 @@
         {
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Product)]</span>
-                <select class="form-select" value="@PurchaseDetail.ProductId" @onchange="ProductsChanged">
-                    @foreach (var item in Products)
+                <select class="form-select" value="@PurchaseDetail.ProductId.ToString()" @onchange="CategoryChanged">
+                    @foreach (var item in Products!)
                     {
                         <option value="@item.ProductId">@item.ProductName</option>
                     }

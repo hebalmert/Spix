@@ -84,6 +84,11 @@ public static class MapsterConfig
             .Ignore(dest => dest.Supplier!)
             .Ignore(dest => dest.ProductStorage!);
 
+        config.NewConfig<PurchaseDetail, PurchaseDetail>()
+            .Ignore(dest => dest.Corporation!)
+            .Ignore(dest => dest.Purchase!)
+            .Ignore(dest => dest.Product!);
+
         config.NewConfig<Transfer, Transfer>()
             .Ignore(dest => dest.Corporation!)
             .Ignore(dest => dest.User!);

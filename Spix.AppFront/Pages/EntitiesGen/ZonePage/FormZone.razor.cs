@@ -6,9 +6,6 @@ using Spix.Domain.Entities;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Spix.AppFront.Pages.EntitiesGen.ZonePage;
 
@@ -26,9 +23,7 @@ public partial class FormZone
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter] public bool IsSaving { get; set; }
 
-    private State? SelectedSate;
     private List<State>? States;
-    private City? SelectedCity = new();
     private List<City>? Cities = new();
     private string BaseView = "/corporations";
     private string BaseComboState = "/api/v1/combosData/ComboState";
@@ -51,11 +46,7 @@ public partial class FormZone
         States = responseHttp.Response;
         if (IsEditControl)
         {
-            SelectedSate = States!.Where(x => x.StateId == Zone.StateId)
-                .Select(x => new State { StateId = x.StateId, Name = x.Name })
-                .FirstOrDefault();
-
-            await LoadCity(SelectedSate!.StateId);
+            await LoadCity(Zone!.StateId);
         }
     }
 
@@ -79,12 +70,6 @@ public partial class FormZone
             return;
         }
         Cities = responseHttp.Response;
-        if (IsEditControl)
-        {
-            SelectedCity = Cities!.Where(x => x.CityId == Zone.CityId)
-                .Select(x => new City { CityId = x.CityId, Name = x.Name })
-                .FirstOrDefault();
-        }
     }
 
     private void CityChanged(ChangeEventArgs e)
@@ -93,22 +78,5 @@ public partial class FormZone
         {
             Zone.CityId = cityId;
         }
-    }
-
-    private string GetDisplayName<T>(Expression<Func<T>> expression)
-    {
-        if (expression.Body is MemberExpression memberExpression)
-        {
-            var property = memberExpression.Member as PropertyInfo;
-            if (property != null)
-            {
-                var displayAttribute = property.GetCustomAttribute<DisplayAttribute>();
-                if (displayAttribute != null)
-                {
-                    return displayAttribute.Name!;
-                }
-            }
-        }
-        return "Texto no definido";
     }
 }

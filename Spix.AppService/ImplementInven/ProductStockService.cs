@@ -12,6 +12,7 @@ using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.EntitiesDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using System.Net.NetworkInformation;
 
 namespace Spix.Services.ImplementInven;
 
@@ -52,7 +53,7 @@ public class ProductStockService : IProductStockService
 
             var queryable = _context.ProductStocks
                 .Include(x => x.ProductStorage).Include(x => x.Product)
-                .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+                .Where(x => x.CorporationId == user.CorporationId && x.ProductId == pagination.GuidId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

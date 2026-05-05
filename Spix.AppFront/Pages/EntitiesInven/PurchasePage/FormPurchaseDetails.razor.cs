@@ -1,4 +1,5 @@
 using CurrieTechnologies.Razor.SweetAlert2;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
@@ -23,29 +24,31 @@ public partial class FormPurchaseDetails
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
 
-    private ProductCategory? SelectedCategory;
     private List<ProductCategory>? Categories;
 
-    private Product? SelectedProduct;
     private List<Product>? Products = new();
 
     private Product? ItemProducto;
     private decimal Total;
-    [Parameter] public bool IsSaving { get; set; }
+
+    private string BaseComboProductCategory = "/api/v1/productcategories/loadCombo";
+    private string BaseComboProduct = "/api/v1/products/loadCombo";
+
 
     protected override async Task OnInitializedAsync()
     {
         await LoadCategory();
         if (IsEditControl)
         {
-            await LoadProducts(PurchaseDetail.ProductCategoryId);
+            await LoadProducts(PurchaseDetail.Product!.ProductCategoryId);
         }
     }
 
     private async Task LoadCategory()
     {
-        var responseHTTP = await _repository.GetAsync<List<ProductCategory>>($"api/v1/productcategories/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<ProductCategory>>($"{BaseComboProductCategory}");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/purchases");
@@ -53,11 +56,6 @@ public partial class FormPurchaseDetails
         }
 
         Categories = responseHTTP.Response;
-        if (IsEditControl)
-        {
-            SelectedCategory = Categories!.Where(x => x.ProductCategoryId == PurchaseDetail.ProductCategoryId)
-                .Select(x => new ProductCategory { ProductCategoryId = x.ProductCategoryId, Name = x.Name }).FirstOrDefault();
-        }
     }
 
     private async Task CategoryChanged(ChangeEventArgs e)
@@ -72,7 +70,7 @@ public partial class FormPurchaseDetails
 
     private async Task LoadProducts(Guid Id) //Recibe la CategoryId
     {
-        var responseHTTP = await _repository.GetAsync<List<Product>>($"api/v1/products/loadCombo/{Id}");
+        var responseHTTP = await _repository.GetAsync<List<Product>>($"{BaseComboProduct}/{Id}");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/purchases");
@@ -82,10 +80,10 @@ public partial class FormPurchaseDetails
         Products = responseHTTP.Response;
         if (IsEditControl)
         {
-            SelectedProduct = Products!.Where(x => x.ProductId == PurchaseDetail.ProductId)
-                .Select(x => new Product { ProductId = x.ProductId, ProductName = x.ProductName }).FirstOrDefault();
             Total = DecimalHelper.FormatDecimal(PurchaseDetail.SubTotal);
         }
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ProductsChanged(ChangeEventArgs e)
@@ -94,7 +92,6 @@ public partial class FormPurchaseDetails
         {
             PurchaseDetail.ProductId = selectedId;
         }
-
         //Traerme el dato del producto
         var responseHTTP = await _repository.GetAsync<Product>($"api/v1/products/{selectedId}");
         // Centralizamos el manejo de errores
