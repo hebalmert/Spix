@@ -18,8 +18,6 @@ public partial class CreatePurchaseDetails
 
     private PurchaseDetail PurchaseDetail = new();
 
-    private FormPurchaseDetails? FormPurchaseDetails { get; set; }
-
     private string BaseUrl = "/api/v1/purchaseDetails";
     private bool isLoading = false;
     private bool IsSaving = false;

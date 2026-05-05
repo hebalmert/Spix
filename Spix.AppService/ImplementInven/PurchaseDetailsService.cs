@@ -98,7 +98,7 @@ public class PurchaseDetailsService : IPurchaseDetailsService
     {
         try
         {
-            var modelo = await _context.PurchaseDetails
+            var modelo = await _context.PurchaseDetails.Include(x=> x.Product).ThenInclude(x => x!.ProductCategory)
                 .FirstOrDefaultAsync(x => x.PurchaseDetailId == id);
             if (modelo == null)
             {

@@ -13,17 +13,6 @@ namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 
 public partial class FormPurchaseDetails
 {
-    private EditContext _editContext = null!;
-
-    private ProductCategory? SelectedCategory;
-    private List<ProductCategory>? Categories;
-
-    private Product? SelectedProduct;
-    private List<Product>? Products = new();
-
-    private Product? ItemProducto;
-    private decimal Total;
-
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
@@ -34,8 +23,16 @@ public partial class FormPurchaseDetails
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
+
+    private ProductCategory? SelectedCategory;
+    private List<ProductCategory>? Categories;
+
+    private Product? SelectedProduct;
+    private List<Product>? Products = new();
+
+    private Product? ItemProducto;
+    private decimal Total;
     [Parameter] public bool IsSaving { get; set; }
-    public bool FormPostedSuccessfully { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {

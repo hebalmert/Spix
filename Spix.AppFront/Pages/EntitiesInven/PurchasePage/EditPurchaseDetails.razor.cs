@@ -18,10 +18,10 @@ public partial class EditPurchaseDetails
     [Inject] private ModalService _modalService { get; set; } = null!;
 
     private PurchaseDetail? PurchaseDetail;
-    private FormPurchaseDetails? FormPurchaseDetails { get; set; }
+    private string BaseUrl = "/api/v1/purchaseDetails";
     private bool isLoading = false;
     private bool IsSaving = false;
-    [Parameter] public int Id { get; set; }
+    [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -29,7 +29,7 @@ public partial class EditPurchaseDetails
         isLoading = true;
         StateHasChanged(); // fuerza mostrar el modal con spinner inmediatamente
 
-        var responseHTTP = await _repository.GetAsync<PurchaseDetail>($"/api/purchaseDetails/{Id}");
+        var responseHTTP = await _repository.GetAsync<PurchaseDetail>($"{BaseUrl}/{Id}");
         // Centralizamos el manejo de errores
         isLoading = false;
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
@@ -43,7 +43,7 @@ public partial class EditPurchaseDetails
     private async Task Edit()
     {
         IsSaving = true;
-        var responseHTTP = await _repository.PutAsync("/api/purchaseDetails", PurchaseDetail);
+        var responseHTTP = await _repository.PutAsync("/api/v1/purchaseDetails", PurchaseDetail);
         IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
