@@ -1,15 +1,22 @@
 ﻿<EditForm Model="CargueDetail" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
-    <div class="mb-4">
-        <label class="form-label">MAC Equipo</label>
-        <InputText class="form-control" @bind-Value="CargueDetail.MacWlan" />
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 100px">
+                @Localizer[nameof(Resource.MAC)]
+            </span>
+            <InputText class="form-control" @bind-Value="CargueDetail.MacWlan" />
+        </div>
         <ValidationMessage For="@(() => CargueDetail.MacWlan)" />
     </div>
-
-    <div class="mb-4">
-        <label class="form-label">Comentario</label>
-        <InputText class="form-control" @bind-Value="CargueDetail.Comment" />
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 100px">
+                @Localizer[nameof(Resource.Comment)]
+            </span>
+            <InputText class="form-control" @bind-Value="CargueDetail.Comment" />
+        </div>
         <ValidationMessage For="@(() => CargueDetail.Comment)" />
     </div>
 
@@ -20,19 +27,21 @@
     else
     {
         <div class="mb-4">
-            <label class="form-label">--Seleccione Role--</label>
-            <select class="form-select" value="@SelectedUserType!.Value" @onchange="UsertTypeChanged">
-                @foreach (var item in ListUserType!)
-                {
-                    <option value="@item.Value">@item.Name</option>
-                }
-            </select>
+            <div class="input-group">
+                <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Status)]</span>
+                <select class="form-select" value="@SelectedUserType!.Value" @onchange="UsertTypeChanged">
+                    @foreach (var item in ListUserType)
+                    {
+                        <option value="@item.Value">@item.Name</option>
+                    }
+                </select>
+            </div>
         </div>
     }
 
     <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave/>
         <ButtonFormBack OnClick="ReturnAction" />
-        <ButtonFormSave />
     </div>
 </EditForm>

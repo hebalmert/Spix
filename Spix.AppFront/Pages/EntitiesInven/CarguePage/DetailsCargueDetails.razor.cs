@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.Pages.EntitiesGen.ProductPage;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -57,9 +56,9 @@ public partial class DetailsCargueDetails
         {
             url += $"&filter={Filter}";
         }
-        var responseHttpCountry = await _repository.GetAsync<Cargue>($"/api/v1/cargues/{Id}");
+        var responseHttpCargue = await _repository.GetAsync<Cargue>($"/api/v1/cargues/{Id}");
         // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttpCountry);
+        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttpCargue);
         if (errorHandled)
         {
             _navigationManager.NavigateTo("/transfers");
@@ -77,7 +76,7 @@ public partial class DetailsCargueDetails
 
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
-        Cargue = responseHttpCountry.Response;
+        Cargue = responseHttpCargue.Response;
         CargueDetails = responseHttp.Response;
 
         await InvokeAsync(StateHasChanged);

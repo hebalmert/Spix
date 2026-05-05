@@ -103,6 +103,10 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IPurchaseDetailsServiceX, PurchaseDetailsServiceX>();
             services.AddScoped<IPurchaseDetailsService, PurchaseDetailsService>();
+            services.AddScoped<ICargueServiceX, CargueServiceX>();
+            services.AddScoped<ICargueService, CargueService>();
+            services.AddScoped<ICargueDetailsServiceX, CargueDetailsServiceX>();
+            services.AddScoped<ICargueDetailsService, CargueDetailsService>();
         }
     }
 }

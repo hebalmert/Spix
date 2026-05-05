@@ -21,7 +21,6 @@ public partial class EditPurchases
     private Purchase? Purchase;
     private bool isLoading = false;
     private bool IsSaving = false;
-    private FormPurchase? FormPurchase { get; set; }
 
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }

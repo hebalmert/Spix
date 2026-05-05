@@ -48,6 +48,11 @@ public partial class IndexCargue
         await Cargar(page);
     }
 
+    private void ShowModalDetailsAsync(Guid? id = null)
+    {
+        _navigationManager.NavigateTo($"/cargues/details/{id}");
+    }
+
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
         Type component;

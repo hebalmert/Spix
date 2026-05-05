@@ -1,10 +1,12 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.CarguePage;
 
@@ -14,14 +16,15 @@ public partial class FormCargueDetails
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
-
-    private IntItemModel? SelectedUserType;
-    private List<IntItemModel>? ListUserType;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
 
     [Parameter, EditorRequired] public CargueDetail CargueDetail { get; set; } = null!;
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
+
+    private IntItemModel? SelectedUserType;
+    private List<IntItemModel>? ListUserType;
 
     protected override async Task OnInitializedAsync()
     {
