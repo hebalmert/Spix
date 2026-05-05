@@ -6,11 +6,11 @@ using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppServiceX.ImplementEntitiesNet;
 
-public class IpNetUnitOfWork : IIpNetServiceX
+public class IpNetServiceX : IIpNetServiceX
 {
     private readonly IIpNetService _ipNetService;
 
-    public IpNetUnitOfWork(IIpNetService ipNetService)
+    public IpNetServiceX(IIpNetService ipNetService)
     {
         _ipNetService = ipNetService;
     }

@@ -583,6 +583,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create IP.
+        /// </summary>
+        public static string Create_Ip {
+            get {
+                return ResourceManager.GetString("Create_Ip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Item.
         /// </summary>
         public static string Create_Items {
@@ -975,6 +984,15 @@ namespace Spix.xLanguage.Resources {
         public static string Edit_Hotspot {
             get {
                 return ResourceManager.GetString("Edit_Hotspot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit IP.
+        /// </summary>
+        public static string Edit_Ip {
+            get {
+                return ResourceManager.GetString("Edit_Ip", resourceCulture);
             }
         }
         

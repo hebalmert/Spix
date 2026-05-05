@@ -1168,4 +1168,10 @@
   <data name="msg_SuccessMessage" xml:space="preserve">
     <value>The record was saved successfully</value>
   </data>
+  <data name="Edit_Ip" xml:space="preserve">
+    <value>Edit IP</value>
+  </data>
+  <data name="Create_Ip" xml:space="preserve">
+    <value>Create IP</value>
+  </data>
 </root>

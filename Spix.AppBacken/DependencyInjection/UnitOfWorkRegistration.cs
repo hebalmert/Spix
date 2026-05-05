@@ -1,13 +1,17 @@
 ﻿using Spix.AppService.ImplementEntitiesData;
 using Spix.AppService.ImplementEntitiesGen;
+using Spix.AppService.ImplementEntitiesNet;
 using Spix.AppService.InterfaceEntities;
+using Spix.AppService.InterfaceEntitiesNet;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.AppService.InterfacesEntitiesGen;
 using Spix.AppService.InterfacesInven;
 using Spix.AppService.InterfacesSecure;
 using Spix.AppServiceX.ImplementEntitiesGen;
+using Spix.AppServiceX.ImplementEntitiesNet;
 using Spix.AppServiceX.ImplementInven;
 using Spix.AppServiceX.InterfaceEntities;
+using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
@@ -106,6 +110,10 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<ICargueService, CargueService>();
             services.AddScoped<ICargueDetailsServiceX, CargueDetailsServiceX>();
             services.AddScoped<ICargueDetailsService, CargueDetailsService>();
+
+            //EntitiesNet
+            services.AddScoped<IIpNetServiceX, IpNetServiceX>();
+            services.AddScoped<IIpNetService, IpNetService>();
         }
     }
 }
