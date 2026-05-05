@@ -12,7 +12,6 @@ using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.AppServiceX.InterfacesSecure;
-using Spix.Domain.EntitiesInven;
 using Spix.Services.ImplementEntties;
 using Spix.Services.ImplementInven;
 using Spix.Services.ImplementSecure;
