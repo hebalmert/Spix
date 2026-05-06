@@ -12,7 +12,7 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (isLoading || IpNet is null)
+            @if (isLoading || IpNetwork is null)
             {
                 <div class="loading-overlay">
                     <Loading />
@@ -20,7 +20,7 @@
             }
             else
             {
-                <FormIpNet IpNet="IpNet"
+                <FormIpNetwork IpNetwork="IpNetwork"
                           IsSaving="IsSaving"
                           OnSubmit="Create"
                           ReturnAction="Return" />

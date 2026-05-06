@@ -114,6 +114,8 @@ namespace Spix.AppBack.DependencyInjection
             //EntitiesNet
             services.AddScoped<IIpNetServiceX, IpNetServiceX>();
             services.AddScoped<IIpNetService, IpNetService>();
+            services.AddScoped<IIpNetworkServiceX, IpNetworkServiceX>();
+            services.AddScoped<IIpNetworkService, IpNetworkService>();
         }
     }
 }

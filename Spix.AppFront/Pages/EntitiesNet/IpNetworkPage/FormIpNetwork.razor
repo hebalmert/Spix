@@ -1,4 +1,4 @@
-﻿<EditForm Model="IpNet" OnValidSubmit="OnSubmit">
+﻿<EditForm Model="IpNetwork" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
     <!-- Nombre de zona -->
@@ -8,18 +8,18 @@
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.IPAddress)]
                 </span>
-                <InputText class="form-control" @bind-Value="IpNet.Ip" />
+                <InputText class="form-control" @bind-Value="IpNetwork.Ip" />
             </div>
-            <ValidationMessage For="@(() => IpNet.Ip)" />
+            <ValidationMessage For="@(() => IpNetwork.Ip)" />
         </div>
         <div class="col-md-12 mb-2">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Description)]
                 </span>
-                <InputText class="form-control" @bind-Value="IpNet.Description" />
+                <InputText class="form-control" @bind-Value="IpNetwork.Description" />
             </div>
-            <ValidationMessage For="@(() => IpNet.Description)" />
+            <ValidationMessage For="@(() => IpNetwork.Description)" />
         </div>
     </div>
     <!-- Activo -->
@@ -29,7 +29,7 @@
             <span class="input-group-text" style="width: 140px">
                 @Localizer[nameof(Resource.Active)]
                 <div class="d-flex align-items-center ps-4">
-                    <InputCheckbox @bind-Value="IpNet.Active" class="form-check-input" />
+                    <InputCheckbox @bind-Value="IpNetwork.Active" class="form-check-input" />
                 </div>
             </span>
         </div>
@@ -37,7 +37,7 @@
             <span class="input-group-text" style="width: 140px">
                 @Localizer[nameof(Resource.Assigned)]
                 <div class="d-flex align-items-center ps-4">
-                    <InputCheckbox @bind-Value="IpNet.Assigned" class="form-check-input" />
+                    <InputCheckbox @bind-Value="IpNetwork.Assigned" class="form-check-input" />
                 </div>
             </span>
         </div>
@@ -46,7 +46,7 @@
             <span class="input-group-text" style="width: 140px">
                 @Localizer[nameof(Resource.Excluded)]
                 <div class="d-flex align-items-center ps-4">
-                    <InputCheckbox @bind-Value="IpNet.Excluded" class="form-check-input" />
+                    <InputCheckbox @bind-Value="IpNetwork.Excluded" class="form-check-input" />
                 </div>
             </span>
         </div>
