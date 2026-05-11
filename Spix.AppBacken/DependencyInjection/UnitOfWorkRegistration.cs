@@ -1,20 +1,24 @@
 ﻿using Spix.AppService.ImplementEntitiesData;
 using Spix.AppService.ImplementEntitiesGen;
 using Spix.AppService.ImplementEntitiesNet;
+using Spix.AppService.ImplementMk;
 using Spix.AppService.InterfaceEntities;
 using Spix.AppService.InterfaceEntitiesNet;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.AppService.InterfacesEntitiesGen;
 using Spix.AppService.InterfacesInven;
+using Spix.AppService.InterfacesMk;
 using Spix.AppService.InterfacesSecure;
 using Spix.AppServiceX.ImplementEntitiesGen;
 using Spix.AppServiceX.ImplementEntitiesNet;
 using Spix.AppServiceX.ImplementInven;
+using Spix.AppServiceX.ImplementMk;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
+using Spix.AppServiceX.InterfacesMk;
 using Spix.AppServiceX.InterfacesSecure;
 using Spix.Services.ImplementEntties;
 using Spix.Services.ImplementInven;
@@ -120,6 +124,10 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<INodeService, NodeService>();
             services.AddScoped<IServerServiceX, ServerServiceX>();
             services.AddScoped<IServerService, ServerService>();
+
+            //MikrotikServices
+            services.AddScoped<IMkConnectionServiceX, MkConnectionServiceX>();
+            services.AddScoped<IMkConnectionService, MkConnectionService>();
         }
     }
 }

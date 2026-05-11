@@ -1207,4 +1207,13 @@
   <data name="Ping_System" xml:space="preserve">
     <value>Ping System</value>
   </data>
+  <data name="Server_Not_Found" xml:space="preserve">
+    <value>Server Not Founf</value>
+  </data>
+  <data name="Mikrotik_Connection_Error" xml:space="preserve">
+    <value>Mikrotik Connection Error</value>
+  </data>
+  <data name="Connetion_Mikrotik" xml:space="preserve">
+    <value>Connection Mikrotik</value>
+  </data>
 </root>

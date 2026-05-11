@@ -32,6 +32,7 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,6 +50,10 @@
                                     </td>
                                     <td>
                                         <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ShowModalServerAsync(item.ServerId)" TooTip="@Localizer[nameof(Resource.Ping_System)]"
+                                                       Icon="fa fa-server" />
                                     </td>
                                     <td style="width:1px;">
                                         <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.IpNetwork.Ip!)" TooTip="@Localizer[nameof(Resource.Ping_System)]"

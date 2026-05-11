@@ -5,7 +5,7 @@ namespace Spix.xNetwork.PingHelper;
 
 public class PingControl : IPingControl
 {
-    public async Task<ActionResponse<PingResult>> PingAsync(string host, int attempts = 6, int timeout = 4000)
+    public async Task<ActionResponse<PingResult>> PingAsync(string host, int attempts = 4, int timeout = 4000)
     {
         var result = new PingResult { Host = host, Sent = attempts };
 

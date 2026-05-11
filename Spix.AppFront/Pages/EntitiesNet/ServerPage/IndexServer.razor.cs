@@ -69,13 +69,24 @@ public partial class IndexServer
         await InvokeAsync(StateHasChanged);
     }
 
+    private async Task ShowModalServerAsync(Guid serverid)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Id", serverid },
+            { "Title", $"{Localizer[nameof(Resource.Connetion_Mikrotik)]}" }
+        };
+
+        await _modalService.ShowAsync(typeof(MikrotikServer), parameters);
+    }
+
     private async Task ShowModalDetailsAsync(string host)
     {
         var parameters = new Dictionary<string, object>
-    {
-        { "Host", host },
-        { "Title", $"Diagnóstico de Red ({host})" }
-    };
+        {
+            { "Host", host },
+            { "Title", $"Diagnóstico de Red ({host})" }
+        };
 
         await _modalService.ShowAsync(typeof(PingModal), parameters);
     }

@@ -385,6 +385,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection Mikrotik.
+        /// </summary>
+        public static string Connetion_Mikrotik {
+            get {
+                return ResourceManager.GetString("Connetion_Mikrotik", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contact.
         /// </summary>
         public static string Contact {
@@ -2167,6 +2176,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mikrotik Connection Error.
+        /// </summary>
+        public static string Mikrotik_Connection_Error {
+            get {
+                return ResourceManager.GetString("Mikrotik_Connection_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mikrotik Id.
         /// </summary>
         public static string MikrotikId {
@@ -2955,6 +2973,15 @@ namespace Spix.xLanguage.Resources {
         public static string Server {
             get {
                 return ResourceManager.GetString("Server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server Not Founf.
+        /// </summary>
+        public static string Server_Not_Found {
+            get {
+                return ResourceManager.GetString("Server_Not_Found", resourceCulture);
             }
         }
         

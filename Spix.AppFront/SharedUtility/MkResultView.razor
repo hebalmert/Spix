@@ -1,0 +1,29 @@
+﻿<div class="p-3">
+
+    <div class="alert alert-success text-center fw-bold">
+        @Result.Text
+    </div>
+
+    <div class="row text-center mb-4">
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-primary mb-1">Nombre del Mikrotik</h6>
+                <span class="fw-bold fs-5">@Result.MikrotikName</span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-success mb-1">Registros en IP Binding</h6>
+                <span class="fw-bold fs-5">@Result.Value</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public MkConnectionResultDTO Result { get; set; } = null!;
+}
