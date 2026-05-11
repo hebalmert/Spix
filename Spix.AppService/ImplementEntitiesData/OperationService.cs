@@ -39,9 +39,15 @@ public class OperationService : IOperationService
         {
             List<IntItemModel> ListModel = await _context.Operations.Where(x => x.Active).Select(c => new IntItemModel()
             {
-                Name = c.ToString(),
+                Name = c.OperationName,
                 Value = c.OperationId
-            }).ToListAsync(); ;
+            }).ToListAsync();
+
+            ListModel.Insert( 0, new IntItemModel 
+            { 
+                Value = 0, 
+                Name = _localizer[nameof(Resource.Select_B_Operation)]
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

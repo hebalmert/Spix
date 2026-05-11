@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 using System.Security.Claims;
 
@@ -16,22 +19,19 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 public class NodesController : ControllerBase
 {
     private readonly INodeServiceX _nodeUnitOfWork;
+    private readonly IStringLocalizer _localizer;
 
-    public NodesController(INodeServiceX nodeUnitOfWork)
+    public NodesController(INodeServiceX nodeUnitOfWork, IStringLocalizer localizer)
     {
         _nodeUnitOfWork = nodeUnitOfWork;
+        _localizer = localizer;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Node>>> GetAll([FromQuery] PaginationDTO pagination)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
-
-        var response = await _nodeUnitOfWork.GetAsync(pagination, email);
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _nodeUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
         if (!response.WasSuccess)
         {
             return BadRequest(response.Message);
@@ -64,13 +64,8 @@ public class NodesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Node>> PostAsync(Node modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
-
-        var response = await _nodeUnitOfWork.AddAsync(modelo, email);
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _nodeUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);

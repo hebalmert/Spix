@@ -39,9 +39,15 @@ public class ChainTypesService : IChainTypesService
         {
             List<IntItemModel> ListModel = await _context.ChainTypes.Where(x => x.Active).Select(c => new IntItemModel()
             {
-                Name = c.ToString(),
+                Name = c.ChainName,
                 Value = c.ChainTypeId
-            }).ToListAsync(); ;
+            }).ToListAsync();
+
+            ListModel.Insert(0, new IntItemModel 
+            { 
+                Value = 0,
+                Name = _localizer[nameof(Resource.Select_Chaint)]
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

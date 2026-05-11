@@ -52,12 +52,12 @@ public class MarkModelService : IMarkModelService
             var ListModel = await _context.MarkModels
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.MarkId == id)
                 .ToListAsync();
-            var defaultItem = new MarkModel
+
+            ListModel.Insert(0, new MarkModel
             {
-                MarkId = Guid.Empty,
-                MarkName = $"[{_localizer[nameof(Resource.Mark)]}]"
-            };
-            ListModel.Insert(0, defaultItem);
+                MarkModelId = Guid.Empty,
+                MarkModelName = $"[{_localizer[nameof(Resource.Mark)]}]"
+            });
 
             return new ActionResponse<IEnumerable<MarkModel>>
             {

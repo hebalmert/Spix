@@ -10,7 +10,7 @@ namespace Spix.AppBack.Controllers.EntitiesData;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/operations")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Usuario")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 [ApiController]
 public class OperationsController : ControllerBase
 {
@@ -21,18 +21,7 @@ public class OperationsController : ControllerBase
         _operationUnitOfWork = operationUnitOfWork;
     }
 
-    [HttpGet("loadCombo")]
-    public async Task<ActionResult<IEnumerable<Operation>>> GetComboAsync()
-    {
-        var response = await _operationUnitOfWork.ComboAsync();
-        if (!response.WasSuccess)
-        {
-            return BadRequest(response.Message);
-        }
-        return Ok(response.Result);
-    }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Operation>>> GetAll([FromQuery] PaginationDTO pagination)
     {
@@ -44,7 +33,6 @@ public class OperationsController : ControllerBase
         return Ok(response.Result);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(int id)
     {
@@ -56,7 +44,6 @@ public class OperationsController : ControllerBase
         return NotFound(response.Message);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpPut]
     public async Task<ActionResult<Operation>> PutAsync(Operation modelo)
     {
@@ -68,7 +55,7 @@ public class OperationsController : ControllerBase
         return NotFound(response.Message);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+
     [HttpPost]
     public async Task<ActionResult<Operation>> PostAsync(Operation modelo)
     {
@@ -80,7 +67,7 @@ public class OperationsController : ControllerBase
         return NotFound(response.Message);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> DeleteAsync(int id)
     {

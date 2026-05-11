@@ -1174,4 +1174,37 @@
   <data name="Create_Ip" xml:space="preserve">
     <value>Create IP</value>
   </data>
+  <data name="Clave" xml:space="preserve">
+    <value>Pass</value>
+  </data>
+  <data name="Edit_Node" xml:space="preserve">
+    <value>Edit Node</value>
+  </data>
+  <data name="Create_Node" xml:space="preserve">
+    <value>Create Node</value>
+  </data>
+  <data name="Select_Chaint" xml:space="preserve">
+    <value>[Select Chain]</value>
+  </data>
+  <data name="Select_Channel" xml:space="preserve">
+    <value>[Select Channel]</value>
+  </data>
+  <data name="Select_Mark" xml:space="preserve">
+    <value>[Select Mark]</value>
+  </data>
+  <data name="Select_IP" xml:space="preserve">
+    <value>[Select IP]</value>
+  </data>
+  <data name="Select_Zone" xml:space="preserve">
+    <value>[Select Zone]</value>
+  </data>
+  <data name="Edit_Server" xml:space="preserve">
+    <value>Edit Server</value>
+  </data>
+  <data name="Create_Server" xml:space="preserve">
+    <value>Create Server</value>
+  </data>
+  <data name="Ping_System" xml:space="preserve">
+    <value>Ping System</value>
+  </data>
 </root>

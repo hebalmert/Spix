@@ -39,9 +39,15 @@ public class FrecuencyTypeService : IFrecuencyTypeService
         {
             List<IntItemModel> ListModel = await _context.FrecuencyTypes.Where(x => x.Active).Select(c => new IntItemModel()
             {
-                Name = c.ToString(),
+                Name = c.TypeName.ToString(),
                 Value = c.FrecuencyTypeId
-            }).ToListAsync(); ;
+            }).ToListAsync();
+
+            ListModel.Insert(0, new IntItemModel
+            {
+                Value = 0,
+                Name = _localizer[nameof(Resource.Select_B_FrecuencyType)]
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

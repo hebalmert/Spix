@@ -6,11 +6,11 @@ using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppServiceX.ImplementEntitiesNet;
 
-public class ServerUnitOfWork : IServerServiceX
+public class ServerServiceX : IServerServiceX
 {
     private readonly IServerService _serverService;
 
-    public ServerUnitOfWork(IServerService serverService)
+    public ServerServiceX(IServerService serverService)
     {
         _serverService = serverService;
     }

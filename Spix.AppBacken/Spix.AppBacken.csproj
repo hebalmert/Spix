@@ -26,6 +26,7 @@
     <ProjectReference Include="..\Spix.AppServiceX\Spix.AppServiceX.csproj" />
     <ProjectReference Include="..\Spix.DomainLogic\Spix.DomainLogic.csproj" />
     <ProjectReference Include="..\Spix.xLanguage\Spix.xLanguage.csproj" />
+    <ProjectReference Include="..\Spix.xNetwork\Spix.xNetwork.csproj" />
   </ItemGroup>
 
 </Project>

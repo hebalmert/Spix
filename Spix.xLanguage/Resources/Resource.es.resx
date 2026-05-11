@@ -833,10 +833,10 @@
     <value>Modelo</value>
   </data>
   <data name="Latitude" xml:space="preserve">
-    <value>Latitude</value>
+    <value>Latitud</value>
   </data>
   <data name="Longitude" xml:space="preserve">
-    <value>Longitude</value>
+    <value>Longitud</value>
   </data>
   <data name="FrequencyType" xml:space="preserve">
     <value>Tipo Frecuencia</value>
@@ -1173,5 +1173,38 @@
   </data>
   <data name="Create_Ip" xml:space="preserve">
     <value>Crear IP</value>
+  </data>
+  <data name="Clave" xml:space="preserve">
+    <value>Clave</value>
+  </data>
+  <data name="Edit_Node" xml:space="preserve">
+    <value>Editar Nodo</value>
+  </data>
+  <data name="Create_Node" xml:space="preserve">
+    <value>Crear Nodo</value>
+  </data>
+  <data name="Select_Chaint" xml:space="preserve">
+    <value>[Seleccione Chain]</value>
+  </data>
+  <data name="Select_Channel" xml:space="preserve">
+    <value>[Seleccione Canal]</value>
+  </data>
+  <data name="Select_Mark" xml:space="preserve">
+    <value>[Seleccione Marca]</value>
+  </data>
+  <data name="Select_IP" xml:space="preserve">
+    <value>[Seleccione IP]</value>
+  </data>
+  <data name="Select_Zone" xml:space="preserve">
+    <value>[Seleccione Zona]</value>
+  </data>
+  <data name="Edit_Server" xml:space="preserve">
+    <value>Editar Servidor</value>
+  </data>
+  <data name="Create_Server" xml:space="preserve">
+    <value>Crear Servidor</value>
+  </data>
+  <data name="Ping_System" xml:space="preserve">
+    <value>Sistema Ping</value>
   </data>
 </root>

@@ -9,6 +9,7 @@ using Spix.xFiles.ExcelHelper;
 using Spix.xFiles.FileHelper;
 using Spix.xFiles.QRgenerate;
 using Spix.xNetwork.IpHelper;
+using Spix.xNetwork.PingHelper;
 using Spix.xNotification.Implements;
 using Spix.xNotification.Interfaces;
 
@@ -26,6 +27,9 @@ namespace Spix.AppBack.DependencyInjection
 
             // Manejo de transacciones por request
             services.AddScoped<ITransactionManager, TransactionManager>();
+
+            // Manejo de Ping para verificar la conectividad de red
+            services.AddScoped<IPingControl, PingControl>();
 
             // Utilidades para manejo de Imagenes o Archivos xFiles
             services.AddScoped<IFileStorage, FileStorage>();

@@ -39,9 +39,15 @@ public class HotSpotTypeService : IHotSpotTypeService
         {
             List<IntItemModel> ListModel = await _context.HotSpotTypes.Where(x => x.Active).Select(c => new IntItemModel()
             {
-                Name = c.ToString(),
+                Name = c.TypeName,
                 Value = c.HotSpotTypeId
-            }).ToListAsync(); ;
+            }).ToListAsync();
+
+            ListModel.Insert(0, new IntItemModel
+            {
+                Value = 0,
+                Name = _localizer[nameof(Resource.Select_B_HotSpot)]
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

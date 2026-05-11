@@ -39,9 +39,14 @@ public class ChannelService : IChannelService
         {
             List<IntItemModel> ListModel = await _context.Channels.Where(x => x.Active).Select(c => new IntItemModel()
             {
-                Name = c.ToString(),
+                Name = c.ChannelName,
                 Value = c.ChannelId
-            }).ToListAsync(); ;
+            }).ToListAsync();
+            ListModel.Insert(0, new IntItemModel() 
+            { 
+                Name = _localizer[nameof(Resource.Select_Channel)], 
+                Value = 0 
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

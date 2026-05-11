@@ -1,0 +1,67 @@
+﻿<div class="p-3">
+    <div class="row text-center mb-3">
+
+        <div class="col-12 col-md-4 mb-2">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-primary mb-1">Promedio</h6>
+                <span class="fw-bold fs-5">@Result.AverageTime ms</span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-2">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-success mb-1">Mínimo</h6>
+                <span class="fw-bold fs-5">@Result.MinTime ms</span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-2">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-danger mb-1">Máximo</h6>
+                <span class="fw-bold fs-5">@Result.MaxTime ms</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row text-center mb-4">
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-warning mb-1">Perdidos</h6>
+                <span class="fw-bold fs-5">@Result.Lost (@Result.LossPercent.ToString("0.0")%)</span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-info mb-1">Jitter</h6>
+                <span class="fw-bold fs-5">@Result.Jitter ms</span>
+            </div>
+        </div>
+
+    </div>
+
+    <hr />
+
+    <h6>Intentos</h6>
+    <div class="mt-3">
+        @foreach (var t in Result.Times)
+        {
+            <div class="mb-2">
+                <div class="d-flex justify-content-between">
+                    <span>@(t < 0 ? "Timeout" : $"{t} ms")</span>
+                </div>
+
+                <div class="progress bg-success bg-opacity-25" style="height: 10px;">
+                    <div class="progress-bar"
+                         role="progressbar"
+                         style="width:@(t < 0 ? "100%" : $"{t}px");
+                        background-color:@(t < 0 ? "#dc3545" : "#0d6efd")">
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>

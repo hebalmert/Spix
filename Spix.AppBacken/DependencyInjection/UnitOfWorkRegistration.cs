@@ -116,6 +116,10 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IIpNetService, IpNetService>();
             services.AddScoped<IIpNetworkServiceX, IpNetworkServiceX>();
             services.AddScoped<IIpNetworkService, IpNetworkService>();
+            services.AddScoped<INodeServiceX, NodeServiceX>();
+            services.AddScoped<INodeService, NodeService>();
+            services.AddScoped<IServerServiceX, ServerServiceX>();
+            services.AddScoped<IServerService, ServerService>();
         }
     }
 }

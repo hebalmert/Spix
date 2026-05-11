@@ -52,6 +52,11 @@ public class ZoneService : IZoneService
             var ListModel = await _context.Zones
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.CityId == id)
                 .ToListAsync();
+            ListModel.Insert(0, new Zone 
+            { 
+                ZoneId = Guid.Empty, 
+                ZoneName = _localizer[nameof(Resource.Select_Zone)] 
+            });
 
             return new ActionResponse<IEnumerable<Zone>>
             {

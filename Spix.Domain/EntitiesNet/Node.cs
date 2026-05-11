@@ -11,6 +11,8 @@ namespace Spix.Domain.EntitiesNet;
 public class Node
 {
     private string? _mac;
+    private decimal? _latitude;
+    private decimal? _longitude;
 
     [Key]
     public Guid NodeId { get; set; }
@@ -80,12 +82,54 @@ public class Node
     [Range(-90, 90)]
     [Column(TypeName = "decimal(12,7)")]
     [Display(Name = nameof(Resource.Latitude), ResourceType = typeof(Resource))]
-    public decimal? Latitude { get; set; }
+    public decimal? Latitude
+    {
+        get => _latitude;
+        set
+        {
+            if (value.HasValue)
+            {
+                // Validar rango
+                if (value.Value < -90 || value.Value > 90)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(Latitude), "Latitud debe estar entre -90 y 90");
+                }
+
+                // Redondear a 7 decimales y validar formato
+                _latitude = Math.Round(value.Value, 7);
+            }
+            else
+            {
+                _latitude = null;
+            }
+        }
+    }
 
     [Range(-180, 180)]
     [Column(TypeName = "decimal(12,7)")]
     [Display(Name = nameof(Resource.Longitude), ResourceType = typeof(Resource))]
-    public decimal? Longitude { get; set; }
+    public decimal? Longitude
+    {
+        get => _longitude;
+        set
+        {
+            if (value.HasValue)
+            {
+                // Validar rango
+                if (value.Value < -180 || value.Value > 180)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(Longitude), "Longitud debe estar entre -180 y 180");
+                }
+
+                // Redondear a 7 decimales y validar formato
+                _longitude = Math.Round(value.Value, 7);
+            }
+            else
+            {
+                _longitude = null;
+            }
+        }
+    }
 
     [Display(Name = nameof(Resource.FrequencyType), ResourceType = typeof(Resource))]
     public int? FrecuencyTypeId { get; set; }

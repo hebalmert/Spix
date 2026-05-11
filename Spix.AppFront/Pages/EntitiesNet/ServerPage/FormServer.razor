@@ -1,0 +1,223 @@
+﻿<EditForm Model="Server" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <!-- ServerName + IP Network -->
+    <div class="row mb-2">
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Server)]
+                </span>
+                <InputText class="form-control" @bind-Value="Server.ServerName" />
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            @if (IpNetworks is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">IP Network</span>
+                    <select class="form-select" value="@Server.IpNetworkId" @onchange="IpNetworkChanged">
+                        @foreach (var item in IpNetworks!)
+                        {
+                            <option value="@item.IpNetworkId">@item.Ip</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Marca + Modelo -->
+        <div class="col-12 col-md-6 mb-2">
+            @if (Marks is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Marca</span>
+                    <select class="form-select" value="@Server.MarkId" @onchange="MarkChanged">
+                        @foreach (var item in Marks!)
+                        {
+                            <option value="@item.MarkId">@item.MarkName</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            @if (MarkModels is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Modelo</span>
+                    <select class="form-select" value="@Server.MarkModelId" @onchange="MarkModelChanged">
+                        @foreach (var item in MarkModels!)
+                        {
+                            <option value="@item.MarkModelId">@item.MarkModelName</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Usuario + Clave -->
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.User)]
+                </span>
+                <InputText class="form-control"
+                           name="server_username"
+                           autocomplete="new-password"
+                           @bind-Value="Server.Usuario" />
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Clave)]
+                </span>
+                <InputText class="form-control"
+                           name="server_clave"
+                           autocomplete="new-password"
+                           type="@(showClave ? "text" : "password")"
+                           @bind-value="Server.Clave" />
+                <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
+                    <i class="fa @(showClave ? "fa-eye-slash" : "fa-eye")"></i>
+                </button>
+            </div>
+            <ValidationMessage For="@(() => Server.Clave)" />
+        </div>
+    </div>
+
+    <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- WanName + ApiPort -->
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.WanName)]
+                </span>
+                <InputText class="form-control" @bind-Value="Server.WanName" />
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.ApiPort)]
+                </span>
+                <InputNumber class="form-control" @bind-Value="Server.ApiPort" />
+            </div>
+        </div>
+    </div>
+
+    <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- State + City -->
+        <div class="col-12 col-md-6 mb-2">
+            @if (States is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Estado</span>
+                    <select class="form-select" value="@Server.StateId" @onchange="StateChanged">
+                        @foreach (var item in States!)
+                        {
+                            <option value="@item.StateId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            @if (Cities is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Ciudad</span>
+                    <select class="form-select" value="@Server.CityId" @onchange="CityChanged">
+                        @foreach (var item in Cities!)
+                        {
+                            <option value="@item.CityId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Zone + Active -->
+        <div class="col-12 col-md-6 mb-2">
+            @if (Zones is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Zona</span>
+                    <select class="form-select" value="@Server.ZoneId" @onchange="ZoneChanged">
+                        @foreach (var item in Zones!)
+                        {
+                            <option value="@item.ZoneId">@item.ZoneName</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Active)]
+                </span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="Server.Active" class="form-check-input me-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+
+</EditForm>

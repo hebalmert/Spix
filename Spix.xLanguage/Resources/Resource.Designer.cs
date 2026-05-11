@@ -304,6 +304,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pass.
+        /// </summary>
+        public static string Clave {
+            get {
+                return ResourceManager.GetString("Clave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Client.
         /// </summary>
         public static string Client {
@@ -637,6 +646,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Node.
+        /// </summary>
+        public static string Create_Node {
+            get {
+                return ResourceManager.GetString("Create_Node", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Operation.
         /// </summary>
         public static string Create_Operation {
@@ -696,6 +714,15 @@ namespace Spix.xLanguage.Resources {
         public static string Create_Serial {
             get {
                 return ResourceManager.GetString("Create_Serial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Server.
+        /// </summary>
+        public static string Create_Server {
+            get {
+                return ResourceManager.GetString("Create_Server", resourceCulture);
             }
         }
         
@@ -1042,6 +1069,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Node.
+        /// </summary>
+        public static string Edit_Node {
+            get {
+                return ResourceManager.GetString("Edit_Node", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Operation.
         /// </summary>
         public static string Edit_Operation {
@@ -1101,6 +1137,15 @@ namespace Spix.xLanguage.Resources {
         public static string Edit_Serial {
             get {
                 return ResourceManager.GetString("Edit_Serial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Server.
+        /// </summary>
+        public static string Edit_Server {
+            get {
+                return ResourceManager.GetString("Edit_Server", resourceCulture);
             }
         }
         
@@ -2500,6 +2545,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ping System.
+        /// </summary>
+        public static string Ping_System {
+            get {
+                return ResourceManager.GetString("Ping_System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plan.
         /// </summary>
         public static string Plan {
@@ -2788,6 +2842,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select Chain].
+        /// </summary>
+        public static string Select_Chaint {
+            get {
+                return ResourceManager.GetString("Select_Chaint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select Channel].
+        /// </summary>
+        public static string Select_Channel {
+            get {
+                return ResourceManager.GetString("Select_Channel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Country].
         /// </summary>
         public static string Select_Country {
@@ -2824,6 +2896,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select IP].
+        /// </summary>
+        public static string Select_IP {
+            get {
+                return ResourceManager.GetString("Select_IP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select Mark].
+        /// </summary>
+        public static string Select_Mark {
+            get {
+                return ResourceManager.GetString("Select_Mark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Plan].
         /// </summary>
         public static string Select_Plan {
@@ -2838,6 +2928,15 @@ namespace Spix.xLanguage.Resources {
         public static string Select_Role {
             get {
                 return ResourceManager.GetString("Select_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select Zone].
+        /// </summary>
+        public static string Select_Zone {
+            get {
+                return ResourceManager.GetString("Select_Zone", resourceCulture);
             }
         }
         

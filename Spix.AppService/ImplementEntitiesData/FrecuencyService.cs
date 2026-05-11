@@ -38,11 +38,17 @@ public class FrecuencyService : IFrecuencyService
     {
         try
         {
-            List<IntItemModel> ListModel = await _context.Frecuencies.Where(x => x.Active).Select(c => new IntItemModel()
+            List<IntItemModel> ListModel = await _context.Frecuencies.Where(x => x.Active && x.FrecuencyTypeId == id).Select(c => new IntItemModel()
             {
-                Name = c.ToString(),
+                Name = c.FrecuencyName.ToString(),
                 Value = c.FrecuencyId
             }).ToListAsync(); ;
+
+            ListModel.Insert(0, new IntItemModel
+            {
+                Value = 0,
+                Name = _localizer[nameof(Resource.Select_B_Frecuency)]
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

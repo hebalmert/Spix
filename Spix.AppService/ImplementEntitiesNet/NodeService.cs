@@ -56,7 +56,7 @@ public class NodeService : INodeService
                 };
             }
 
-            var queryable = _context.Nodes.Include(x => x.IpNetwork).Include(x => x.Zone)
+            var queryable = _context.Nodes.Include(x => x.Operation).Include(x => x.IpNetwork).Include(x => x.Zone)
                 .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -65,7 +65,7 @@ public class NodeService : INodeService
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.NodesName).Paginate(pagination).ToListAsync();
+            var modelo = await queryable.OrderBy(x => x.Zone!.ZoneName).ThenBy(x=> x.Operation!.OperationName).Paginate(pagination).ToListAsync();
 
             return new ActionResponse<IEnumerable<Node>>
             {
@@ -91,7 +91,7 @@ public class NodeService : INodeService
         }
         try
         {
-            var modelo = await _context.Nodes.FindAsync(id);
+            var modelo = await _context.Nodes.FirstOrDefaultAsync(x => x.NodeId == id);
             var ZoneDetail = await _context.Zones.FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
             modelo!.StateId = ZoneDetail!.StateId;
             modelo.CityId = ZoneDetail.CityId;

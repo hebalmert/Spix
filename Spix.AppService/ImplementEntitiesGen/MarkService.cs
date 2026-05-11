@@ -52,6 +52,12 @@ public class MarkService : IMarkService
             var ListModel = await _context.Marks
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
                 .ToListAsync();
+            
+            ListModel.Insert(0, new Mark
+            {
+                MarkId = Guid.Empty, 
+                MarkName = _localizer[nameof(Resource.Select_Mark)] 
+            });
 
             return new ActionResponse<IEnumerable<Mark>>
             {

@@ -10,7 +10,7 @@ namespace Spix.AppBack.Controllers.Entities;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/frecuencies")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Usuario")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 [ApiController]
 public class FrecuenciesController : ControllerBase
 {
@@ -21,18 +21,6 @@ public class FrecuenciesController : ControllerBase
         _frecuencyUnitOfWork = frecuencyUnitOfWork;
     }
 
-    [HttpGet("loadCombo/{id:int}")]
-    public async Task<ActionResult<IEnumerable<Frecuency>>> GetComboAsync(int id)
-    {
-        var response = await _frecuencyUnitOfWork.ComboAsync(id);
-        if (!response.WasSuccess)
-        {
-            return BadRequest(response.Message);
-        }
-        return Ok(response.Result);
-    }
-
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Frecuency>>> GetAll([FromQuery] PaginationDTO pagination)
     {
@@ -44,7 +32,6 @@ public class FrecuenciesController : ControllerBase
         return Ok(response.Result);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(int id)
     {
@@ -56,7 +43,6 @@ public class FrecuenciesController : ControllerBase
         return NotFound(response.Message);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpPut]
     public async Task<ActionResult<Frecuency>> PutAsync(Frecuency modelo)
     {
@@ -68,7 +54,6 @@ public class FrecuenciesController : ControllerBase
         return NotFound(response.Message);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<Frecuency>> PostAsync(Frecuency modelo)
     {
@@ -80,7 +65,6 @@ public class FrecuenciesController : ControllerBase
         return NotFound(response.Message);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> DeleteAsync(int id)
     {

@@ -10,8 +10,6 @@ using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.EntitiesGen;
-using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ItemsGeneric;
 using System.Security.Claims;

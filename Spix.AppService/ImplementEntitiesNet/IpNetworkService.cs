@@ -57,6 +57,11 @@ public class IpNetworkService : IIpNetworkService
                 IpList = await _context.IpNetworks
                     .Where(x => x.Active && x.CorporationId == user.CorporationId && x.Assigned == false && x.Excluded == false)
                     .ToListAsync();
+                IpList.Insert(0, new IpNetwork
+                {
+                    IpNetworkId = Guid.Empty,
+                    Ip = _localizer[nameof(Resource.Select_IP)]
+                });
             }
             else
             {

@@ -39,9 +39,15 @@ public class SecurityService : ISecurityService
         {
             List<IntItemModel> ListModel = await _context.Securities.Where(x => x.Active).Select(c => new IntItemModel()
             {
-                Name = c.ToString(),
+                Name = c.SecurityName,
                 Value = c.SecurityId
-            }).ToListAsync(); ;
+            }).ToListAsync();
+
+            ListModel.Insert(0, new IntItemModel
+            {
+                Value = 0,
+                Name = _localizer[nameof(Resource.Select_B_Secutiry)]
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {
