@@ -1216,4 +1216,22 @@
   <data name="Connetion_Mikrotik" xml:space="preserve">
     <value>Conecion a Mikrotik</value>
   </data>
+  <data name="Taxes" xml:space="preserve">
+    <value>Impuestos</value>
+  </data>
+  <data name="Edit_Client" xml:space="preserve">
+    <value>Editar Cliente</value>
+  </data>
+  <data name="Create_Client" xml:space="preserve">
+    <value>Crear Cliente</value>
+  </data>
+  <data name="Control_Client" xml:space="preserve">
+    <value>Control de Clientes</value>
+  </data>
+  <data name="Create_Account" xml:space="preserve">
+    <value>Crear Cuenta</value>
+  </data>
+  <data name="Generic_AuthUserNameFail" xml:space="preserve">
+    <value>Error al obtener el nombre de usuario</value>
+  </data>
 </root>

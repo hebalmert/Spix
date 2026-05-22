@@ -475,6 +475,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Control Client.
+        /// </summary>
+        public static string Control_Client {
+            get {
+                return ResourceManager.GetString("Control_Client", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Control Access.
         /// </summary>
         public static string ControlAccess {
@@ -520,6 +529,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Account.
+        /// </summary>
+        public static string Create_Account {
+            get {
+                return ResourceManager.GetString("Create_Account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Category.
         /// </summary>
         public static string Create_Category {
@@ -552,6 +570,15 @@ namespace Spix.xLanguage.Resources {
         public static string Create_Charge {
             get {
                 return ResourceManager.GetString("Create_Charge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Client.
+        /// </summary>
+        public static string Create_Client {
+            get {
+                return ResourceManager.GetString("Create_Client", resourceCulture);
             }
         }
         
@@ -975,6 +1002,15 @@ namespace Spix.xLanguage.Resources {
         public static string Edit_Charge {
             get {
                 return ResourceManager.GetString("Edit_Charge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Client.
+        /// </summary>
+        public static string Edit_Client {
+            get {
+                return ResourceManager.GetString("Edit_Client", resourceCulture);
             }
         }
         
@@ -1524,6 +1560,15 @@ namespace Spix.xLanguage.Resources {
         public static string Generic_AuthRoleFail {
             get {
                 return ResourceManager.GetString("Generic_AuthRoleFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to retrieve the username.
+        /// </summary>
+        public static string Generic_AuthUserNameFail {
+            get {
+                return ResourceManager.GetString("Generic_AuthUserNameFail", resourceCulture);
             }
         }
         
@@ -3126,6 +3171,15 @@ namespace Spix.xLanguage.Resources {
         public static string Tax {
             get {
                 return ResourceManager.GetString("Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Taxes.
+        /// </summary>
+        public static string Taxes {
+            get {
+                return ResourceManager.GetString("Taxes", resourceCulture);
             }
         }
         

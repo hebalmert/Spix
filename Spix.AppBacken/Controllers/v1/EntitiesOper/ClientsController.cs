@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfacesOper;
 using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 using System.Security.Claims;
 
@@ -11,17 +14,19 @@ namespace Spix.AppBack.Controllers.v1
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/clients")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Usuario")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     [ApiController]
     public class ClientsController : ControllerBase
     {
         private readonly IClientServiceX _clientServiceX;
         private readonly IConfiguration _configuration;
+        private readonly IStringLocalizer _localizer;
 
-        public ClientsController(IClientServiceX clientServiceX, IConfiguration configuration)
+        public ClientsController(IClientServiceX clientServiceX, IConfiguration configuration, IStringLocalizer localizer)
         {
             _clientServiceX = clientServiceX;
             _configuration = configuration;
+            _localizer = localizer;
         }
 
         [HttpGet("loadCombo")]
@@ -83,13 +88,13 @@ namespace Spix.AppBack.Controllers.v1
         [HttpPost]
         public async Task<ActionResult<Client>> PostAsync(Client modelo)
         {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
             }
 
-            var response = await _clientServiceX.AddAsync(modelo, email, _configuration["UrlFrontend"]!);
+            var response = await _clientServiceX.AddAsync(modelo, userClaimsInfo.UserName, _configuration["UrlFrontend"]!);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);

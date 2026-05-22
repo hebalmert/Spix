@@ -12,7 +12,7 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (isLoading || Usuario is null)
+            @if (isLoading || Client is null)
             {
                 <div class="loading-overlay">
                     <Loading />
@@ -20,7 +20,7 @@
             }
             else
             {
-                <FormUsuario Usuario="Usuario"
+                <FormClient Client="Client"
                              IsSaving="IsSaving"
                              IsEditControl="false"
                              OnSubmit="Create"

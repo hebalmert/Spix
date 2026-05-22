@@ -26,12 +26,13 @@ public partial class CreateUsuario
     private Usuario Usuario = new() { Active = true };
     private string BaseUrl = "/api/v1/usuarios";
     private bool isLoading = false;
+    private bool IsSaving = false;
 
     private async Task Create()
     {
-        isLoading = true;
+        IsSaving = true;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Usuario);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());

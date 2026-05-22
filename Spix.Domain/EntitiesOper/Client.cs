@@ -17,13 +17,6 @@ public class Client
     [Display(Name = nameof(Resource.Created), ResourceType = typeof(Resource))]
     public DateTime? DateCreated { get; set; }
 
-    [Display(Name = nameof(Resource.DocumentType), ResourceType = typeof(Resource))]
-    public Guid DocumentTypeId { get; set; }
-
-    [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
-    [Display(Name = nameof(Resource.Document), ResourceType = typeof(Resource))]
-    public string Document { get; set; } = null!;
-
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.FirstName), ResourceType = typeof(Resource))]
     public string FirstName { get; set; } = null!;
@@ -32,15 +25,12 @@ public class Client
     [Display(Name = nameof(Resource.LastName), ResourceType = typeof(Resource))]
     public string LastName { get; set; } = null!;
 
-    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
-    [MaxLength(7, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
-    [Display(Name = nameof(Resource.Country), ResourceType = typeof(Resource))]
-    public string CodeCountry { get; set; } = null!;
+    [Display(Name = nameof(Resource.DocumentType), ResourceType = typeof(Resource))]
+    public Guid DocumentTypeId { get; set; }
 
-    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
-    [MaxLength(3, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
-    [Display(Name = nameof(Resource.Code), ResourceType = typeof(Resource))]
-    public string CodeNumber { get; set; } = null!;
+    [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.Document), ResourceType = typeof(Resource))]
+    public string Document { get; set; } = null!;
 
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
@@ -68,6 +58,9 @@ public class Client
 
     [Display(Name = nameof(Resource.Photo), ResourceType = typeof(Resource))]
     public string? Imagen { get; set; }
+
+    [Display(Name = nameof(Resource.Create_Account), ResourceType = typeof(Resource))]
+    public bool CreateAccount { get; set; }
 
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]
     public bool Active { get; set; }

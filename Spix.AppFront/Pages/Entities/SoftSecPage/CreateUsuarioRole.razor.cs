@@ -25,15 +25,16 @@ public partial class CreateUsuarioRole
 
     private UsuarioRole UsuarioRole = new();
     private bool isLoading = false;
+    private bool IsSaving = false;
     private string BaseUrl = "/api/v1/usuarioRoles";
     private string BaseView = "/usuarios/detailusuario";
 
     private async Task Create()
     {
-        isLoading = true;
+        IsSaving = true;
         UsuarioRole.UsuarioId = Id;
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", UsuarioRole);
-        isLoading = false;
+        IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());

@@ -13,7 +13,7 @@ public static class ClaimsPrincipalExtensions
             throw new ApplicationException(localizer[nameof(Resource.Generic_AuthRequired)]);
 
         int Idcorporate;
-        string? email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        string? username = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
         string? id = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         string? role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
         if (role == "Admin")
@@ -32,8 +32,8 @@ public static class ClaimsPrincipalExtensions
         string userAgent = httpContext.Request.Headers["User-Agent"].ToString();
         string referer = httpContext.Request.Headers["Referer"].ToString();
 
-        if (string.IsNullOrWhiteSpace(email))
-            throw new ApplicationException(localizer[nameof(Resource.Generic_AuthEmailFail)].Value);
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ApplicationException(localizer[nameof(Resource.Generic_AuthUserNameFail)]);
 
         if (string.IsNullOrWhiteSpace(id))
             throw new ApplicationException(localizer[nameof(Resource.Generic_AuthIdFail)]);
@@ -43,7 +43,7 @@ public static class ClaimsPrincipalExtensions
 
         return new ClaimsDTOs
         {
-            UserName = email,
+            UserName = username!,
             Id = id,
             CorporationId = Idcorporate,
             Role = role,

@@ -22,6 +22,11 @@ html, body {
     border-radius: 10px;
 }
 
+/* Para que los Switches pasen a Verde cuando esten activos */
+.form-switch .form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
 
 /* sobre poner el spinner en los modales */
 .loading-overlay {

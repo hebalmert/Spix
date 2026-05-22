@@ -19,9 +19,10 @@ public partial class FormUsuarioRole
     [Parameter, EditorRequired] public UsuarioRole UsuarioRole { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
 
     private List<IntItemModel>? ListUserType;
-
+    private bool isLoading = false;
     protected override async Task OnInitializedAsync()
     {
         await LoadRoles();

@@ -1,6 +1,5 @@
 ﻿@inherits ComponentBase
 
-
 <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-create-shadow p-4 position-relative">
@@ -12,7 +11,8 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (isLoading || Usuario is null)
+
+            @if (isLoading || Client is null)
             {
                 <div class="loading-overlay">
                     <Loading />
@@ -20,10 +20,10 @@
             }
             else
             {
-                <FormUsuario Usuario="Usuario"
+                <FormClient Client="Client"
                              IsSaving="IsSaving"
-                             IsEditControl="false"
-                             OnSubmit="Create"
+                             IsEditControl="true"
+                             OnSubmit="Edit"
                              ReturnAction="Return" />
             }
         </div>

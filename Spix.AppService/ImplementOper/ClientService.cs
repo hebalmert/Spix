@@ -18,6 +18,7 @@ using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.SettingModels;
 using Spix.xFiles.FileHelper;
+using Spix.xLanguage.Resources;
 using Spix.xNotification.Interfaces;
 
 namespace Spix.Services.ImplementOper
@@ -106,6 +107,15 @@ namespace Spix.Services.ImplementOper
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
                 var modelo = await queryable.OrderBy(x => x.FirstName).Paginate(pagination).ToListAsync();
 
+                await Task.WhenAll(modelo.Select(async option =>
+                {
+                    if (!string.IsNullOrWhiteSpace(option.Imagen))
+                    {
+                        var FileResult = await _fileStorage.GetBlobSasUrlAsync(option.Imagen, _imgOption.ImgClient, TimeSpan.FromMinutes(3));
+                        option.ImageFullPath = FileResult;
+                    }
+                }));
+
                 return new ActionResponse<IEnumerable<Client>>
                 {
                     WasSuccess = true,
@@ -172,48 +182,43 @@ namespace Spix.Services.ImplementOper
             try
             {
                 Client NewModelo = _mapperService.Map<Client, Client>(modelo);
-                if (modelo.ImgBase64 != null)
-                {
-                    NewModelo.ImgBase64 = modelo.ImgBase64;
-                }
 
                 if (!string.IsNullOrEmpty(modelo.ImgBase64))
                 {
-                    string guid;
-                    if (modelo.Imagen == null)
-                    {
-                        guid = Guid.NewGuid().ToString() + ".jpg";
-                    }
-                    else
-                    {
-                        guid = modelo.Imagen;
-                    }
+                    string guid = modelo.Imagen == null ? Guid.NewGuid().ToString() + ".jpg" : modelo.Imagen;
                     var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                    NewModelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgClient!);
+                    NewModelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgClient);
                 }
+
                 _context.Clients.Update(NewModelo);
                 await _transactionManager.SaveChangesAsync();
 
                 User UserCurrent = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+
                 if (UserCurrent != null)
                 {
+                    // Actualizar solo si tiene cuenta
                     UserCurrent.FirstName = modelo.FirstName;
                     UserCurrent.LastName = modelo.LastName;
                     UserCurrent.PhoneNumber = modelo.PhoneNumber;
                     UserCurrent.PhotoUser = modelo.Imagen;
                     UserCurrent.JobPosition = "Client";
-                    UserCurrent.Active = modelo.Active;
-                    IdentityResult result = await _userHelper.UpdateUserAsync(UserCurrent);
+
+                    // Active del IdentityUser ahora depende de CreateAccount
+                    UserCurrent.Active = modelo.CreateAccount;
+
+                    await _userHelper.UpdateUserAsync(UserCurrent);
                 }
                 else
                 {
-                    if (modelo.Active)
+                    // Crear usuario solo si CreateAccount = true
+                    if (modelo.CreateAccount)
                     {
                         Response response = await AcivateUser(modelo, frontUrl);
-                        if (response.IsSuccess == false)
+                        if (!response.IsSuccess)
                         {
                             var guid = modelo.Imagen;
-                            _fileStorage.DeleteImage(_imgOption.ImgManager!, guid!);
+                            _fileStorage.DeleteImage(_imgOption.ImgClient!, guid!);
                             await _transactionManager.RollbackTransactionAsync();
                             return new ActionResponse<Client>
                             {
@@ -235,60 +240,71 @@ namespace Spix.Services.ImplementOper
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return await _httpErrorHandler.HandleErrorAsync<Client>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<Client>(ex);
             }
         }
 
-        public async Task<ActionResponse<Client>> AddAsync(Client modelo, string email, string frontUrl)
+        public async Task<ActionResponse<Client>> AddAsync(Client modelo, string username, string frontUrl)
         {
             await _transactionManager.BeginTransactionAsync();
             try
             {
-                User CheckEmail = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
-                if (CheckEmail != null)
+                User UserLogin = await _userHelper.GetUserByUserNameAsync(username);
+                if (UserLogin == null)
                 {
                     return new ActionResponse<Client>
                     {
                         WasSuccess = false,
-                        Message = _localizer["Generic_UserNameAlreadyUsed"]
+                        Message = _localizer[nameof(Resource.Generic_AuthUserNameFail)]
                     };
                 }
 
-                var user = await _userHelper.GetUserByEmailAsync(email);
-                if (user == null)
+                User CheckUserName = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+                if (CheckUserName != null)
                 {
                     return new ActionResponse<Client>
                     {
                         WasSuccess = false,
-                        Message = "Problemas de Validacion de Usuario"
+                        Message = _localizer[nameof(Resource.Generic_UserNameAlreadyUsed)]
+                    };
+                }
+
+                var user = await _userHelper.GetUserByEmailAsync(modelo.Email);
+                if (user != null)
+                {
+                    return new ActionResponse<Client>
+                    {
+                        WasSuccess = false,
+                        Message = _localizer[nameof(Resource.Generic_EmailAlreadyUsed)]
                     };
                 }
 
                 modelo.DateCreated = DateTime.Now;
                 modelo.UserType = UserType.Client;
-                modelo.CorporationId = Convert.ToInt32(user.CorporationId);
+                modelo.CorporationId = UserLogin.CorporationId!.Value;
+
                 if (!string.IsNullOrEmpty(modelo.ImgBase64))
                 {
                     string guid = Guid.NewGuid().ToString() + ".jpg";
                     var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                    modelo.Imagen = await _fileStorage.UploadImage(imageId, _imgOption.ImgClient!, guid);
+                    modelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgClient);
                 }
 
                 _context.Clients.Add(modelo);
                 await _transactionManager.SaveChangesAsync();
 
-                //Registro del Usuario en User
-                if (modelo.Active)
+                // Crear cuenta SOLO si CreateAccount = true
+                if (modelo.CreateAccount)
                 {
                     Response response = await AcivateUser(modelo, frontUrl);
                     if (!response.IsSuccess)
                     {
                         var guid = modelo.Imagen;
-                        _fileStorage.DeleteImage(_imgOption.ImgManager!, guid!);
+                        _fileStorage.DeleteImage(_imgOption.ImgClient!, guid!);
                         await _transactionManager.RollbackTransactionAsync();
                         return new ActionResponse<Client>
                         {
-                            WasSuccess = true,
+                            WasSuccess = false,
                             Message = "No se ha podido crear el Usuario, Intentelo de nuevo"
                         };
                     }
@@ -305,8 +321,9 @@ namespace Spix.Services.ImplementOper
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return await _httpErrorHandler.HandleErrorAsync<Client>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<Client>(ex);
             }
+
         }
 
         public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
@@ -382,7 +399,7 @@ namespace Spix.Services.ImplementOper
                 $"Para Activar su vuenta, " +
                 $"Has Click en el siguiente Link:</br></br><strong><a href = \"{tokenLink}\">Confirmar Correo</a></strong>");
 
-            Response response = await _emailHelper.ConfirmarCuenta(user.UserName!, $"{user.FirstName} {user.LastName}", subject, body);
+            Response response = await _emailHelper.ConfirmarCuenta(user.Email!, $"{user.FirstName} {user.LastName}", subject, body);
             if (response.IsSuccess == false)
             {
                 return response;

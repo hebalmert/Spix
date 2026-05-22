@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesNet;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
