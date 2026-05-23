@@ -15,10 +15,12 @@ using Spix.AppService.InterfacesOper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesOper;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.SettingModels;
 using Spix.xFiles.FileHelper;
+using Spix.xLanguage.Resources;
 using Spix.xNotification.Interfaces;
 
 namespace Spix.Services.ImplementOper;
@@ -52,22 +54,31 @@ public class ContractorService : IContractorService
         _httpErrorHandler = httpErrorHandler;
     }
 
-    public async Task<ActionResponse<IEnumerable<Contractor>>> ComboAsync(string username)
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username)
     {
         try
         {
             var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
-                return new ActionResponse<IEnumerable<Contractor>>
+                return new ActionResponse<IEnumerable<GuidItemModel>>
                 {
                     WasSuccess = false,
                     Message = "Problemas de Validacion de Usuario"
                 };
             }
-            var ListModel = await _context.Contractors.Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
+            var ListModel = await _context.Contractors
+                .Where(x => x.Active && x.CorporationId == user.CorporationId)
+                .Select(x => new GuidItemModel { Value = x.ContractorId, Name = x.FirstName + " " + x.LastName })
+                .ToListAsync();
+            ListModel.Insert(0, new GuidItemModel 
+            { 
+                Value = Guid.Empty, 
+                Name = _localizer[nameof(Resource.Select_Contractor)]
+            });
 
-            return new ActionResponse<IEnumerable<Contractor>>
+
+            return new ActionResponse<IEnumerable<GuidItemModel>>
             {
                 WasSuccess = true,
                 Result = ListModel
@@ -75,7 +86,7 @@ public class ContractorService : IContractorService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Contractor>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex); // ✅ Manejo de errores automático
         }
     }
 
@@ -107,6 +118,15 @@ public class ContractorService : IContractorService
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
             var modelo = await queryable.OrderBy(x => x.FirstName).Paginate(pagination).ToListAsync();
 
+            await Task.WhenAll(modelo.Select(async option =>
+            {
+                if (!string.IsNullOrWhiteSpace(option.Imagen))
+                {
+                    var FileResult = await _fileStorage.GetBlobSasUrlAsync(option.Imagen, _imgOption.ImgContractor, TimeSpan.FromMinutes(3));
+                    option.ImageFullPath = FileResult;
+                }
+            }));
+
             return new ActionResponse<IEnumerable<Contractor>>
             {
                 WasSuccess = true,
@@ -123,7 +143,10 @@ public class ContractorService : IContractorService
     {
         try
         {
-            var modelo = await _context.Contractors.Include(x => x.DocumentType).FirstOrDefaultAsync(x => x.ContractorId == id);
+            var modelo = await _context.Contractors
+                .AsNoTracking()
+                .Include(x => x.DocumentType)
+                .FirstOrDefaultAsync(x => x.ContractorId == id);
             if (modelo == null)
             {
                 return new ActionResponse<Contractor>
@@ -132,7 +155,15 @@ public class ContractorService : IContractorService
                     Message = "Problemas para Enconstrar el Registro Indicado"
                 };
             }
-
+            if (!string.IsNullOrWhiteSpace(modelo.Imagen))
+            {
+                var FileResult = await _fileStorage.GetBlobSasUrlAsync(modelo.Imagen, _imgOption.ImgContractor, TimeSpan.FromMinutes(2));
+                modelo.ImageFullPath = FileResult;
+            }
+            else
+            {
+                modelo.ImageFullPath = _imgOption.ImgNoImage;
+            }
             return new ActionResponse<Contractor>
             {
                 WasSuccess = true,
@@ -152,45 +183,40 @@ public class ContractorService : IContractorService
         try
         {
             Contractor NewModelo = _mapperService.Map<Contractor, Contractor>(modelo);
-            if (modelo.ImgBase64 != null)
-            {
-                NewModelo.ImgBase64 = modelo.ImgBase64;
-            }
 
             if (!string.IsNullOrEmpty(modelo.ImgBase64))
             {
-                string guid;
-                if (modelo.Imagen == null)
-                {
-                    guid = Guid.NewGuid().ToString() + ".jpg";
-                }
-                else
-                {
-                    guid = modelo.Imagen;
-                }
+                string guid = modelo.Imagen == null ? Guid.NewGuid().ToString() + ".jpg" : modelo.Imagen;
                 var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                NewModelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgContractor!);
+                NewModelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgContractor);
             }
+
             _context.Contractors.Update(NewModelo);
             await _transactionManager.SaveChangesAsync();
 
             User UserCurrent = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+
             if (UserCurrent != null)
             {
+                // Actualizar solo si tiene cuenta
                 UserCurrent.FirstName = modelo.FirstName;
                 UserCurrent.LastName = modelo.LastName;
                 UserCurrent.PhoneNumber = modelo.PhoneNumber;
                 UserCurrent.PhotoUser = modelo.Imagen;
-                UserCurrent.JobPosition = "Client";
-                UserCurrent.Active = modelo.Active;
-                IdentityResult result = await _userHelper.UpdateUserAsync(UserCurrent);
+                UserCurrent.JobPosition = "Contractor";
+
+                // Active del IdentityUser ahora depende de CreateAccount
+                UserCurrent.Active = modelo.CreateAccount;
+
+                await _userHelper.UpdateUserAsync(UserCurrent);
             }
             else
             {
-                if (modelo.Active)
+                // Crear usuario solo si CreateAccount = true
+                if (modelo.CreateAccount)
                 {
                     Response response = await AcivateUser(modelo, frontUrl);
-                    if (response.IsSuccess == false)
+                    if (!response.IsSuccess)
                     {
                         var guid = modelo.Imagen;
                         _fileStorage.DeleteImage(_imgOption.ImgContractor!, guid!);
@@ -215,7 +241,7 @@ public class ContractorService : IContractorService
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<Contractor>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Contractor>(ex);
         }
     }
 
@@ -224,51 +250,62 @@ public class ContractorService : IContractorService
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            User CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.UserName);
-            if (CheckEmail != null)
-            {
-                return new ActionResponse<Contractor>
-                {
-                    WasSuccess = true,
-                    Message = "El Correo ingresado ya se encuentra reservado, debe cambiarlo."
-                };
-            }
-
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
+            User UserLogin = await _userHelper.GetUserByUserNameAsync(username);
+            if (UserLogin == null)
             {
                 return new ActionResponse<Contractor>
                 {
                     WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
+                    Message = _localizer[nameof(Resource.Generic_AuthUserNameFail)]
+                };
+            }
+
+            User CheckUserName = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+            if (CheckUserName != null)
+            {
+                return new ActionResponse<Contractor>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_UserNameAlreadyUsed)]
+                };
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(modelo.Email);
+            if (user != null)
+            {
+                return new ActionResponse<Contractor>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_EmailAlreadyUsed)]
                 };
             }
 
             modelo.DateCreated = DateTime.Now;
-            modelo.UserType = UserType.Contractor;
-            modelo.CorporationId = Convert.ToInt32(user.CorporationId);
+            modelo.UserType = UserType.Client;
+            modelo.CorporationId = UserLogin.CorporationId!.Value;
+
             if (!string.IsNullOrEmpty(modelo.ImgBase64))
             {
                 string guid = Guid.NewGuid().ToString() + ".jpg";
                 var imageId = Convert.FromBase64String(modelo.ImgBase64);
-                modelo.Imagen = await _fileStorage.UploadImage(imageId, _imgOption.ImgContractor!, guid);
+                modelo.Imagen = await _fileStorage.SaveImageAsync(imageId, guid, _imgOption.ImgContractor);
             }
 
             _context.Contractors.Add(modelo);
             await _transactionManager.SaveChangesAsync();
 
-            //Registro del Usuario en User
-            if (modelo.Active)
+            // Crear cuenta SOLO si CreateAccount = true
+            if (modelo.CreateAccount)
             {
                 Response response = await AcivateUser(modelo, frontUrl);
                 if (!response.IsSuccess)
                 {
                     var guid = modelo.Imagen;
-                    _fileStorage.DeleteImage(_imgOption.ImgManager!, guid!);
+                    _fileStorage.DeleteImage(_imgOption.ImgContractor!, guid!);
                     await _transactionManager.RollbackTransactionAsync();
                     return new ActionResponse<Contractor>
                     {
-                        WasSuccess = true,
+                        WasSuccess = false,
                         Message = "No se ha podido crear el Usuario, Intentelo de nuevo"
                     };
                 }
@@ -285,7 +322,7 @@ public class ContractorService : IContractorService
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<Contractor>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Contractor>(ex);
         }
     }
 
@@ -362,7 +399,7 @@ public class ContractorService : IContractorService
             $"Para Activar su vuenta, " +
             $"Has Click en el siguiente Link:</br></br><strong><a href = \"{tokenLink}\">Confirmar Correo</a></strong>");
 
-        Response response = await _emailHelper.ConfirmarCuenta(user.UserName!, $"{user.FirstName} {user.LastName}", subject, body);
+        Response response = await _emailHelper.ConfirmarCuenta(user.Email!, $"{user.FirstName} {user.LastName}", subject, body);
         if (response.IsSuccess == false)
         {
             return response;

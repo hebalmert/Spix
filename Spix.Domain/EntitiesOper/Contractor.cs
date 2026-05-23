@@ -73,6 +73,9 @@ public class Contractor
     [Display(Name = nameof(Resource.Photo), ResourceType = typeof(Resource))]
     public string? Imagen { get; set; }
 
+    [Display(Name = nameof(Resource.Create_Account), ResourceType = typeof(Resource))]
+    public bool CreateAccount { get; set; }
+
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]
     public bool Active { get; set; }
 

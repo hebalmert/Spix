@@ -53,7 +53,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.Client)
                     .Include(x => x.Zone)
                     .Where(x => x.CorporationId == user.CorporationId &&
-                                (x.StateType == StateType.Procesando || x.StateType == StateType.Activo))
+                                (x.ContractState == ContractState.PendingApproval || x.ContractState == ContractState.Active))
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -76,7 +76,7 @@ namespace Spix.Services.ImplementContratos
             }
             catch (Exception ex)
             {
-                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ContractClient>>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ContractClient>>(ex);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.Client)
                     .Include(x => x.Zone)
                     .Where(x => x.CorporationId == user.CorporationId &&
-                            (x.StateType == StateType.Creando || x.StateType == StateType.Procesando))
+                            (x.ContractState == ContractState.Draft || x.ContractState == ContractState.PendingApproval))
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -121,7 +121,7 @@ namespace Spix.Services.ImplementContratos
             }
             catch (Exception ex)
             {
-                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ContractClient>>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ContractClient>>(ex);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Spix.Services.ImplementContratos
             }
             catch (Exception ex)
             {
-                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
             }
         }
 
@@ -172,7 +172,7 @@ namespace Spix.Services.ImplementContratos
                         Message = "Problemas para Encontrar el Registro Indicado"
                     };
                 }
-                if (modelo.StateType == StateType.Procesando)
+                if (modelo.ContractState == ContractState.PendingApproval)
                 {
                     return new ActionResponse<ContractClient>
                     {
@@ -180,13 +180,13 @@ namespace Spix.Services.ImplementContratos
                         Message = "Solo se puede Cambiar de Creando a Procesando"
                     };
                 }
-                if (modelo.StateType == StateType.Procesando)
+                if (modelo.ContractState == ContractState.PendingApproval)
                 {
-                    modelo.StateType = StateType.Creando;
+                    modelo.ContractState = ContractState.Draft;
                 }
                 else
                 {
-                    modelo.StateType = StateType.Procesando;
+                    modelo.ContractState = ContractState.Draft;
                 }
                 _context.ContractClients.Update(modelo);
 
@@ -201,7 +201,7 @@ namespace Spix.Services.ImplementContratos
             }
             catch (Exception ex)
             {
-                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
             }
         }
 
@@ -228,7 +228,7 @@ namespace Spix.Services.ImplementContratos
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
             }
         }
 
@@ -248,22 +248,18 @@ namespace Spix.Services.ImplementContratos
                 }
 
                 //Para crear el correlativo de Contratos
-                var reg = await _context.Registers.FirstOrDefaultAsync(x => x.CorporationId == user.CorporationId);
-                if (reg == null)
-                {
-                    return new ActionResponse<ContractClient>
-                    {
-                        WasSuccess = false,
-                        Message = "Problemas Para Asiganar el Consecutivo de Contrato"
-                    };
-                }
-                reg.Contratos += 1;
-                _context.Registers.Update(reg);
+                var lastNumber = await _context.ContractClients.AsNoTracking()
+                    .Where(x => x.CorporationId == user.CorporationId)
+                                    .MaxAsync(x => (long?)x.ControlContrato) ?? 0;
+                modelo.ControlContrato = lastNumber + 1;
 
-                modelo.ControlContrato = Convert.ToString(reg.Contratos);
                 modelo.CorporationId = Convert.ToInt32(user.CorporationId);
-                modelo.StateType = StateType.Creando;
+                modelo.ContractState = ContractState.Draft;
                 modelo.DateCreado = DateTime.Now;
+                //control de Auditoria
+                modelo.UsuarioOwner = $"{user.FirstName!} {user.LastName!}";
+                modelo.UserId = Guid.Parse(user.Id);
+
                 _context.ContractClients.Add(modelo);
                 await _transactionManager.SaveChangesAsync();
                 await _transactionManager.CommitTransactionAsync();
@@ -277,7 +273,7 @@ namespace Spix.Services.ImplementContratos
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
             }
         }
 
@@ -295,7 +291,6 @@ namespace Spix.Services.ImplementContratos
                         Message = "Problemas para Enconstrar el Registro Indicado"
                     };
                 }
-
                 _context.ContractClients.Remove(DataRemove);
 
                 await _transactionManager.SaveChangesAsync();
@@ -310,7 +305,7 @@ namespace Spix.Services.ImplementContratos
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
             }
         }
     }

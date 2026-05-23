@@ -9,33 +9,39 @@ namespace Spix.Domain.EntitiesOper;
 
 public class Technician
 {
-    [Key]
     public Guid TechnicianId { get; set; }
 
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     [Display(Name = nameof(Resource.Created), ResourceType = typeof(Resource))]
     public DateTime? DateCreated { get; set; }
 
-    [Display(Name = nameof(Resource.DocumentType), ResourceType = typeof(Resource))]
-    public Guid DocumentTypeId { get; set; }
-
-    [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
-    [Display(Name = nameof(Resource.Document), ResourceType = typeof(Resource))]
-    public string Document { get; set; } = null!;
-
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.FirstName), ResourceType = typeof(Resource))]
     public string FirstName { get; set; } = null!;
 
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.LastName), ResourceType = typeof(Resource))]
     public string LastName { get; set; } = null!;
 
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.DocumentType), ResourceType = typeof(Resource))]
+    public Guid DocumentTypeId { get; set; }
+
+    [MaxLength(15, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.Document), ResourceType = typeof(Resource))]
+    public string? Document { get; set; }
+
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
     public string PhoneNumber { get; set; } = null!;
 
     [MaxLength(256, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [DataType(DataType.MultilineText)]
     [Display(Name = nameof(Resource.Address), ResourceType = typeof(Resource))]
     public string Address { get; set; } = null!;
 
@@ -70,6 +76,7 @@ public class Technician
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
+
     public DocumentType? DocumentType { get; set; }
 
 }

@@ -63,9 +63,7 @@ public static class MapsterConfig
         config.NewConfig<ContractClient, ContractClient>()
             .Ignore(dest => dest.Corporation!)
             .Ignore(dest => dest.Client!)
-            .Ignore(dest => dest.ServiceClient!)
-            .Ignore(dest => dest.Zone!)
-            .Ignore(dest => dest.ServiceCategory!);
+            .Ignore(dest => dest.Zone!);
 
         config.NewConfig<Supplier, Supplier>()
             .Ignore(dest => dest.Corporation!)

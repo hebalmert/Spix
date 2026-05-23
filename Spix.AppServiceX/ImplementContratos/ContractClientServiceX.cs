@@ -15,9 +15,9 @@ public class ContractClientServiceX : IContractClientServiceX
         _contractClientService = contractClientService;
     }
 
-    public async Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string email) => await _contractClientService.GetControlContratos(pagination, email);
+    public async Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username) => await _contractClientService.GetControlContratos(pagination, username);
 
-    public async Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string email) => await _contractClientService.GetAsync(pagination, email);
+    public async Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string username) => await _contractClientService.GetAsync(pagination, username);
 
     public async Task<ActionResponse<ContractClient>> GetAsync(Guid id) => await _contractClientService.GetAsync(id);
 
@@ -25,7 +25,7 @@ public class ContractClientServiceX : IContractClientServiceX
 
     public async Task<ActionResponse<ContractClient>> UpdateAsync(ContractClient modelo) => await _contractClientService.UpdateAsync(modelo);
 
-    public async Task<ActionResponse<ContractClient>> AddAsync(ContractClient modelo, string email) => await _contractClientService.AddAsync(modelo, email);
+    public async Task<ActionResponse<ContractClient>> AddAsync(ContractClient modelo, string username) => await _contractClientService.AddAsync(modelo, username);
 
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _contractClientService.DeleteAsync(id);
 }

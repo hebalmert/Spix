@@ -9,195 +9,217 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="nav flex-column">
+
+        <!-- HOME -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="bi bi-house-door-fill-nav-menu"></span> Home
             </NavLink>
         </div>
+
+        <!-- PLATFORM SETUP -->
         <AuthorizeView Roles="Admin">
             <Authorized>
-                <!-- Grupo: Opciones -->
                 <div class="nav-item px-3">
-                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
-                            @onclick="submenu1"
-                            style="background: none; border: none;">
-                        <span class="fa fa-th-large" aria-hidden="true"></span> Configuration
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="submenu1">
+                        <span class="fa fa-th-large"></span>
+                        @Localizer[nameof(Resource.PlatForm_Setup)]
                         <span class="ms-auto fa @(expandSubMenu1 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
                     @if (expandSubMenu1)
                     {
-                        <NavLink class="nav-link text-white ps-4" href="/softplans">
-                            <span class="fa fa-dot me-2" aria-hidden="true"></span> Sofplans
+                        <NavLink class="nav-link text-white nav-subitem" href="/softplans">
+                            <span class="fa fa-dot nav-subicon me-2"></span> Sofplans
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/corporations">
-                            <span class="fa fa-dot me-2" aria-hidden="true"></span> Corporation
+                        <NavLink class="nav-link text-white nav-subitem" href="/corporations">
+                            <span class="fa fa-dot nav-subicon me-2"></span> Corporation
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/managers">
-                            <span class="fa fa-dot me-2" aria-hidden="true"></span> Manager
+                        <NavLink class="nav-link text-white nav-subitem" href="/managers">
+                            <span class="fa fa-dot nav-subicon me-2"></span> Manager
                         </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
+
+        <!-- OPERATIONAL SETUP -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
-                <!-- Grupo: Configuración -->
                 <div class="nav-item px-3">
-                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
-                            @onclick="submenu3"
-                            style="background: none; border: none;">
-                        <span class="fa fa-cogs" aria-hidden="true"></span> Configuración
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="submenu3">
+                        <span class="fa fa-cogs"></span>
+                        @Localizer[nameof(Resource.Menu_Setup)]
                         <span class="ms-auto fa @(expandSubMenu3 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
                     @if (expandSubMenu3)
                     {
-                        <NavLink class="nav-link text-white ps-4" href="/zones">
-                            <span class="fa fa-map-marker-alt me-2"></span> Zonas
+                        <NavLink class="nav-link text-white nav-subitem" href="/zones">
+                            <span class="fa fa-map-marker-alt nav-subicon me-2"></span> Zonas
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/documenttypes">
-                            <span class="fa fa-file me-2"></span> Tipo Documento
+                        <NavLink class="nav-link text-white nav-subitem" href="/documenttypes">
+                            <span class="fa fa-file nav-subicon me-2"></span> Tipo Documento
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/taxes">
-                            <span class="fa fa-percent me-2"></span> Impuestos
+                        <NavLink class="nav-link text-white nav-subitem" href="/taxes">
+                            <span class="fa fa-percent nav-subicon me-2"></span> Impuestos
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/registers">
-                            <span class="fa fa-book me-2"></span> Registros
+                        <NavLink class="nav-link text-white nav-subitem" href="/registers">
+                            <span class="fa fa-book nav-subicon me-2"></span> Registros
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/contractor">
-                            <span class="fa fa-user-tie me-2"></span> Contratistas
-                        </NavLink>
+
                         <hr class="border-top border-light opacity-50 my-2" />
-                        //Linea de Division
-                        <NavLink class="nav-link text-white ps-4" href="/servicecategories">
-                            <span class="fa fa-concierge-bell me-2"></span> Categoria/Servicios
+
+                        <NavLink class="nav-link text-white nav-subitem" href="/servicecategories">
+                            <span class="fa fa-concierge-bell nav-subicon me-2"></span> Categoria/Servicios
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/plancategories">
-                            <span class="fa fa-sitemap me-2"></span> Categoria/Planes
+                        <NavLink class="nav-link text-white nav-subitem" href="/plancategories">
+                            <span class="fa fa-sitemap nav-subicon me-2"></span> Categoria/Planes
                         </NavLink>
                     }
                 </div>
-
             </Authorized>
         </AuthorizeView>
+
+        <!-- PRODUCTS & STOCK -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
-                <!-- Grupo: Configuración -->
                 <div class="nav-item px-3">
-                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
-                            @onclick="submenu5"
-                            style="background: none; border: none;">
-                        <span class="fa fa-network-wired" aria-hidden="true"></span> Inventarios
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="submenu5">
+                        <span class="fa fa-boxes"></span>
+                        @Localizer[nameof(Resource.Menu_Inventory)]
                         <span class="ms-auto fa @(expandSubMenu5 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
                     @if (expandSubMenu5)
                     {
-                        <NavLink class="nav-link text-white ps-4" href="/suppliers">
-                            <span class="fa fa-concierge-bell me-2"></span> Proveedores
+                        <NavLink class="nav-link text-white nav-subitem" href="/productcategories">
+                            <span class="fa fa-boxes nav-subicon me-2"></span> Categoria/Productos
                         </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/marks">
+                            <span class="fa fa-tags nav-subicon me-2"></span> Marca/Modelo
+                        </NavLink>
+
                         <hr class="border-top border-light opacity-50 my-2" />
-                        //Linea de Division
-                        <NavLink class="nav-link text-white ps-4" href="/marks">
-                            <span class="fa fa-tags me-2"></span> Marca/Modelo
+
+                        <NavLink class="nav-link text-white nav-subitem" href="/suppliers">
+                            <span class="fa fa-truck nav-subicon me-2"></span> Proveedores
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/productstorages">
-                            <span class="fa fa-boxes me-2"></span> Bodegas
+                        <NavLink class="nav-link text-white nav-subitem" href="/productstorages">
+                            <span class="fa fa-warehouse nav-subicon me-2"></span> Bodegas
                         </NavLink>
+
                         <hr class="border-top border-light opacity-50 my-2" />
-                        //Linea de Division
-                        <NavLink class="nav-link text-white ps-4" href="/productcategories">
-                            <span class="fa fa-boxes me-2"></span> Categoria/Productos
+
+                        <NavLink class="nav-link text-white nav-subitem" href="/purchases">
+                            <span class="fa fa-shopping-cart nav-subicon me-2"></span> Compras
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/purchases">
-                            <span class="fa fa-concierge-bell me-2"></span> Compras
-                        </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/cargues">
-                            <span class="fa fa-concierge-bell me-2"></span> Cargue Serials
+                        <NavLink class="nav-link text-white nav-subitem" href="/cargues">
+                            <span class="fa fa-barcode nav-subicon me-2"></span> Cargue Serials
                         </NavLink>
                     }
                 </div>
-
             </Authorized>
         </AuthorizeView>
+
+        <!-- NETWORK MANAGEMENT -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
-                <!-- Grupo: Configuración -->
                 <div class="nav-item px-3">
-                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
-                            @onclick="submenu4"
-                            style="background: none; border: none;">
-                        <span class="fa fa-network-wired" aria-hidden="true"></span> Configuracion Red
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="submenu4">
+                        <span class="fa fa-network-wired"></span>
+                        @Localizer[nameof(Resource.Menu_Network)]
                         <span class="ms-auto fa @(expandSubMenu4 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
                     @if (expandSubMenu4)
                     {
-                        <NavLink class="nav-link text-white ps-4" href="/ipnets">
-                            <span class="fa fa-concierge-bell me-2"></span> Ip Clientes
+                        <NavLink class="nav-link text-white nav-subitem" href="/ipnets">
+                            <span class="fa fa-laptop nav-subicon me-2"></span> Ip Clientes
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/ipnetworks">
-                            <span class="fa fa-concierge-bell me-2"></span> Ip Red
+                        <NavLink class="nav-link text-white nav-subitem" href="/ipnetworks">
+                            <span class="fa fa-project-diagram nav-subicon me-2"></span> Ip Red
                         </NavLink>
+
                         <hr class="border-top border-light opacity-50 my-2" />
-                        <NavLink class="nav-link text-white ps-4" href="/nodes">
-                            <span class="fa fa-concierge-bell me-2"></span> Nodos
+
+                        <NavLink class="nav-link text-white nav-subitem" href="/nodes">
+                            <span class="fa fa-server nav-subicon me-2"></span> Nodos
                         </NavLink>
-                        <NavLink class="nav-link text-white ps-4" href="/servers">
-                            <span class="fa fa-concierge-bell me-2"></span> Servidores
+                        <NavLink class="nav-link text-white nav-subitem" href="/servers">
+                            <span class="fa fa-database nav-subicon me-2"></span> Servidores
                         </NavLink>
                     }
                 </div>
-
             </Authorized>
         </AuthorizeView>
+
+        <!-- OPERATIONS -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
-                <!-- Grupo: Configuración -->
                 <div class="nav-item px-3">
-                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
-                            @onclick="submenu6"
-                            style="background: none; border: none;">
-                        <span class="fa fa-network-wired" aria-hidden="true"></span> Operaciones
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="submenu6">
+                        <span class="fa fa-briefcase"></span>
+                        @Localizer[nameof(Resource.Menu_Operation)]
                         <span class="ms-auto fa @(expandSubMenu6 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
                     @if (expandSubMenu6)
                     {
-                        <NavLink class="nav-link text-white ps-4" href="/clients">
-                            <span class="fa fa-concierge-bell me-2"></span> Clientes
+                        <NavLink class="nav-link text-white nav-subitem" href="/clients">
+                            <span class="fa fa-users nav-subicon me-2"></span> Clientes
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractclients">
+                            <span class="fa fa-users nav-subicon me-2"></span> Contract Clients
                         </NavLink>
                     }
                 </div>
-
             </Authorized>
         </AuthorizeView>
+
+        <!-- SYSTEM SETTINGS -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
-                <!-- Grupo: Configuración -->
                 <div class="nav-item px-3">
-                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100"
-                            @onclick="submenu2"
-                            style="background: none; border: none;">
-                        <span class="fa fa-gears" aria-hidden="true"></span> System Setting
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="submenu2">
+                        <span class="fa fa-gears"></span>
+                        System Setting
                         <span class="ms-auto fa @(expandSubMenu2 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
                     @if (expandSubMenu2)
                     {
-                        <NavLink class="nav-link text-white ps-4" href="/usuarios">
-                            <span class="fa fa-dot me-2" aria-hidden="true"></span> User
+                        <NavLink class="nav-link text-white nav-subitem" href="/usuarios">
+                            <span class="fa fa-user nav-subicon me-2"></span> User
                         </NavLink>
-                        <hr class="border-top border-white opacity-25 my-2" />
+
+                        <hr class="border-top border-light opacity-50 my-2" />
+
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractors">
+                            <span class="fa fa-user-tie nav-subicon me-2"></span> Contratistas
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/technitians">
+                            <span class="fa fa-user-tie nav-subicon me-2"></span> Tecnicos
+                        </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
+
     </nav>
 </div>
 
+
 @code {
+
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
+
     private bool collapseNavMenu = true;
 
     private bool expandSubMenu1;

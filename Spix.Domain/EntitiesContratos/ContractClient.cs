@@ -20,7 +20,7 @@ public class ContractClient
     public DateTime DateCreado { get; set; }
 
     [Display(Name = nameof(Resource.ContractNumber), ResourceType = typeof(Resource))]
-    public string? ControlContrato { get; set; }
+    public long ControlContrato { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Contractor), ResourceType = typeof(Resource))]
@@ -29,16 +29,6 @@ public class ContractClient
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Client), ResourceType = typeof(Resource))]
     public Guid ClientId { get; set; }
-
-    [Required(ErrorMessage = "El {0} es Obligatorio")]
-    [MaxLength(7, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
-    [Display(Name = nameof(Resource.Country), ResourceType = typeof(Resource))]
-    public string CodeCountry { get; set; } = null!;
-
-    [Required(ErrorMessage = "El {0} es Obligatorio")]
-    [MaxLength(3, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
-    [Display(Name = nameof(Resource.Code), ResourceType = typeof(Resource))]
-    public string CodeNumber { get; set; } = null!;
 
     [Required(ErrorMessage = "El {0} es Obligatorio")]
     [MaxLength(7, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
@@ -56,34 +46,15 @@ public class ContractClient
     public Guid ZoneId { get; set; }
 
     [Display(Name = nameof(Resource.State), ResourceType = typeof(Resource))]
-    public StateType StateType { get; set; }
+    public ContractState ContractState { get; set; }
 
     [Display(Name = nameof(Resource.CompanyAntenna), ResourceType = typeof(Resource))]
     public bool EquipoEmpres { get; set; }
 
-    [Display(Name = nameof(Resource.InvoiceClient), ResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.Invoice_Client), ResourceType = typeof(Resource))]
     public bool EnvoiceClient { get; set; }
 
-    [Required(ErrorMessage = "La {0} es Obligatorio")]
-    [Display(Name = nameof(Resource.ServiceCategory), ResourceType = typeof(Resource))]
-    public Guid ServiceCategoryId { get; set; }
-
-    [Required(ErrorMessage = "La {0} es Obligatorio")]
-    [Display(Name = nameof(Resource.ClientService), ResourceType = typeof(Resource))]
-    public Guid ServiceClientId { get; set; }
-
-    [MaxLength(50, ErrorMessage = "El Maximo de caracteres es {0}")]
-    [Display(Name = nameof(Resource.Service), ResourceType = typeof(Resource))]
-    public string? ServiceName { get; set; }
-
-    [Range(0, double.MaxValue, ErrorMessage = "El Valor del Precio debe ser mayor que {1}")]
-    [Display(Name = nameof(Resource.Tax), ResourceType = typeof(Resource))]
-    public decimal? Impuesto { get; set; }
-
-    [Range(0, double.MaxValue, ErrorMessage = "El Valor del Precio debe ser mayor que {1}")]
-    [Display(Name = nameof(Resource.Price), ResourceType = typeof(Resource))]
-    public decimal? Price { get; set; }
-
+    //Propiedades no Mapeadas para el Control de Contratos
     [Display(Name = nameof(Resource.UseHotSpotControl), ResourceType = typeof(Resource))]
     [NotMapped]
     public bool UsaHotSpotControl { get; set; }
@@ -99,19 +70,22 @@ public class ContractClient
     [Display(Name = nameof(Resource.Client), ResourceType = typeof(Resource))]
     [NotMapped]
     public string? NombreCliente { get; set; }
-
-    [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
-    public string FullPhone => $"({CodeCountry}) - ({CodeNumber}) - {PhoneNumber}";
-
-    [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
-    public string SMSPhone => $"{CodeCountry}{CodeNumber}{PhoneNumber}";
+    //Fin Propiedades no Mapeadas para el Control de Contratos
 
     public int CorporationId { get; set; }
 
+
+    //Cual fue el usuario que Creo el Registro
+    [Display(Name = "Quien Creo el QcGeneral")]  //El usuario que creo el QC su nombre en base al logueo del usuario.
+    public string? UsuarioOwner { get; set; }
+
+    [Display(Name = "Quien Creo el QcGeneral")]  //El UserId del usuario que lo creo para ubicarle sus credenciales.
+    public Guid? UserId { get; set; }
+    //Fin quien creo el registro
+
+
     public Corporation? Corporation { get; set; }
     public Contractor? Contractor { get; set; }
-    public ServiceCategory? ServiceCategory { get; set; }
-    public ServiceClient? ServiceClient { get; set; }
     public Client? Client { get; set; }
     public Zone? Zone { get; set; }
 

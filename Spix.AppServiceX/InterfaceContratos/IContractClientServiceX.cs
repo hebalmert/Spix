@@ -6,9 +6,9 @@ namespace Spix.AppServiceX.InterfaceContratos;
 
 public interface IContractClientServiceX
 {
-    Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string email);
+    Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username);
 
-    Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string email);
+    Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<ContractClient>> GetAsync(Guid id);
 
@@ -16,7 +16,7 @@ public interface IContractClientServiceX
 
     Task<ActionResponse<ContractClient>> UpdateAsync(ContractClient modelo);
 
-    Task<ActionResponse<ContractClient>> AddAsync(ContractClient modelo, string email);
+    Task<ActionResponse<ContractClient>> AddAsync(ContractClient modelo, string username);
 
     Task<ActionResponse<bool>> DeleteAsync(Guid id);
 }

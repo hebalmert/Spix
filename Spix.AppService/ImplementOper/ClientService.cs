@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
@@ -14,6 +13,7 @@ using Spix.AppService.InterfacesOper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesOper;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.SettingModels;
@@ -52,22 +52,36 @@ namespace Spix.Services.ImplementOper
             _httpErrorHandler = httpErrorHandle;
         }
 
-        public async Task<ActionResponse<IEnumerable<Client>>> ComboAsync(string username)
+        public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username)
         {
             try
             {
                 var user = await _userHelper.GetUserByUserNameAsync(username);
                 if (user == null)
                 {
-                    return new ActionResponse<IEnumerable<Client>>
+                    return new ActionResponse<IEnumerable<GuidItemModel>>
                     {
                         WasSuccess = false,
                         Message = "Problemas de Validacion de Usuario"
                     };
                 }
-                var ListModel = await _context.Clients.Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
+                var ListModel = await _context.Clients
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId)
+                    .Select(x => new GuidItemModel
+                    {
+                        Value = x.ClientId,
+                        Name = x.FirstName + " " + x.LastName
+                    })
+                    .ToListAsync();
 
-                return new ActionResponse<IEnumerable<Client>>
+                ListModel.Insert(0, new GuidItemModel
+                {
+                    Value = Guid.Empty,
+                    Name = _localizer[nameof(Resource.Select_Client)]
+                }
+                );
+
+                return new ActionResponse<IEnumerable<GuidItemModel>>
                 {
                     WasSuccess = true,
                     Result = ListModel
@@ -75,7 +89,7 @@ namespace Spix.Services.ImplementOper
             }
             catch (Exception ex)
             {
-                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Client>>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex); // ✅ Manejo de errores automático
             }
         }
 

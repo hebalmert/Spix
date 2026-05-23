@@ -649,21 +649,14 @@ namespace Spix.AppBacken.Migrations
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CodeCountry")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)");
-
-                    b.Property<string>("CodeNumber")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
+                    b.Property<int>("ContractState")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ContractorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ControlContrato")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<long>("ControlContrato")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
@@ -677,31 +670,22 @@ namespace Spix.AppBacken.Migrations
                     b.Property<bool>("EquipoEmpres")
                         .HasColumnType("bit");
 
-                    b.Property<decimal?>("Impuesto")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(7)
                         .HasColumnType("nvarchar(7)");
 
-                    b.Property<decimal?>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("ServiceCategoryId")
+                    b.Property<Guid?>("ServiceCategoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ServiceClientId")
+                    b.Property<Guid?>("ServiceClientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ServiceName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("StateType")
-                        .HasColumnType("int");
+                    b.Property<string>("UsuarioOwner")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ZoneId")
                         .HasColumnType("uniqueidentifier");
@@ -719,8 +703,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ZoneId");
 
                     b.HasIndex("CorporationId", "ControlContrato")
-                        .IsUnique()
-                        .HasFilter("[ControlContrato] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("ContractClients");
                 });
@@ -2244,6 +2227,9 @@ namespace Spix.AppBacken.Migrations
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("CreateAccount")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("DateCreated")
                         .HasColumnType("date");
 
@@ -2332,8 +2318,8 @@ namespace Spix.AppBacken.Migrations
 
                     b.Property<string>("Document")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<Guid>("DocumentTypeId")
                         .HasColumnType("uniqueidentifier");
@@ -2557,17 +2543,13 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Spix.Domain.EntitiesGen.ServiceCategory", "ServiceCategory")
+                    b.HasOne("Spix.Domain.EntitiesGen.ServiceCategory", null)
                         .WithMany("ContractClients")
-                        .HasForeignKey("ServiceCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("ServiceCategoryId");
 
-                    b.HasOne("Spix.Domain.EntitiesGen.ServiceClient", "ServiceClient")
+                    b.HasOne("Spix.Domain.EntitiesGen.ServiceClient", null)
                         .WithMany("ContractClients")
-                        .HasForeignKey("ServiceClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("ServiceClientId");
 
                     b.HasOne("Spix.Domain.EntitiesGen.Zone", "Zone")
                         .WithMany("ContractClients")
@@ -2580,10 +2562,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Contractor");
 
                     b.Navigation("Corporation");
-
-                    b.Navigation("ServiceCategory");
-
-                    b.Navigation("ServiceClient");
 
                     b.Navigation("Zone");
                 });

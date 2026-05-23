@@ -2,6 +2,36 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Grupo principal */
+.nav-group {
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 10px 12px;
+    background-color: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
+/* Items del submenú */
+.nav-subitem {
+    font-weight: 400;
+    font-size: 0.92rem;
+    padding-left: 2.2rem !important;
+    opacity: 0.85;
+}
+
+    .nav-subitem:hover {
+        opacity: 1;
+        background-color: rgba(255,255,255,0.08);
+        border-radius: 4px;
+    }
+
+/* Íconos más pequeños para subitems */
+.nav-subicon {
+    font-size: 0.75rem;
+    width: 16px;
+}
+
 .top-row {
     min-height: 3.5rem;
     background-color: rgba(0,0,0,0.4);

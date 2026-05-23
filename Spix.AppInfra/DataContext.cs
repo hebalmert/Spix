@@ -90,6 +90,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Technician> Technicians => Set<Technician>();
     public DbSet<Client> Clients => Set<Client>();
 
+
     //EntitiesContratos
 
     public DbSet<ContractIp> ContractIps => Set<ContractIp>();

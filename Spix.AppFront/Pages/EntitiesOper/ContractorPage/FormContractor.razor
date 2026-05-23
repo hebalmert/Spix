@@ -1,0 +1,156 @@
+﻿<EditForm Model="Contractor" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <InputImageGeneral ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+            </div>
+            <div class="col-md-6">
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.FirstName)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Contractor.FirstName" />
+                    </div>
+                    <ValidationMessage For="@(() => Contractor.FirstName)" />
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.LastName)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Contractor.LastName" />
+                    </div>
+                    <ValidationMessage For="@(() => Contractor.LastName)" />
+                </div>
+                <div class="mb-2">
+                    @if (DocumentTypes is null)
+                    {
+                        <Loading />
+                    }
+                    else
+                    {
+                        <div class="input-group">
+                            <span class="input-group-text" style="width:150px">Tipo Documento</span>
+                            <select class="form-select" value="@Contractor.DocumentTypeId" @onchange="DocuementTypeChanged">
+                                @foreach (var item in DocumentTypes!)
+                                {
+                                    <option value="@item.DocumentTypeId">@item.DocumentName</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.NroDocuement)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Contractor.Document" />
+                    </div>
+                    <ValidationMessage For="@(() => Contractor.Document)" />
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">
+                            @Localizer[nameof(Resource.Phone)]
+                        </span>
+                        <InputText class="form-control" placeholder="" @bind-Value="Contractor.PhoneNumber" />
+                    </div>
+                    <ValidationMessage For="@(() => Contractor.PhoneNumber)" />
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Address)]
+                </span>
+                <InputTextArea class="form-control" placeholder="" @bind-Value="Contractor.Address" />
+            </div>
+            <ValidationMessage For="@(() => Contractor.Address)" />
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Email)]
+                    </span>
+                    <InputText class="form-control" placeholder="" @bind-Value="Contractor.Email" />
+                </div>
+                <ValidationMessage For="@(() => Contractor.Email)" />
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.UserName)]
+                    </span>
+                    <InputText class="form-control" placeholder="" @bind-Value="Contractor.UserName" />
+                </div>
+                <ValidationMessage For="@(() => Contractor.UserName)" />
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Email)]
+                    </span>
+                    <InputNumber class="form-control" placeholder="" @bind-Value="Contractor.Rate" />
+                </div>
+                <ValidationMessage For="@(() => Contractor.Rate)" />
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.SavePayment)]
+                    </span>
+
+                    <div class="form-check form-switch ms-3">
+                        <InputCheckbox @bind-Value="Contractor.GuardarPago"
+                                       class="form-check-input"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Active)]
+                    </span>
+
+                    <div class="form-check form-switch ms-3">
+                        <InputCheckbox @bind-Value="Contractor.Active" class="form-check-input" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                    <span class="input-group-text" style="width: 150px">
+                        @Localizer[nameof(Resource.Create_Account)]
+                    </span>
+
+                    <div class="form-check form-switch ms-3">
+                        <InputCheckbox @bind-Value="Contractor.CreateAccount"
+                                       class="form-check-input"
+                                       disabled="@(!Contractor.Active)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+
+</EditForm>

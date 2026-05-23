@@ -9,7 +9,10 @@ using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
+using Spix.AppServiceX.InterfacesOper;
 using Spix.Domain.EntitiesData;
+using Spix.Domain.EntitiesGen;
+using Spix.Domain.EntitiesOper;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ItemsGeneric;
 using System.Security.Claims;
@@ -38,15 +41,19 @@ public class ComboDatasController : ControllerBase
     private readonly IPlanServiceX _planServiceX;
     private readonly ISupplierServiceX _supplierServiceX;
     private readonly IProductStorageServiceX _productStorageService;
+    private readonly IClientServiceX _clientServiceX;
     private readonly IStringLocalizer _localizer;
+    private readonly IContractorServiceX _contractorServiceX;
+    private readonly ITechnitianServiceX _technitianService;
 
     public ComboDatasController(ISecurityServiceX securityUnitOfWork, IOperationServiceX operationUnitOfWork,
         IHotSpotTypeServiceX hotSpotTypeUnitOfWork, IFrecuencyTypeServiceX frecuencyTypeUnitOfWork,
         IFrecuencyServiceX frecuencyUnitOfWork, IChannelServiceX channelUnitOfWork, IStateServiceX stateUnitOfWork,
         ICityServiceX cityUnitOfWork, IDocumentTypeServiceX documentTypeUnitOfWork, ITaxServiceX taxServiceX,
         IProductCategoryServiceX productCategory, IProductServiceX productService, IPlanServiceX planServiceX,
-        ISupplierServiceX supplierServiceX, IProductStorageServiceX productStorageService,
-        IChainTypesServiceX chainTypesUnitOfWork, IStringLocalizer localizer)
+        ISupplierServiceX supplierServiceX, IProductStorageServiceX productStorageService, IClientServiceX clientServiceX,
+        IChainTypesServiceX chainTypesUnitOfWork, IStringLocalizer localizer, IContractorServiceX contractorServiceX,
+        ITechnitianServiceX technitianService)
     {
         _securityUnitOfWork = securityUnitOfWork;
         _operationUnitOfWork = operationUnitOfWork;
@@ -64,19 +71,73 @@ public class ComboDatasController : ControllerBase
         _planServiceX = planServiceX;
         _supplierServiceX = supplierServiceX;
         _productStorageService = productStorageService;
+        _clientServiceX = clientServiceX;
         _localizer = localizer;
+        _contractorServiceX = contractorServiceX;
+        _technitianService = technitianService;
+    }
+
+    [HttpGet("ComboClients")]
+    public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboClientsAsync(int id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _clientServiceX.ComboAsync(userClaimsInfo.UserName);
+        if (!response.WasSuccess)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Result);
+    }
+
+    [HttpGet("ComboTechnicians")]
+    public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboTecniciansAsync(int id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _technitianService.ComboAsync(userClaimsInfo.UserName);
+        if (!response.WasSuccess)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Result);
+    }
+
+    [HttpGet("ComboContractor")]
+    public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboAsync(int id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _contractorServiceX.ComboAsync(userClaimsInfo.UserName);
+        if (!response.WasSuccess)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Result);
     }
 
     [HttpGet("ComboStorage")]
     public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStorage()
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
         }
 
-        var response = await _productStorageService.ComboAsync(email);
+        var response = await _productStorageService.ComboAsync(userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
@@ -90,6 +151,10 @@ public class ComboDatasController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _supplierServiceX.ComboAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -109,6 +174,10 @@ public class ComboDatasController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _planServiceX.GetComboUpAsync();
             return ResponseHelper.Format(response);
         }
@@ -128,6 +197,10 @@ public class ComboDatasController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _planServiceX.GetComboDownAsync();
             return ResponseHelper.Format(response);
         }
@@ -147,6 +220,10 @@ public class ComboDatasController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _productService.ComboAsync(userClaimsInfo.UserName, id);
             return ResponseHelper.Format(response);
         }
@@ -166,6 +243,10 @@ public class ComboDatasController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _productCategory.ComboAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -184,8 +265,6 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            //ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
             var response = await _cityUnitOfWork.ComboAsync(id);
             return ResponseHelper.Format(response);
         }
@@ -200,8 +279,11 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _stateUnitOfWork.ComboAsync(userClaimsInfo);
             return ResponseHelper.Format(response);
         }
@@ -217,6 +299,10 @@ public class ComboDatasController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _documentTypeUnitOfWork.ComboAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -313,6 +399,10 @@ public class ComboDatasController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
             var response = await _taxServiceX.ComboAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }

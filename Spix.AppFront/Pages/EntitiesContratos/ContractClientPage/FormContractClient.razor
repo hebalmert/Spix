@@ -1,0 +1,185 @@
+﻿<EditForm Model="ContractClient" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <!--Contractors -->
+        <div class="col-12 col-md-6 mb-2">
+            @if (Contractors is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Contractors</span>
+                    <select class="form-select" value="@ContractClient.ContractorId" @onchange="ContractorChanged">
+                        @foreach (var item in Contractors!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            @if (Clients is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Cliente</span>
+                    <select class="form-select" value="@ContractClient?.ClientId" @onchange="ClientChanged">
+                        @foreach (var item in Clients!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Usuario + Clave -->
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Phone)]
+                </span>
+                <InputText class="form-control" placeholder="" @bind-Value="ContractClient!.PhoneNumber" />
+            </div>
+            <ValidationMessage For="@(() => ContractClient.PhoneNumber)" />
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Phone)]
+                </span>
+                <InputText class="form-control" placeholder="" @bind-Value="ContractClient!.PhoneNumber" />
+            </div>
+            <ValidationMessage For="@(() => ContractClient.PhoneNumber)" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Address)]
+                </span>
+                <InputTextArea class="form-control" placeholder="" @bind-Value="ContractClient!.Address" />
+            </div>
+            <ValidationMessage For="@(() => ContractClient.Address)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Estado + Zona -->
+        <div class="col-12 col-md-4 mb-2">
+            @if (States is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Estado</span>
+                    <select class="form-select" value="@ContractClient.StateId" @onchange="StateChanged">
+                        @foreach (var item in States!)
+                        {
+                            <option value="@item.StateId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="col-12 col-md-4 mb-2">
+            @if (Cities is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Ciudad</span>
+                    <select class="form-select" value="@ContractClient?.CityId" @onchange="CityChanged">
+                        @foreach (var item in Cities!)
+                        {
+                            <option value="@item.CityId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+
+        </div>
+
+        <div class="col-12 col-md-4 mb-2">
+            @if (Zones is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Zona</span>
+                    <select class="form-select" value="@ContractClient!.ZoneId" @onchange="ZoneChanged">
+                        @foreach (var item in Zones!)
+                        {
+                            <option value="@item.ZoneId">@item.ZoneName</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+        <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Ciudad + Activo -->
+        <div class="col-12 col-md-6 mb-2">
+            <div class="d-flex align-items-center">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Equipment_Compnay)]
+                </span>
+
+                <div class="form-check form-switch ms-3">
+                    <InputCheckbox @bind-Value="ContractClient!.EquipoEmpres" class="form-check-input" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="d-flex align-items-center">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Invoice_Client)]
+                </span>
+
+                <div class="form-check form-switch ms-3">
+                    <InputCheckbox @bind-Value="ContractClient!.EnvoiceClient" class="form-check-input" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <!-- BOTONES -->
+    <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+
+</EditForm>

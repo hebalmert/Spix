@@ -1,6 +1,7 @@
 ﻿using Spix.AppService.InterfacesOper;
 using Spix.AppServiceX.InterfacesOper;
 using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -15,7 +16,7 @@ public class ClientServiceX : IClientServiceX
         _clientService = clientService;
     }
 
-    public async Task<ActionResponse<IEnumerable<Client>>> ComboAsync(string username) => await _clientService.ComboAsync(username);
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username) => await _clientService.ComboAsync(username);
 
     public async Task<ActionResponse<IEnumerable<Client>>> GetAsync(PaginationDTO pagination, string email) => await _clientService.GetAsync(pagination, email);
 

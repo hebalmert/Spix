@@ -331,7 +331,7 @@
             {
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Zona</span>
-                    <select class="form-select" value="@Node.ZoneId" @onchange="ZoneChanged">
+                    <select class="form-select" value="@Node!.ZoneId" @onchange="ZoneChanged">
                         @foreach (var item in Zones!)
                         {
                             <option value="@item.ZoneId">@item.ZoneName</option>

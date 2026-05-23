@@ -2,44 +2,31 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfacesOper;
-using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.v1
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/contractor")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Usuario")]
+    [Route("api/v{version:apiVersion}/contractors")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     [ApiController]
     public class ContractorsController : ControllerBase
     {
         private readonly IContractorServiceX _contractorUnitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly IStringLocalizer _localizer;
 
-        public ContractorsController(IContractorServiceX contractorUnitOfWork, IConfiguration configuration)
+        public ContractorsController(IContractorServiceX contractorUnitOfWork, IConfiguration configuration, IStringLocalizer localizer)
         {
             _contractorUnitOfWork = contractorUnitOfWork;
             _configuration = configuration;
-        }
-
-        [HttpGet("loadCombo")]
-        public async Task<ActionResult<IEnumerable<Zone>>> GetComboAsync(int id)
-        {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
-            {
-                return BadRequest("Erro en el sistema de Usuarios");
-            }
-
-            var response = await _contractorUnitOfWork.ComboAsync(email);
-            if (!response.WasSuccess)
-            {
-                return BadRequest(response.Message);
-            }
-            return Ok(response.Result);
+            _localizer = localizer;
         }
 
         [HttpGet]
@@ -84,13 +71,13 @@ namespace Spix.AppBack.Controllers.v1
         [HttpPost]
         public async Task<ActionResult<Contractor>> PostAsync(Contractor modelo)
         {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
             }
 
-            var response = await _contractorUnitOfWork.AddAsync(modelo, email, _configuration["UrlFrontend"]!);
+            var response = await _contractorUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName, _configuration["UrlFrontend"]!);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);

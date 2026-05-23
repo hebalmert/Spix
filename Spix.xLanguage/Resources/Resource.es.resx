@@ -895,9 +895,6 @@
   <data name="UseHotSpotControl" xml:space="preserve">
     <value>Usa Control con HotSpot</value>
   </data>
-  <data name="InvoiceClient" xml:space="preserve">
-    <value>Factura Cliente</value>
-  </data>
   <data name="CompanyAntenna" xml:space="preserve">
     <value>Antena de Empresa</value>
   </data>
@@ -1233,5 +1230,74 @@
   </data>
   <data name="Generic_AuthUserNameFail" xml:space="preserve">
     <value>Error al obtener el nombre de usuario</value>
+  </data>
+  <data name="Control_Contractor" xml:space="preserve">
+    <value>Control de Contratistas</value>
+  </data>
+  <data name="PlatForm_Setup" xml:space="preserve">
+    <value>Config. Plataforma</value>
+  </data>
+  <data name="Menu_Setup" xml:space="preserve">
+    <value>Configuracion</value>
+  </data>
+  <data name="Menu_Inventory" xml:space="preserve">
+    <value>Inventario</value>
+  </data>
+  <data name="Menu_Network" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="Menu_Operation" xml:space="preserve">
+    <value>Operaciones</value>
+  </data>
+  <data name="ContractState_Draft" xml:space="preserve">
+    <value>Borrador</value>
+  </data>
+  <data name="ContractState_PendingApproval" xml:space="preserve">
+    <value>Por Aprobacion</value>
+  </data>
+  <data name="ContractState_Active" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="ContractState_Exempt" xml:space="preserve">
+    <value>Exento</value>
+  </data>
+  <data name="ContractState_Suspended" xml:space="preserve">
+    <value>Suspendido</value>
+  </data>
+  <data name="ContractState_Cancelled" xml:space="preserve">
+    <value>Anulado</value>
+  </data>
+  <data name="ContractState_Terminated" xml:space="preserve">
+    <value>Terminado</value>
+  </data>
+  <data name="Select_Contractor" xml:space="preserve">
+    <value>[Seleccione Contratista]</value>
+  </data>
+  <data name="Select_Client" xml:space="preserve">
+    <value>[Seleccione Cliente]</value>
+  </data>
+  <data name="Equipment_Compnay" xml:space="preserve">
+    <value>Equipos Empresa</value>
+  </data>
+  <data name="Invoice_Client" xml:space="preserve">
+    <value>Factura Cliente</value>
+  </data>
+  <data name="Edit_ContractClient" xml:space="preserve">
+    <value>Editar Contrato Cliente</value>
+  </data>
+  <data name="Create_ContractClient" xml:space="preserve">
+    <value>Crear Contrato Cliente</value>
+  </data>
+  <data name="Select_Technician" xml:space="preserve">
+    <value>[Seleccione Tecnico]</value>
+  </data>
+  <data name="Edit_Technitian" xml:space="preserve">
+    <value>Editar Tecnico</value>
+  </data>
+  <data name="Create_Technitian" xml:space="preserve">
+    <value>Crear Tecnico</value>
+  </data>
+  <data name="Control_Contracts" xml:space="preserve">
+    <value>Control de Contratos</value>
   </data>
 </root>

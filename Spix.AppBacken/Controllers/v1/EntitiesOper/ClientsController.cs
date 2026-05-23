@@ -29,33 +29,16 @@ namespace Spix.AppBack.Controllers.v1
             _localizer = localizer;
         }
 
-        [HttpGet("loadCombo")]
-        public async Task<ActionResult<IEnumerable<Client>>> GetComboAsync(int id)
-        {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
-            {
-                return BadRequest("Erro en el sistema de Usuarios");
-            }
-
-            var response = await _clientServiceX.ComboAsync(email);
-            if (!response.WasSuccess)
-            {
-                return BadRequest(response.Message);
-            }
-            return Ok(response.Result);
-        }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Client>>> GetAll([FromQuery] PaginationDTO pagination)
         {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
             }
 
-            var response = await _clientServiceX.GetAsync(pagination, email);
+            var response = await _clientServiceX.GetAsync(pagination, userClaimsInfo.UserName);
             if (!response.WasSuccess)
             {
                 return BadRequest(response.Message);

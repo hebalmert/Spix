@@ -59,12 +59,12 @@ public class Contract
     public int ZoneId { get; set; }
 
     [Display(Name = nameof(Resource.State), ResourceType = typeof(Resource))]
-    public StateType StateType { get; set; }
+    public ContractState ContractState { get; set; }
 
     [Display(Name = nameof(Resource.CompanyAntenna), ResourceType = typeof(Resource))]
     public bool EquipoEmpres { get; set; }
 
-    [Display(Name = nameof(Resource.InvoiceClient), ResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.Invoice_Client), ResourceType = typeof(Resource))]
     public bool EnvoiceClient { get; set; }
 
     [MaxLength(50, ErrorMessage = "El Maximo de caracteres es {0}")]

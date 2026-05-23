@@ -2,6 +2,7 @@
 using Spix.AppService.ImplementEntitiesGen;
 using Spix.AppService.ImplementEntitiesNet;
 using Spix.AppService.ImplementMk;
+using Spix.AppService.InterfaceContratos;
 using Spix.AppService.InterfaceEntities;
 using Spix.AppService.InterfaceEntitiesNet;
 using Spix.AppService.InterfacesEntitiesData;
@@ -10,10 +11,12 @@ using Spix.AppService.InterfacesInven;
 using Spix.AppService.InterfacesMk;
 using Spix.AppService.InterfacesOper;
 using Spix.AppService.InterfacesSecure;
+using Spix.AppServiceX.ImplementContratos;
 using Spix.AppServiceX.ImplementEntitiesGen;
 using Spix.AppServiceX.ImplementEntitiesNet;
 using Spix.AppServiceX.ImplementInven;
 using Spix.AppServiceX.ImplementMk;
+using Spix.AppServiceX.InterfaceContratos;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.AppServiceX.InterfacesEntitiesData;
@@ -22,6 +25,7 @@ using Spix.AppServiceX.InterfacesInven;
 using Spix.AppServiceX.InterfacesMk;
 using Spix.AppServiceX.InterfacesOper;
 using Spix.AppServiceX.InterfacesSecure;
+using Spix.Services.ImplementContratos;
 using Spix.Services.ImplementEntties;
 using Spix.Services.ImplementInven;
 using Spix.Services.ImplementOper;
@@ -136,6 +140,14 @@ namespace Spix.AppBack.DependencyInjection
             //Operaciones
             services.AddScoped<IClientServiceX, ClientServiceX>();
             services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IContractorServiceX, ContractorServiceX>();
+            services.AddScoped<IContractorService, ContractorService>();
+            services.AddScoped<ITechnitianServiceX, TechnitianServiceX>();
+            services.AddScoped<ITechnitianService, TechnitianService>();
+
+            //Contratos
+            services.AddScoped<IContractClientServiceX, ContractClientServiceX>();
+            services.AddScoped<IContractClientService, ContractClientService>();
         }
     }
 }
