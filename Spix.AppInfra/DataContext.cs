@@ -99,6 +99,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractNode> ContractNodes => Set<ContractNode>();
     public DbSet<ContractQue> ContractQues => Set<ContractQue>();
     public DbSet<ContractClient> ContractClients => Set<ContractClient>();
+    public DbSet<ContractIDPic> ContractIDPics => Set<ContractIDPic>();
 
 
     //Esta parte nos permite tomar las configuraciones desde otra ubicacion, para mantener el codigo mas ordenado

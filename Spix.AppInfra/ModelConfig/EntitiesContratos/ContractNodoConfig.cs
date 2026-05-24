@@ -9,6 +9,7 @@ public class ContractNodoConfig : IEntityTypeConfiguration<ContractNode>
     public void Configure(EntityTypeBuilder<ContractNode> builder)
     {
         builder.HasKey(e => e.ContractNodeId);
+        builder.Property(x => x.ContractNodeId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.ContractClientId, e.NodeId }).IsUnique();
 
         //Evitar el borrado en cascada

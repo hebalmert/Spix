@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesContratos.ContracIDPicPage;
 using Spix.Domain.EntitiesContratos;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -99,9 +100,34 @@ public partial class IndexContractClient
         });
     }
 
-    private void ShowModalDetailsAsync(Guid id)
+    private async Task ShowModalidpicsAsync(Guid id, Guid? idPic = null)
     {
-        _navigationManager.NavigateTo($"/usuarios/detailusuario/{id}");
+        Type component;
+        Dictionary<string, object> parameters;
+        if (idPic != null)
+        {
+            component = typeof(EditContractIDPic);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", idPic! },
+                { "Title", $"{Localizer[nameof(Resource.Picture_ID)]}" }
+            };
+        }
+        else
+        {
+            component = typeof(CreateContractIDPic);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Picture_ID)]}" }
+            };
+        }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar(CurrentPage);   //solo refresca si hubo cambios
+        });
     }
 
     private async Task DeleteAsync(Guid id)

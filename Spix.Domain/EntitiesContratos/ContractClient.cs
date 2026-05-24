@@ -31,9 +31,13 @@ public class ContractClient
     public Guid ClientId { get; set; }
 
     [Required(ErrorMessage = "El {0} es Obligatorio")]
-    [MaxLength(7, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
+    [MaxLength(25, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
     [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
     public string PhoneNumber { get; set; } = null!;
+
+    [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
+    public string? PhoneNumber2 { get; set; }
 
     [Required(ErrorMessage = "El {0} es Obligatorio")]
     [MaxLength(256, ErrorMessage = "El campo no puede ser mayor a {0} de largo")]
@@ -70,6 +74,9 @@ public class ContractClient
     [Display(Name = nameof(Resource.Client), ResourceType = typeof(Resource))]
     [NotMapped]
     public string? NombreCliente { get; set; }
+
+    [NotMapped]
+    public bool TieneIDPic => ContractIDPic != null;
     //Fin Propiedades no Mapeadas para el Control de Contratos
 
     public int CorporationId { get; set; }
@@ -89,6 +96,8 @@ public class ContractClient
     public Client? Client { get; set; }
     public Zone? Zone { get; set; }
 
+
+    public ContractIDPic? ContractIDPic { get; set; }
     public ICollection<ContractIp>? ContractIps { get; set; }
     public ICollection<ContractServer>? ContractServers { get; set; }
     public ICollection<ContractPlan>? ContractPlans { get; set; }

@@ -11,11 +11,8 @@ using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.AppServiceX.InterfacesOper;
 using Spix.Domain.EntitiesData;
-using Spix.Domain.EntitiesGen;
-using Spix.Domain.EntitiesOper;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ItemsGeneric;
-using System.Security.Claims;
 
 namespace Spix.AppBacken.Controllers.v1.CombosGen;
 

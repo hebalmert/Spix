@@ -52,6 +52,7 @@ namespace Spix.Services.ImplementContratos
                 var queryable = _context.ContractClients
                     .Include(x => x.Client)
                     .Include(x => x.Zone)
+                    .Include(c => c.ContractIDPic)
                     .Where(x => x.CorporationId == user.CorporationId &&
                                 (x.ContractState == ContractState.PendingApproval || x.ContractState == ContractState.Active))
                     .AsQueryable();
@@ -96,7 +97,9 @@ namespace Spix.Services.ImplementContratos
 
                 var queryable = _context.ContractClients
                     .Include(x => x.Client)
+                    .Include(x => x.Contractor)
                     .Include(x => x.Zone)
+                    .Include(c => c.ContractIDPic)
                     .Where(x => x.CorporationId == user.CorporationId &&
                             (x.ContractState == ContractState.Draft || x.ContractState == ContractState.PendingApproval))
                     .AsQueryable();
@@ -131,6 +134,8 @@ namespace Spix.Services.ImplementContratos
             {
                 var modelo = await _context.ContractClients
                     .Include(x => x.Client)
+                    .Include(x=> x.Contractor)
+                    .Include(c => c.ContractIDPic)
                     .FirstOrDefaultAsync(x => x.ContractClientId == id);
                 var ZoneDetail = await _context.Zones.FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
                 modelo!.StateId = ZoneDetail!.StateId;

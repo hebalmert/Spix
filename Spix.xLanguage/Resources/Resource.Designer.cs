@@ -673,6 +673,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Contractor.
+        /// </summary>
+        public static string Create_Contractor {
+            get {
+                return ResourceManager.GetString("Create_Contractor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Corporation.
         /// </summary>
         public static string Create_Corportation {
@@ -714,6 +723,15 @@ namespace Spix.xLanguage.Resources {
         public static string Create_Hotspot {
             get {
                 return ResourceManager.GetString("Create_Hotspot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create ID Pic.
+        /// </summary>
+        public static string Create_IDPics {
+            get {
+                return ResourceManager.GetString("Create_IDPics", resourceCulture);
             }
         }
         
@@ -1123,6 +1141,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Contractor.
+        /// </summary>
+        public static string Edit_Contractor {
+            get {
+                return ResourceManager.GetString("Edit_Contractor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Corporation.
         /// </summary>
         public static string Edit_Corporation {
@@ -1164,6 +1191,15 @@ namespace Spix.xLanguage.Resources {
         public static string Edit_Hotspot {
             get {
                 return ResourceManager.GetString("Edit_Hotspot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit ID Pic.
+        /// </summary>
+        public static string Edit_IDPics {
+            get {
+                return ResourceManager.GetString("Edit_IDPics", resourceCulture);
             }
         }
         
@@ -2761,11 +2797,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Phone 2.
+        /// </summary>
+        public static string Phone2 {
+            get {
+                return ResourceManager.GetString("Phone2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Photo.
         /// </summary>
         public static string Photo {
             get {
                 return ResourceManager.GetString("Photo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Picture ID.
+        /// </summary>
+        public static string Picture_ID {
+            get {
+                return ResourceManager.GetString("Picture_ID", resourceCulture);
             }
         }
         

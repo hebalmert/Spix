@@ -9,7 +9,7 @@ using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 
-namespace Spix.AppBack.Controllers.EntitiesContractV1
+namespace Spix.AppBack.Controllers.v1.EntitiesContracts
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/contractclients")]

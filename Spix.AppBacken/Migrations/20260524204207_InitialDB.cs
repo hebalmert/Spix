@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Spix.AppBacken.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -730,18 +730,17 @@ namespace Spix.AppBacken.Migrations
                 {
                     ClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     DateCreated = table.Column<DateTime>(type: "date", nullable: true),
-                    DocumentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Document = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CodeCountry = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
-                    CodeNumber = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
+                    DocumentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Document = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(24)", maxLength: 24, nullable: false),
                     UserType = table.Column<int>(type: "int", nullable: false),
                     Imagen = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateAccount = table.Column<bool>(type: "bit", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     CorporationId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -780,6 +779,7 @@ namespace Spix.AppBacken.Migrations
                     Rate = table.Column<decimal>(type: "decimal(15,2)", precision: 15, scale: 2, nullable: false),
                     GuardarPago = table.Column<bool>(type: "bit", nullable: false),
                     Imagen = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateAccount = table.Column<bool>(type: "bit", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     CorporationId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -853,10 +853,10 @@ namespace Spix.AppBacken.Migrations
                 {
                     TechnicianId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     DateCreated = table.Column<DateTime>(type: "date", nullable: true),
-                    DocumentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Document = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DocumentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Document = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -1310,25 +1310,23 @@ namespace Spix.AppBacken.Migrations
                 name: "ContractClients",
                 columns: table => new
                 {
-                    ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     DateCreado = table.Column<DateTime>(type: "date", nullable: false),
-                    ControlContrato = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ControlContrato = table.Column<long>(type: "bigint", nullable: false),
                     ContractorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CodeCountry = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
-                    CodeNumber = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    PhoneNumber2 = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StateType = table.Column<int>(type: "int", nullable: false),
+                    ContractState = table.Column<int>(type: "int", nullable: false),
                     EquipoEmpres = table.Column<bool>(type: "bit", nullable: false),
                     EnvoiceClient = table.Column<bool>(type: "bit", nullable: false),
-                    ServiceCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ServiceClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ServiceName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Impuesto = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
-                    CorporationId = table.Column<int>(type: "int", nullable: false)
+                    CorporationId = table.Column<int>(type: "int", nullable: false),
+                    UsuarioOwner = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ServiceCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ServiceClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1355,14 +1353,12 @@ namespace Spix.AppBacken.Migrations
                         name: "FK_ContractClients_ServiceCategories_ServiceCategoryId",
                         column: x => x.ServiceCategoryId,
                         principalTable: "ServiceCategories",
-                        principalColumn: "ServiceCategoryId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ServiceCategoryId");
                     table.ForeignKey(
                         name: "FK_ContractClients_ServiceClients_ServiceClientId",
                         column: x => x.ServiceClientId,
                         principalTable: "ServiceClients",
-                        principalColumn: "ServiceClientId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ServiceClientId");
                     table.ForeignKey(
                         name: "FK_ContractClients_Zones_ZoneId",
                         column: x => x.ZoneId,
@@ -1442,10 +1438,40 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ContractIDPics",
+                columns: table => new
+                {
+                    ContractIDPicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DateCreado = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PhotoIDFront = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhotoIDBack = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioOwner = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CorporationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContractIDPics", x => x.ContractIDPicId);
+                    table.ForeignKey(
+                        name: "FK_ContractIDPics_ContractClients_ContractClientId",
+                        column: x => x.ContractClientId,
+                        principalTable: "ContractClients",
+                        principalColumn: "ContractClientId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContractIDPics_Corporations_CorporationId",
+                        column: x => x.CorporationId,
+                        principalTable: "Corporations",
+                        principalColumn: "CorporationId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ContractIps",
                 columns: table => new
                 {
-                    ContractIpId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ContractIpId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IpNetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -1470,7 +1496,7 @@ namespace Spix.AppBacken.Migrations
                 name: "ContractNodes",
                 columns: table => new
                 {
-                    ContractNodeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ContractNodeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NodeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -1495,8 +1521,7 @@ namespace Spix.AppBacken.Migrations
                 name: "ContractPlans",
                 columns: table => new
                 {
-                    ContractPlanId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ContractPlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -1521,7 +1546,7 @@ namespace Spix.AppBacken.Migrations
                 name: "ContractQues",
                 columns: table => new
                 {
-                    ContractQueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ContractQueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ServerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IpNetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -1566,7 +1591,7 @@ namespace Spix.AppBacken.Migrations
                 name: "ContractServers",
                 columns: table => new
                 {
-                    ContractServerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ContractServerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ServerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -1792,8 +1817,7 @@ namespace Spix.AppBacken.Migrations
                 name: "IX_ContractClients_CorporationId_ControlContrato",
                 table: "ContractClients",
                 columns: new[] { "CorporationId", "ControlContrato" },
-                unique: true,
-                filter: "[ControlContrato] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ContractClients_ServiceCategoryId",
@@ -1809,6 +1833,17 @@ namespace Spix.AppBacken.Migrations
                 name: "IX_ContractClients_ZoneId",
                 table: "ContractClients",
                 column: "ZoneId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractIDPics_ContractClientId",
+                table: "ContractIDPics",
+                column: "ContractClientId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractIDPics_CorporationId",
+                table: "ContractIDPics",
+                column: "CorporationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ContractIps_ContractClientId_IpNetId",
@@ -2527,6 +2562,9 @@ namespace Spix.AppBacken.Migrations
 
             migrationBuilder.DropTable(
                 name: "ChainTypes");
+
+            migrationBuilder.DropTable(
+                name: "ContractIDPics");
 
             migrationBuilder.DropTable(
                 name: "ContractIps");

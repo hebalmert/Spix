@@ -49,11 +49,23 @@
                                     <td>
                                         <input type="checkbox" class="form-check-input" checked="@item.EnvoiceClient" disabled />
                                     </td>
-                                    <td>@item.Contractor!.FirstName @item.ContractState.ToString()</td>
+                                    <td>@item.ContractState.ToLocalizedString(Localizer)</td>
+
                                     <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.ContractClientId)" TooTip="@Localizer[nameof(Resource.Models)]"
-                                                       Icon="fa fa-tags" />
+                                        @if (item.TieneIDPic)
+                                        {
+                                            <ButtonGeneric OnClick="() => ShowModalidpicsAsync(item.ContractClientId, item.ContractIDPic!.ContractIDPicId)"
+                                                           TooTip="@Localizer[nameof(Resource.Edit_IDPics)]"
+                                                           Icon="fa fa-tags" />
+                                        }
+                                        else
+                                        {
+                                            <ButtonGeneric OnClick="() => ShowModalidpicsAsync(item.ContractClientId, null)"
+                                                           TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                           Icon="fa fa-tags" />
+                                        }
                                     </td>
+
                                     <td style="width:1px;">
                                         |
                                     </td>

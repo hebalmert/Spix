@@ -7,7 +7,7 @@ namespace Spix.Domain.EntitiesContratos;
 public class ContractPlan
 {
     [Key]
-    public int ContractPlanId { get; set; }
+    public Guid ContractPlanId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Contract), ResourceType = typeof(Resource))]

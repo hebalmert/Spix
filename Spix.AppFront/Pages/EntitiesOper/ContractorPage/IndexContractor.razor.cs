@@ -79,7 +79,7 @@ public partial class IndexContractor
             parameters = new Dictionary<string, object>
                 {
                     { "Id", id! },
-                    { "Title", $"{Localizer[nameof(Resource.Edit_Client)]}"  }
+                    { "Title", $"{Localizer[nameof(Resource.Edit_Contractor)]}"  }
                 };
         }
         else
@@ -87,7 +87,7 @@ public partial class IndexContractor
             component = typeof(CreateContractor);
             parameters = new Dictionary<string, object>
                 {
-                    { "Title", $"{Localizer[nameof(Resource.Create_Client)]}"  }
+                    { "Title", $"{Localizer[nameof(Resource.Create_Contractor)]}"  }
                 };
         }
 

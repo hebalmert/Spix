@@ -18,6 +18,8 @@ public class ImgSetting
 
     public string ImgTechnicians { get; set; } = null!;
 
+    public string ImgContractIDPic { get; set; } = null!;
+
     public string LogoSoftware { get; set; } = null!;
 
     public string ImgNoImage { get; set; } = null!;

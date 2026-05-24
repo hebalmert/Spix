@@ -1300,4 +1300,22 @@
   <data name="Control_Contracts" xml:space="preserve">
     <value>Control de Contratos</value>
   </data>
+  <data name="Create_Contractor" xml:space="preserve">
+    <value>Crear Contratista</value>
+  </data>
+  <data name="Edit_Contractor" xml:space="preserve">
+    <value>Editar Contratista</value>
+  </data>
+  <data name="Phone2" xml:space="preserve">
+    <value>Telefono 2</value>
+  </data>
+  <data name="Picture_ID" xml:space="preserve">
+    <value>Foto Documento</value>
+  </data>
+  <data name="Edit_IDPics" xml:space="preserve">
+    <value>Editar Foto Documento</value>
+  </data>
+  <data name="Create_IDPics" xml:space="preserve">
+    <value>Crear Foto Documento</value>
+  </data>
 </root>

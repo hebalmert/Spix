@@ -32,7 +32,9 @@ public partial class FormContractClient
     private List<Zone>? Zones = new();
     private List<GuidItemModel>? Contractors;
     private List<GuidItemModel>? Clients;
+    private Client Client = new();
     private string BaseView = "/contractclients";
+    private string BaseClient = "/api/v1/clients";
     private string BaseComboContractor = "/api/v1/combosData/ComboContractor";
     private string BaseComboClients = "/api/v1/combosData/ComboClients";
     private string BaseComboState = "/api/v1/combosData/ComboState";
@@ -63,6 +65,20 @@ public partial class FormContractClient
         if (Guid.TryParse(e.Value?.ToString(), out var clientid))
         {
             ContractClient.ClientId = clientid;
+            if (!IsEditControl)
+            {
+                var responseHttp = await _repository.GetAsync<Client>($"{BaseClient}/{clientid}");
+                bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+                if (errorHandler)
+                {
+                    _navigationManager.NavigateTo($"{BaseView}");
+                    return;
+                }
+                Client = responseHttp.Response!;
+                ContractClient.PhoneNumber = Client.PhoneNumber;
+                ContractClient.Address = Client.Address;
+            }
+
         }
     }
 
