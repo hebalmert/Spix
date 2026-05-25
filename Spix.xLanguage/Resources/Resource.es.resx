@@ -1318,4 +1318,7 @@
   <data name="Create_IDPics" xml:space="preserve">
     <value>Crear Foto Documento</value>
   </data>
+  <data name="Control_Technitian" xml:space="preserve">
+    <value>Control de Tecnicos</value>
+  </data>
 </root>

@@ -565,6 +565,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Control Technictian.
+        /// </summary>
+        public static string Control_Technitian {
+            get {
+                return ResourceManager.GetString("Control_Technitian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Control Access.
         /// </summary>
         public static string ControlAccess {

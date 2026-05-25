@@ -34,7 +34,7 @@ public class SeedDb
         await CheckHotSpotTypes();
         await CheckOperations();
         await CheckSecurity();
-        await CheckUserAsync("Nexxtplanet", "TrialPro", "hebalmert", "merchanhebert@gmail.com", "+1 786 503", UserType.Admin);
+        await CheckUserAsync("Nexxtplanet", "TrialPro", "hebalmert", "nexxtplanet.soft@gmail.com", "+1 786 503", UserType.Admin);
     }
 
     private async Task CheckSoftPlan()

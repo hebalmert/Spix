@@ -1318,4 +1318,7 @@
   <data name="Create_IDPics" xml:space="preserve">
     <value>Create ID Pic</value>
   </data>
+  <data name="Control_Technitian" xml:space="preserve">
+    <value>Control Technictian</value>
+  </data>
 </root>

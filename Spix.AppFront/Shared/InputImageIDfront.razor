@@ -1,0 +1,37 @@
+﻿<div class="camera-container">
+
+    <!-- Placeholder cuando la cámara está apagada -->
+    <div class="camera-layer" style="@(ShowCamera ? "display:none;" : "display:block;")">
+        <div class="placeholder-box"></div>
+    </div>
+
+    <!-- Cámara -->
+    <div class="camera-layer" style="@(ShowCamera ? "display:block;" : "display:none;")">
+        <video id="cameraFront" autoplay playsinline class="w-100 h-100" />
+    </div>
+
+    <!-- Imagen desde parámetro ImageUrl -->
+    <div class="camera-layer" style="@(string.IsNullOrWhiteSpace(ImageBase64) && ShowImageUrl && !string.IsNullOrWhiteSpace(ImageUrl) ? "display:block;" : "display:none;")">
+        <img src="@ImageUrl" alt="@Label" class="w-100 h-100 image-preview" />
+    </div>
+
+    <!-- Preview (base64) -->
+    <div class="camera-layer" style="@(ShowPreview && !string.IsNullOrWhiteSpace(ImageBase64) ? "display:block;" : "display:none;")">
+        <img src="data:image/jpeg;base64,@ImageBase64" alt="@Label" class="w-100 h-100 image-preview" />
+    </div>
+</div>
+
+<div class="camera-actions mt-2 d-flex flex-row justify-content-center gap-2">
+    @if (ShowCamera)
+    {
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="CaptureImage">Capturar</button>
+        <button type="button" class="btn btn-outline-danger btn-sm" @onclick="CloseCamera">Cerrar</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ToggleCamera">Cámara</button>
+    }
+
+    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="LoadFromFile">Disco</button>
+    <input type="file" id="fileInputFront" accept="image/*" style="display:none" />
+</div>

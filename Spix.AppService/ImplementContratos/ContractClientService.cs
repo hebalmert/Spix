@@ -114,7 +114,7 @@ namespace Spix.Services.ImplementContratos
                 }
 
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-                var modelo = await queryable.Paginate(pagination).ToListAsync();
+                var modelo = await queryable.OrderByDescending(x=> x.ControlContrato).Paginate(pagination).ToListAsync();
 
                 return new ActionResponse<IEnumerable<ContractClient>>
                 {

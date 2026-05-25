@@ -18,13 +18,13 @@ namespace Spix.AppBack.Controllers.v1
     [ApiController]
     public class TechnitiansController : ControllerBase
     {
-        private readonly IContractorServiceX _contractorUnitOfWork;
+        private readonly ITechnitianServiceX _technitianService;
         private readonly IConfiguration _configuration;
         private readonly IStringLocalizer _localizer;
 
-        public TechnitiansController(IContractorServiceX contractorUnitOfWork, IConfiguration configuration, IStringLocalizer localizer)
+        public TechnitiansController(ITechnitianServiceX technitianService, IConfiguration configuration, IStringLocalizer localizer)
         {
-            _contractorUnitOfWork = contractorUnitOfWork;
+            _technitianService = technitianService;
             _configuration = configuration;
             _localizer = localizer;
         }
@@ -38,7 +38,7 @@ namespace Spix.AppBack.Controllers.v1
                 return BadRequest("Erro en el sistema de Usuarios");
             }
 
-            var response = await _contractorUnitOfWork.GetAsync(pagination, email);
+            var response = await _technitianService.GetAsync(pagination, email);
             if (!response.WasSuccess)
             {
                 return BadRequest(response.Message);
@@ -49,7 +49,7 @@ namespace Spix.AppBack.Controllers.v1
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(Guid id)
         {
-            var response = await _contractorUnitOfWork.GetAsync(id);
+            var response = await _technitianService.GetAsync(id);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -58,9 +58,9 @@ namespace Spix.AppBack.Controllers.v1
         }
 
         [HttpPut]
-        public async Task<ActionResult<Contractor>> PutAsync(Contractor modelo)
+        public async Task<ActionResult<Technician>> PutAsync(Technician modelo)
         {
-            var response = await _contractorUnitOfWork.UpdateAsync(modelo, _configuration["UrlFrontend"]!);
+            var response = await _technitianService.UpdateAsync(modelo, _configuration["UrlFrontend"]!);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -69,7 +69,7 @@ namespace Spix.AppBack.Controllers.v1
         }
 
         [HttpPost]
-        public async Task<ActionResult<Contractor>> PostAsync(Contractor modelo)
+        public async Task<ActionResult<Technician>> PostAsync(Technician modelo)
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
@@ -77,7 +77,7 @@ namespace Spix.AppBack.Controllers.v1
                 return BadRequest("Erro en el sistema de Usuarios");
             }
 
-            var response = await _contractorUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName, _configuration["UrlFrontend"]!);
+            var response = await _technitianService.AddAsync(modelo, userClaimsInfo.UserName, _configuration["UrlFrontend"]!);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -88,7 +88,7 @@ namespace Spix.AppBack.Controllers.v1
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> DeleteAsync(Guid id)
         {
-            var response = await _contractorUnitOfWork.DeleteAsync(id);
+            var response = await _technitianService.DeleteAsync(id);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
