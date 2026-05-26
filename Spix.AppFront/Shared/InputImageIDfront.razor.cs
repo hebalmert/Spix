@@ -71,7 +71,10 @@ public partial class InputImageIDfront
         ShowPreview = false;
 
         await JS.InvokeVoidAsync("camaraIdPicFront.stopCamera");
-
+        if (!string.IsNullOrWhiteSpace(ImageUrl) && string.IsNullOrWhiteSpace(ImageBase64))
+        {
+            ShowImageUrl = true;
+        }
         StateHasChanged();
     }
 

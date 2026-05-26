@@ -71,7 +71,10 @@ public partial class InputImageIDBack
         ShowPreview = false;
 
         await JS.InvokeVoidAsync("camaraIdPicBack.stopCamera");
-
+        if (!string.IsNullOrWhiteSpace(ImageUrl) && string.IsNullOrWhiteSpace(ImageBase64))
+        {
+            ShowImageUrl = true;
+        }
         StateHasChanged();
     }
 
