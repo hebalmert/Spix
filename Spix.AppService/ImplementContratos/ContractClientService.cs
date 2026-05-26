@@ -83,6 +83,7 @@ namespace Spix.Services.ImplementContratos
 
                 var queryable = _context.ContractClients
                     .Include(x => x.Client)
+                    .Include(x => x.Contractor)
                     .Include(x => x.Zone)
                     .Include(c => c.ContractIDPic)
                     .Where(x => x.CorporationId == user.CorporationId &&
