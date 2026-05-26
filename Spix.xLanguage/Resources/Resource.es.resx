@@ -1327,4 +1327,7 @@
   <data name="Select_Status" xml:space="preserve">
     <value>[Seleccione Estatus]</value>
   </data>
+  <data name="Action" xml:space="preserve">
+    <value>Accion</value>
+  </data>
 </root>

@@ -1,0 +1,146 @@
+@page "/marks/detailed"
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3 class="mb-4">@Localizer[nameof(Resource.MarkEquipment)]</h3>
+
+        <!-- Botón + Filtro -->
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalCreateMarkAsync()">
+                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
+                </button>
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="Marks">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 40px;"></th>
+                                <th>@Localizer[nameof(Resource.MarkEquipment)]</th>
+                                <th>@Localizer[nameof(Resource.Active)]</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Marks!)
+                            {
+                                <tr>
+                                    <td style="cursor: pointer;" @onclick="() => ToggleExpandedMark(item.MarkId)">
+                                        <button class="btn btn-sm btn-light" type="button">
+                                            <i class="fa @(ExpandedMarkId == item.MarkId ? "fa-chevron-down" : "fa-chevron-right")"></i>
+                                        </button>
+                                    </td>
+                                    <td>@item.MarkName</td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowModalEditMarkAsync(item)" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonDelete OnClick="() => DeleteMarkAsync(item.MarkId)" />
+                                    </td>
+                                </tr>
+
+                                <!-- Fila expandible para mostrar Modelos (Acordeón) -->
+                                @if (ExpandedMarkId == item.MarkId)
+                                {
+                                    <tr style="background-color: #f8f9fa;">
+                                        <td colspan="5">
+                                            <div class="p-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h5 class="mb-0">
+                                                        <i class="fa fa-cube"></i> @Localizer[nameof(Resource.Models)] - <strong>@item.MarkName</strong>
+                                                    </h5>
+                                                    <button class="btn btn-sm btn-gradient-primary" @onclick="() => ShowModalCreateMarkModelAsync(item.MarkId)">
+                                                        <i class="fa fa-plus"></i> @Localizer[nameof(Resource.New)] @Localizer[nameof(Resource.Model)]
+                                                    </button>
+                                                </div>
+
+                                                <!-- Loading Spinner -->
+                                                @if (LoadingMarkIds.Contains(item.MarkId))
+                                                {
+                                                    <div class="text-center py-4">
+                                                        <div class="spinner-border text-primary" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                        <p class="text-muted mt-2">@Localizer["Loading"] @Localizer[nameof(Resource.Models)]...</p>
+                                                    </div>
+                                                }
+
+                                                <!-- Tabla anidada de Modelos -->
+                                                @if (!LoadingMarkIds.Contains(item.MarkId) && MarkModelsByMarkId.ContainsKey(item.MarkId))
+                                                {
+                                                    @if (MarkModelsByMarkId[item.MarkId].Any())
+                                                    {
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm table-bordered table-hover">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>
+                                                                            <i class="fa fa-box"></i> @Localizer[nameof(Resource.Models)]
+                                                                        </th>
+                                                                        <th style="width: 100px;">
+                                                                            <i class="fa fa-check-circle"></i> @Localizer[nameof(Resource.Active)]
+                                                                        </th>
+                                                                        <th class="text-center" colspan="2">
+                                                                            <i class="fa fa-cogs"></i>@Localizer[nameof(Resource.Action)]
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var model in MarkModelsByMarkId[item.MarkId])
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                <span class="badge bg-info">@model.MarkModelName</span>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <input type="checkbox" class="form-check-input" checked="@model.Active" disabled />
+                                                                            </td>
+                                                                            <td style="width:1px;">
+                                                                                <ButtonEdit OnClick="() => ShowModalEditMarkModelAsync(model)" />
+                                                                            </td>
+                                                                            <td style="width:1px;">
+                                                                                <ButtonDelete OnClick="() => DeleteMarkModelAsync(model.MarkModelId)" />
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="alert alert-info" role="alert">
+                                                            <i class="fa fa-info-circle"></i> @Localizer["NoRecordsFound"]
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+
+        <hr />
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    </div>
+</div>
