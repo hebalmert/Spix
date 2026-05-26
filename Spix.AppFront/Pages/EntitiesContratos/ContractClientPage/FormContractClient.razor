@@ -136,7 +136,7 @@
 
     <div class="row">
         <!-- Ciudad + Activo -->
-        <div class="col-12 col-md-6 mb-2">
+        <div class="col-12 col-md-4 mb-2">
             <div class="d-flex align-items-center">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Equipment_Compnay)]
@@ -148,7 +148,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-md-6 mb-2">
+        <div class="col-12 col-md-4 mb-2">
             <div class="d-flex align-items-center">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Invoice_Client)]
@@ -158,6 +158,24 @@
                     <InputCheckbox @bind-Value="ContractClient!.EnvoiceClient" class="form-check-input" />
                 </div>
             </div>
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            @if (WorkStatuses is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:110px">Estatus</span>
+                    <select class="form-select" value="@(IsEditControl ? ((int)ContractClient.ContractState).ToString() : "1")" @onchange="StatusChanged">
+                        @foreach (var item in WorkStatuses!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
         </div>
     </div>
     <!-- SEPARADOR -->

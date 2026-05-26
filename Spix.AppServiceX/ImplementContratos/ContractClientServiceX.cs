@@ -1,6 +1,7 @@
 ﻿using Spix.AppService.InterfaceContratos;
 using Spix.AppServiceX.InterfaceContratos;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -14,6 +15,8 @@ public class ContractClientServiceX : IContractClientServiceX
     {
         _contractClientService = contractClientService;
     }
+
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatusAsync() => await _contractClientService.GetComboStatusAsync();
 
     public async Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username) => await _contractClientService.GetControlContratos(pagination, username);
 

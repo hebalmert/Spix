@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
@@ -9,8 +10,10 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceContratos;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using Spix.xLanguage.Resources;
 
 namespace Spix.Services.ImplementContratos
 {
@@ -22,10 +25,11 @@ namespace Spix.Services.ImplementContratos
         private readonly IUserHelper _userHelper;
         private readonly IMapperService _mapperService;
         private readonly HttpErrorHandler _httpErrorHandler;
+        private readonly IStringLocalizer _localizer;
 
         public ContractClientService(DataContext context, IHttpContextAccessor httpContextAccessor,
             ITransactionManager transactionManager, IUserHelper userHelper, IMapperService mapperService,
-            HttpErrorHandler httpErrorHandler)
+            HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -33,6 +37,34 @@ namespace Spix.Services.ImplementContratos
             _userHelper = userHelper;
             _mapperService = mapperService;
             _httpErrorHandler = httpErrorHandler;
+            _localizer = localizer;
+        }
+        public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatusAsync()
+        {
+            try
+            {
+                List<IntItemModel> list = Enum.GetValues(typeof(ContractState)).Cast<ContractState>().Select(c => new IntItemModel()
+                {
+                    Name = c.ToLocalizedString(_localizer),
+                    Value = (int)c
+                }).ToList();
+
+                list.Insert(0, new IntItemModel() 
+                { 
+                    Name = _localizer[nameof(Resource.Select_Status)], 
+                    Value = 0 
+                });
+
+                return new ActionResponse<IEnumerable<IntItemModel>>
+                {
+                    WasSuccess = true,
+                    Result = list
+                };
+            }
+            catch (Exception ex)
+            {
+                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); // ✅ Manejo de errores automático
+            }
         }
 
         public async Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username)
@@ -54,7 +86,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.Zone)
                     .Include(c => c.ContractIDPic)
                     .Where(x => x.CorporationId == user.CorporationId &&
-                                (x.ContractState == ContractState.PendingApproval || x.ContractState == ContractState.Active))
+                                (x.ContractState == ContractState.Active || x.ContractState == ContractState.Exempt || x.ContractState == ContractState.Suspended))
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -100,8 +132,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.Contractor)
                     .Include(x => x.Zone)
                     .Include(c => c.ContractIDPic)
-                    .Where(x => x.CorporationId == user.CorporationId &&
-                            (x.ContractState == ContractState.Draft || x.ContractState == ContractState.PendingApproval))
+                    .Where(x => x.CorporationId == user.CorporationId)
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -166,7 +197,6 @@ namespace Spix.Services.ImplementContratos
             try
             {
                 await _transactionManager.BeginTransactionAsync();
-
                 var modelo = await _context.ContractClients
                     .FirstOrDefaultAsync(x => x.ContractClientId == id);
                 if (modelo == null)

@@ -6,6 +6,7 @@ using Spix.Domain.Entities;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -34,9 +35,11 @@ public partial class FormContractClient
     private List<GuidItemModel>? Clients;
     private Client Client = new();
     private Guid Value = Guid.Empty;
+    private List<IntItemModel>? WorkStatuses;
     private string ValueText = string.Empty;
     private string BaseView = "/contractclients";
     private string BaseClient = "/api/v1/clients";
+    private string BaseComboStatus = "/api/v1/contractclients/loadStatus";
     private string BaseComboContractor = "/api/v1/combosData/ComboContractor";
     private string BaseComboClients = "/api/v1/combosData/ComboClients";
     private string BaseComboState = "/api/v1/combosData/ComboState";
@@ -47,10 +50,39 @@ public partial class FormContractClient
     {
         await LoadState();
         await LoadContractor();
+        await LoadStatus();
         if (IsEditControl)
         {
             Value = ContractClient.ClientId;
             ValueText = $"{ContractClient.Client!.FirstName} {ContractClient.Client!.LastName}";
+        }
+    }
+    private async Task LoadStatus()
+    {
+        var responseHttp = await _repository.GetAsync<List<IntItemModel>>($"{BaseComboStatus}");
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+        {
+            _navigationManager.NavigateTo($"{BaseView}");
+            return;
+        }
+        WorkStatuses = responseHttp.Response;
+    }
+
+    private async Task StatusChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+        {
+            if (int.TryParse(e?.Value?.ToString(), out int modelo))
+            {
+                if (value == 1) { ContractClient.ContractState = ContractState.Draft; }
+                if (value == 2) { ContractClient.ContractState = ContractState.PendingApproval; }
+                if (value == 3) { ContractClient.ContractState = ContractState.Active; }
+                if (value == 4) { ContractClient.ContractState = ContractState.Exempt; }
+                if (value == 5) { ContractClient.ContractState = ContractState.Suspended; }
+                if (value == 6) { ContractClient.ContractState = ContractState.Cancelled; }
+                if (value == 7) { ContractClient.ContractState = ContractState.Terminated; }
+            }
         }
     }
 

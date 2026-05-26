@@ -7,6 +7,7 @@ using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfaceContratos;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppBack.Controllers.v1.EntitiesContracts
@@ -27,6 +28,17 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             _contractClientUnitOfWork = contractClientUnitOfWork;
             _configuration = configuration;
             _localizer = localizer;
+        }
+
+        [HttpGet("loadStatus")]
+        public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStatus()
+        {
+            var response = await _contractClientUnitOfWork.GetComboStatusAsync();
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest(response.Message);
         }
 
         [HttpGet("procesando/{id}")]

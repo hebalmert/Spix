@@ -1519,6 +1519,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Equipment.
+        /// </summary>
+        public static string Equipment {
+            get {
+                return ResourceManager.GetString("Equipment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Equipment Company.
         /// </summary>
         public static string Equipment_Compnay {
@@ -3243,6 +3252,15 @@ namespace Spix.xLanguage.Resources {
         public static string Select_Role {
             get {
                 return ResourceManager.GetString("Select_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select Status].
+        /// </summary>
+        public static string Select_Status {
+            get {
+                return ResourceManager.GetString("Select_Status", resourceCulture);
             }
         }
         

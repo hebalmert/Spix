@@ -27,8 +27,8 @@
                                 <th>@Localizer[nameof(Resource.Contracts)]</th>
                                 <th>@Localizer[nameof(Resource.Client)]</th>
                                 <th>@Localizer[nameof(Resource.Contractor)]</th>
-                                <th>@Localizer[nameof(Resource.Active)]</th>
-                                <th>@Localizer[nameof(Resource.Active)]</th>
+                                <th>@Localizer[nameof(Resource.Equipment)]</th>
+                                <th>@Localizer[nameof(Resource.Invoice)]</th>
                                 <th>@Localizer[nameof(Resource.Status)]</th>
                                 <th></th>
                                 <th></th>
@@ -49,8 +49,11 @@
                                     <td>
                                         <input type="checkbox" class="form-check-input" checked="@item.EnvoiceClient" disabled />
                                     </td>
-                                    <td>@item.ContractState.ToLocalizedString(Localizer)</td>
+                                    <td>
+                                        <StatusBadge Value="@item.ContractState" />
+                                    </td>
 
+                                  
                                     <td style="width:1px;">
                                         @if (item.TieneIDPic)
                                         {
