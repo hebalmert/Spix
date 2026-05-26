@@ -1,0 +1,43 @@
+﻿.autocomplete-container {
+    margin-bottom: 1rem;
+}
+    .autocomplete-container input.form-control:focus {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%; /* 🔥 clave */
+    z-index: 3000;
+    max-height: 260px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: 2px;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    z-index: 3000;
+}
+    .autocomplete-dropdown .list-group-item {
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        border: none;
+    }
+
+        .autocomplete-dropdown .list-group-item:hover {
+            background-color: #f0f4ff;
+        }
+
+    .autocomplete-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .autocomplete-dropdown::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+    }

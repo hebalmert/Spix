@@ -52,7 +52,7 @@ namespace Spix.Services.ImplementOper
             _httpErrorHandler = httpErrorHandle;
         }
 
-        public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username)
+        public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, string? filter)
         {
             try
             {
@@ -65,26 +65,33 @@ namespace Spix.Services.ImplementOper
                         Message = "Problemas de Validacion de Usuario"
                     };
                 }
-                var ListModel = await _context.Clients
-                    .Where(x => x.Active && x.CorporationId == user.CorporationId)
-                    .Select(x => new GuidItemModel
-                    {
-                        Value = x.ClientId,
-                        Name = x.FirstName + " " + x.LastName
-                    })
-                    .ToListAsync();
+                var query = _context.Clients
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId);
 
-                ListModel.Insert(0, new GuidItemModel
+                if (!string.IsNullOrWhiteSpace(filter))
                 {
-                    Value = Guid.Empty,
-                    Name = _localizer[nameof(Resource.Select_Client)]
+                    filter = filter.Trim().ToLower();
+
+                    query = query.Where(x =>
+                        x.FirstName.ToLower().Contains(filter) ||
+                        x.LastName.ToLower().Contains(filter) ||
+                        x.Document.ToLower().Contains(filter) ||
+                        x.Email.ToLower().Contains(filter)
+                    );
                 }
-                );
+
+                var list = await query.OrderBy(x => x.FirstName) .ThenBy(x => x.LastName).Take(20)
+                            .Select(x => new GuidItemModel
+                            {
+                                Value = x.ClientId,
+                                Name = x.FirstName + " " + x.LastName
+                            })
+                            .ToListAsync();
 
                 return new ActionResponse<IEnumerable<GuidItemModel>>
                 {
                     WasSuccess = true,
-                    Result = ListModel
+                    Result = list
                 };
             }
             catch (Exception ex)

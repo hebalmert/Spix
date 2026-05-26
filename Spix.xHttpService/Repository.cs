@@ -108,6 +108,31 @@ public class Repository : IRepository
         return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
     }
 
+    public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url, CancellationToken token)
+    {
+        await AddAuthorizationHeader();
+
+        HttpResponseMessage responseHttp;
+
+        try
+        {
+            responseHttp = await _httpClient.GetAsync(url, token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Si se cancela, devolvemos un wrapper indicando error
+            return new HttpResponseWrapper<T>(default, true, null);
+        }
+
+        if (responseHttp.IsSuccessStatusCode)
+        {
+            var response = await UnserializeAnswerAsync<T>(responseHttp);
+            return new HttpResponseWrapper<T>(response, false, responseHttp);
+        }
+
+        return new HttpResponseWrapper<T>(default, true, responseHttp);
+    }
+
     public async Task<HttpResponseWrapper<TResponse>> PostAsync<T, TResponse>(string url, T model)
     {
         await AddAuthorizationHeader();

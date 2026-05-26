@@ -45,25 +45,17 @@ public partial class FormContractClient
     {
         await LoadState();
         await LoadContractor();
-        await LoadClients();
+        //await LoadClients();
     }
 
-    private async Task LoadClients()
+    private async Task OnClientSelected(GuidItemModel item)
     {
-        var responseHttp = await _repository.GetAsync<List<GuidItemModel>>($"{BaseComboClients}");
-        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
-        {
-            _navigationManager.NavigateTo($"{BaseView}");
-            return;
-        }
-        Clients = responseHttp.Response;
+        ContractClient.ClientId = item.Value;
+        await ClientChanged(item.Value);
     }
 
-    private async Task ClientChanged(ChangeEventArgs e)
+    private async Task ClientChanged(Guid clientid)
     {
-        if (Guid.TryParse(e.Value?.ToString(), out var clientid))
-        {
             ContractClient.ClientId = clientid;
             if (!IsEditControl)
             {
@@ -78,8 +70,6 @@ public partial class FormContractClient
                 ContractClient.PhoneNumber = Client.PhoneNumber;
                 ContractClient.Address = Client.Address;
             }
-
-        }
     }
 
     private async Task LoadContractor()

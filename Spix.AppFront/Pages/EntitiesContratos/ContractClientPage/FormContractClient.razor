@@ -1,4 +1,4 @@
-﻿<EditForm Model="ContractClient" OnValidSubmit="OnSubmit">
+﻿<EditForm Model="ContractClient">
     <DataAnnotationsValidator />
 
     <div class="row">
@@ -23,22 +23,11 @@
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (Clients is null)
-            {
-                <Loading />
-            }
-            else
-            {
-                <div class="input-group">
-                    <span class="input-group-text" style="width:150px">Cliente</span>
-                    <select class="form-select" value="@ContractClient?.ClientId" @onchange="ClientChanged">
-                        @foreach (var item in Clients!)
-                        {
-                            <option value="@item.Value">@item.Name</option>
-                        }
-                    </select>
-                </div>
-            }
+            <AutoCompleteGuidSelect 
+                Label="Cliente"
+                ApiUrl="/api/v1/combosData/ComboClients"
+                MinLength="3"
+                OnSelected="OnClientSelected" />
         </div>
     </div>
 
@@ -178,7 +167,7 @@
     </div>
     <!-- BOTONES -->
     <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
-        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormSaveOnClick IsSaving="IsSaving" OnClick="OnSubmit"/>
         <ButtonFormBack OnClick="ReturnAction" />
     </div>
 

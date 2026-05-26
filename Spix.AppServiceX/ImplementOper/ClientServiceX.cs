@@ -16,7 +16,7 @@ public class ClientServiceX : IClientServiceX
         _clientService = clientService;
     }
 
-    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username) => await _clientService.ComboAsync(username);
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, string? filter) => await _clientService.ComboAsync(username, filter);
 
     public async Task<ActionResponse<IEnumerable<Client>>> GetAsync(PaginationDTO pagination, string email) => await _clientService.GetAsync(pagination, email);
 

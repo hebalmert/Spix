@@ -1,4 +1,4 @@
-﻿window.cameraInteropIdPics = {
+﻿window.camaraInterop2 = {
     startCamera: async () => {
         const video = document.getElementById("camera");
         video.style.display = "block";
@@ -14,6 +14,7 @@
         try {
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
+            camaraInterop2.stream = stream;
 
             const track = stream.getVideoTracks()[0];
             const settings = track.getSettings();
@@ -26,6 +27,7 @@
                 const fallbackConstraints = { video: { deviceId: { exact: savedId } } };
                 const fallbackStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
                 video.srcObject = fallbackStream;
+                camaraInterop2.stream = fallbackStream; // ← GUARDAR STREAM
                 video.style.display = "block";
             } else {
                 console.warn("No se pudo acceder a la cámara. Mostrando selector de archivo.");
@@ -43,56 +45,38 @@
         const video = document.getElementById('camera');
         if (video) {
             video.srcObject = null;
+            video.style.display = "none";
         }
     },
 
     takePhoto: () => {
         const video = document.getElementById("camera");
 
-        const TARGET_RATIO = 1.6; // 1:1.6 vertical
+        // Resolución máxima permitida
+        const MAX_WIDTH = 1280;
 
-        let vw = video.videoWidth;
-        let vh = video.videoHeight;
+        // Mantener proporción
+        const ratio = video.videoHeight / video.videoWidth;
 
-        let currentRatio = vh / vw;
+        let targetWidth = video.videoWidth;
+        let targetHeight = video.videoHeight;
 
-        // Recortar para mantener proporción exacta
-        if (currentRatio > TARGET_RATIO) {
-            // Muy alto → recortar arriba/abajo
-            let newHeight = vw * TARGET_RATIO;
-            let offset = (vh - newHeight) / 2;
-            vh = newHeight;
-            video.cropY = offset;
-        } else {
-            // Muy ancho → recortar lados
-            let newWidth = vh / TARGET_RATIO;
-            let offset = (vw - newWidth) / 2;
-            vw = newWidth;
-            video.cropX = offset;
+        // Si la imagen es muy grande, reducirla
+        if (targetWidth > MAX_WIDTH) {
+            targetWidth = MAX_WIDTH;
+            targetHeight = MAX_WIDTH * ratio;
         }
 
-        const MAX_WIDTH = 2048;
-        const scale = MAX_WIDTH / vw;
-
         const canvas = document.createElement("canvas");
-        canvas.width = MAX_WIDTH;
-        canvas.height = vh * scale;
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
 
         const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
 
-        ctx.drawImage(
-            video,
-            video.cropX || 0,
-            video.cropY || 0,
-            vw,
-            vh,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
+        // JPEG calidad 0.8 (perfecto para OCR)
+        return canvas.toDataURL("image/jpeg", 0.80);
 
-        return canvas.toDataURL("image/jpeg", 0.85);
     },
 
     loadFromFile: (dotNetRef) => {

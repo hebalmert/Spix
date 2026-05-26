@@ -1,0 +1,27 @@
+﻿<div class="input-group position-relative">
+    <span class="input-group-text" style="width:150px">
+        @Label
+    </span>
+
+    <input class="form-control"
+           placeholder="Escriba para buscar..."
+           @bind="SearchText"
+           @bind:event="oninput"
+           @bind:after="OnSearchChanged"
+           @onkeydown="HandleKeyDown" />
+
+    @if (Results?.Any() == true)
+    {
+        <ul class="list-group position-absolute w-100 shadow-sm"
+            style="top:100%; left:0; z-index:2000; max-height:240px; overflow-y:auto;">
+            @for (var i = 0; i < Results.Count; i++)
+            {
+                var item = Results[i];
+                <li class="list-group-item list-group-item-action @(SelectedIndex == i ? "active" : "")"
+                    @onclick="() => SelectItem(item)">
+                    @item.Name
+                </li>
+            }
+        </ul>
+    }
+</div>

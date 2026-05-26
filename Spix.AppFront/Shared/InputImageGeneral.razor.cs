@@ -11,7 +11,7 @@ public partial class InputImageGeneral
     [Inject] private IJSRuntime JS { get; set; } = null!;
 
     private string? ImageBase64;
-    private bool ShowCamera = true;
+    private bool ShowCamera = false;
     private bool ShowPreview = false;
     private bool ShowImageUrl = true;
 
@@ -29,22 +29,7 @@ public partial class InputImageGeneral
         else
         {
             ShowPreview = false;
-            ShowCamera = false; // asegura que no se active por defecto
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            try
-            {
-                await JS.InvokeVoidAsync("cameraInterop2.startCamera");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al iniciar cámara: {ex.Message}");
-            }
+            ShowCamera = false; // cámara apagada por defecto
         }
     }
 
@@ -52,13 +37,16 @@ public partial class InputImageGeneral
     {
         try
         {
-            var base64 = await JS.InvokeAsync<string>("cameraInterop2.takePhoto");
+            var base64 = await JS.InvokeAsync<string>("camaraInterop2.takePhoto");
             if (!string.IsNullOrWhiteSpace(base64))
             {
                 ImageBase64 = base64.Replace("data:image/jpeg;base64,", "");
                 await ImageSelected.InvokeAsync(ImageBase64);
+                await JS.InvokeVoidAsync("camaraInterop2.stopCamera");
+                ShowCamera = false;
                 ShowCamera = false;
                 ShowPreview = true;
+                ShowImageUrl = false;
                 StateHasChanged();
             }
         }
@@ -68,16 +56,28 @@ public partial class InputImageGeneral
         }
     }
 
-    private void ToggleCamera()
+    private async Task ToggleCamera()
     {
         ShowCamera = true;
         ShowPreview = false;
         ShowImageUrl = false;
+
+        await JS.InvokeVoidAsync("camaraInterop2.startCamera");
+    }
+
+    private async Task CloseCamera()
+    {
+        ShowCamera = false;
+        ShowPreview = false;
+
+        await JS.InvokeVoidAsync("camaraInterop2.stopCamera");
+
+        StateHasChanged();
     }
 
     private async Task LoadFromFile()
     {
-        await JS.InvokeVoidAsync("cameraInterop2.loadFromFile", DotNetObjectReference.Create(this));
+        await JS.InvokeVoidAsync("camaraInterop2.loadFromFile", DotNetObjectReference.Create(this));
     }
 
     [JSInvokable]
@@ -92,18 +92,8 @@ public partial class InputImageGeneral
 
             ShowCamera = false;
             ShowPreview = true;
+            ShowImageUrl = false;
             StateHasChanged();
         }
-    }
-
-    private string GetImageSource()
-    {
-        if (!string.IsNullOrWhiteSpace(ImageUrl))
-            return ImageUrl;
-
-        if (!string.IsNullOrWhiteSpace(ImageBase64))
-            return $"data:image/jpeg;base64,{ImageBase64}";
-
-        return string.Empty;
     }
 }

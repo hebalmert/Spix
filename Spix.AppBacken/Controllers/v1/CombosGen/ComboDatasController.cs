@@ -75,7 +75,7 @@ public class ComboDatasController : ControllerBase
     }
 
     [HttpGet("ComboClients")]
-    public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboClientsAsync(int id)
+    public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboClientsAsync([FromQuery] string? filter = null)
     {
         ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
@@ -83,7 +83,7 @@ public class ComboDatasController : ControllerBase
             return BadRequest("Erro en el sistema de Usuarios");
         }
 
-        var response = await _clientServiceX.ComboAsync(userClaimsInfo.UserName);
+        var response = await _clientServiceX.ComboAsync(userClaimsInfo.UserName, filter);
         if (!response.WasSuccess)
         {
             return BadRequest(response.Message);
