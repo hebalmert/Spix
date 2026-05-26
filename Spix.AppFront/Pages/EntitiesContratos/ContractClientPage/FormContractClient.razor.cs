@@ -30,9 +30,11 @@ public partial class FormContractClient
     private List<State>? States;
     private List<City>? Cities = new();
     private List<Zone>? Zones = new();
-    private List<GuidItemModel>? Contractors;
+    private List<GuidItemModel>? Contractors = new();
     private List<GuidItemModel>? Clients;
     private Client Client = new();
+    private Guid Value = Guid.Empty;
+    private string ValueText = string.Empty;
     private string BaseView = "/contractclients";
     private string BaseClient = "/api/v1/clients";
     private string BaseComboContractor = "/api/v1/combosData/ComboContractor";
@@ -45,7 +47,11 @@ public partial class FormContractClient
     {
         await LoadState();
         await LoadContractor();
-        //await LoadClients();
+        if (IsEditControl)
+        {
+            Value = ContractClient.ClientId;
+            ValueText = $"{ContractClient.Client!.FirstName} {ContractClient.Client!.LastName}";
+        }
     }
 
     private async Task OnClientSelected(GuidItemModel item)

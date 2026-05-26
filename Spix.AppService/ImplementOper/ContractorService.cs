@@ -69,8 +69,13 @@ public class ContractorService : IContractorService
             }
             var ListModel = await _context.Contractors
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
-                .Select(x => new GuidItemModel { Value = x.ContractorId, Name = x.FirstName + " " + x.LastName })
+                .Select(x => new GuidItemModel 
+                { 
+                    Value = x.ContractorId, 
+                    Name = $"{x.FirstName} {x.LastName}" 
+                })
                 .ToListAsync();
+
             ListModel.Insert(0, new GuidItemModel 
             { 
                 Value = Guid.Empty, 
@@ -86,7 +91,7 @@ public class ContractorService : IContractorService
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex);
         }
     }
 

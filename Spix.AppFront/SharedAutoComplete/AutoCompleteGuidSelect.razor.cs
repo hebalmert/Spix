@@ -16,10 +16,22 @@ public partial class AutoCompleteGuidSelect
     [Parameter] public int MinLength { get; set; } = 3;
     [Parameter] public EventCallback<GuidItemModel> OnSelected { get; set; }
 
+    //Para cargar desde Edit un dato ya existente
+    [Parameter] public Guid? Value { get; set; }
+    [Parameter] public string? ValueText { get; set; }
+
     private string SearchText = "";
     private int SelectedIndex = -1;
     private List<GuidItemModel>? Results;
     private CancellationTokenSource? cts;
+
+    protected override void OnParametersSet()
+    {
+        if (Value != null && !string.IsNullOrWhiteSpace(ValueText))
+        {
+            SearchText = ValueText;
+        }
+    }
 
     private async Task OnSearchChanged()
     {

@@ -23,11 +23,12 @@
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            <AutoCompleteGuidSelect 
-                Label="Cliente"
-                ApiUrl="/api/v1/combosData/ComboClients"
-                MinLength="3"
-                OnSelected="OnClientSelected" />
+            <AutoCompleteGuidSelect Label="Cliente"
+                                    ApiUrl="/api/v1/combosData/ComboClients"
+                                    MinLength="3"
+                                    Value="@Value"
+                                    ValueText="@ValueText"
+                                    OnSelected="OnClientSelected" />
         </div>
     </div>
 
@@ -126,7 +127,7 @@
         </div>
     </div>
 
-        <!-- SEPARADOR -->
+    <!-- SEPARADOR -->
     <div class="row">
         <div class="col-12">
             <hr />
@@ -167,7 +168,7 @@
     </div>
     <!-- BOTONES -->
     <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
-        <ButtonFormSaveOnClick IsSaving="IsSaving" OnClick="OnSubmit"/>
+        <ButtonFormSaveOnClick IsSaving="IsSaving" OnClick="OnSubmit" />
         <ButtonFormBack OnClick="ReturnAction" />
     </div>
 
