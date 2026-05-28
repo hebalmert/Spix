@@ -67,53 +67,6 @@ namespace Spix.Services.ImplementContratos
             }
         }
 
-        public async Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username)
-        {
-            try
-            {
-                var user = await _userHelper.GetUserByUserNameAsync(username);
-                if (user == null)
-                {
-                    return new ActionResponse<IEnumerable<ContractClient>>
-                    {
-                        WasSuccess = false,
-                        Message = "Problemas de Validacion de Usuario"
-                    };
-                }
-
-                var queryable = _context.ContractClients
-                    .Include(x => x.Client)
-                    .Include(x => x.Contractor)
-                    .Include(x => x.Zone)
-                    .Include(c => c.ContractIDPic)
-                    .Where(x => x.CorporationId == user.CorporationId &&
-                                (x.ContractState == ContractState.Active || x.ContractState == ContractState.Exempt || x.ContractState == ContractState.Suspended))
-                    .AsQueryable();
-
-                if (!string.IsNullOrWhiteSpace(pagination.Filter))
-                {
-                    var filter = pagination.Filter.Trim();
-                    queryable = queryable.Where(u =>
-                        EF.Functions.Like(u.Client!.FirstName, $"%{filter}%") ||
-                        EF.Functions.Like(u.Client!.LastName, $"%{filter}%") ||
-                        EF.Functions.Like(u.Client!.FirstName + " " + u.Client!.LastName, $"%{filter}%"));
-                }
-
-                await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-                var modelo = await queryable.Paginate(pagination).ToListAsync();
-
-                return new ActionResponse<IEnumerable<ContractClient>>
-                {
-                    WasSuccess = true,
-                    Result = modelo
-                };
-            }
-            catch (Exception ex)
-            {
-                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ContractClient>>(ex);
-            }
-        }
-
         public async Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string username)
         {
             try
@@ -180,54 +133,6 @@ namespace Spix.Services.ImplementContratos
                         Message = "Problemas para Enconstrar el Registro Indicado"
                     };
                 }
-
-                return new ActionResponse<ContractClient>
-                {
-                    WasSuccess = true,
-                    Result = modelo
-                };
-            }
-            catch (Exception ex)
-            {
-                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
-            }
-        }
-
-        public async Task<ActionResponse<ContractClient>> GetProcesandoAsync(Guid id)
-        {
-            try
-            {
-                await _transactionManager.BeginTransactionAsync();
-                var modelo = await _context.ContractClients
-                    .FirstOrDefaultAsync(x => x.ContractClientId == id);
-                if (modelo == null)
-                {
-                    return new ActionResponse<ContractClient>
-                    {
-                        WasSuccess = false,
-                        Message = "Problemas para Encontrar el Registro Indicado"
-                    };
-                }
-                if (modelo.ContractState == ContractState.PendingApproval)
-                {
-                    return new ActionResponse<ContractClient>
-                    {
-                        WasSuccess = false,
-                        Message = "Solo se puede Cambiar de Creando a Procesando"
-                    };
-                }
-                if (modelo.ContractState == ContractState.PendingApproval)
-                {
-                    modelo.ContractState = ContractState.Draft;
-                }
-                else
-                {
-                    modelo.ContractState = ContractState.Draft;
-                }
-                _context.ContractClients.Update(modelo);
-
-                await _transactionManager.SaveChangesAsync();
-                await _transactionManager.CommitTransactionAsync();
 
                 return new ActionResponse<ContractClient>
                 {

@@ -2,6 +2,13 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.btn-bor {
+    border-radius: 15px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 5px 10px 8px #888888;
+}
+
 .modal-content {
     animation: modalFadeIn 0.18s ease-out;
 }

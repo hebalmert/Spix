@@ -32,9 +32,9 @@ public class Zone
 
     public Corporation? Corporation { get; set; }
 
-    public State? State { get; set; }
+    public State? State { get; set; } = new();
 
-    public City? City { get; set; }
+    public City? City { get; set; } = new();
 
     public ICollection<Node>? Nodes { get; set; }
 

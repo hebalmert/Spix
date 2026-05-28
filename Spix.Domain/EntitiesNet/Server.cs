@@ -69,5 +69,6 @@ public class Server
 
     public ICollection<ContractServer>? ContractServers { get; set; }
     public ICollection<ContractQue>? ContractQues { get; set; }
+    public ICollection<ContractBind>? ContractBinds { get; set; }
 
 }

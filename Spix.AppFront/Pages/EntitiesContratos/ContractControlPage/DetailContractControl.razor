@@ -1,0 +1,178 @@
+﻿@page "/detailscontractcontrol/{Id:guid}"
+@attribute [Authorize(Roles = "Administrator")]
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        <div class="row mt-2">
+            <div class="col-12">
+                <div class="card shadow-lg p-4" style="border-radius: 12px;">
+                    <div class="row align-items-center ">
+
+                        <!-- Título -->
+                        <div class="col-md-6 mb-3">
+                            <h2>Detalle Contrato</h2>
+                        </div>
+
+                        <!-- Botones alineados a la izquierda ocupando todo el ancho -->
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex justify-content-end gap-3">
+                                <button title="Volver" type="button" class="btn btn-outline-dark btn-bor">
+                                    <i class="fa fa-arrow-right-from-bracket" style="font-size: 20px;"></i>
+                                    Volver
+                                </button>
+
+                                <a title="Editar" asp-action="Edit" class="btn btn-outline-primary btn-bor">
+                                    <i class="fa fa-pencil-square" style="font-size: 20px;"></i>
+                                    Editar
+                                </a>
+                                <button type="button" title="Retirar" class="btn btn-danger btn-bor btn-bor">
+                                    <i class="fa fa-cloud-arrow-down" style="font-size: 20px;"></i>
+                                    Retirar
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+
+                        <div class="row mb-2">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Creado</span>
+                                    <text class="form-control">01-01-2026</text>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Contrato</span>
+                                    <text class="form-control" style="font-weight:bold">00002</text>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Contractor</span>
+                                    <text class="form-control">Pedro Melas</text>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Cliente</span>
+                                    <text class="form-control">Pedro Melas</text>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Documento</span>
+                                    <text class="form-control flex-fill">C.C.</text>
+                                    <text class="form-control flex-fill">535345345345</text>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Telefono</span>
+                                    <text class="form-control">786 5034489</text>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Correo</span>
+                                    <text class="form-control">jpedromelas@gmail.com</text>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Direccion</span>
+                                    <text class="form-control">Calle 150 Unit 234, Unit 34, Bogota</text>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Ciudad</span>
+                                    <text class="form-control">Bopgota</text>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width: 100px">Zona</span>
+                                    <text class="form-control">Parte Baja Cedrito</text>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="height:2px;border:none;color:#333;background-color:#333;" />
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-control input-group" style="text-align:center; align-items:center">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" readonly>
+                                        <label class="form-check-label"
+                                               style="color : forestgreen; font-weight: bold; font-size:14px">Equipo</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-control input-group" style="text-align:center; align-items:center">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" readonly="readonly">
+                                        <label class="form-check-label"
+                                               style="color : forestgreen; font-weight: bold; font-size:14px">Invoice</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="text-align:center">
+                                @switch (Model.StateType.ToString())
+                                {
+                                    case "Procesando":
+                                        <strong><text class="form-control" style="color : darkorange; font-weight: bold">@Html.DisplayFor(model => model.StateType)</text></strong>
+
+                                        break;
+
+                                    case "Activo":
+                                        <h5>
+                                            <strong><text class="form-control" style="color : forestgreen; font-weight: bold; background-color:whitesmoke; font-size:20px"> @Html.DisplayFor(model => model.StateType)</text></strong>
+                                        </h5>
+                                        break;
+
+                                    case "Anulado":
+                                        <h5>
+                                            <strong><text class="form-control" style="color : orangered; font-weight: bold"> @Html.DisplayFor(model => model.StateType)</text></strong>
+                                        </h5>
+                                        break;
+                                    case "Retirado":
+                                        <h5>
+                                            <strong><text class="form-control" style="color : red; font-weight: bold"> @Html.DisplayFor(model => model.StateType)</text></strong>
+                                        </h5>
+                                        break;
+                                    case "Suspendido":
+                                        <h5>
+                                            <strong><text class="form-control" style="color : red; font-weight: bold"> @Html.DisplayFor(model => model.StateType)</text></strong>
+                                        </h5>
+                                        break;
+                                    case "Exonerado":
+                                        <h5>
+                                            <strong><text class="form-control" style="color : royalblue; font-weight: bold"> @Html.DisplayFor(model => model.StateType)</text></strong>
+                                        </h5>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

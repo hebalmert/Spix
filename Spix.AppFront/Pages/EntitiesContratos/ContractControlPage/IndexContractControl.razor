@@ -8,7 +8,7 @@
         <!-- Botón + Filtro -->
         <div class="row align-items-center mb-3">
             <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                <button class="btn btn-gradient-primary btn-bor d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
                     <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
                 </button>
             </div>
@@ -55,18 +55,9 @@
 
                                   
                                     <td style="width:1px;">
-                                        @if (item.TieneIDPic)
-                                        {
-                                            <ButtonGeneric OnClick="() => ShowModalidpicsAsync(item.ContractClientId, item.ContractIDPic!.ContractIDPicId)"
-                                                           TooTip="@Localizer[nameof(Resource.Edit_IDPics)]"
-                                                           Icon="fa fa-id-card" />
-                                        }
-                                        else
-                                        {
-                                            <ButtonGeneric OnClick="() => ShowModalidpicsAsync(item.ContractClientId, null)"
-                                                           TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
-                                                           Icon="fa fa-id-card" />
-                                        }
+                                        <ButtonGeneric OnClick="() => ShowModaDetailsAsync(item.ContractClientId)"
+                                                       TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                       Icon="fa fa-id-card" />
                                     </td>
 
                                     <td style="width:1px;">

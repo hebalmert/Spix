@@ -26,7 +26,7 @@ public partial class IndexContractControl
     private int TotalPages;      //Cantidad total de paginas
     private int PageSize = 20;  //Cantidad de registros por pagina
 
-    private const string baseUrl = "api/v1/contractclients/contractControl";
+    private const string baseUrl = "api/v1/contractcontrols";
     public List<ContractClient>? ContractClients { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -101,34 +101,9 @@ public partial class IndexContractControl
         });
     }
 
-    private async Task ShowModalidpicsAsync(Guid id, Guid? idPic = null)
+    private async Task ShowModaDetailsAsync(Guid? id)
     {
-        Type component;
-        Dictionary<string, object> parameters;
-        if (idPic != null)
-        {
-            component = typeof(EditContractIDPic);
-            parameters = new Dictionary<string, object>
-            {
-                { "Id", idPic! },
-                { "Title", $"{Localizer[nameof(Resource.Picture_ID)]}" }
-            };
-        }
-        else
-        {
-            component = typeof(CreateContractIDPic);
-            parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Picture_ID)]}" }
-            };
-        }
-
-        await _modalService.ShowAsync(component, parameters, async result =>
-        {
-            if (result.Succeeded)
-                await Cargar(CurrentPage);   //solo refresca si hubo cambios
-        });
+        _navigationManager.NavigateTo($"/detailscontractcontrol/{id}");
     }
 
     private async Task DeleteAsync(Guid id)

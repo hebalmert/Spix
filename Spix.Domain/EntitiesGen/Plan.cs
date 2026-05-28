@@ -4,6 +4,7 @@ using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Spix.Domain.EntitiesGen;
 
@@ -50,10 +51,26 @@ public class Plan
     [Range(1, double.MaxValue, ErrorMessage = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     [DisplayFormat(DataFormatString = "{0:C2}")]
     [Display(Name = "Precio Venta Sin Iva")]
-    public decimal? Price { get; set; }
+    public decimal Price { get; set; }
 
     [Display(Name = "Activo")]
     public bool Active { get; set; }
+
+    //[NotMapped]
+    public decimal? PrecioconImpuesto => Math.Round((((Price * RateTax) / 100) + Price), 2);
+
+    [NotMapped]
+    public decimal RateTax => Tax == null ? 0 : Tax!.Rate;
+
+    [NotMapped]
+    public string VelocidadDown => Convert.ToString(SpeedDown) + SpeedDownType;
+
+    [NotMapped]
+    public string VelocidadUp => Convert.ToString(SpeedUp) + SpeedUpType;
+
+    [NotMapped]
+    [Display(Name = "Up / Down")]
+    public string VelocidadTotal => $"{VelocidadUp}/{VelocidadDown}";
 
     //Relaciones
     public int CorporationId { get; set; }

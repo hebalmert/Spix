@@ -86,5 +86,6 @@ public class IpNet
 
     public ICollection<ContractIp>? ContractIps { get; set; }
     public ICollection<ContractQue>? ContractQues { get; set; }
+    public ICollection<ContractBind>? ContractBinds { get; set; }
 
 }

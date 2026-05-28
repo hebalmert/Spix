@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
@@ -58,5 +59,7 @@ public class CargueDetail
 
     public Corporation? Corporation { get; set; }
     public Cargue? Cargue { get; set; }
+    public ICollection<ContractBind>? ContractBinds { get; set; } = new List<ContractBind>();
+    public ICollection<ContractMac>? ContractMacs { get; set; } = new List<ContractMac>();
 
 }

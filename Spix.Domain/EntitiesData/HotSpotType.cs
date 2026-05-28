@@ -1,4 +1,5 @@
-﻿using Spix.xLanguage.Resources;
+﻿using Spix.Domain.EntitiesContratos;
+using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 
 namespace Spix.Domain.EntitiesData;
@@ -16,4 +17,5 @@ public class HotSpotType
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]
     public bool Active { get; set; }
 
+    public ICollection<ContractBind>? ContractBinds { get; set; }
 }

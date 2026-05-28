@@ -41,34 +41,6 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             return BadRequest(response.Message);
         }
 
-        [HttpGet("procesando/{id}")]
-        public async Task<IActionResult> GetProcesandoAsync(Guid id)
-        {
-            var response = await _contractClientUnitOfWork.GetProcesandoAsync(id);
-            if (response.WasSuccess)
-            {
-                return Ok(response.Result);
-            }
-            return BadRequest(response.Message);
-        }
-
-        [HttpGet("contractControl")]
-        public async Task<ActionResult<IEnumerable<ContractClient>>> GetControlContratos([FromQuery] PaginationDTO pagination)
-        {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-            if (userClaimsInfo == null)
-            {
-                return BadRequest("Erro en el sistema de Usuarios");
-            }
-
-            var response = await _contractClientUnitOfWork.GetControlContratos(pagination, userClaimsInfo.UserName);
-            if (!response.WasSuccess)
-            {
-                return BadRequest(response.Message);
-            }
-            return Ok(response.Result);
-        }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ContractClient>>> GetAll([FromQuery] PaginationDTO pagination)
         {

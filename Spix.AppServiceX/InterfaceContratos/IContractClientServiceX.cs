@@ -9,13 +9,9 @@ public interface IContractClientServiceX
 {
     Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatusAsync();
 
-    Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username);
-
     Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<ContractClient>> GetAsync(Guid id);
-
-    Task<ActionResponse<ContractClient>> GetProcesandoAsync(Guid id);
 
     Task<ActionResponse<ContractClient>> UpdateAsync(ContractClient modelo);
 

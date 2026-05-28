@@ -5,7 +5,7 @@
 @code {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = default!;
     [Parameter] public string Icon { get; set; } = "fa fa-plus-circle";
-    [Parameter] public string CssClass { get; set; } = "btn btn-gradient-primary d-flex align-items-center gap-2";
+    [Parameter] public string CssClass { get; set; } = "btn btn-gradient-primary btn-bord-flex align-items-center gap-2";
     [Parameter] public EventCallback OnClick { get; set; }
     [Parameter] public string? TooTip { get; set; }
     [Parameter] public string Type { get; set; } = "button";

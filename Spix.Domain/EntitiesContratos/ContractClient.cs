@@ -92,16 +92,18 @@ public class ContractClient
 
 
     public Corporation? Corporation { get; set; }
-    public Contractor? Contractor { get; set; }
-    public Client? Client { get; set; }
-    public Zone? Zone { get; set; }
+    public Contractor? Contractor { get; set; } = new();
+    public Client? Client { get; set; } = new();
+    public Zone? Zone { get; set; } = new();
 
 
-    public ContractIDPic? ContractIDPic { get; set; }
-    public ICollection<ContractIp>? ContractIps { get; set; }
-    public ICollection<ContractServer>? ContractServers { get; set; }
-    public ICollection<ContractPlan>? ContractPlans { get; set; }
-    public ICollection<ContractNode>? ContractNodes { get; set; }
-    public ICollection<ContractQue>? ContractQues { get; set; }
+    public ContractIDPic? ContractIDPic { get; set; } = new();
+    public ICollection<ContractIp>? ContractIps { get; set; } = new List<ContractIp>();
+    public ICollection<ContractMac>? ContractMacs { get; set; } = new List<ContractMac>();
+    public ICollection<ContractServer>? ContractServers { get; set; } = new List<ContractServer>();
+    public ICollection<ContractPlan>? ContractPlans { get; set; } = new List<ContractPlan>();
+    public ICollection<ContractNode>? ContractNodes { get; set; } = new List<ContractNode>();
+    public ICollection<ContractQue>? ContractQues { get; set; } = new List<ContractQue>();
+    public ICollection<ContractBind>? ContractBinds { get; set; } = new List<ContractBind>();
 
 }
