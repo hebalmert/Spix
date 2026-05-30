@@ -4,6 +4,8 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
+using Spix.Domain.EntitiesData;
+using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -22,7 +24,7 @@ public partial class CreateContractClient
 
     [Parameter] public string? Title { get; set; }
 
-    private ContractClient ContractClient = new() { EquipoEmpres = true, EnvoiceClient = false };
+    private ContractClient ContractClient = new() { EquipoEmpres = true, EnvoiceClient = false, ContractState = DomainLogic.EnumTypes.ContractState.Draft };
     private string BaseUrl = "/api/v1/contractclients";
     private bool isLoading = false;
     private bool IsSaving = false;

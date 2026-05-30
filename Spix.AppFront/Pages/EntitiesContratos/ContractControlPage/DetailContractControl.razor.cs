@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesContratos.ContractClientPage;
 using Spix.Domain.EntitiesContratos;
-using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -22,7 +22,7 @@ public partial class DetailContractControl
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
-    private ContractClient? ContractClient = new();
+    private ContractClient? ContractClient { get; set; }
     private string BaseUrl = "/api/v1/contractcontrols";
     private bool isLoading = false;
     private bool IsSaving = false;
@@ -49,6 +49,25 @@ public partial class DetailContractControl
         ContractClient = responseHTTP.Response;
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ShowEditContractClient(Guid? id = null)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(EditContractClient);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_ContractClient)]}"  }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractClient();   //solo refresca si hubo cambios
+        });
     }
 
 }

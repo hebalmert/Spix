@@ -7,7 +7,6 @@ using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfaceContratos;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.AppResponses;
-using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppBack.Controllers.v1.EntitiesContracts

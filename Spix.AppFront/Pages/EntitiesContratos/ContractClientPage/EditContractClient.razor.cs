@@ -4,6 +4,8 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
+using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -36,7 +38,24 @@ public partial class EditContractClient
     private async Task Edit()
     {
         IsSaving = true;
-        var responseHttp = await _repository.PutAsync($"{BaseUrl}", ContractClient);
+        var nModelo = new ContractClient
+        {
+            ContractClientId = ContractClient!.ContractClientId,
+            DateCreado = ContractClient.DateCreado,
+            ControlContrato = ContractClient.ControlContrato,
+            ContractorId = ContractClient.ContractorId,
+            ClientId = ContractClient.ClientId,
+            PhoneNumber = ContractClient.PhoneNumber,
+            PhoneNumber2 = ContractClient.PhoneNumber2,
+            Address = ContractClient.Address,
+            ZoneId = ContractClient.ZoneId,
+            ContractState = ContractClient.ContractState,
+            EquipoEmpres = ContractClient.EquipoEmpres,
+            EnvoiceClient = ContractClient.EnvoiceClient,
+            CorporationId = ContractClient.CorporationId
+        };
+
+        var responseHttp = await _repository.PutAsync($"{BaseUrl}", nModelo);
         IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {

@@ -5,6 +5,8 @@ using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace Spix.Domain.EntitiesContratos;
 
@@ -13,7 +15,7 @@ public class ContractClient
     [Key]
     public Guid ContractClientId { get; set; }
 
-    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+
     [DataType(DataType.Date)]
     [DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy}", ApplyFormatInEditMode = false)]
     [Display(Name = nameof(Resource.Date), ResourceType = typeof(Resource))]
@@ -61,22 +63,22 @@ public class ContractClient
     //Propiedades no Mapeadas para el Control de Contratos
     [Display(Name = nameof(Resource.UseHotSpotControl), ResourceType = typeof(Resource))]
     [NotMapped]
-    public bool UsaHotSpotControl { get; set; }
+    public virtual bool UsaHotSpotControl { get; set; }
 
     [Display(Name = nameof(Resource.State), ResourceType = typeof(Resource))]
     [NotMapped]
-    public int StateId { get; set; }
+    public virtual int StateId { get; set; }
 
     [Display(Name = nameof(Resource.City), ResourceType = typeof(Resource))]
     [NotMapped]
-    public int CityId { get; set; }
+    public virtual int CityId { get; set; }
 
     [Display(Name = nameof(Resource.Client), ResourceType = typeof(Resource))]
     [NotMapped]
-    public string? NombreCliente { get; set; }
+    public virtual string? NombreCliente { get; set; }
 
     [NotMapped]
-    public bool TieneIDPic => ContractIDPic != null;
+    public virtual bool TieneIDPic => ContractIDPic != null;
     //Fin Propiedades no Mapeadas para el Control de Contratos
 
     public int CorporationId { get; set; }
@@ -92,18 +94,18 @@ public class ContractClient
 
 
     public Corporation? Corporation { get; set; }
-    public Contractor? Contractor { get; set; } = new();
-    public Client? Client { get; set; } = new();
-    public Zone? Zone { get; set; } = new();
+    public Contractor? Contractor { get; set; } 
+    public Client? Client { get; set; }
+    public Zone? Zone { get; set; } 
 
 
-    public ContractIDPic? ContractIDPic { get; set; } = new();
-    public ICollection<ContractIp>? ContractIps { get; set; } = new List<ContractIp>();
-    public ICollection<ContractMac>? ContractMacs { get; set; } = new List<ContractMac>();
-    public ICollection<ContractServer>? ContractServers { get; set; } = new List<ContractServer>();
-    public ICollection<ContractPlan>? ContractPlans { get; set; } = new List<ContractPlan>();
-    public ICollection<ContractNode>? ContractNodes { get; set; } = new List<ContractNode>();
-    public ICollection<ContractQue>? ContractQues { get; set; } = new List<ContractQue>();
-    public ICollection<ContractBind>? ContractBinds { get; set; } = new List<ContractBind>();
+    public ContractIDPic? ContractIDPic { get; set; }
+    public ICollection<ContractIp>? ContractIps { get; set; } 
+    public ICollection<ContractMac>? ContractMacs { get; set; }
+    public ICollection<ContractServer>? ContractServers { get; set; } 
+    public ICollection<ContractPlan>? ContractPlans { get; set; }
+    public ICollection<ContractNode>? ContractNodes { get; set; } 
+    public ICollection<ContractQue>? ContractQues { get; set; } 
+    public ICollection<ContractBind>? ContractBinds { get; set; } 
 
 }

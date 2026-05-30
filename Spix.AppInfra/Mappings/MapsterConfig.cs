@@ -64,6 +64,11 @@ public static class MapsterConfig
             .Ignore(dest => dest.Corporation!)
             .Ignore(dest => dest.Contractor!)
             .Ignore(dest => dest.ContractIDPic!)
+            .Ignore(dest => dest.ContractNodes!)
+            .Ignore(dest => dest.ContractBinds!)
+            .Ignore(dest => dest.ContractIps!)
+            .Ignore(dest => dest.ContractMacs!)
+            .Ignore(dest => dest.ContractServers!)
             .Ignore(dest => dest.Client!)
             .Ignore(dest => dest.Zone!);
 

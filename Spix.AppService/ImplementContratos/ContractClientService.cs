@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
@@ -9,6 +10,7 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceContratos;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
@@ -122,9 +124,9 @@ namespace Spix.Services.ImplementContratos
                     .Include(x=> x.Contractor)
                     .Include(c => c.ContractIDPic)
                     .FirstOrDefaultAsync(x => x.ContractClientId == id);
-                var ZoneDetail = await _context.Zones.FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
-                modelo!.StateId = ZoneDetail!.StateId;
-                modelo.CityId = ZoneDetail.CityId;
+                var ZoneDetail = await _context.Zones.AsNoTracking().FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
+                        modelo!.StateId = ZoneDetail!.StateId;
+                        modelo.CityId = ZoneDetail.CityId;
                 if (modelo == null)
                 {
                     return new ActionResponse<ContractClient>
@@ -152,10 +154,10 @@ namespace Spix.Services.ImplementContratos
 
             try
             {
-                //Implementando el Mapeo de Modelos con Mapster
-                ContractClient NuevoModelo = _mapperService.Map<ContractClient, ContractClient>(modelo);
+                
 
-                _context.ContractClients.Update(NuevoModelo);
+                //Implementando el Mapeo de Modelos con Mapster
+                _context.ContractClients.Update(modelo);
 
                 await _transactionManager.SaveChangesAsync();
                 await _transactionManager.CommitTransactionAsync();

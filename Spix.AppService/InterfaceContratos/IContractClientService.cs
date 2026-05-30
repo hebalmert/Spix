@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;

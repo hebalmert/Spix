@@ -1330,4 +1330,7 @@
   <data name="Action" xml:space="preserve">
     <value>Action</value>
   </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
 </root>
