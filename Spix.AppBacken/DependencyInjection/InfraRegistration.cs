@@ -9,6 +9,7 @@ using Spix.xFiles.ExcelHelper;
 using Spix.xFiles.FileHelper;
 using Spix.xFiles.QRgenerate;
 using Spix.xNetwork.IpHelper;
+using Spix.xNetwork.MacHelper;
 using Spix.xNetwork.MkHelper;
 using Spix.xNetwork.PingHelper;
 using Spix.xNotification.Implements;
@@ -43,6 +44,9 @@ namespace Spix.AppBack.DependencyInjection
             // Manejo de Procesos para el Network
             services.AddScoped<IIpControl, IpControl>();
             services.AddScoped<IIpNetControl, IpNetControl>();
+
+            //Marnejo de Mac
+            services.AddScoped<IMacControl, MacControl>();
 
             // Utilidades para autenticación y gestión de usuarios
             services.AddScoped<IUserHelper, UserHelper>();

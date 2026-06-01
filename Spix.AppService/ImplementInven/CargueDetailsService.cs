@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
@@ -9,9 +10,12 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesInven;
 using Spix.Domain.EntitiesInven;
+using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using Spix.xLanguage.Resources;
 
 namespace Spix.Services.ImplementInven;
 
@@ -23,9 +27,11 @@ public class CargueDetailsService : ICargueDetailsService
     private readonly ITransactionManager _transactionManager;
     private readonly IUserHelper _userHelper;
     private readonly HttpErrorHandler _httpErrorHandler;
+    private readonly IStringLocalizer _localizer;
 
     public CargueDetailsService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
-        ITransactionManager transactionManager, IMemoryCache cache, IUserHelper userHelper, HttpErrorHandler httpErrorHandle)
+        ITransactionManager transactionManager, IMemoryCache cache, IUserHelper userHelper, HttpErrorHandler httpErrorHandle,
+        IStringLocalizer localizer)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -34,6 +40,60 @@ public class CargueDetailsService : ICargueDetailsService
 
         _userHelper = userHelper;
         _httpErrorHandler = httpErrorHandle;
+        _localizer = localizer;
+    }
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, Guid? id = null)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<GuidItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+            List<GuidItemModel> ListMac = new();
+            if (id == null)
+            {
+                ListMac = await _context.CargueDetails
+                    .Where(x => x.CorporationId == user.CorporationId && x.Status == SerialStateType.Disponible)
+                    .Select(x => new GuidItemModel
+                    {
+                        Value = x.CargueDetailId,
+                        Name = x.MacWlan
+                    })
+                    .ToListAsync();
+                ListMac.Insert(0, new GuidItemModel
+                {
+                    Value = Guid.Empty,
+                    Name = _localizer[nameof(Resource.Select_IP)]
+                });
+            }
+            else
+            {
+                ListMac = await _context.CargueDetails
+                    .Where(x => x.CorporationId == user.CorporationId && x.Status == SerialStateType.Disponible || x.CargueDetailId == id)
+                                        .Select(x => new GuidItemModel
+                                        {
+                                            Value = x.CargueDetailId,
+                                            Name = x.MacWlan
+                                        })
+                    .ToListAsync();
+            }
+
+            return new ActionResponse<IEnumerable<GuidItemModel>>
+            {
+                WasSuccess = true,
+                Result = ListMac
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex); // ✅ Manejo de errores automático
+        }
     }
 
     public async Task<ActionResponse<IEnumerable<CargueDetail>>> GetAsync(PaginationDTO pagination, string username)
@@ -111,7 +171,7 @@ public class CargueDetailsService : ICargueDetailsService
         try
         {
             var modelo = await _context.CargueDetails
-                .Include(x => x.Cargue).ThenInclude(x=> x!.Product)
+                .Include(x => x.Cargue).ThenInclude(x => x!.Product)
                 .FirstOrDefaultAsync(x => x.CargueDetailId == id);
             if (modelo == null)
             {

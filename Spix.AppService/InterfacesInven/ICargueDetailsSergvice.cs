@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -6,6 +7,8 @@ namespace Spix.AppService.InterfacesInven;
 
 public interface ICargueDetailsService
 {
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, Guid? id = null);
+
     Task<ActionResponse<IEnumerable<CargueDetail>>> GetAsync(PaginationDTO pagination, string email);
 
     Task<ActionResponse<IEnumerable<CargueDetail>>> GetSerialsAsync(PaginationDTO pagination, string email);

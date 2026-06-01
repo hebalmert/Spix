@@ -1,6 +1,8 @@
 ﻿using Spix.AppService.InterfacesInven;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.Domain.EntitiesInven;
+using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -14,6 +16,8 @@ public class CargueDetailsServiceX : ICargueDetailsServiceX
     {
         _cargueDetailsService = cargueDetailsService;
     }
+
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, Guid? id = null) => await _cargueDetailsService.ComboAsync(username, id);
 
     public async Task<ActionResponse<IEnumerable<CargueDetail>>> GetAsync(PaginationDTO pagination, string email) => await _cargueDetailsService.GetAsync(pagination, email);
 

@@ -181,82 +181,78 @@
                             </div>
                         </div>
                     </div>
+                    <table class="table table-borderless table-sm mt-3" id="MyTable">
+                        <tbody id="reordenable">
+                            @if (ContractIp is null || ContractIp!.ContractIpId == Guid.Empty)
+                            {
+                                <tr>
+                                    <td>
+                                        <h5 class="m-0">Sin IP Asignada...</h5>
+                                    </td>
+                                    <td>
+                                        <ButtonGeneric OnClick="() => ShowContractIpsAsyn(ContractClient!.ContractClientId)"
+                                                       TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                       Icon="fa fa-plus" />
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>
+                                        @ContractIp.IpNet!.Ip
+                                    </td>
 
+                                    <td style="width:1px; padding-left:1px; padding-right:4px">
+                                        <ButtonDelete OnClick="() => DeleteContractIpAsync(ContractIp!.ContractIpId)"
+                                                      TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                      Icon="fa fa-trash" />
+                                    </td>
+                                </tr>
 
-                        <table class="table table-borderless table-sm mt-3" id="MyTable">
-                            <tbody id="reordenable">
-                                @if (ContractIp is null || ContractIp!.ContractIpId == Guid.Empty)
-                                {
-                                    <tr>
-                                        <td>
-                                            <h5 class="m-0">Sin IP Asignada...</h5>
-                                        </td>
-                                        <td>
-                                            <ButtonGeneric OnClick="() => ShowContractIpsAsyn(ContractClient!.ContractClientId)"
-                                                           TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
-                                                           Icon="fa fa-plus"/>
-                                        </td>
-                                    </tr>
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td>
-                                            @ContractIp.IpNet!.Ip
-                                        </td>
+                            }
 
-                                        <td style="width:1px; padding-left:1px; padding-right:4px">
-                                            <ButtonDelete OnClick="() => DeleteContractIpAsync(ContractIp!.ContractIpId)"
-                                                           TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
-                                                           Icon="fa fa-trash" />
-                                        </td>
-                                    </tr>
-
-                                }
-
-                            </tbody>
-                        </table>
-         
-               
-            </div>
-        </div>
-        <!-- Mac Client -->
-        <div class="col-md-4">
-            <div class="card shadow-lg p-4" style="border-radius: 12px;">
-                <div class="card-header bg-transparent border-dark  text-dark">
-                    <div class="row">
-                        <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
-                            <div style="margin-left:5px">
-                                <i class="fa fa-gears" style=" color:#27A844; font-size: 20px"></i>
-                                <strong>Mac Equipo</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="card-body text-dark">
+                        </tbody>
+                    </table>        
                 </div>
             </div>
-        </div>
-        <!-- Server Client -->
-        <div class="col-md-4">
-            <div class="card shadow-lg p-4" style="border-radius: 12px;">
-
-                <div class="card-header bg-transparent border-dark  text-dark">
-                    <div class="row">
-                        <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
-                            <div style="margin-left:5px">
-                                <i class="fa fa-server" style=" color:#27A844; font-size: 20px"></i>
-                                <strong>Servidor Gateway</strong>
+            <!-- Mac Client -->
+            <div class="col-md-4">
+                <div class="card shadow-lg p-4" style="border-radius: 12px;">
+                    <div class="card-header bg-transparent border-dark  text-dark">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
+                                <div style="margin-left:5px">
+                                    <i class="fa fa-gears" style=" color:#27A844; font-size: 20px"></i>
+                                    <strong>Mac Equipo</strong>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
+                    <div class="card-body text-dark">
+                    </div>
                 </div>
-                <div class="card-body text-dark">
+            </div>
+            <!-- Server Client -->
+            <div class="col-md-4">
+                <div class="card shadow-lg p-4" style="border-radius: 12px;">
+
+                    <div class="card-header bg-transparent border-dark  text-dark">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
+                                <div style="margin-left:5px">
+                                    <i class="fa fa-server" style=" color:#27A844; font-size: 20px"></i>
+                                    <strong>Servidor Gateway</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-body text-dark">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>

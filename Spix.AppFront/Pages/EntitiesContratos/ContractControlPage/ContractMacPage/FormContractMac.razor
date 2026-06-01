@@ -1,0 +1,25 @@
+﻿<EditForm Model="ContractIp" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    @if (IpNets is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="input-group">
+            <span class="input-group-text" style="width:150px">IP Clients</span>
+            <select class="form-select" value="@ContractIp?.IpNetId" @onchange="IpNetworkChanged">
+                @foreach (var item in IpNets!)
+                {
+                    <option value="@item.IpNetId">@item.Ip</option>
+                }
+            </select>
+        </div>
+    }
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

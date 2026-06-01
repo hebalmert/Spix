@@ -28,6 +28,23 @@ public class CargueDetailsController : ControllerBase
         _localizer = localizer;
     }
 
+    [HttpGet("loadCombo/{id?}")]
+    public async Task<ActionResult<IEnumerable<CargueDetail>>> GetComboAsync([FromRoute] Guid? id = null)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _cargueDetailsUnitOfWork.ComboAsync(userClaimsInfo.UserName, id);
+        if (!response.WasSuccess)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Result);
+    }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CargueDetail>>> GetAll([FromQuery] PaginationDTO pagination)
     {
