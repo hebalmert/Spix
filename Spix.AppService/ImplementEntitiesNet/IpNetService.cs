@@ -36,6 +36,51 @@ public class IpNetService : IIpNetService
         _localizer = localizer;
     }
 
+    public async Task<ActionResponse<IEnumerable<IpNet>>> ComboAsync(string username, Guid? id = null)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<IpNet>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+            List<IpNet> IpList = new();
+            if (id == null)
+            {
+                IpList = await _context.IpNets
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId && x.Assigned == false && x.Excluded == false)
+                    .ToListAsync();
+                IpList.Insert(0, new IpNet
+                {
+                    IpNetId = Guid.Empty,
+                    Ip = _localizer[nameof(Resource.Select_IP)]
+                });
+            }
+            else
+            {
+                IpList = await _context.IpNets
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId && x.Assigned == false && x.Excluded == false || x.IpNetId == id)
+                    .ToListAsync();
+            }
+
+            return new ActionResponse<IEnumerable<IpNet>>
+            {
+                WasSuccess = true,
+                Result = IpList
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IpNet>>(ex); // ✅ Manejo de errores automático
+        }
+    }
+
+
     public async Task<ActionResponse<IEnumerable<IpNet>>> GetAsync(PaginationDTO pagination, string username)
     {
         try

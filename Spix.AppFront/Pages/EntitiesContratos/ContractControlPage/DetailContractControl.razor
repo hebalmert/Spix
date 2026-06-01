@@ -4,12 +4,13 @@
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
 
+        <!-- Card del Contrato -->
         <div class="row mt-2">
             <div class="col-12">
                 <div class="card shadow-lg p-4" style="border-radius: 12px;">
-@if (ContractClient is null)
+                    @if (ContractClient is null)
                     {
-                        <Loading/>
+                        <Loading />
                     }
                     else
                     {
@@ -24,8 +25,8 @@
                             <div class="col-md-6 mb-3">
                                 <div class="d-flex justify-content-end gap-3">
                                     <AnchorFormBack Href="/contractcontrol" CssClass="btn btn-outline-dark btn-bor" />
-                                    <ButtonFormNew Icon="fa fa-pencil-square" CssClass="btn btn-outline-primary btn-bor" 
-                                    OnClick="() => ShowEditContractClient(ContractClient!.ContractClientId)" TooTip="@Localizer[nameof(Resource.Edit)]" />
+                                    <ButtonFormNew Icon="fa fa-pencil-square" CssClass="btn btn-outline-primary btn-bor"
+                                                   OnClick="() => ShowEditContractClient(ContractClient!.ContractClientId)" TooTip="@Localizer[nameof(Resource.Edit)]" />
                                     @*                                 <a title="Editar" asp-action="Edit" class="btn btn-outline-primary btn-bor">
                                     <i class="fa fa-pencil-square" style="font-size: 20px;"></i>
                                     Editar
@@ -163,8 +164,99 @@
                         </div>
                     }
                 </div>
+
             </div>
         </div>
+        <div class="row mt-2">
+            <!-- IP Cliente -->
+            <div class="col-md-4">
+                <div class="card shadow-lg p-4" style="border-radius: 12px;">
+                    <div class="card-header bg-transparent border-dark  text-dark">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
+                                <div style="margin-left:5px">
+                                    <i class="fa fa-ethernet" style="color:#27A844; font-size: 20px"></i>
+                                    <strong>IP Cliente</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
+
+                        <table class="table table-borderless table-sm mt-3" id="MyTable">
+                            <tbody id="reordenable">
+                                @if (ContractIp is null || ContractIp!.ContractIpId == Guid.Empty)
+                                {
+                                    <tr>
+                                        <td>
+                                            <h5 class="m-0">Sin IP Asignada...</h5>
+                                        </td>
+                                        <td>
+                                            <ButtonGeneric OnClick="() => ShowContractIpsAsyn(ContractClient!.ContractClientId)"
+                                                           TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                           Icon="fa fa-plus"/>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>
+                                            @ContractIp.IpNet!.Ip
+                                        </td>
+
+                                        <td style="width:1px; padding-left:1px; padding-right:4px">
+                                            <ButtonDelete OnClick="() => DeleteContractIpAsync(ContractIp!.ContractIpId)"
+                                                           TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                           Icon="fa fa-trash" />
+                                        </td>
+                                    </tr>
+
+                                }
+
+                            </tbody>
+                        </table>
+         
+               
+            </div>
+        </div>
+        <!-- Mac Client -->
+        <div class="col-md-4">
+            <div class="card shadow-lg p-4" style="border-radius: 12px;">
+                <div class="card-header bg-transparent border-dark  text-dark">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
+                            <div style="margin-left:5px">
+                                <i class="fa fa-gears" style=" color:#27A844; font-size: 20px"></i>
+                                <strong>Mac Equipo</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body text-dark">
+                </div>
+            </div>
+        </div>
+        <!-- Server Client -->
+        <div class="col-md-4">
+            <div class="card shadow-lg p-4" style="border-radius: 12px;">
+
+                <div class="card-header bg-transparent border-dark  text-dark">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
+                            <div style="margin-left:5px">
+                                <i class="fa fa-server" style=" color:#27A844; font-size: 20px"></i>
+                                <strong>Servidor Gateway</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body text-dark">
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 </div>

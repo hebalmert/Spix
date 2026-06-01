@@ -9,6 +9,95 @@ html, body {
     box-shadow: 5px 10px 8px #888888;
 }
 
+.btn-mini {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Fondo inicial */
+    background-color: #ffffff;
+    color: #000;
+    /* Borde estilo Bootstrap */
+    border: 1px solid #ced4da;
+    /* SOMBRA flotante estilo tu botón original */
+    box-shadow: 4px 6px 10px rgba(0,0,0,0.55);
+    /* Transición estilo btn-dark */
+    transition: background-color .25s ease, color .25s ease, transform .15s ease;
+    padding: 0;
+}
+
+    /* Hover: blanco → negro */
+    .btn-mini:hover {
+        background-color: #000;
+        color: #fff;
+        transform: translateY(-2px); /* levita */
+    }
+
+    /* Active: más oscuro y baja */
+    .btn-mini:active {
+        background-color: #333;
+        color: #fff;
+        transform: translateY(0);
+    }
+
+.btn-mini-danger {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    color: #dc3545;
+    border: 1px solid #ced4da;
+    box-shadow: 4px 6px 10px rgba(0,0,0,0.55);
+    transition: background-color .25s ease, color .25s ease, transform .15s ease;
+    padding: 0;
+}
+
+    .btn-mini-danger:hover {
+        background-color: #dc3545;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .btn-mini-danger:active {
+        background-color: #b02a37;
+        color: #fff;
+        transform: translateY(0);
+    }
+
+.btn-mini-success {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    color: #198754;
+    border: 1px solid #ced4da;
+    box-shadow: 4px 6px 10px rgba(0,0,0,0.55);
+    transition: background-color .25s ease, color .25s ease, transform .15s ease;
+    padding: 0;
+}
+
+    .btn-mini-success:hover {
+        background-color: #198754;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .btn-mini-success:active {
+        background-color: #146c43;
+        color: #fff;
+        transform: translateY(0);
+    }
+
+
+
 .modal-content {
     animation: modalFadeIn 0.18s ease-out;
 }

@@ -92,6 +92,8 @@ public class ContractClient
     public Guid? UserId { get; set; }
     //Fin quien creo el registro
 
+    public int ControlIpCount => ContractIps == null ? 0 : ContractIps.Count;
+
 
     public Corporation? Corporation { get; set; }
     public Contractor? Contractor { get; set; } 

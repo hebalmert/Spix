@@ -6,6 +6,8 @@ namespace Spix.AppService.InterfaceEntitiesNet;
 
 public interface IIpNetService
 {
+    Task<ActionResponse<IEnumerable<IpNet>>> ComboAsync(string username, Guid? id = null);
+
     Task<ActionResponse<IEnumerable<IpNet>>> GetAsync(PaginationDTO pagination, string email);
 
     Task<ActionResponse<IpNet>> GetAsync(Guid id);

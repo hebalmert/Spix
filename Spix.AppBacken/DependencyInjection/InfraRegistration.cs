@@ -42,6 +42,7 @@ namespace Spix.AppBack.DependencyInjection
 
             // Manejo de Procesos para el Network
             services.AddScoped<IIpControl, IpControl>();
+            services.AddScoped<IIpNetControl, IpNetControl>();
 
             // Utilidades para autenticación y gestión de usuarios
             services.AddScoped<IUserHelper, UserHelper>();

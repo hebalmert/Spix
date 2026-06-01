@@ -4,44 +4,27 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Spix.AppBack.Helper;
+using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
 using Spix.AppServiceX.InterfaceEntitiesNet;
+using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.AppResponses;
-using Spix.DomainLogic.Pagination;
-using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.EntitiesNet;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/servers")]
+[Route("api/v{version:apiVersion}/contractips")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
 [ApiController]
-public class ServersController : ControllerBase
+public class ContractIpsController : ControllerBase
 {
-    private readonly IServerServiceX _serverUnitOfWork;
+    private readonly IContractIpServiceX _serverUnitOfWork;
     private readonly IStringLocalizer _localizer;
 
-    public ServersController(IServerServiceX serverUnitOfWork, IStringLocalizer localizer)
+    public ContractIpsController(IContractIpServiceX serverUnitOfWork, IStringLocalizer localizer)
     {
         _serverUnitOfWork = serverUnitOfWork;
         _localizer = localizer;
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Server>>> GetAll([FromQuery] PaginationDTO pagination)
-    {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-        if (userClaimsInfo == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
-
-        var response = await _serverUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
-        if (!response.WasSuccess)
-        {
-            return BadRequest(response.Message);
-        }
-        return Ok(response.Result);
     }
 
     [HttpGet("{id}")]
@@ -55,19 +38,9 @@ public class ServersController : ControllerBase
         return NotFound(response.Message);
     }
 
-    [HttpPut]
-    public async Task<ActionResult<Server>> PutAsync(Server modelo)
-    {
-        var response = await _serverUnitOfWork.UpdateAsync(modelo);
-        if (response.WasSuccess)
-        {
-            return Ok(response.Result);
-        }
-        return NotFound(response.Message);
-    }
 
     [HttpPost]
-    public async Task<ActionResult<Server>> PostAsync(Server modelo)
+    public async Task<ActionResult<ContractIp>> PostAsync(ContractIp modelo)
     {
         ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)

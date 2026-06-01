@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 using System.Security.Claims;
 
@@ -17,22 +20,24 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 public class IpNetworksController : ControllerBase
 {
     private readonly IIpNetworkServiceX _ipNetworkUnitOfWork;
+    private readonly IStringLocalizer _localizer;
 
-    public IpNetworksController(IIpNetworkServiceX ipNetworkUnitOfWork)
+    public IpNetworksController(IIpNetworkServiceX ipNetworkUnitOfWork, IStringLocalizer localizer)
     {
         _ipNetworkUnitOfWork = ipNetworkUnitOfWork;
+        _localizer = localizer;
     }
 
     [HttpGet("loadCombo/{id?}")]
     public async Task<ActionResult<IEnumerable<Tax>>> GetComboAsync([FromRoute] Guid? id = null)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
         }
 
-        var response = await _ipNetworkUnitOfWork.ComboAsync(email, id);
+        var response = await _ipNetworkUnitOfWork.ComboAsync(userClaimsInfo.UserName, id);
         if (!response.WasSuccess)
         {
             return BadRequest(response.Message);
@@ -43,13 +48,13 @@ public class IpNetworksController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IpNetwork>>> GetAll([FromQuery] PaginationDTO pagination)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
         }
 
-        var response = await _ipNetworkUnitOfWork.GetAsync(pagination, email);
+        var response = await _ipNetworkUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
         if (!response.WasSuccess)
         {
             return BadRequest(response.Message);

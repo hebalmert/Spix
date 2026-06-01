@@ -15,6 +15,8 @@ public class IpNetServiceX : IIpNetServiceX
         _ipNetService = ipNetService;
     }
 
+    public async Task<ActionResponse<IEnumerable<IpNet>>> ComboAsync(string username, Guid? id = null) => await _ipNetService.ComboAsync(username, id);
+
     public async Task<ActionResponse<IEnumerable<IpNet>>> GetAsync(PaginationDTO pagination, string email) => await _ipNetService.GetAsync(pagination, email);
 
     public async Task<ActionResponse<IpNet>> GetAsync(Guid id) => await _ipNetService.GetAsync(id);

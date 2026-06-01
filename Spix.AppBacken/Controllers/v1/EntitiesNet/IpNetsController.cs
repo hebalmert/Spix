@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfaceEntitiesNet;
+using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 using System.Security.Claims;
 
@@ -16,22 +20,41 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 public class IpNetsController : ControllerBase
 {
     private readonly IIpNetServiceX _ipNetUnitOfWork;
+    private readonly IStringLocalizer _localizer;
 
-    public IpNetsController(IIpNetServiceX ipNetUnitOfWork)
+    public IpNetsController(IIpNetServiceX ipNetUnitOfWork, IStringLocalizer localizer)
     {
         _ipNetUnitOfWork = ipNetUnitOfWork;
+        _localizer = localizer;
+    }
+
+    [HttpGet("loadCombo/{id?}")]
+    public async Task<ActionResult<IEnumerable<Tax>>> GetComboAsync([FromRoute] Guid? id = null)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _ipNetUnitOfWork.ComboAsync(userClaimsInfo.UserName, id);
+        if (!response.WasSuccess)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Result);
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IpNet>>> GetAll([FromQuery] PaginationDTO pagination)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
         }
 
-        var response = await _ipNetUnitOfWork.GetAsync(pagination, email);
+        var response = await _ipNetUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
         if (!response.WasSuccess)
         {
             return BadRequest(response.Message);
