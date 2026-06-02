@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -17,54 +18,40 @@ public partial class FormContractMac
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
-    [Parameter, EditorRequired] public ContractIp ContractIp { get; set; } = null!;
+    [Parameter, EditorRequired] public ContractMac ContractMac { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter] public bool IsSaving { get; set; }
 
 
-    private List<IpNet>? IpNets = new();
+    private List<GuidItemModel>? ListMacs = new();
     private string BaseView = "/contractcontrol";
-    private string BaseComboIpNetwork = "/api/v1/cargueDetails/loadCombo";
+    private string BaseComboMacs = "/api/v1/cargueDetails/loadCombo";
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadIpNetwork();
+        await LoadMacs();
     }
 
-    private async Task LoadIpNetwork()
+    private async Task LoadMacs()
     {
-        if (IsEditControl)
+        var responseHttp2 = await _repository.GetAsync<List<GuidItemModel>>($"{BaseComboMacs}");
+        bool errorHandler2 = await _responseHandler.HandleErrorAsync(responseHttp2);
+        if (errorHandler2)
         {
-            var responseHttp2 = await _repository.GetAsync<List<IpNet>>($"{BaseComboIpNetwork}/{ContractIp.IpNet!.IpNetId}");
-            bool errorHandler2 = await _responseHandler.HandleErrorAsync(responseHttp2);
-            if (errorHandler2)
-            {
-                _navigationManager.NavigateTo($"{BaseView}");
-                return;
-            }
-            IpNets = responseHttp2.Response;
+            _navigationManager.NavigateTo($"{BaseView}");
+            return;
         }
-        else
-        {
+        ListMacs = responseHttp2.Response;
 
-            var responseHttp = await _repository.GetAsync<List<IpNet>>($"{BaseComboIpNetwork}");
-            bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-            if (errorHandler)
-            {
-                _navigationManager.NavigateTo($"{BaseView}");
-                return;
-            }
-            IpNets = responseHttp.Response;
-        }
     }
 
-    private void IpNetworkChanged(ChangeEventArgs e)
+    private void MacsChanged(ChangeEventArgs e)
     {
-        if (Guid.TryParse(e.Value?.ToString(), out var ipnetworkId))
+        if (Guid.TryParse(e.Value?.ToString(), out var macid))
         {
-            ContractIp.IpNetId = ipnetworkId;
+            ContractMac.CargueDetailId = macid;
         }
     }
 }

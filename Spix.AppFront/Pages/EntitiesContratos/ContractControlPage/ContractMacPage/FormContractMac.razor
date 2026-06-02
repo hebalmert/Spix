@@ -1,6 +1,6 @@
-﻿<EditForm Model="ContractIp" OnValidSubmit="OnSubmit">
+﻿<EditForm Model="ContractMac" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    @if (IpNets is null)
+    @if (ListMacs is null)
     {
         <Loading />
     }
@@ -8,10 +8,10 @@
     {
         <div class="input-group">
             <span class="input-group-text" style="width:150px">IP Clients</span>
-            <select class="form-select" value="@ContractIp?.IpNetId" @onchange="IpNetworkChanged">
-                @foreach (var item in IpNets!)
+            <select class="form-select" value="@ContractMac?.CargueDetailId" @onchange="MacsChanged">
+                @foreach (var item in ListMacs!)
                 {
-                    <option value="@item.IpNetId">@item.Ip</option>
+                    <option value="@item.Value">@item.Name</option>
                 }
             </select>
         </div>

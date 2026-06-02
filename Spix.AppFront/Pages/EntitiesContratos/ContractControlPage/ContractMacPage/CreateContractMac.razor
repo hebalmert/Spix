@@ -12,7 +12,7 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (isLoading || ContractIp is null)
+            @if (isLoading || ContractMac is null)
             {
                 <div class="loading-overlay">
                     <Loading />
@@ -20,7 +20,7 @@
             }
             else
             {
-                <FormContractMac ContractIp="ContractIp"
+                <FormContractMac ContractMac="ContractMac"
                                 IsEditControl="false"
                                 IsSaving="IsSaving"
                                 OnSubmit="Create"

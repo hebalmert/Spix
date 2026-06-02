@@ -19,7 +19,7 @@ public partial class CreateContractMac
 
     private ContractMac ContractMac = new();
 
-    private string BaseUrl = "/api/v1/contractips";
+    private string BaseUrl = "/api/v1/contractmacs";
     private bool isLoading = false;
     private bool IsSaving = false;
     [Parameter] public Guid Id { get; set; }  //ContractiClientId

@@ -5,6 +5,7 @@ using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.AppFront.Pages.EntitiesContratos.ContractClientPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractIpPage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMacPage;
 using Spix.Domain.EntitiesContratos;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -26,9 +27,11 @@ public partial class DetailContractControl
 
     private ContractClient? ContractClient { get; set; }
     private ContractIp? ContractIp { get; set; } = new();
+    private ContractMac? ContractMac { get; set; } = new();
 
     private string BaseUrl = "/api/v1/contractcontrols";
     private string BaseContractIpUrl = "/api/v1/contractips";
+    private string BaseContractMacUrl = "/api/v1/contractmacs";
     private bool isLoading = false;
     private bool IsSaving = false;
 
@@ -61,6 +64,49 @@ public partial class DetailContractControl
             if (result.Succeeded)
                 await LoadContractip(Id);   //solo refresca si hubo cambios
         });
+    }
+
+    private async Task ShowContractMacsAsyn(Guid? id)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractMac);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Create_Mac)]}"  }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractip(Id);   //solo refresca si hubo cambios
+        });
+    }
+
+    private async Task DeleteContractMacAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{BaseContractMacUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await LoadContractip(Id);
     }
 
     private async Task DeleteContractIpAsync(Guid id)
