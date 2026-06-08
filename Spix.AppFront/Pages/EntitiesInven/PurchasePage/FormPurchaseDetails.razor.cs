@@ -1,7 +1,5 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.AppInfra.UtilityTools;
