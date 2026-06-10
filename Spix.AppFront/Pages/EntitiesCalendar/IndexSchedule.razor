@@ -1,0 +1,57 @@
+﻿@page "/schedule"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+@using Spix.AppFront.GenericModel
+
+<PageTitle>@Localizer["Schedule"]</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>@Localizer["Schedule"]</h3>
+
+    <button class="btn btn-primary" @onclick="() => ShowModalAsync(null, false)">
+        <i class="fa fa-plus me-2"></i> @Localizer["Create_Schedule"]
+    </button>
+</div>
+
+<div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+    <SpixCalendar @ref="_calendar" />
+</div>
+
+@code {
+    [Inject] private ModalService _modalService { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
+
+    private SpixCalendar? _calendar;
+
+    private async Task ShowModalAsync(Guid? id, bool isEdit)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+        if (isEdit)
+        {
+            component = typeof(EditSchedule);
+            parameters = new Dictionary<string, object>
+                {
+                    { "Id", id! },
+                    { "Title", $"{Localizer[nameof(Resource.Edit_Schedule)]}"  }
+                };
+        }
+        else
+        {
+            component = typeof(CreateSchedule);
+            parameters = new Dictionary<string, object>
+                {
+                    { "Title", $"{Localizer[nameof(Resource.Create_Schedule)]}"  }
+                };
+        }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                if (_calendar is not null)
+                    await _calendar.ReloadAsync();
+            }
+        });
+    }
+}

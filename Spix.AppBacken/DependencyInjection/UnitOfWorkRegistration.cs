@@ -3,10 +3,12 @@ using Spix.AppService.ImplementEntitiesData;
 using Spix.AppService.ImplementEntitiesGen;
 using Spix.AppService.ImplementEntitiesNet;
 using Spix.AppService.ImplementMk;
+using Spix.AppService.ImplementSchedule;
 using Spix.AppService.InterfaceContratos;
 using Spix.AppService.InterfaceContratos.InterfaceContractControl;
 using Spix.AppService.InterfaceEntities;
 using Spix.AppService.InterfaceEntitiesNet;
+using Spix.AppService.InterfaceSchedule;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.AppService.InterfacesEntitiesGen;
 using Spix.AppService.InterfacesInven;
@@ -19,10 +21,12 @@ using Spix.AppServiceX.ImplementEntitiesGen;
 using Spix.AppServiceX.ImplementEntitiesNet;
 using Spix.AppServiceX.ImplementInven;
 using Spix.AppServiceX.ImplementMk;
+using Spix.AppServiceX.ImplementSchedule;
 using Spix.AppServiceX.InterfaceContratos;
 using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfaceEntitiesNet;
+using Spix.AppServiceX.InterfaceSchedule;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
@@ -160,6 +164,11 @@ namespace Spix.AppBack.DependencyInjection
             //ContratosContractControl
             services.AddScoped<IContractIpServiceX, ContractIpServiceX>();
             services.AddScoped<IContractIpService, ContractIpService>();
+
+            //Schedule
+            services.AddScoped<IScheduleServiceX, ScheduleServiceX>();
+            services.AddScoped<IScheduleService, ScheduleService>();
+
         }
     }
 }

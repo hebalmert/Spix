@@ -14,7 +14,7 @@ namespace Spix.AppBack.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/usuarios")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {
@@ -32,7 +32,6 @@ namespace Spix.AppBack.Controllers
 
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
         {
             try
@@ -52,7 +51,6 @@ namespace Spix.AppBack.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> GetAsync(Guid id)
         {
             try
@@ -71,7 +69,6 @@ namespace Spix.AppBack.Controllers
         }
 
         [HttpPut]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> PutAsync(Usuario modelo)
         {
             try
@@ -90,7 +87,6 @@ namespace Spix.AppBack.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> PostAsync(Usuario modelo)
         {
             try
@@ -110,7 +106,6 @@ namespace Spix.AppBack.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             try

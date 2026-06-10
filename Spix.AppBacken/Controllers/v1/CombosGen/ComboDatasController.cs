@@ -10,6 +10,7 @@ using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.AppServiceX.InterfacesOper;
+using Spix.AppServiceX.InterfacesSecure;
 using Spix.Domain.EntitiesData;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ItemsGeneric;
@@ -42,6 +43,7 @@ public class ComboDatasController : ControllerBase
     private readonly IStringLocalizer _localizer;
     private readonly IContractorServiceX _contractorServiceX;
     private readonly ITechnitianServiceX _technitianService;
+    private readonly IUsuarioServiceX _usuarioServiceX;
 
     public ComboDatasController(ISecurityServiceX securityUnitOfWork, IOperationServiceX operationUnitOfWork,
         IHotSpotTypeServiceX hotSpotTypeUnitOfWork, IFrecuencyTypeServiceX frecuencyTypeUnitOfWork,
@@ -50,7 +52,7 @@ public class ComboDatasController : ControllerBase
         IProductCategoryServiceX productCategory, IProductServiceX productService, IPlanServiceX planServiceX,
         ISupplierServiceX supplierServiceX, IProductStorageServiceX productStorageService, IClientServiceX clientServiceX,
         IChainTypesServiceX chainTypesUnitOfWork, IStringLocalizer localizer, IContractorServiceX contractorServiceX,
-        ITechnitianServiceX technitianService)
+        ITechnitianServiceX technitianService, IUsuarioServiceX usuarioServiceX)
     {
         _securityUnitOfWork = securityUnitOfWork;
         _operationUnitOfWork = operationUnitOfWork;
@@ -72,6 +74,24 @@ public class ComboDatasController : ControllerBase
         _localizer = localizer;
         _contractorServiceX = contractorServiceX;
         _technitianService = technitianService;
+        _usuarioServiceX = usuarioServiceX;
+    }
+
+    [HttpGet("ComboUsuarios")]
+    public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboUsuariosAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _usuarioServiceX.ComboAsync(userClaimsInfo.UserName);
+        if (!response.WasSuccess)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Result);
     }
 
     [HttpGet("ComboClients")]

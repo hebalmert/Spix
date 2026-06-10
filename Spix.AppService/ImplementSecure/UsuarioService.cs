@@ -11,6 +11,7 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesSecure;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.DomainLogic.SettingModels;
@@ -45,6 +46,42 @@ public class UsuarioService : IUsuarioService
         _emailHelper = emailHelper;
         _imgOption = ImgOption.Value;
         _localizer = localizer;
+    }
+
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<GuidItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+            var ListModel = await _context.Usuarios
+                .Where(x => x.Active && x.CorporationId == user.CorporationId)
+                .Select(x => new GuidItemModel { Value = x.UsuarioId, Name = x.FirstName + " " + x.LastName })
+                .ToListAsync();
+            ListModel.Insert(0, new GuidItemModel
+            {
+                Value = Guid.Empty,
+                Name = _localizer[nameof(Resource.Select_Usuario)]
+            });
+
+
+            return new ActionResponse<IEnumerable<GuidItemModel>>
+            {
+                WasSuccess = true,
+                Result = ListModel
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex); // ✅ Manejo de errores automático
+        }
     }
 
     public async Task<ActionResponse<IEnumerable<Usuario>>> GetAsync(PaginationDTO pagination, string username)

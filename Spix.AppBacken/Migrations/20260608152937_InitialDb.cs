@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Spix.AppBacken.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDB : Migration
+    public partial class InitialDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -705,6 +705,28 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    Expiration = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserRoleDetails",
                 columns: table => new
                 {
@@ -1023,6 +1045,45 @@ namespace Spix.AppBacken.Migrations
                         principalTable: "Taxes",
                         principalColumn: "TaxId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ScheduleItems",
+                columns: table => new
+                {
+                    ScheduleItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    StartUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsAllDay = table.Column<bool>(type: "bit", nullable: false),
+                    TimeZoneId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UsuarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    IsRecurring = table.Column<bool>(type: "bit", nullable: false),
+                    RecurrenceRule = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    RecurrenceEndUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ParentSeriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsException = table.Column<bool>(type: "bit", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScheduleItems", x => x.ScheduleItemId);
+                    table.ForeignKey(
+                        name: "FK_ScheduleItems_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ScheduleItems_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "UsuarioId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1677,6 +1738,82 @@ namespace Spix.AppBacken.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ContractBinds",
+                columns: table => new
+                {
+                    ContractBindId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ServerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IpNetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CargueDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HotSpotTypeId = table.Column<int>(type: "int", nullable: false),
+                    MikrotikId = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    ServerName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IpServer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IpCliente = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MacCliente = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContractBinds", x => x.ContractBindId);
+                    table.ForeignKey(
+                        name: "FK_ContractBinds_CargueDetails_CargueDetailId",
+                        column: x => x.CargueDetailId,
+                        principalTable: "CargueDetails",
+                        principalColumn: "CargueDetailId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContractBinds_ContractClients_ContractClientId",
+                        column: x => x.ContractClientId,
+                        principalTable: "ContractClients",
+                        principalColumn: "ContractClientId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContractBinds_HotSpotTypes_HotSpotTypeId",
+                        column: x => x.HotSpotTypeId,
+                        principalTable: "HotSpotTypes",
+                        principalColumn: "HotSpotTypeId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContractBinds_IpNets_IpNetId",
+                        column: x => x.IpNetId,
+                        principalTable: "IpNets",
+                        principalColumn: "IpNetId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContractBinds_Servers_ServerId",
+                        column: x => x.ServerId,
+                        principalTable: "Servers",
+                        principalColumn: "ServerId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContractMacs",
+                columns: table => new
+                {
+                    ContractMacId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CargueDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContractMacs", x => x.ContractMacId);
+                    table.ForeignKey(
+                        name: "FK_ContractMacs_CargueDetails_CargueDetailId",
+                        column: x => x.CargueDetailId,
+                        principalTable: "CargueDetails",
+                        principalColumn: "CargueDetailId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContractMacs_ContractClients_ContractClientId",
+                        column: x => x.ContractClientId,
+                        principalTable: "ContractClients",
+                        principalColumn: "ContractClientId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -1804,6 +1941,32 @@ namespace Spix.AppBacken.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContractBinds_CargueDetailId",
+                table: "ContractBinds",
+                column: "CargueDetailId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractBinds_ContractClientId_IpNetId",
+                table: "ContractBinds",
+                columns: new[] { "ContractClientId", "IpNetId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractBinds_HotSpotTypeId",
+                table: "ContractBinds",
+                column: "HotSpotTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractBinds_IpNetId",
+                table: "ContractBinds",
+                column: "IpNetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractBinds_ServerId",
+                table: "ContractBinds",
+                column: "ServerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ContractClients_ClientId",
                 table: "ContractClients",
                 column: "ClientId");
@@ -1855,6 +2018,17 @@ namespace Spix.AppBacken.Migrations
                 name: "IX_ContractIps_IpNetId",
                 table: "ContractIps",
                 column: "IpNetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractMacs_CargueDetailId",
+                table: "ContractMacs",
+                column: "CargueDetailId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractMacs_ContractClientId_CargueDetailId",
+                table: "ContractMacs",
+                columns: new[] { "ContractClientId", "CargueDetailId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ContractNodes_ContractClientId_NodeId",
@@ -2243,6 +2417,11 @@ namespace Spix.AppBacken.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Registers_CorporationId_Adelantado",
                 table: "Registers",
                 columns: new[] { "CorporationId", "Adelantado" },
@@ -2295,6 +2474,16 @@ namespace Spix.AppBacken.Migrations
                 table: "Registers",
                 columns: new[] { "CorporationId", "Solicitudes" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduleItems_CreatedByUserId",
+                table: "ScheduleItems",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduleItems_UsuarioId",
+                table: "ScheduleItems",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Securities_SecurityName",
@@ -2558,16 +2747,19 @@ namespace Spix.AppBacken.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CargueDetails");
+                name: "ChainTypes");
 
             migrationBuilder.DropTable(
-                name: "ChainTypes");
+                name: "ContractBinds");
 
             migrationBuilder.DropTable(
                 name: "ContractIDPics");
 
             migrationBuilder.DropTable(
                 name: "ContractIps");
+
+            migrationBuilder.DropTable(
+                name: "ContractMacs");
 
             migrationBuilder.DropTable(
                 name: "ContractNodes");
@@ -2582,16 +2774,19 @@ namespace Spix.AppBacken.Migrations
                 name: "ContractServers");
 
             migrationBuilder.DropTable(
-                name: "HotSpotTypes");
-
-            migrationBuilder.DropTable(
                 name: "Managers");
 
             migrationBuilder.DropTable(
                 name: "ProductStocks");
 
             migrationBuilder.DropTable(
+                name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
                 name: "Registers");
+
+            migrationBuilder.DropTable(
+                name: "ScheduleItems");
 
             migrationBuilder.DropTable(
                 name: "Technicians");
@@ -2609,7 +2804,10 @@ namespace Spix.AppBacken.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Cargues");
+                name: "HotSpotTypes");
+
+            migrationBuilder.DropTable(
+                name: "CargueDetails");
 
             migrationBuilder.DropTable(
                 name: "Nodes");
@@ -2633,7 +2831,7 @@ namespace Spix.AppBacken.Migrations
                 name: "Usuarios");
 
             migrationBuilder.DropTable(
-                name: "PurchaseDetails");
+                name: "Cargues");
 
             migrationBuilder.DropTable(
                 name: "Channels");
@@ -2672,10 +2870,7 @@ namespace Spix.AppBacken.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Products");
-
-            migrationBuilder.DropTable(
-                name: "Purchases");
+                name: "PurchaseDetails");
 
             migrationBuilder.DropTable(
                 name: "FrecuencyTypes");
@@ -2685,6 +2880,12 @@ namespace Spix.AppBacken.Migrations
 
             migrationBuilder.DropTable(
                 name: "Marks");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Purchases");
 
             migrationBuilder.DropTable(
                 name: "ProductCategories");

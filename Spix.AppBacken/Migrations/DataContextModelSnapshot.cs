@@ -155,6 +155,36 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitesSoftSec.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Expiration")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", (string)null);
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitesSoftSec.Usuario", b =>
                 {
                     b.Property<Guid>("UsuarioId")
@@ -830,6 +860,29 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique();
 
                     b.ToTable("ContractIps");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractMac", b =>
+                {
+                    b.Property<Guid>("ContractMacId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("CargueDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ContractMacId");
+
+                    b.HasIndex("CargueDetailId");
+
+                    b.HasIndex("ContractClientId", "CargueDetailId")
+                        .IsUnique();
+
+                    b.ToTable("ContractMacs");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractNode", b =>
@@ -2475,6 +2528,80 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("Technicians");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ScheduleItem", b =>
+                {
+                    b.Property<Guid>("ScheduleItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("EndUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAllDay")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsException")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ParentSeriesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("RecurrenceEndUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecurrenceRule")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("StartUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TimeZoneId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsuarioOwner")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ScheduleItemId");
+
+                    b.HasIndex("CorporationId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("ScheduleItems");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -2524,6 +2651,17 @@ namespace Spix.AppBacken.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitesSoftSec.RefreshToken", b =>
+                {
+                    b.HasOne("Spix.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitesSoftSec.Usuario", b =>
@@ -2749,6 +2887,25 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ContractClient");
 
                     b.Navigation("IpNet");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractMac", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesInven.CargueDetail", "CargueDetail")
+                        .WithMany("ContractMacs")
+                        .HasForeignKey("CargueDetailId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany("ContractMacs")
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CargueDetail");
+
+                    b.Navigation("ContractClient");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractNode", b =>
@@ -3505,6 +3662,25 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("DocumentType");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ScheduleItem", b =>
+                {
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitesSoftSec.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Corporation");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitesSoftSec.Usuario", b =>
                 {
                     b.Navigation("UsuarioRoles");
@@ -3557,6 +3733,8 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ContractIDPic");
 
                     b.Navigation("ContractIps");
+
+                    b.Navigation("ContractMacs");
 
                     b.Navigation("ContractNodes");
 
@@ -3679,6 +3857,8 @@ namespace Spix.AppBacken.Migrations
             modelBuilder.Entity("Spix.Domain.EntitiesInven.CargueDetail", b =>
                 {
                     b.Navigation("ContractBinds");
+
+                    b.Navigation("ContractMacs");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.ProductStorage", b =>

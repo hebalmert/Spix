@@ -1,0 +1,76 @@
+﻿@using Spix.AppFront.GenericModel
+@using Spix.AppFront.Helper
+@using Spix.Domain.EntitiesSchedule
+@using Spix.HttpService
+@inherits ComponentBase
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
+            }
+            else
+            {
+                <FormSchedule Model="Schedule"
+                              IsSaving="IsSaving"
+                              OnSubmit="Update"
+                              ReturnAction="Return" />
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? Title { get; set; }
+
+    [Inject] private IRepository _repository { get; set; } = null!;
+    [Inject] private ModalService _modalService { get; set; } = null!;
+    [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
+
+    private ScheduleItemDto Schedule = new();
+    private bool isLoading = true;
+    private bool IsSaving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _repository.GetAsync<ScheduleItemDto>($"/api/v1/schedulecontrol/{Id}");
+        if (!await _responseHandler.HandleErrorAsync(response))
+        {
+            Schedule = response.Response!;
+        }
+        isLoading = false;
+    }
+
+    private async Task Update()
+    {
+        IsSaving = true;
+        var response = await _repository.PutAsync($"/api/v1/schedulecontrol/{Id}", Schedule);
+        IsSaving = false;
+
+        if (await _responseHandler.HandleErrorAsync(response))
+        {
+            await _modalService.CloseAsync(ModalResult.Cancel());
+            return;
+        }
+
+        await _modalService.CloseAsync(ModalResult.Ok());
+    }
+
+    private async Task Return()
+    {
+        await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+}

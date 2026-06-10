@@ -8,6 +8,7 @@ using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
 using Spix.Domain.EntitiesNet;
 using Spix.Domain.EntitiesOper;
+using Spix.Domain.EntitiesSchedule;
 using System.Reflection;
 
 namespace Spix.AppInfra;
@@ -102,6 +103,10 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractClient> ContractClients => Set<ContractClient>();
     public DbSet<ContractIDPic> ContractIDPics => Set<ContractIDPic>();
     public DbSet<ContractMac> ContractMacs => Set<ContractMac>();
+
+    //EntitiesSchedule
+    public DbSet<ScheduleItem> ScheduleItems => Set<ScheduleItem>();
+
 
 
     //Esta parte nos permite tomar las configuraciones desde otra ubicacion, para mantener el codigo mas ordenado

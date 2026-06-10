@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitesSoftSec;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -6,6 +7,7 @@ namespace Spix.AppService.InterfacesSecure;
 
 public interface IUsuarioService
 {
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username);
 
     Task<ActionResponse<IEnumerable<Usuario>>> GetAsync(PaginationDTO pagination, string username);
 

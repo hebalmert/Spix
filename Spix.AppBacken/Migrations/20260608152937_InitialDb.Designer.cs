@@ -12,8 +12,8 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260603134841_AddRefreshTokens")]
-    partial class AddRefreshTokens
+    [Migration("20260608152937_InitialDb")]
+    partial class InitialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2531,6 +2531,76 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("Technicians");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ScheduleItem", b =>
+                {
+                    b.Property<Guid>("ScheduleItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("EndUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAllDay")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsException")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ParentSeriesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("RecurrenceEndUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecurrenceRule")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("StartUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TimeZoneId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ScheduleItemId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("ScheduleItems");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -3589,6 +3659,25 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Corporation");
 
                     b.Navigation("DocumentType");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ScheduleItem", b =>
+                {
+                    b.HasOne("Spix.Domain.Entities.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitesSoftSec.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitesSoftSec.Usuario", b =>

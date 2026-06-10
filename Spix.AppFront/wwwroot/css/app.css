@@ -2,6 +2,60 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.spix-calendar {
+    height: calc(100vh - 260px);
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+/* FullCalendar visual tuning */
+.fc {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+    .fc .fc-toolbar-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .fc .fc-button {
+        background: #4285F4;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px;
+        color: white;
+    }
+
+        .fc .fc-button:hover {
+            background: #3367D6;
+        }
+
+        .fc .fc-button.fc-button-active {
+            background: #0F9D58;
+        }
+
+    .fc .fc-daygrid-day {
+        border: 1px solid #e6e6e6;
+    }
+
+    .fc .fc-daygrid-day-number {
+        font-weight: 600;
+        color: #444;
+    }
+
+    .fc .fc-daygrid-event {
+        border-radius: 4px;
+        padding: 2px 4px;
+    }
+
+        .fc .fc-daygrid-event:hover {
+            filter: brightness(1.15);
+            cursor: pointer;
+        }
+
 .btn-bor {
     border-radius: 15px;
     text-align: center;

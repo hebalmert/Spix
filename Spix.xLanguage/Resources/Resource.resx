@@ -1333,4 +1333,13 @@
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="Create_Schedule" xml:space="preserve">
+    <value>Create Schedule</value>
+  </data>
+  <data name="Edit_Schedule" xml:space="preserve">
+    <value>Edit Schedule</value>
+  </data>
+  <data name="Select_Usuario" xml:space="preserve">
+    <value>[Select Usuario]</value>
+  </data>
 </root>

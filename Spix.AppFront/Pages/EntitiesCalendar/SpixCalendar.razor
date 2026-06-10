@@ -1,0 +1,139 @@
+﻿@using Spix.AppFront.GenericModel
+@using Spix.AppFront.Helper
+@using Spix.Domain.EntitiesSchedule
+@using Spix.HttpService
+
+<div id="spix-calendar" class="spix-calendar"></div>
+
+@code {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
+    [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
+    [Inject] private IRepository _repository { get; set; } = null!;
+    [Inject] private ModalService _modalService { get; set; } = null!;
+    [Inject] private IJSRuntime JS { get; set; } = null!;
+
+    private DotNetObjectReference<SpixCalendar>? _objRef;
+    private List<CalendarEventDto> _events = new();
+    private Dictionary<Guid, string> _userColors = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadEventsAsync();
+
+            _objRef = DotNetObjectReference.Create(this);
+
+            await JS.InvokeVoidAsync(
+                "SpixCalendar.init",
+                "spix-calendar",
+                _objRef,
+                _events
+            );
+        }
+    }
+
+    private string GetColorForUser(Guid userId)
+    {
+        if (_userColors.TryGetValue(userId, out var color))
+            return color;
+
+        var palette = new[]
+        {
+        "#4285F4", "#DB4437", "#F4B400", "#0F9D58",
+        "#AB47BC", "#00ACC1", "#FF7043", "#9E9D24"
+    };
+
+        var newColor = palette[_userColors.Count % palette.Length];
+        _userColors[userId] = newColor;
+
+        return newColor;
+    }
+
+    private async Task LoadEventsAsync()
+    {
+        var from = DateTime.UtcNow.AddMonths(-1);
+        var to = DateTime.UtcNow.AddMonths(2);
+
+        var url = $"/api/v1/schedulecontrol?fromUtc={from:o}&toUtc={to:o}";
+        var httpResponse = await _repository.GetAsync<IEnumerable<ScheduleItemDto>>(url);
+
+        if (await _responseHandler.HandleErrorAsync(httpResponse))
+        {
+            _events = new List<CalendarEventDto>();
+            return;
+        }
+
+        _events = httpResponse.Response!
+            .Select(x => new CalendarEventDto
+            {
+                id = x.Id.ToString(),
+                title = $"{x.Title} - {x.UsuarioNombreCompleto}",
+                start = x.StartUtc,
+                end = x.EndUtc,
+                allDay = x.IsAllDay
+            })
+            .ToList();
+    }
+
+    [JSInvokable]
+    public async Task OnDateClick(string date)
+    {
+        await ShowModalAsync(null, false, date);
+    }
+
+    [JSInvokable]
+    public async Task OnEventClick(string id)
+    {
+        await ShowModalAsync(Guid.Parse(id), true, null);
+    }
+
+    private async Task ShowModalAsync(Guid? id, bool isEdit, string? date)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        if (isEdit)
+        {
+            component = typeof(EditSchedule);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Schedule)]}" }
+            };
+        }
+        else
+        {
+            component = typeof(CreateSchedule);
+            parameters = new Dictionary<string, object>
+            {
+                { "Title", $"{Localizer[nameof(Resource.Create_Schedule)]}" },
+                { "SelectedDate", date! }
+            };
+        }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                await ReloadAsync();
+                StateHasChanged();
+            }
+        });
+    }
+
+    public async Task ReloadAsync()
+    {
+        await LoadEventsAsync();
+        await JS.InvokeVoidAsync("SpixCalendar.refreshEvents", "spix-calendar", _events);
+    }
+
+    public class CalendarEventDto
+    {
+        public string id { get; set; } = "";
+        public string title { get; set; } = "";
+        public DateTime start { get; set; }
+        public DateTime end { get; set; }
+        public bool allDay { get; set; }
+    }
+}
