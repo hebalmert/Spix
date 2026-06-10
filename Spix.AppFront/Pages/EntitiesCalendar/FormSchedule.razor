@@ -5,43 +5,77 @@
     <DataAnnotationsValidator />
 
     <div class="mb-3">
-        <label class="form-label">@Localizer["Title"]</label>
-        <InputText class="form-control" @bind-Value="Model.Title" />
+        <div class="input-group">
+            <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.Title)]</span>
+            <InputText class="form-control" @bind-Value="Model.Title" />
+        </div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">@Localizer["Description"]</label>
-        <InputTextArea class="form-control" @bind-Value="Model.Description" />
+        <div class="input-group">
+            <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.Description)]</span>
+            <InputTextArea class="form-control" @bind-Value="Model.Description" />
+        </div>
     </div>
 
     <div class="row">
         <div class="col">
-            <label>@Localizer["Start"]</label>
-            <input type="datetime-local" class="form-control"
-                   @bind="Model.StartUtc"
-                   @bind:format="yyyy-MM-ddTHH:mm" />
+            <div class="input-group">
+                <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.StartDate)]</span>
+                <input type="datetime-local" class="form-control"
+                       @bind="Model.StartUtc"
+                       @bind:format="yyyy-MM-ddTHH:mm" />
+            </div>
         </div>
         <div class="col">
-            <label>@Localizer["End"]</label>
-            <input type="datetime-local" class="form-control"
-                   @bind="Model.EndUtc"
-                   @bind:format="yyyy-MM-ddTHH:mm" />
+            <div class="input-group">
+                <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.EndDate)]</span>
+                <input type="datetime-local" class="form-control"
+                       @bind="Model.EndUtc"
+                       @bind:format="yyyy-MM-ddTHH:mm" />
+            </div>
         </div>
     </div>
 
     <div class="mb-3 mt-3">
-        <label>@Localizer["AssignTo"]</label>
-        <InputSelect class="form-control" @bind-Value="Model.UsuarioId">
-            @foreach (var u in Usuarios)
-            {
-                <option value="@u.Value">@u.Name</option>
-            }
-        </InputSelect>
+        <div class="input-group">
+            <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.AssignTo)]</span>
+            <InputSelect class="form-control" @bind-Value="Model.UsuarioId">
+                @foreach (var u in Usuarios)
+                {
+                    <option value="@u.Value">@u.Name</option>
+                }
+            </InputSelect>
+        </div>
     </div>
+
+    <hr />
+    <div class="mb-3 mt-3">
+        <div class="input-group">
+            @if (ScheduleStatuses is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.Status)]</span>
+                    <select class="form-select" value="@(IsEditControl ? ((int)Model.ScheduleStatus!).ToString() : "1")" @onchange="StatusChanged">
+                        @foreach (var item in ScheduleStatuses!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+    <hr />
 
     <div class="d-flex justify-content-end mt-4">
         <button class="btn btn-secondary me-2" @onclick="ReturnAction">@Localizer["Cancel"]</button>
-        <button class="btn btn-primary" disabled="@IsSaving">@Localizer["Save"]</button>
+        <button class="btn btn-primary me-2" disabled="@IsSaving">@Localizer["Save"]</button>
+        <button class="btn btn-danger" @onclick="DeleteAction" hidden="@(IsEditControl == false)">@Localizer["Delete"]</button>
     </div>
 </EditForm>
 
@@ -50,18 +84,50 @@
     [Parameter] public bool IsSaving { get; set; }
     [Parameter] public EventCallback OnSubmit { get; set; }
     [Parameter] public EventCallback ReturnAction { get; set; }
+    [Parameter] public EventCallback DeleteAction { get; set; }
+    [Parameter, EditorRequired] public bool IsEditControl { get; set; }
 
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
     private List<GuidItemModel> Usuarios = new();
+    private List<IntItemModel>? ScheduleStatuses;
+    private string BaseComboStatus = "/api/v1/schedulecontrol/loadStatus";
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadStatus();
         var response = await _repository.GetAsync<IEnumerable<GuidItemModel>>("/api/v1/combosData/ComboUsuarios");
         if (!await _responseHandler.HandleErrorAsync(response))
             Usuarios = response.Response!.ToList();
+    }
+
+    private async Task LoadStatus()
+    {
+        var responseHttp = await _repository.GetAsync<List<IntItemModel>>($"{BaseComboStatus}");
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+        {
+            return;
+        }
+        ScheduleStatuses = responseHttp.Response;
+    }
+
+    private async Task StatusChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+        {
+            if (int.TryParse(e?.Value?.ToString(), out int modelo))
+            {
+                if (value == 1) { Model.ScheduleStatus = ScheduleStatus.Pending; }
+                if (value == 2) { Model.ScheduleStatus = ScheduleStatus.InProgress; }
+                if (value == 3) { Model.ScheduleStatus = ScheduleStatus.OnHold; }
+                if (value == 4) { Model.ScheduleStatus = ScheduleStatus.Rescheduled; }
+                if (value == 5) { Model.ScheduleStatus = ScheduleStatus.Completed; }
+                if (value == 6) { Model.ScheduleStatus = ScheduleStatus.Cancelled; }
+            }
+        }
     }
 }
 

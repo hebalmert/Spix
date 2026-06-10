@@ -8,6 +8,7 @@ using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfaceSchedule;
 using Spix.Domain.EntitiesSchedule;
 using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.ItemsGeneric;
 
 namespace Spix.AppBacken.Controllers.v1.EntitiesGen;
 
@@ -24,6 +25,18 @@ public class ScheduleController : ControllerBase
     {
         _unitOfWork = scheduleServiceX;
         _localizer = localizer;
+    }
+
+    [HttpGet("loadStatus")]
+    public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStatus()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.ComboStatusAsync(userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
     }
 
     [HttpGet]

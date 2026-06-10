@@ -15,5 +15,7 @@ public class ScheduleItemDto
 
     public bool IsRecurring { get; set; }
     public string? RecurrenceRule { get; set; }
+
+    public ScheduleStatus? ScheduleStatus { get; set; }
 }
 

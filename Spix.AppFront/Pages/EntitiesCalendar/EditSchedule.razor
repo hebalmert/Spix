@@ -24,9 +24,11 @@
             else
             {
                 <FormSchedule Model="Schedule"
+                              IsEditControl="true"
                               IsSaving="IsSaving"
                               OnSubmit="Update"
-                              ReturnAction="Return" />
+                              ReturnAction="Return"
+                              DeleteAction="DeleteAsync" />
             }
         </div>
     </div>
@@ -39,6 +41,8 @@
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
+    [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
 
     private ScheduleItemDto Schedule = new();
     private bool isLoading = true;
@@ -72,5 +76,29 @@
     private async Task Return()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+
+    private async Task DeleteAsync()
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"/api/v1/schedulecontrol/{Id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await _modalService.CloseAsync(ModalResult.Ok());
     }
 }

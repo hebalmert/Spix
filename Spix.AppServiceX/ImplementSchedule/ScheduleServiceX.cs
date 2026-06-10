@@ -1,6 +1,7 @@
 ﻿using Spix.AppService.InterfaceSchedule;
 using Spix.AppServiceX.InterfaceSchedule;
 using Spix.Domain.EntitiesSchedule;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 
 namespace Spix.AppServiceX.ImplementSchedule;
@@ -13,6 +14,8 @@ public class ScheduleServiceX : IScheduleServiceX
     {
         _scheduleService = scheduleService;
     }
+
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusAsync(string username) => await _scheduleService.ComboStatusAsync(username);
 
     public Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id) => _scheduleService.GetByIdAsync(id);
 

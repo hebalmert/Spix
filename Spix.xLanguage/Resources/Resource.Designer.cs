@@ -106,6 +106,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Assign To.
+        /// </summary>
+        public static string AssignTo {
+            get {
+                return ResourceManager.GetString("AssignTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Camara.
         /// </summary>
         public static string Button_Camara {
@@ -3504,6 +3513,15 @@ namespace Spix.xLanguage.Resources {
         public static string Taxes {
             get {
                 return ResourceManager.GetString("Taxes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        public static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
             }
         }
         

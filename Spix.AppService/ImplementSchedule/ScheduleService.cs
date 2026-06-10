@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceSchedule;
-using Spix.Domain.Entities;
-using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesSchedule;
+using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppService.ImplementSchedule;
 
@@ -17,14 +19,54 @@ public class ScheduleService : IScheduleService
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly ITransactionManager _transactionManager;
     private readonly IUserHelper _userHelper;
+    private readonly IStringLocalizer _localizer;
 
     public ScheduleService(DataContext context, HttpErrorHandler httpErrorHandle, ITransactionManager transactionManager,
-        IUserHelper userHelper)
+        IUserHelper userHelper, IStringLocalizer localizer)
     {
         _context = context;
         _httpErrorHandler = httpErrorHandle;
         _transactionManager = transactionManager;
         _userHelper = userHelper;
+        _localizer = localizer;
+    }
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<IntItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            List<IntItemModel> list = Enum.GetValues(typeof(ScheduleStatus)).Cast<ScheduleStatus>().Select(c => new IntItemModel()
+            {
+                Name = c.ToString(),
+                Value = (int)c
+            }).ToList();
+
+            list.Insert(0, new IntItemModel
+            {
+                Value = 0,
+                Name = _localizer[nameof(Resource.Select_Status)]
+            });
+
+
+            return new ActionResponse<IEnumerable<IntItemModel>>
+            {
+                WasSuccess = true,
+                Result = list
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
+        }
     }
 
 
@@ -54,7 +96,8 @@ public class ScheduleService : IScheduleService
                 UsuarioId = x.UsuarioId,
                 UsuarioNombreCompleto = $"{x.Usuario!.FirstName} {x.Usuario.LastName}",
                 IsRecurring = x.IsRecurring,
-                RecurrenceRule = x.RecurrenceRule
+                RecurrenceRule = x.RecurrenceRule,
+                ScheduleStatus = x.ScheduleStatus
             }).ToList();
 
             return new ActionResponse<IEnumerable<ScheduleItemDto>>
@@ -97,7 +140,8 @@ public class ScheduleService : IScheduleService
                 UsuarioId = entity.UsuarioId,
                 UsuarioNombreCompleto = $"{entity.Usuario!.FirstName} {entity.Usuario.LastName}",
                 IsRecurring = entity.IsRecurring,
-                RecurrenceRule = entity.RecurrenceRule
+                RecurrenceRule = entity.RecurrenceRule,
+                ScheduleStatus = entity.ScheduleStatus
             };
 
             return new ActionResponse<ScheduleItemDto>
@@ -140,7 +184,8 @@ public class ScheduleService : IScheduleService
                 CreatedAtUtc = DateTime.UtcNow,
                 CorporationId = Convert.ToInt32(user.CorporationId),
                 UserId = Guid.Parse(user.Id),
-                UsuarioOwner = $"{user.FirstName!} {user.LastName!}"
+                UsuarioOwner = $"{user.FirstName!} {user.LastName!}",
+                ScheduleStatus = dto.ScheduleStatus
             };
 
             _context.ScheduleItems.Add(entity);
@@ -188,6 +233,7 @@ public class ScheduleService : IScheduleService
             entity.IsRecurring = dto.IsRecurring;
             entity.RecurrenceRule = dto.RecurrenceRule;
             entity.UpdatedAtUtc = DateTime.UtcNow;
+            entity.ScheduleStatus = dto.ScheduleStatus;
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

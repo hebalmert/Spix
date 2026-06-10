@@ -60,6 +60,9 @@ public class ScheduleItem
     public DateTime CreatedAtUtc { get; set; }
     public DateTime? UpdatedAtUtc { get; set; }
 
+    //Status
+    public ScheduleStatus? ScheduleStatus { get; set; }
+
     //Relaciones
     public int CorporationId { get; set; }
 
