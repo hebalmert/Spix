@@ -23,16 +23,16 @@
             <div class="input-group">
                 <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.StartDate)]</span>
                 <input type="datetime-local" class="form-control"
-                       @bind="Model.StartUtc"
-                       @bind:format="yyyy-MM-ddTHH:mm" />
+                       value="@Model.StartUtc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
+                       @oninput="OnDateTimeStartUtc" />
             </div>
         </div>
         <div class="col">
             <div class="input-group">
                 <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.EndDate)]</span>
                 <input type="datetime-local" class="form-control"
-                       @bind="Model.EndUtc"
-                       @bind:format="yyyy-MM-ddTHH:mm" />
+                       value="@Model.EndUtc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
+                       @oninput="OnDateTimeEndUtc" />
             </div>
         </div>
     </div>
@@ -101,6 +101,18 @@
         var response = await _repository.GetAsync<IEnumerable<GuidItemModel>>("/api/v1/combosData/ComboUsuarios");
         if (!await _responseHandler.HandleErrorAsync(response))
             Usuarios = response.Response!.ToList();
+    }
+
+    private void OnDateTimeStartUtc(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var dt))
+            Model.StartUtc = DateTime.SpecifyKind(dt, DateTimeKind.Local).ToUniversalTime();
+    }
+
+    private void OnDateTimeEndUtc(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var dt))
+            Model.EndUtc = DateTime.SpecifyKind(dt, DateTimeKind.Local).ToUniversalTime();
     }
 
     private async Task LoadStatus()

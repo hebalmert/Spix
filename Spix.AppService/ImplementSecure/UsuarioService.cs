@@ -64,6 +64,7 @@ public class UsuarioService : IUsuarioService
             var ListModel = await _context.Usuarios
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
                 .Select(x => new GuidItemModel { Value = x.UsuarioId, Name = x.FirstName + " " + x.LastName })
+                .OrderBy(x => x.Name)
                 .ToListAsync();
             ListModel.Insert(0, new GuidItemModel
             {

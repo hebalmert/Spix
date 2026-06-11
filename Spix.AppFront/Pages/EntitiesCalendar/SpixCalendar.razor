@@ -15,6 +15,7 @@
     private DotNetObjectReference<SpixCalendar>? _objRef;
     private List<CalendarEventDto> _events = new();
     private Dictionary<Guid, string> _userColors = new();
+    private string UserTimeZone = "UTC";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -23,7 +24,7 @@
             await LoadEventsAsync();
 
             _objRef = DotNetObjectReference.Create(this);
-
+            UserTimeZone = await JS.InvokeAsync<string>("getTimeZone");
             await JS.InvokeVoidAsync(
                 "SpixCalendar.init",
                 "spix-calendar",
@@ -69,8 +70,8 @@
             {
                 id = x.Id.ToString(),
                 title = $"{x.Title} - {x.UsuarioNombreCompleto}",
-                start = x.StartUtc,
-                end = x.EndUtc,
+                start = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc).ToLocalTime(),
+                end = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc).ToLocalTime(),
                 allDay = x.IsAllDay
             })
             .ToList();

@@ -20,7 +20,7 @@ public partial class CreateSchedule
     [Parameter] public string? SelectedDate { get; set; }
 
 
-    private ScheduleItemDto Schedule = new();
+    private ScheduleItemDto Schedule = new() { ScheduleStatus = ScheduleStatus.Pending };
     private bool isLoading = false;
     private bool IsSaving = false;
 
@@ -29,8 +29,8 @@ public partial class CreateSchedule
         if (SelectedDate != null)
         {
             var date = DateTime.Parse(SelectedDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-            Schedule.StartUtc = date;
-            Schedule.EndUtc = date.AddHours(1);
+            Schedule.StartUtc = DateTime.SpecifyKind(date, DateTimeKind.Local).ToUniversalTime();
+            Schedule.EndUtc = DateTime.SpecifyKind(date.AddHours(1), DateTimeKind.Local).ToUniversalTime();
         }
     }
 
