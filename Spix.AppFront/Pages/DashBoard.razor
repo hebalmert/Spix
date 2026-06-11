@@ -1,8 +1,137 @@
 ﻿@page "/dashboard"
+@attribute [Authorize(Roles = "Admin, Administrator, Coordinator, Investigator, QcUser, QcRemote, FrontUser")]
 @layout MainLayout
-
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="full-bg">
+    <div class="dashboard-content">
 
-Welcome to your new app.
+        <div class="row g-4">
+
+            <!-- CARD 1 -->
+            <div class="col-md-4">
+                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, FrontUser">
+                    <div class="spix-card shadow">
+                        <a href="/dashboard" class="spix-link">
+                            <div class="spix-card-body bg-success">
+                                <div class="spix-text">
+                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Server)]</h1>
+                                    <p class="mb-0">@Localizer[nameof(Resource.Server)]</p>
+                                    <div class="spix-goto">
+                                        @Localizer[nameof(Resource.GoTo)]
+                                        <i class="fa fa-square-caret-right"></i>
+                                    </div>
+                                </div>
+                                <div class="spix-icon">
+                                    <i class="fa fa-calendar-check"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+
+            <!-- CARD 2 -->
+            <div class="col-md-4">
+                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, FrontUser">
+                    <div class="spix-card shadow">
+                        <a href="/dashboard" class="spix-link">
+                            <div class="spix-card-body bg-primary">
+                                <div class="spix-text">
+                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Node)]</h1>
+                                    <p class="mb-0">@Localizer[nameof(Resource.Node)]</p>
+                                    <div class="spix-goto">
+                                        @Localizer[nameof(Resource.GoTo)]
+                                        <i class="fa fa-square-caret-right"></i>
+                                    </div>
+                                </div>
+                                <div class="spix-icon">
+                                    <i class="fa fa-user"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+
+            <!-- CARD 3 -->
+            <div class="col-md-4">
+                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, QcRemote">
+                    <div class="spix-card shadow">
+                        <a href="/dashboard" class="spix-link">
+                            <div class="spix-card-body bg-secondary">
+                                <div class="spix-text">
+                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Purchase)]</h1>
+                                    <p class="mb-0">@Localizer[nameof(Resource.Purchase)]</p>
+                                    <div class="spix-goto">
+                                        @Localizer[nameof(Resource.GoTo)]
+                                        <i class="fa fa-user-shield"></i>
+                                    </div>
+                                </div>
+                                <div class="spix-icon">
+                                    <i class="fa fa-clipboard-check"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+
+        </div>
+
+        <div class="row mt-4 g-4">
+
+            <!-- CARD 4 -->
+            <div class="col-md-4">
+                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, FrontUser">
+                    <div class="spix-card shadow">
+                        <a href="/schedule" class="spix-link">
+                            <div class="spix-card-body bg-info">
+                                <div class="spix-text">
+                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Node)]</h1>
+                                    <p class="mb-0">@Localizer[nameof(Resource.Node)]</p>
+                                    <div class="spix-goto">
+                                        @Localizer[nameof(Resource.GoTo)]
+                                        <i class="fa fa-square-caret-right"></i>
+                                    </div>
+                                </div>
+                                <div class="spix-icon">
+                                    <i class="fa fa-calendar-days"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+
+            <div class="col-md-4"></div>
+
+            <!-- CARD 5 -->
+            <div class="col-md-4">
+                <AuthorizeView Roles="Administrator">
+                    <div class="spix-card shadow">
+                        <a href="/dashboard" class="spix-link">
+                            <div class="spix-card-body bg-warning">
+                                <div class="spix-text">
+                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Node)]</h1>
+                                    <p class="mb-0">@Localizer[nameof(Resource.Node)]</p>
+                                    <div class="spix-goto">
+                                        @Localizer[nameof(Resource.GoTo)]
+                                        <i class="fa fa-square-caret-right"></i>
+                                    </div>
+                                </div>
+                                <div class="spix-icon">
+                                    <i class="fa fa-file-excel"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+

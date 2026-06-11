@@ -2014,6 +2014,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Go To....
+        /// </summary>
+        public static string GoTo {
+            get {
+                return ResourceManager.GetString("GoTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hotspot.
         /// </summary>
         public static string Hotspot {
@@ -2712,6 +2721,15 @@ namespace Spix.xLanguage.Resources {
         public static string NewRole {
             get {
                 return ResourceManager.GetString("NewRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nodes.
+        /// </summary>
+        public static string Node {
+            get {
+                return ResourceManager.GetString("Node", resourceCulture);
             }
         }
         

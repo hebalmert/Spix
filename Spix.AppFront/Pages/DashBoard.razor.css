@@ -1,0 +1,57 @@
+﻿.spix-card {
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 200px;
+}
+
+.spix-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.spix-card-body {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 200px;
+    border-radius: 16px;
+}
+
+.spix-text h1,
+.spix-text p,
+.spix-goto {
+    color: white;
+}
+
+.spix-goto {
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.spix-icon i {
+    font-size: 5rem;
+    color: white;
+    opacity: 0.9;
+}
+
+/* Hace los fondos más sólidos sin perder el color original */
+.spix-card-body.bg-success {
+    background-color: #28a745 !important;
+}
+
+.spix-card-body.bg-primary {
+    background-color: #007bff !important;
+}
+
+.spix-card-body.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.spix-card-body.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.spix-card-body.bg-warning {
+    background-color: #ffc107 !important;
+}

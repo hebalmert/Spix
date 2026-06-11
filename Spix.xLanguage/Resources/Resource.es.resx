@@ -1348,4 +1348,10 @@
   <data name="AssignTo" xml:space="preserve">
     <value>Para</value>
   </data>
+  <data name="GoTo" xml:space="preserve">
+    <value>Ir a...</value>
+  </data>
+  <data name="Node" xml:space="preserve">
+    <value>Nodos</value>
+  </data>
 </root>
