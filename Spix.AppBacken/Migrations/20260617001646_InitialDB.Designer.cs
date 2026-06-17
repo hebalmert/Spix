@@ -12,8 +12,8 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260608152937_InitialDb")]
-    partial class InitialDb
+    [Migration("20260617001646_InitialDB")]
+    partial class InitialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2540,13 +2540,11 @@ namespace Spix.AppBacken.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedByUserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -2574,6 +2572,9 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int?>("ScheduleStatus")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartUtc")
                         .HasColumnType("datetime2");
 
@@ -2589,12 +2590,18 @@ namespace Spix.AppBacken.Migrations
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("UsuarioOwner")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ScheduleItemId");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CorporationId");
 
                     b.HasIndex("UsuarioId");
 
@@ -3663,9 +3670,9 @@ namespace Spix.AppBacken.Migrations
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ScheduleItem", b =>
                 {
-                    b.HasOne("Spix.Domain.Entities.User", "CreatedByUser")
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
                         .WithMany()
-                        .HasForeignKey("CreatedByUserId")
+                        .HasForeignKey("CorporationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3675,7 +3682,7 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedByUser");
+                    b.Navigation("Corporation");
 
                     b.Navigation("Usuario");
                 });

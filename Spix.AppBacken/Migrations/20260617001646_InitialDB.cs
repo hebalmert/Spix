@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Spix.AppBacken.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDb : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -1059,7 +1059,8 @@ namespace Spix.AppBacken.Migrations
                     IsAllDay = table.Column<bool>(type: "bit", nullable: false),
                     TimeZoneId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     UsuarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    UsuarioOwner = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsRecurring = table.Column<bool>(type: "bit", nullable: false),
                     RecurrenceRule = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     RecurrenceEndUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1067,16 +1068,18 @@ namespace Spix.AppBacken.Migrations
                     IsException = table.Column<bool>(type: "bit", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ScheduleStatus = table.Column<int>(type: "int", nullable: true),
+                    CorporationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ScheduleItems", x => x.ScheduleItemId);
                     table.ForeignKey(
-                        name: "FK_ScheduleItems_AspNetUsers_CreatedByUserId",
-                        column: x => x.CreatedByUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
+                        name: "FK_ScheduleItems_Corporations_CorporationId",
+                        column: x => x.CorporationId,
+                        principalTable: "Corporations",
+                        principalColumn: "CorporationId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ScheduleItems_Usuarios_UsuarioId",
@@ -2476,9 +2479,9 @@ namespace Spix.AppBacken.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScheduleItems_CreatedByUserId",
+                name: "IX_ScheduleItems_CorporationId",
                 table: "ScheduleItems",
-                column: "CreatedByUserId");
+                column: "CorporationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ScheduleItems_UsuarioId",
