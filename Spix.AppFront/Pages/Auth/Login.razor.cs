@@ -4,6 +4,7 @@ using Spix.AppFront.AuthenticationProviders;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 using System.IdentityModel.Tokens.Jwt;
@@ -51,7 +52,11 @@ public partial class Login
         await _sessionModel.SetSessionAsync(sessionModelDTO, "SessionDTO");
 
         isProcessing = false;
-        _navigation.NavigateTo("/dashboard");
+        var dashboardUrl = string.Equals(role, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)
+            ? "/client-dashboard"
+            : "/dashboard";
+
+        _navigation.NavigateTo(dashboardUrl);
     }
 
     private async Task OpenRecoverPasswordModal()

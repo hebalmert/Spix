@@ -53,6 +53,11 @@ public partial class FormClient
             return;
         }
         DocumentTypes = responseHttp.Response;
+
+        if (Client.DocumentTypeId == Guid.Empty && DocumentTypes?.Count > 0)
+        {
+            Client.DocumentTypeId = DocumentTypes[0].DocumentTypeId;
+        }
     }
 
     private async Task DocuementTypeChanged(ChangeEventArgs e)

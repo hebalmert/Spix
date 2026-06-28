@@ -1,0 +1,140 @@
+.client-dashboard {
+    min-height: calc(100vh - 2rem);
+    padding: 2rem;
+    background: #f5f7fb;
+}
+
+.client-dashboard__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.client-dashboard__eyebrow {
+    margin: 0 0 .25rem;
+    color: #4f6b8a;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.client-dashboard__header h1 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.client-dashboard__status {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .85rem;
+    border-radius: 8px;
+    background: #e8f7ef;
+    color: #157347;
+    font-weight: 700;
+}
+
+.client-dashboard__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.client-card {
+    position: relative;
+    min-height: 190px;
+    overflow: hidden;
+    border-radius: 8px;
+    padding: 1.5rem;
+    color: #fff;
+}
+
+.client-card--service {
+    background: #0f766e;
+}
+
+.client-card--billing {
+    background: #2563eb;
+}
+
+.client-card--support {
+    background: #7c3aed;
+}
+
+.client-card__content {
+    position: relative;
+    z-index: 1;
+    max-width: 78%;
+}
+
+.client-card__label {
+    display: block;
+    margin-bottom: .75rem;
+    font-weight: 700;
+    opacity: .9;
+}
+
+.client-card h2,
+.client-dashboard__panel h2 {
+    margin: 0 0 .5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.client-card p,
+.client-dashboard__panel p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.client-card__icon {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1rem;
+    font-size: 4.5rem;
+    opacity: .28;
+}
+
+.client-dashboard__panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
+}
+
+.client-dashboard__panel i {
+    color: #0f766e;
+    font-size: 2.25rem;
+}
+
+@media (max-width: 992px) {
+    .client-dashboard__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .client-dashboard {
+        padding: 1rem;
+    }
+
+    .client-dashboard__header,
+    .client-dashboard__panel {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .client-card__content {
+        max-width: 100%;
+    }
+}

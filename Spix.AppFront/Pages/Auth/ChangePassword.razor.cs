@@ -1,11 +1,14 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using System.Security.Claims;
 
 namespace Spix.AppFront.Pages.Auth;
 
@@ -17,6 +20,7 @@ public partial class ChangePassword
     [Inject] private HttpResponseHandler _httpHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
+    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
 
     private ChangePasswordDTO changePasswordDTO = new();
 
@@ -25,13 +29,27 @@ public partial class ChangePassword
         var responseHttp = await _repository.PostAsync("/api/v1/accounts/changePassword", changePasswordDTO);
         if (await _httpHandler.HandleErrorAsync(responseHttp)) return;
         _modalService.Close();
-        _navigation.NavigateTo("/dashboard");
+        await NavigateToDashboardByRoleAsync();
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.PasswordUpdateTitle)], Localizer[nameof(Resource.PasswordUpdateMsg)], SweetAlertIcon.Success);
     }
 
-    private void ReturnAction()
+    private async Task ReturnAction()
     {
         _modalService.Close();
-        _navigation.NavigateTo("/dashboard");
+        await NavigateToDashboardByRoleAsync();
+    }
+
+    private async Task NavigateToDashboardByRoleAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var role = authState.User.Claims
+            .FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role")
+            ?.Value;
+
+        var dashboardUrl = string.Equals(role, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)
+            ? "/client-dashboard"
+            : "/dashboard";
+
+        _navigation.NavigateTo(dashboardUrl);
     }
 }

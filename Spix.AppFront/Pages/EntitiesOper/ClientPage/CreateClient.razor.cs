@@ -37,6 +37,10 @@ public partial class CreateClient
         {
             Client.CreateAccount = false;
         }
+        Client.DocumentType = null;
+        Client.Corporation = null;
+        Client.ContractClients = null;
+
         var responseHttp = await _repository.PostAsync($"{BaseUrl}", Client);
         IsSaving = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))

@@ -74,7 +74,7 @@ public class Client
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
-    public DocumentType? DocumentType { get; set; } = new();
+    public DocumentType? DocumentType { get; set; }
     public ICollection<ContractClient>? ContractClients { get; set; }
 
 }

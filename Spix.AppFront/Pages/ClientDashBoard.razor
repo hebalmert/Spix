@@ -1,0 +1,55 @@
+@page "/client-dashboard"
+@attribute [Authorize(Roles = "Client")]
+@layout MainLayout
+
+<PageTitle>Client Dashboard</PageTitle>
+
+<section class="client-dashboard">
+    <div class="client-dashboard__header">
+        <div>
+            <p class="client-dashboard__eyebrow">Portal Cliente</p>
+            <h1>Mi Servicio</h1>
+        </div>
+        <span class="client-dashboard__status">
+            <i class="fa fa-circle-check"></i>
+            Activo
+        </span>
+    </div>
+
+    <div class="client-dashboard__grid">
+        <div class="client-card client-card--service">
+            <div class="client-card__content">
+                <span class="client-card__label">Plan contratado</span>
+                <h2>Servicio principal</h2>
+                <p>Resumen del plan, velocidad y estado general del servicio.</p>
+            </div>
+            <i class="fa fa-wifi client-card__icon"></i>
+        </div>
+
+        <div class="client-card client-card--billing">
+            <div class="client-card__content">
+                <span class="client-card__label">Facturacion</span>
+                <h2>Pagos y balance</h2>
+                <p>Espacio reservado para facturas, pagos pendientes e historial.</p>
+            </div>
+            <i class="fa fa-file-invoice-dollar client-card__icon"></i>
+        </div>
+
+        <div class="client-card client-card--support">
+            <div class="client-card__content">
+                <span class="client-card__label">Soporte</span>
+                <h2>Solicitudes</h2>
+                <p>Base para tickets, reportes de servicio y seguimiento tecnico.</p>
+            </div>
+            <i class="fa fa-headset client-card__icon"></i>
+        </div>
+    </div>
+
+    <div class="client-dashboard__panel">
+        <div>
+            <h2>Actividad reciente</h2>
+            <p>Este bloque queda listo para mostrar notificaciones, mantenimientos, pagos o cambios del servicio.</p>
+        </div>
+        <i class="fa fa-bell"></i>
+    </div>
+</section>
