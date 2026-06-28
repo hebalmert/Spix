@@ -98,7 +98,9 @@ public class PurchaseDetailsService : IPurchaseDetailsService
     {
         try
         {
-            var modelo = await _context.PurchaseDetails.Include(x=> x.Product).ThenInclude(x => x!.ProductCategory)
+            var modelo = await _context.PurchaseDetails
+                .Include(x=> x.Product)
+                .ThenInclude(x => x!.ProductCategory)
                 .FirstOrDefaultAsync(x => x.PurchaseDetailId == id);
             if (modelo == null)
             {
@@ -250,20 +252,23 @@ public class PurchaseDetailsService : IPurchaseDetailsService
                 //Preguntamos si el equipo va a manejar seriales
                 if (UpdateProduct.WithSerials)
                 {
-                    var IdPurchaseDetails = await _context.PurchaseDetails.FirstOrDefaultAsync(x => x.PurchaseId == modelo.PurchaseId);
-                    var CheckRegister = await _context.Registers.FirstOrDefaultAsync(x => x.CorporationId == modelo.CorporationId);
+                    var CheckRegister = await _context.Registers
+                        .FirstOrDefaultAsync(x => x.CorporationId == modelo.CorporationId);
+
                     CheckRegister!.Cargue += 1;
                     _context.Registers.Update(CheckRegister);
+
                     Cargue cargue = new()
                     {
-                        DateCargue = DateTime.Now,
+                        DateCargue = DateTime.UtcNow,
                         ControlCargue = Convert.ToString(CheckRegister.Cargue),
-                        PurchaseDetailId = IdPurchaseDetails!.PurchaseDetailId,
-                        ProductId = IdPurchaseDetails.ProductId,
-                        CantToUp = IdPurchaseDetails.Quantity,
+                        PurchaseDetailId = item.PurchaseDetailId,
+                        ProductId = item.ProductId,
+                        CantToUp = item.Quantity,
                         Status = CargueType.Pendiente,
                         CorporationId = modelo.CorporationId
                     };
+
                     _context.Cargues.Add(cargue);
                 }
             }

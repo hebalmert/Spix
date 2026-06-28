@@ -24,7 +24,7 @@ public partial class FormPurchaseDetails
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
     [Parameter] public bool IsSaving { get; set; }
 
-    private List<ProductCategory>? Categories;
+    private List<ProductCategory>? Categories = new();
 
     private List<Product>? Products = new();
 

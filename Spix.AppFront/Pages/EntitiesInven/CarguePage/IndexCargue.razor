@@ -42,7 +42,7 @@
                                 @foreach (var item in Cargues!)
                                 {
                                     <tr>
-                                        <td>@item.DateCargue</td>
+                                        <td>@item.DateCargue.ToLocalTime()</td>
                                         <td>@item.ControlCargue</td>
                                         <td>@item.PurchaseDetail!.Purchase!.NroFactura</td>
                                         <td>@item.CantToUp</td>
