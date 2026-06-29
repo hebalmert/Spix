@@ -9,12 +9,18 @@
 
         <!-- Botón + Filtro -->
         <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
+            <div class="col-md-5 d-flex justify-content-start ipnetwork-actions">
                 <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
                     <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
                 </button>
+                <button class="btn-gradient-black-pool" @onclick="ShowPoolModalAsync">
+                    <i class="fa fa-layer-group"></i> Pool Nuevo
+                </button>
+                <button class="btn-gradient-danger-pool" @onclick="ShowDeletePoolModalAsync">
+                    <i class="fa fa-trash"></i> Borra Pool
+                </button>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+            <div class="col-md-7 d-flex justify-content-end">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>

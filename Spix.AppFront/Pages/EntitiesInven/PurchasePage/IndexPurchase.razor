@@ -28,7 +28,7 @@
                                 <th>Proveedor</th>
                                 <th>Factura</th>
                                 <th>Fecha Fact</th>
-                                <th>Status</th>
+                                <th>@Localizer[nameof(Resource.Status)]</th>
                                 <th colspan="4" class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -39,7 +39,7 @@
                                     <td>@item.Supplier!.Name</td>
                                     <td>@item.NroFactura</td>
                                     <td>@item.FacuraDate.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.Status.ToString()</td>
+                                    <td><PurchaseStatusBadge Value="@item.Status" /></td>
                                     <td style="width:1px;">
                                         <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.PurchaseId)" TooTip="@Localizer[nameof(Resource.Purchase)]"
                                                        Icon="fa fa-table-list" />
@@ -68,3 +68,4 @@
                     TotalPages="TotalPages" />
     </div>
 </div>
+

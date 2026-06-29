@@ -1,0 +1,132 @@
+﻿.product-category-table > tbody > tr.products-expanded-row > td {
+    background: #f3f5f7;
+    padding: 0;
+}
+
+.product-category-row.is-expanded > td {
+    border-bottom-color: transparent;
+}
+
+.expand-button {
+    border: 0;
+    height: 2.4rem;
+    width: 2.4rem;
+}
+
+.category-name {
+    font-weight: 500;
+}
+
+.products-panel {
+    padding: 1.65rem 1.5rem 1.5rem;
+    position: relative;
+}
+
+.products-new-button {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.45rem;
+    justify-content: center;
+    min-width: 8.5rem;
+    position: absolute;
+    right: 2.15rem;
+    top: 0.55rem;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.products-list {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    margin-top: 1.1rem;
+}
+
+.products-list-header,
+.products-list-row {
+    align-items: center;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(14rem, 1fr) 7rem 8rem 7rem 12rem;
+}
+
+.products-list-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    color: #212529;
+    font-weight: 700;
+    padding: 0.8rem 1rem;
+}
+
+.products-list-header span:not(:first-child) {
+    text-align: center;
+}
+
+.products-list-row {
+    border-bottom: 1px solid #edf0f2;
+    min-height: 3.2rem;
+    padding: 0.55rem 1rem;
+}
+
+.products-list-row:last-child {
+    border-bottom: 0;
+}
+
+.product-name {
+    color: #212529;
+    font-weight: 500;
+}
+
+.product-stock,
+.product-serials,
+.product-active {
+    text-align: center;
+}
+
+.product-actions {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.products-empty-state {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.1rem;
+    min-height: 4.5rem;
+    padding: 1rem;
+}
+
+.products-empty-state p {
+    margin: 0;
+}
+
+@media (max-width: 992px) {
+    .products-list-header,
+    .products-list-row {
+        grid-template-columns: minmax(12rem, 1fr) 5rem 6.5rem 5rem 10rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .products-panel {
+        padding-top: 1rem;
+    }
+
+    .products-new-button {
+        margin-bottom: 0.75rem;
+        position: static;
+        width: 100%;
+    }
+
+    .products-list,
+    .products-empty-state {
+        margin-top: 0;
+        min-width: 46rem;
+    }
+}

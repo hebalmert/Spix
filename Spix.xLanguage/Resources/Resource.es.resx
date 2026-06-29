@@ -1354,4 +1354,11 @@
   <data name="Node" xml:space="preserve">
     <value>Nodos</value>
   </data>
+  <data name="PurchaseStatus_Pendiente" xml:space="preserve">
+    <value>Pendiente</value>
+  </data>
+  <data name="PurchaseStatus_Completado" xml:space="preserve">
+    <value>Completado</value>
+  </data>
 </root>
+

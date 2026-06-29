@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -15,6 +16,10 @@ public interface IIpNetServiceX
     Task<ActionResponse<IpNet>> UpdateAsync(IpNet modelo);
 
     Task<ActionResponse<IpNet>> AddAsync(IpNet modelo, string email);
+
+    Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string email);
+
+    Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string email);
 
     Task<ActionResponse<bool>> DeleteAsync(Guid id);
 }

@@ -1,11 +1,12 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
+
 namespace Spix.AppFront.Pages.EntitiesGen.ProductPage;
 
 public partial class IndexProductCategory
@@ -19,12 +20,17 @@ public partial class IndexProductCategory
 
     private string Filter { get; set; } = string.Empty;
 
-    private int CurrentPage = 1;  //Pagina seleccionada
-    private int TotalPages;      //Cantidad total de paginas
-    private int PageSize = 15;  //Cantidad de registros por pagina
+    private int CurrentPage = 1;
+    private int TotalPages;
+    private int PageSize = 15;
 
     private const string baseUrl = "api/v1/productcategories";
+    private const string baseUrlProducts = "api/v1/products";
+
     public List<ProductCategory>? ProductCategories { get; set; }
+    public Dictionary<Guid, List<Product>> ProductsByCategoryId { get; set; } = new();
+    public Guid? ExpandedProductCategoryId { get; set; }
+    public HashSet<Guid> LoadingProductCategoryIds { get; set; } = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -32,6 +38,43 @@ public partial class IndexProductCategory
         {
             await Cargar();
         }
+    }
+
+    private async Task ToggleExpandedProductCategory(Guid productCategoryId)
+    {
+        if (ExpandedProductCategoryId == productCategoryId)
+        {
+            ExpandedProductCategoryId = null;
+            return;
+        }
+
+        ExpandedProductCategoryId = productCategoryId;
+
+        if (!ProductsByCategoryId.ContainsKey(productCategoryId))
+        {
+            await LoadProductsForCategory(productCategoryId);
+        }
+    }
+
+    private async Task LoadProductsForCategory(Guid productCategoryId)
+    {
+        LoadingProductCategoryIds.Add(productCategoryId);
+        await InvokeAsync(StateHasChanged);
+
+        var url = $"{baseUrlProducts}?guidId={productCategoryId}&page=1&recordsnumber=100";
+        var responseHttp = await _repository.GetAsync<List<Product>>(url);
+
+        LoadingProductCategoryIds.Remove(productCategoryId);
+
+        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandled)
+        {
+            _navigationManager.NavigateTo("/dasboard");
+            return;
+        }
+
+        ProductsByCategoryId[productCategoryId] = responseHttp.Response ?? new List<Product>();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SelectedPage(int page)
@@ -54,25 +97,64 @@ public partial class IndexProductCategory
         {
             component = typeof(EditProductCategory);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Product)]}"  }
-        };
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Product)]}" }
+            };
         }
         else
         {
             component = typeof(CreateProductCategory);
             parameters = new Dictionary<string, object>
-        {
-            { "Title", $"{Localizer[nameof(Resource.Create_Product)]}"  }
-        };
+            {
+                { "Title", $"{Localizer[nameof(Resource.Create_Product)]}" }
+            };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
             {
-                await Cargar(CurrentPage);   // refresca la tabla
+                await Cargar(CurrentPage);
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
+        });
+    }
+
+    private async Task ShowModalProductAsync(Guid productCategoryId, Guid? id = null, bool isEdit = false)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+        if (isEdit)
+        {
+            component = typeof(EditProduct);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Product)]}" }
+            };
+        }
+        else
+        {
+            component = typeof(CreateProduct);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", productCategoryId },
+                { "Title", $"{Localizer[nameof(Resource.Create_Product)]}" }
+            };
+        }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                await Cargar(CurrentPage);
+                ExpandedProductCategoryId = productCategoryId;
+                await LoadProductsForCategory(productCategoryId);
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
                     Localizer[nameof(Resource.msg_SuccessMessage)],
@@ -87,6 +169,17 @@ public partial class IndexProductCategory
         _navigationManager.NavigateTo($"/products/details/{id}");
     }
 
+    private async Task ShowModalStockAsync(Guid id)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Id", id },
+            { "Title", $"{Localizer[nameof(Resource.Stock)]}" }
+        };
+
+        await _modalService.ShowAsync(typeof(ProductStockModal), parameters);
+    }
+
     private async Task Cargar(int page = 1)
     {
         var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}";
@@ -95,7 +188,6 @@ public partial class IndexProductCategory
             url += $"&filter={Filter}";
         }
         var responseHttp = await _repository.GetAsync<List<ProductCategory>>(url);
-        // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
         {
@@ -105,6 +197,10 @@ public partial class IndexProductCategory
 
         ProductCategories = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        ExpandedProductCategoryId = null;
+        ProductsByCategoryId.Clear();
+        LoadingProductCategoryIds.Clear();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -132,4 +228,33 @@ public partial class IndexProductCategory
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar(CurrentPage);
     }
+
+    private async Task DeleteProductAsync(Guid productCategoryId, Guid productId)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{baseUrlProducts}/{productId}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await Cargar(CurrentPage);
+        ExpandedProductCategoryId = productCategoryId;
+        await LoadProductsForCategory(productCategoryId);
+    }
 }
+
+
+

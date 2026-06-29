@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
@@ -26,10 +27,11 @@ public class PurchaseService : IPurchaseService
     private readonly ITransactionManager _transactionManager;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IUserHelper _userHelper;
+    private readonly IEnumMultilLanguageService _enumMultilLanguageService;
 
     public PurchaseService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
         ITransactionManager transactionManager, IMemoryCache cache,
-        IUserHelper userHelper, HttpErrorHandler httpErrorHandle)
+        IUserHelper userHelper, HttpErrorHandler httpErrorHandle, IEnumMultilLanguageService enumMultilLanguageService)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -37,17 +39,14 @@ public class PurchaseService : IPurchaseService
         _transactionManager = transactionManager;
         _userHelper = userHelper;
         _httpErrorHandler = httpErrorHandle;
+        _enumMultilLanguageService = enumMultilLanguageService;
     }
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatus()
     {
         try
         {
-            List<IntItemModel> list = Enum.GetValues(typeof(PurchaseStatus)).Cast<PurchaseStatus>().Select(c => new IntItemModel()
-            {
-                Name = c.ToString(),
-                Value = (int)c
-            }).ToList();
+            List<IntItemModel> list = _enumMultilLanguageService.GetEnumSelectList<PurchaseStatus>();
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

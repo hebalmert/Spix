@@ -9,9 +9,11 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppInfra.Validations;
 using Spix.AppService.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
+using System.Net;
 
 namespace Spix.AppService.ImplementEntitiesNet;
 
@@ -225,6 +227,171 @@ public class IpNetService : IIpNetService
         {
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<IpNet>(ex); // ✅ Manejo de errores automático
+        }
+    }
+
+    public async Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string username)
+    {
+        if (!ValidatorModel.IsValid(modelo, out var errores))
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
+
+        var ipBase = modelo.IpAddress?.Trim();
+        if (string.IsNullOrWhiteSpace(ipBase) || !IPAddress.TryParse($"{ipBase}.0", out _))
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
+
+        if (modelo.Desde > modelo.Hasta)
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
+
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        if (user == null)
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+            };
+        }
+
+        var corporationId = Convert.ToInt32(user.CorporationId);
+        var requestedIps = Enumerable
+            .Range(modelo.Desde, modelo.Hasta - modelo.Desde + 1)
+            .Select(number => $"{ipBase}.{number}")
+            .ToList();
+
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            var existingIps = await _context.IpNets
+                .Where(x => x.CorporationId == corporationId && requestedIps.Contains(x.Ip!))
+                .Select(x => x.Ip!)
+                .ToListAsync();
+
+            var existingSet = existingIps.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var ipNets = requestedIps
+                .Where(ip => !existingSet.Contains(ip))
+                .Select(ip => new IpNet
+                {
+                    Ip = ip,
+                    Active = true,
+                    Assigned = false,
+                    Excluded = false,
+                    CorporationId = corporationId
+                })
+                .ToList();
+
+            if (ipNets.Count > 0)
+            {
+                _context.IpNets.AddRange(ipNets);
+                await _transactionManager.SaveChangesAsync();
+            }
+
+            await _transactionManager.CommitTransactionAsync();
+
+            return new ActionResponse<int>
+            {
+                WasSuccess = true,
+                Result = ipNets.Count
+            };
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<int>(ex);
+        }
+    }
+
+    public async Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string username)
+    {
+        if (!ValidatorModel.IsValid(modelo, out var errores))
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
+
+        var ipBase = modelo.IpAddress?.Trim();
+        if (string.IsNullOrWhiteSpace(ipBase) || !IPAddress.TryParse($"{ipBase}.0", out _))
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
+
+        if (modelo.Desde > modelo.Hasta)
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+            };
+        }
+
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        if (user == null)
+        {
+            return new ActionResponse<int>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+            };
+        }
+
+        var corporationId = Convert.ToInt32(user.CorporationId);
+        var requestedIps = Enumerable
+            .Range(modelo.Desde, modelo.Hasta - modelo.Desde + 1)
+            .Select(number => $"{ipBase}.{number}")
+            .ToList();
+
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            var ipNets = await _context.IpNets
+                .Where(x => x.CorporationId == corporationId
+                    && requestedIps.Contains(x.Ip!)
+                    && !x.Assigned
+                    && !x.Excluded)
+                .ToListAsync();
+
+            if (ipNets.Count > 0)
+            {
+                _context.IpNets.RemoveRange(ipNets);
+                await _transactionManager.SaveChangesAsync();
+            }
+
+            await _transactionManager.CommitTransactionAsync();
+
+            return new ActionResponse<int>
+            {
+                WasSuccess = true,
+                Result = ipNets.Count
+            };
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<int>(ex);
         }
     }
 

@@ -3031,6 +3031,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string PurchaseStatus_Completado {
+            get {
+                return ResourceManager.GetString("PurchaseStatus_Completado", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string PurchaseStatus_Pendiente {
+            get {
+                return ResourceManager.GetString("PurchaseStatus_Pendiente", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Quantity.
         /// </summary>
         public static string Quantity {

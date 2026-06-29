@@ -105,6 +105,48 @@ public partial class IndexIpNet
         });
     }
 
+    private async Task ShowPoolModalAsync()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Title", "Nuevo Ip Network Pool" }
+        };
+
+        await _modalService.ShowAsync(typeof(CreateIpNetPool), parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                await Cargar(CurrentPage);
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
+        });
+    }
+
+    private async Task ShowDeletePoolModalAsync()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Title", "Borrado Ip Network Pool" }
+        };
+
+        await _modalService.ShowAsync(typeof(DeleteIpNetPool), parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                await Cargar(CurrentPage);
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_DeleteConfirmationTitle)],
+                    Localizer[nameof(Resource.msg_DeleteConfirmationText)],
+                    SweetAlertIcon.Success
+                );
+            }
+        });
+    }
+
     private async Task DeleteAsync(Guid id)
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions

@@ -1,0 +1,53 @@
+﻿@inherits ComponentBase
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative product-stock-modal">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (IsLoading)
+            {
+                <div class="stock-loading">
+                    <Loading />
+                </div>
+            }
+            else
+            {
+                <div class="stock-summary">
+                    <span>@Product?.ProductName</span>
+                </div>
+
+                <div class="stock-list" role="list">
+                    <div class="stock-list-header">
+                        <span>@Localizer[nameof(Resource.Product)]</span>
+                        <span>@Localizer[nameof(Resource.Storage)]</span>
+                        <span>@Localizer[nameof(Resource.Stock)]</span>
+                    </div>
+
+                    @if (ProductStocks is not null && ProductStocks.Any())
+                    {
+                        @foreach (var item in ProductStocks)
+                        {
+                            <div class="stock-list-row" role="listitem">
+                                <span>@item.Product?.ProductName</span>
+                                <span>@item.ProductStorage?.StorageName</span>
+                                <span>@item.Stock.ToString("N2")</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="stock-empty-state" role="alert">
+                            <i class="fa fa-info-circle"></i> @Localizer["NoRecordsFound"]
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

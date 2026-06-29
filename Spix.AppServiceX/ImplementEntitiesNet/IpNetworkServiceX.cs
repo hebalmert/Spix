@@ -1,6 +1,7 @@
 ﻿using Spix.AppService.InterfaceEntitiesNet;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -24,6 +25,10 @@ public class IpNetworkServiceX : IIpNetworkServiceX
     public async Task<ActionResponse<IpNetwork>> UpdateAsync(IpNetwork modelo) => await _ipNetworkService.UpdateAsync(modelo);
 
     public async Task<ActionResponse<IpNetwork>> AddAsync(IpNetwork modelo, string email) => await _ipNetworkService.AddAsync(modelo, email);
+
+    public async Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string email) => await _ipNetworkService.AddPoolAsync(modelo, email);
+
+    public async Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string email) => await _ipNetworkService.DeletePoolAsync(modelo, email);
 
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _ipNetworkService.DeleteAsync(id);
 }

@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Spix.xLanguage\Spix.xLanguage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="EntitiesNetDTO\" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,53 @@
+@inherits ComponentBase
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative ip-pool-modal">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">
+                    @Title
+                </h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <EditForm Model="Model" OnValidSubmit="CreatePoolAsync">
+                <DataAnnotationsValidator />
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text ip-pool-label">Ip Address</span>
+                            <InputText class="form-control" @bind-Value="Model.IpAddress" placeholder="192.168.0" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.IpAddress)" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text ip-pool-label">Desde</span>
+                            <InputNumber class="form-control" @bind-Value="Model.Desde" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.Desde)" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text ip-pool-label">Hasta</span>
+                            <InputNumber class="form-control" @bind-Value="Model.Hasta" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.Hasta)" />
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <ButtonFormSave IsSaving="IsSaving" />
+                    <ButtonFormBack OnClick="Return" />
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>

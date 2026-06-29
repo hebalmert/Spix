@@ -8,6 +8,7 @@ using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.DomainLogic.Pagination;
 using System.Security.Claims;
 
@@ -99,6 +100,40 @@ public class IpNetsController : ControllerBase
             return Ok(response.Result);
         }
         return NotFound(response.Message);
+    }
+
+    [HttpPost("pool")]
+    public async Task<ActionResult<int>> PostPoolAsync(IpNetPoolCreateDTO modelo)
+    {
+        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+        if (email == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _ipNetUnitOfWork.AddPoolAsync(modelo, email);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
+    [HttpPost("pool/delete")]
+    public async Task<ActionResult<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo)
+    {
+        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+        if (email == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+
+        var response = await _ipNetUnitOfWork.DeletePoolAsync(modelo, email);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
     }
 
     [HttpDelete("{id}")]
