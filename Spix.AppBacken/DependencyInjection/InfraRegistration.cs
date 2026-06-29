@@ -1,5 +1,6 @@
-ï»¿using Mapster;
+using Mapster;
 using MapsterMapper;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
@@ -48,16 +49,19 @@ namespace Spix.AppBack.DependencyInjection
             //Marnejo de Mac
             services.AddScoped<IMacControl, MacControl>();
 
-            // Utilidades para autenticaciÃ³n y gestiÃ³n de usuarios
+            // Utilidades para autenticación y gestión de usuarios
             services.AddScoped<IUserHelper, UserHelper>();
 
             // Herramientas generales sin estado
             services.AddTransient<IUtilityTools, UtilityTools>();
 
-            // Servicio de envÃ­o de correos
+            // Multilenguaje para opciones de enums
+            services.AddScoped<IEnumMultilLanguageService, EnumMultilLanguageService>();
+
+            // Servicio de envío de correos
             services.AddTransient<IEmailHelper, EmailHelper>();
 
-            // ConfiguraciÃ³n y mapeo con Mapster
+            // Configuración y mapeo con Mapster
             MapsterConfig.RegisterMappings();
             services.AddSingleton(TypeAdapterConfig.GlobalSettings);
             services.AddScoped<IMapper, ServiceMapper>();

@@ -1,0 +1,128 @@
+﻿.mark-table > tbody > tr.models-expanded-row > td {
+    background: #f3f5f7;
+    padding: 0;
+}
+
+.mark-row.is-expanded > td {
+    border-bottom-color: transparent;
+}
+
+.expand-button {
+    border: 0;
+    height: 2.4rem;
+    width: 2.4rem;
+}
+
+.mark-name {
+    font-weight: 500;
+}
+
+.models-panel {
+    padding: 1.65rem 1.5rem 1.5rem;
+    position: relative;
+}
+
+.models-new-button {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.45rem;
+    justify-content: center;
+    min-width: 8.5rem;
+    position: absolute;
+    right: 2.15rem;
+    top: 0.55rem;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.models-list {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    margin-top: 1.1rem;
+}
+
+.models-list-header,
+.models-list-row {
+    align-items: center;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(12rem, 1fr) 8rem 10rem;
+}
+
+.models-list-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    color: #212529;
+    font-weight: 700;
+    padding: 0.8rem 1rem;
+}
+
+.models-list-header span:nth-child(2),
+.models-list-header span:nth-child(3) {
+    text-align: center;
+}
+
+.models-list-row {
+    border-bottom: 1px solid #edf0f2;
+    min-height: 3.2rem;
+    padding: 0.55rem 1rem;
+}
+
+.models-list-row:last-child {
+    border-bottom: 0;
+}
+
+.model-name {
+    color: #212529;
+    font-weight: 500;
+}
+
+.model-active {
+    text-align: center;
+}
+
+.model-actions {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.models-empty-state {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.1rem;
+    min-height: 4.5rem;
+    padding: 1rem;
+}
+
+.models-empty-state p {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .models-panel {
+        padding-top: 1rem;
+    }
+
+    .models-new-button {
+        margin-bottom: 0.75rem;
+        position: static;
+        width: 100%;
+    }
+
+    .models-list,
+    .models-empty-state {
+        margin-top: 0;
+    }
+
+    .models-list-header,
+    .models-list-row {
+        grid-template-columns: minmax(9rem, 1fr) 5rem 7.5rem;
+    }
+}

@@ -1,9 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Vml.Office;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
@@ -27,11 +27,11 @@ namespace Spix.Services.ImplementContratos
         private readonly IUserHelper _userHelper;
         private readonly IMapperService _mapperService;
         private readonly HttpErrorHandler _httpErrorHandler;
-        private readonly IStringLocalizer _localizer;
+        private readonly IEnumMultilLanguageService _enumMultilLanguageService;
 
         public ContractClientService(DataContext context, IHttpContextAccessor httpContextAccessor,
             ITransactionManager transactionManager, IUserHelper userHelper, IMapperService mapperService,
-            HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
+            HttpErrorHandler httpErrorHandler, IEnumMultilLanguageService enumMultilLanguageService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -39,23 +39,13 @@ namespace Spix.Services.ImplementContratos
             _userHelper = userHelper;
             _mapperService = mapperService;
             _httpErrorHandler = httpErrorHandler;
-            _localizer = localizer;
+            _enumMultilLanguageService = enumMultilLanguageService;
         }
         public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatusAsync()
         {
             try
             {
-                List<IntItemModel> list = Enum.GetValues(typeof(ContractState)).Cast<ContractState>().Select(c => new IntItemModel()
-                {
-                    Name = c.ToLocalizedString(_localizer),
-                    Value = (int)c
-                }).ToList();
-
-                list.Insert(0, new IntItemModel() 
-                { 
-                    Name = _localizer[nameof(Resource.Select_Status)], 
-                    Value = 0 
-                });
+                List<IntItemModel> list = _enumMultilLanguageService.GetEnumSelectList<ContractState>(nameof(Resource.Select_Status));
 
                 return new ActionResponse<IEnumerable<IntItemModel>>
                 {
@@ -65,7 +55,7 @@ namespace Spix.Services.ImplementContratos
             }
             catch (Exception ex)
             {
-                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); // ✅ Manejo de errores automático
+                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
             }
         }
 
@@ -253,3 +243,6 @@ namespace Spix.Services.ImplementContratos
         }
     }
 }
+
+
+

@@ -1,16 +1,19 @@
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront;
 using Spix.AppFront.AuthenticationProviders;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.AppFront.Helpers.Security;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.ResponcesSec;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -37,7 +40,7 @@ builder.Services.AddScoped<ICryptoService>(sp =>
     return new CryptoService(config);
 });
 
-// Reemplazar la configuración del IRepository
+// Reemplazar la configuraciÃ³n del IRepository
 builder.Services.AddScoped(sp =>
 {
     var localStorage = sp.GetRequiredService<ILocalStorageService>();
@@ -55,6 +58,8 @@ builder.Services.AddScoped(sp =>
 
 //Para sistema de multilenguaje
 builder.Services.AddLocalization();
+builder.Services.AddSingleton<IStringLocalizer>(sp => sp.GetRequiredService<IStringLocalizer<Resource>>());
+builder.Services.AddScoped<IEnumMultilLanguageService, EnumMultilLanguageService>();
 
 // Sistema de Seguridad
 builder.Services.AddAuthorizationCore();
@@ -74,3 +79,5 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProviderJW
 builder.Services.AddScoped<ILoginService, AuthenticationProviderJWT>(x => x.GetRequiredService<AuthenticationProviderJWT>());
 
 await builder.Build().RunAsync();
+
+

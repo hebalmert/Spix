@@ -1,18 +1,16 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
-using Spix.AppInfra.Extensions;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.DomainLogic.EnumTypes;
-using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.SharedEnumColor;
 
 public partial class StatusBadge
 {
-    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
+    [Inject] private IEnumMultilLanguageService EnumMultilLanguageService { get; set; } = null!;
 
     [Parameter] public ContractState Value { get; set; }
 
-    protected string Text => Value.ToLocalizedString(Localizer);
+    protected string Text => EnumMultilLanguageService.GetLocalizedName(Value);
 
     protected string Color => Value switch
     {
