@@ -144,6 +144,8 @@ namespace Spix.AppBack.DependencyInjection
             //MikrotikServices
             services.AddScoped<IMkConnectionServiceX, MkConnectionServiceX>();
             services.AddScoped<IMkConnectionService, MkConnectionService>();
+            services.AddScoped<IConnectionMikrotikControlServiceX, ConnectionMikrotikControlServiceX>();
+            services.AddScoped<IConnectionMikrotikControlService, ConnectionMikrotikControlService>();
 
             //Operaciones
             services.AddScoped<IClientServiceX, ClientServiceX>();
@@ -172,6 +174,10 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IContractNodeService, ContractNodeService>();
             services.AddScoped<IContractPlanServiceX, ContractPlanServiceX>();
             services.AddScoped<IContractPlanService, ContractPlanService>();
+            services.AddScoped<IContractQueServiceX, ContractQueServiceX>();
+            services.AddScoped<IContractQueService, ContractQueService>();
+            services.AddScoped<IContractBindServiceX, ContractBindServiceX>();
+            services.AddScoped<IContractBindService, ContractBindService>();
 
             //Schedule
             services.AddScoped<IScheduleServiceX, ScheduleServiceX>();

@@ -1,0 +1,121 @@
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
+using Spix.AppInfra.ErrorHandling;
+using Spix.AppServiceX.InterfacesMk;
+using Spix.Domain.EntitiesMK;
+using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.Pagination;
+
+namespace Spix.AppBacken.Controllers.v1.EntitiesMK;
+
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/connectionmikrotikcontrols")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+[ApiController]
+public class ConnectionMikrotikControlsController : ControllerBase
+{
+    private readonly IConnectionMikrotikControlServiceX _unitOfWork;
+    private readonly IStringLocalizer _localizer;
+
+    public ConnectionMikrotikControlsController(IConnectionMikrotikControlServiceX unitOfWork, IStringLocalizer localizer)
+    {
+        _unitOfWork = unitOfWork;
+        _localizer = localizer;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAsync(Guid id)
+    {
+        try
+        {
+            var response = await _unitOfWork.GetAsync(id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> PutAsync(ConnectionMikrotikControl modelo)
+    {
+        try
+        {
+            var response = await _unitOfWork.UpdateAsync(modelo);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> PostAsync(ConnectionMikrotikControl modelo)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        try
+        {
+            var response = await _unitOfWork.DeleteAsync(id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+}

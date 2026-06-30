@@ -12,7 +12,7 @@ using Spix.xLanguage.Resources;
 
 namespace Spix.AppService.ImplementEntitiesNet;
 
-public class ContractServerService : IContractServerService
+public class ContractQueService : IContractQueService
 {
     private readonly DataContext _context;
     private readonly ITransactionManager _transactionManager;
@@ -20,11 +20,8 @@ public class ContractServerService : IContractServerService
     private readonly IStringLocalizer _localizer;
     private readonly HttpErrorHandler _httpErrorHandler;
 
-    public ContractServerService(DataContext context,
-        ITransactionManager transactionManager,
-        IUserHelper userHelper,
-        IStringLocalizer localizer,
-        HttpErrorHandler httpErrorHandler)
+    public ContractQueService(DataContext context, ITransactionManager transactionManager,
+        IUserHelper userHelper, IStringLocalizer localizer, HttpErrorHandler httpErrorHandler)
     {
         _context = context;
         _transactionManager = transactionManager;
@@ -33,11 +30,11 @@ public class ContractServerService : IContractServerService
         _httpErrorHandler = httpErrorHandler;
     }
 
-    public async Task<ActionResponse<ContractServer>> GetAsync(Guid id)
+    public async Task<ActionResponse<ContractQue>> GetAsync(Guid id)
     {
         if (id == Guid.Empty)
         {
-            return new ActionResponse<ContractServer>
+            return new ActionResponse<ContractQue>
             {
                 WasSuccess = false,
                 Message = _localizer[nameof(Resource.Generic_InvalidId)]
@@ -46,33 +43,29 @@ public class ContractServerService : IContractServerService
 
         try
         {
-            var modelo = await _context.ContractServers
+            var modelo = await _context.ContractQues
                 .Include(x => x.Server)
-                    .ThenInclude(x => x!.IpNetwork)
+                .Include(x => x.IpNet)
+                .Include(x => x.Plan)
                 .FirstOrDefaultAsync(c => c.ContractClientId == id);
 
-            if (modelo is null)
-            {
-                modelo = new();
-            }
-
-            return new ActionResponse<ContractServer>
+            return new ActionResponse<ContractQue>
             {
                 WasSuccess = true,
-                Result = modelo
+                Result = modelo ?? new()
             };
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<ContractServer>(ex);
+            return await _httpErrorHandler.HandleErrorAsync<ContractQue>(ex);
         }
     }
 
-    public async Task<ActionResponse<ContractServer>> AddAsync(ContractServer modelo, string username)
+    public async Task<ActionResponse<ContractQue>> AddAsync(ContractQue modelo, string username)
     {
         if (!ValidatorModel.IsValid(modelo, out var errores))
         {
-            return new ActionResponse<ContractServer>
+            return new ActionResponse<ContractQue>
             {
                 WasSuccess = false,
                 Result = modelo,
@@ -86,19 +79,18 @@ public class ContractServerService : IContractServerService
             var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
-                return new ActionResponse<ContractServer>
+                return new ActionResponse<ContractQue>
                 {
                     WasSuccess = false,
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
 
-            _context.ContractServers.Add(modelo);
-
+            _context.ContractQues.Add(modelo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<ContractServer>
+            return new ActionResponse<ContractQue>
             {
                 WasSuccess = true,
                 Result = modelo
@@ -107,7 +99,7 @@ public class ContractServerService : IContractServerService
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<ContractServer>(ex);
+            return await _httpErrorHandler.HandleErrorAsync<ContractQue>(ex);
         }
     }
 
@@ -116,7 +108,7 @@ public class ContractServerService : IContractServerService
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var dataRemove = await _context.ContractServers.FindAsync(id);
+            var dataRemove = await _context.ContractQues.FindAsync(id);
             if (dataRemove == null)
             {
                 return new ActionResponse<bool>
@@ -126,8 +118,7 @@ public class ContractServerService : IContractServerService
                 };
             }
 
-            _context.ContractServers.Remove(dataRemove);
-
+            _context.ContractQues.Remove(dataRemove);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 

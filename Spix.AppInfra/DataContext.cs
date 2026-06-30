@@ -6,6 +6,7 @@ using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
+using Spix.Domain.EntitiesMK;
 using Spix.Domain.EntitiesNet;
 using Spix.Domain.EntitiesOper;
 using Spix.Domain.EntitiesSchedule;
@@ -83,6 +84,10 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<IpNet> IpNets => Set<IpNet>();
     public DbSet<Node> Nodes => Set<Node>();
     public DbSet<Server> Servers => Set<Server>();
+
+    //EntitiesMK
+
+    public DbSet<ConnectionMikrotikControl> ConnectionMikrotikControls => Set<ConnectionMikrotikControl>();
 
 
     //EntitiesOper

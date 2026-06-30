@@ -6,13 +6,16 @@ using Spix.AppFront.Helper;
 using Spix.AppFront.Pages.EntitiesContratos.ContractClientPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractIpPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMacPage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractBindPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractNodePage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractPlanPage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractQuePage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractServerPage;
 using Spix.Domain.EntitiesContratos;
+using Spix.Domain.EntitiesMK;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-using System.Security.AccessControl;
 
 namespace Spix.AppFront.Pages.EntitiesContratos.ContractControlPage;
 
@@ -34,6 +37,9 @@ public partial class DetailContractControl
     private ContractServer? ContractServer { get; set; } = new();
     private ContractPlan? ContractPlan { get; set; } = new();
     private ContractNode? ContractNode { get; set; } = new();
+    private ContractQue? ContractQue { get; set; } = new();
+    private ContractBind? ContractBind { get; set; } = new();
+    private bool UseHotSpotControl { get; set; }
 
     private string BaseUrl = "/api/v1/contractcontrols";
     private string BaseContractIpUrl = "/api/v1/contractips";
@@ -41,6 +47,9 @@ public partial class DetailContractControl
     private string BaseContractServerUrl = "/api/v1/contractservers";
     private string BaseContractPlanUrl = "/api/v1/contractplans";
     private string BaseContractNodeUrl = "/api/v1/contractnodes";
+    private string BaseContractQueUrl = "/api/v1/contractques";
+    private string BaseContractBindUrl = "/api/v1/contractbinds";
+    private string BaseConnectionMikrotikControlUrl = "/api/v1/connectionmikrotikcontrols";
     private bool isLoading = false;
     private bool IsSaving = false;
 
@@ -49,6 +58,7 @@ public partial class DetailContractControl
         if (firstRender)
         {
             await LoadContractClient();
+            await LoadConnectionMikrotikControl();
             if (ContractClient!.ControlIpCount > 0)
             {
                 await LoadContractip(Id);
@@ -68,6 +78,11 @@ public partial class DetailContractControl
             if (ContractClient.ControlNodeCount > 0)
             {
                 await LoadContractNode(Id);
+            }
+            if (UseHotSpotControl)
+            {
+                await LoadContractQue(Id);
+                await LoadContractBind(Id);
             }
         }
     }
@@ -164,6 +179,74 @@ public partial class DetailContractControl
         {
             if (result.Succeeded)
                 await LoadContractNode(Id);
+        });
+    }
+
+    private async Task ShowContractQuesAsyn(Guid? id)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractQue);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", "Queues Velocidad" },
+                { "ContractServer", ContractServer! },
+                { "ContractIp", ContractIp! },
+                { "ContractPlan", ContractPlan! }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractQue(Id);
+        });
+    }
+
+    private async Task ShowContractBindsAsyn(Guid? id)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractBind);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", "IpBinding Acceso" },
+                { "ContractServer", ContractServer! },
+                { "ContractIp", ContractIp! },
+                { "ContractMac", ContractMac! }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractBind(Id);
+        });
+    }
+
+    private async Task ShowContractBindEditAsync(ContractBind? model)
+    {
+        if (model is null || model.ContractBindId == Guid.Empty)
+        {
+            return;
+        }
+
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(EditContractBind);
+        parameters = new Dictionary<string, object>
+            {
+                { "Model", model },
+                { "Title", "Editar IpBinding Acceso" }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractBind(Id);
         });
     }
 
@@ -287,6 +370,54 @@ public partial class DetailContractControl
         await LoadContractNode(Id);
     }
 
+    private async Task DeleteContractQueAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{BaseContractQueUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await LoadContractQue(Id);
+    }
+
+    private async Task DeleteContractBindAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{BaseContractBindUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await LoadContractBind(Id);
+    }
+
     private async Task LoadContractip(Guid? id)
     {
         isLoading = true;
@@ -373,6 +504,59 @@ public partial class DetailContractControl
         }
 
         ContractNode = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadContractQue(Guid? id)
+    {
+        isLoading = true;
+        var responseHTTP = await _repository.GetAsync<ContractQue>($"{BaseContractQueUrl}/{Id}");
+        isLoading = false;
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            ContractQue = null;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        ContractQue = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadContractBind(Guid? id)
+    {
+        isLoading = true;
+        var responseHTTP = await _repository.GetAsync<ContractBind>($"{BaseContractBindUrl}/{Id}");
+        isLoading = false;
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            ContractBind = null;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        ContractBind = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadConnectionMikrotikControl()
+    {
+        var responseHTTP = await _repository.GetAsync<List<ConnectionMikrotikControl>>($"{BaseConnectionMikrotikControlUrl}?page=1&recordsnumber=1");
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            UseHotSpotControl = false;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        var connectionControl = responseHTTP.Response?.FirstOrDefault();
+        UseHotSpotControl = connectionControl?.MikrotikControlType == MikrotikControlType.HotSpot;
 
         await InvokeAsync(StateHasChanged);
     }

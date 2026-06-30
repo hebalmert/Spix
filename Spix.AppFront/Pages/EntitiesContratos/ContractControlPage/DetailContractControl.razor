@@ -253,6 +253,83 @@
                     </article>
                 </div>
             </section>
+
+            @if (UseHotSpotControl)
+            {
+                <section class="row g-4 mt-1 control-grid">
+                    <div class="col-12">
+                        <article class="control-card control-card-wide">
+                            <header class="control-card-header">
+                                <span class="control-icon"><i class="fa fa-gauge-high"></i></span>
+                                <span>Queues Velocidad</span>
+                            </header>
+                            <div class="control-body">
+                                @if (ContractQue is null || ContractQue.ContractQueId == Guid.Empty)
+                                {
+                                    <p class="control-empty">Sin Queue de Velocidad...</p>
+                                    <div class="control-action">
+                                        <ButtonGeneric OnClick="() => ShowContractQuesAsyn(ContractClient!.ContractClientId)"
+                                                       TooTip="Queues Velocidad"
+                                                       Icon="fa fa-plus" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="control-data control-data-five">
+                                        <span class="control-value">@(ContractQue.ServerName ?? ContractQue.Server?.ServerName)</span>
+                                        <span class="control-value control-value-center">@(ContractQue.IpCliente ?? ContractQue.IpNet?.Ip)</span>
+                                        <span class="control-value control-value-center">@(ContractQue.PlanName ?? ContractQue.Plan?.PlanName)</span>
+                                        <span class="control-value control-value-center">@(ContractQue.TotalVelocidad ?? ContractQue.Plan?.VelocidadTotal)</span>
+                                        <span class="control-value control-value-end">@ContractQue.MikrotikId</span>
+                                    </div>
+                                    <div class="control-action">
+                                        <ButtonDelete OnClick="() => DeleteContractQueAsync(ContractQue!.ContractQueId)"
+                                                      TooTip="Queues Velocidad"
+                                                      Icon="fa fa-trash" />
+                                    </div>
+                                }
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="col-12">
+                        <article class="control-card control-card-wide">
+                            <header class="control-card-header">
+                                <span class="control-icon"><i class="fa fa-id-card"></i></span>
+                                <span>IpBinding Acceso</span>
+                            </header>
+                            <div class="control-body">
+                                @if (ContractBind is null || ContractBind.ContractBindId == Guid.Empty)
+                                {
+                                    <p class="control-empty">Sin IpBinding de Acceso...</p>
+                                    <div class="control-action">
+                                        <ButtonGeneric OnClick="() => ShowContractBindsAsyn(ContractClient!.ContractClientId)"
+                                                       TooTip="IpBinding Acceso"
+                                                       Icon="fa fa-plus" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="control-data control-data-five">
+                                        <span class="control-value">@(ContractBind.ServerName ?? ContractBind.Server?.ServerName)</span>
+                                        <span class="control-value control-value-center">@(ContractBind.IpCliente ?? ContractBind.IpNet?.Ip)</span>
+                                        <span class="control-value control-value-center">@(ContractBind.MacCliente ?? ContractBind.CargueDetail?.MacWlan)</span>
+                                        <span class="control-value control-value-center">@ContractBind.HotSpotType?.TypeName</span>
+                                        <span class="control-value control-value-end">@ContractBind.MikrotikId</span>
+                                    </div>
+                                    <div class="control-action">
+                                        <ButtonEdit OnClick="() => ShowContractBindEditAsync(ContractBind)"
+                                                    TooTip="Editar IpBinding" />
+                                        <ButtonDelete OnClick="() => DeleteContractBindAsync(ContractBind!.ContractBindId)"
+                                                      TooTip="IpBinding Acceso"
+                                                      Icon="fa fa-trash" />
+                                    </div>
+                                }
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            }
         }
     </div>
 </div>

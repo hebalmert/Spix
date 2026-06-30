@@ -11,24 +11,20 @@ public class ContractBind
     public Guid ContractBindId { get; set; }
 
     [Required(ErrorMessage = "El Campo {0} es Requerido")]
-    [Range(1, double.MaxValue, ErrorMessage = "Debe Seleccionar un {0}")]
     [Display(Name = "Contrato")]
     public Guid ContractClientId { get; set; }
 
     [Required(ErrorMessage = "El Campo {0} es Requerido")]
-    [Range(1, double.MaxValue, ErrorMessage = "Debe Seleccionar un {0}")]
     [Display(Name = "Servidor")]
     public Guid ServerId { get; set; }
 
 
     [Required(ErrorMessage = "El Campo {0} es Requerido")]
-    [Range(1, double.MaxValue, ErrorMessage = "Debe Seleccionar un {0}")]
     [Display(Name = "Ip Cliente")]
     public Guid IpNetId { get; set; }
 
 
     [Required(ErrorMessage = "El Campo {0} es Requerido")]
-    [Range(1, double.MaxValue, ErrorMessage = "Debe Seleccionar un {0}")]
     [Display(Name = "Mac Cliente")]
     public Guid CargueDetailId { get; set; }
 
