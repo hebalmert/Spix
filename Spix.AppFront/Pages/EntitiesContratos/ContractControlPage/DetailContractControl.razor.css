@@ -332,6 +332,18 @@
     color: #ffffff;
 }
 
+.control-action-disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    border-color: rgba(102, 112, 133, 0.30) !important;
+    color: #667085 !important;
+    background: #f8fafc !important;
+}
+
+.control-action-disabled i {
+    color: #667085 !important;
+}
+
 @media (max-width: 991.98px) {
     .info-grid,
     .info-grid-wide,

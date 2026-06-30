@@ -156,6 +156,19 @@ public class ContractIpService : IContractIpService
                     Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
+
+            var hasHotSpotDependencies = await _context.ContractQues.AnyAsync(x => x.ContractClientId == DataRemove.ContractClientId)
+                || await _context.ContractBinds.AnyAsync(x => x.ContractClientId == DataRemove.ContractClientId);
+            if (hasHotSpotDependencies)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "Debe eliminar Queues Velocidad e IpBinding Acceso antes de cambiar la IP del contrato."
+                };
+            }
+
             _context.ContractIps.Remove(DataRemove);
 
             var resultIp = await _ipControl.SelectIpNetToDelete(DataRemove.IpNetId, transaction!);

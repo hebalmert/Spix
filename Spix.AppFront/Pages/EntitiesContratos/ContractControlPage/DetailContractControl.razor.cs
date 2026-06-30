@@ -40,6 +40,9 @@ public partial class DetailContractControl
     private ContractQue? ContractQue { get; set; } = new();
     private ContractBind? ContractBind { get; set; } = new();
     private bool UseHotSpotControl { get; set; }
+    private bool HasContractQue => ContractQue is not null && ContractQue.ContractQueId != Guid.Empty;
+    private bool HasContractBind => ContractBind is not null && ContractBind.ContractBindId != Guid.Empty;
+    private bool HasHotSpotDependencies => HasContractQue || HasContractBind;
 
     private string BaseUrl = "/api/v1/contractcontrols";
     private string BaseContractIpUrl = "/api/v1/contractips";

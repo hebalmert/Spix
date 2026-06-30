@@ -90,6 +90,17 @@ public class ContractBindService : IContractBindService
                 };
             }
 
+            var exists = await _context.ContractBinds.AnyAsync(x => x.ContractClientId == modelo.ContractClientId);
+            if (exists)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = "Ya existe un IpBinding de Acceso para este contrato."
+                };
+            }
+
             _context.ContractBinds.Add(modelo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

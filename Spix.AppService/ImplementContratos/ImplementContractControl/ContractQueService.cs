@@ -86,6 +86,17 @@ public class ContractQueService : IContractQueService
                 };
             }
 
+            var exists = await _context.ContractQues.AnyAsync(x => x.ContractClientId == modelo.ContractClientId);
+            if (exists)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractQue>
+                {
+                    WasSuccess = false,
+                    Message = "Ya existe una Queue de Velocidad para este contrato."
+                };
+            }
+
             _context.ContractQues.Add(modelo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

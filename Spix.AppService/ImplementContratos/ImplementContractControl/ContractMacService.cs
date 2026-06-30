@@ -155,6 +155,18 @@ public class ContractMacService : IContractMacService
                     Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
+
+            var hasHotSpotDependencies = await _context.ContractBinds.AnyAsync(x => x.ContractClientId == DataRemove.ContractClientId);
+            if (hasHotSpotDependencies)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "Debe eliminar IpBinding Acceso antes de cambiar la MAC del contrato."
+                };
+            }
+
             _context.ContractMacs.Remove(DataRemove);
 
             var resultIp = await _macControl.SelectMacToDelete(DataRemove.CargueDetailId, transaction!);

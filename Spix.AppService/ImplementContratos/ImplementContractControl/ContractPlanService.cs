@@ -117,6 +117,17 @@ public class ContractPlanService : IContractPlanService
                 };
             }
 
+            var hasHotSpotDependencies = await _context.ContractQues.AnyAsync(x => x.ContractClientId == dataRemove.ContractClientId);
+            if (hasHotSpotDependencies)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "Debe eliminar Queues Velocidad antes de cambiar el plan del contrato."
+                };
+            }
+
             _context.ContractPlans.Remove(dataRemove);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

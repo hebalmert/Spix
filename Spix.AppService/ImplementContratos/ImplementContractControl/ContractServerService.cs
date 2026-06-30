@@ -126,6 +126,18 @@ public class ContractServerService : IContractServerService
                 };
             }
 
+            var hasHotSpotDependencies = await _context.ContractQues.AnyAsync(x => x.ContractClientId == dataRemove.ContractClientId)
+                || await _context.ContractBinds.AnyAsync(x => x.ContractClientId == dataRemove.ContractClientId);
+            if (hasHotSpotDependencies)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "Debe eliminar Queues Velocidad e IpBinding Acceso antes de cambiar el servidor del contrato."
+                };
+            }
+
             _context.ContractServers.Remove(dataRemove);
 
             await _transactionManager.SaveChangesAsync();

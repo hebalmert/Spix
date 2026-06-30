@@ -117,9 +117,18 @@
                                     <span class="control-value">@ContractIp.IpNet!.Ip</span>
                                 </div>
                                 <div class="control-action">
-                                    <ButtonDelete OnClick="() => DeleteContractIpAsync(ContractIp!.ContractIpId)"
-                                                  TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
-                                                  Icon="fa fa-trash" />
+                                    @if (HasHotSpotDependencies)
+                                    {
+                                        <button type="button" class="btn-mini-danger control-action-disabled" disabled title="Elimine Queues Velocidad e IpBinding Acceso primero">
+                                            <i class="fa fa-lock"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <ButtonDelete OnClick="() => DeleteContractIpAsync(ContractIp!.ContractIpId)"
+                                                      TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                      Icon="fa fa-trash" />
+                                    }
                                 </div>
                             }
                         </div>
@@ -148,9 +157,18 @@
                                     <span class="control-value">@ContractMac.CargueDetail!.MacWlan</span>
                                 </div>
                                 <div class="control-action">
-                                    <ButtonDelete OnClick="() => DeleteContractMacAsync(ContractMac!.ContractMacId)"
-                                                  TooTip="@Localizer[nameof(Resource.Create_Mac)]"
-                                                  Icon="fa fa-trash" />
+                                    @if (HasContractBind)
+                                    {
+                                        <button type="button" class="btn-mini-danger control-action-disabled" disabled title="Elimine IpBinding Acceso primero">
+                                            <i class="fa fa-lock"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <ButtonDelete OnClick="() => DeleteContractMacAsync(ContractMac!.ContractMacId)"
+                                                      TooTip="@Localizer[nameof(Resource.Create_Mac)]"
+                                                      Icon="fa fa-trash" />
+                                    }
                                 </div>
                             }
                         </div>
@@ -179,9 +197,18 @@
                                     <span class="control-value">@ContractServer.Server!.ServerName</span>
                                 </div>
                                 <div class="control-action">
-                                    <ButtonDelete OnClick="() => DeleteContractServerAsync(ContractServer!.ContractServerId)"
-                                                  TooTip="@Localizer[nameof(Resource.Create_Server)]"
-                                                  Icon="fa fa-trash" />
+                                    @if (HasHotSpotDependencies)
+                                    {
+                                        <button type="button" class="btn-mini-danger control-action-disabled" disabled title="Elimine Queues Velocidad e IpBinding Acceso primero">
+                                            <i class="fa fa-lock"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <ButtonDelete OnClick="() => DeleteContractServerAsync(ContractServer!.ContractServerId)"
+                                                      TooTip="@Localizer[nameof(Resource.Create_Server)]"
+                                                      Icon="fa fa-trash" />
+                                    }
                                 </div>
                             }
                         </div>
@@ -212,9 +239,18 @@
                                     <span class="control-value control-value-end">@ContractPlan.Plan!.PrecioconImpuesto?.ToString("N2")</span>
                                 </div>
                                 <div class="control-action">
-                                    <ButtonDelete OnClick="() => DeleteContractPlanAsync(ContractPlan!.ContractPlanId)"
-                                                  TooTip="@Localizer[nameof(Resource.ClientPlan)]"
-                                                  Icon="fa fa-trash" />
+                                    @if (HasContractQue)
+                                    {
+                                        <button type="button" class="btn-mini-danger control-action-disabled" disabled title="Elimine Queues Velocidad primero">
+                                            <i class="fa fa-lock"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <ButtonDelete OnClick="() => DeleteContractPlanAsync(ContractPlan!.ContractPlanId)"
+                                                      TooTip="@Localizer[nameof(Resource.ClientPlan)]"
+                                                      Icon="fa fa-trash" />
+                                    }
                                 </div>
                             }
                         </div>
