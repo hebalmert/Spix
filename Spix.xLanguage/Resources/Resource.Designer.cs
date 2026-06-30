@@ -3310,6 +3310,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select MAC].
+        /// </summary>
+        public static string Select_MAC {
+            get {
+                return ResourceManager.GetString("Select_MAC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Mark].
         /// </summary>
         public static string Select_Mark {

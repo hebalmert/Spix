@@ -44,6 +44,10 @@ public partial class DetailContractControl
             {
                 await LoadContractip(Id);
             }
+            if (ContractClient.ControlMacCount > 0)
+            {
+                await LoadContractMac(Id);
+            }
         }
     }
 
@@ -81,7 +85,7 @@ public partial class DetailContractControl
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await LoadContractip(Id);   //solo refresca si hubo cambios
+                await LoadContractMac(Id);   //solo refresca si hubo cambios
         });
     }
 
@@ -106,7 +110,7 @@ public partial class DetailContractControl
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await LoadContractip(Id);
+        await LoadContractMac(Id);
     }
 
     private async Task DeleteContractIpAsync(Guid id)
@@ -147,6 +151,24 @@ public partial class DetailContractControl
         }
 
         ContractIp = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadContractMac(Guid? id)
+    {
+        isLoading = true;
+        var responseHTTP = await _repository.GetAsync<ContractMac>($"{BaseContractMacUrl}/{Id}");
+        isLoading = false;
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            ContractMac = null;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        ContractMac = responseHTTP.Response;
 
         await InvokeAsync(StateHasChanged);
     }

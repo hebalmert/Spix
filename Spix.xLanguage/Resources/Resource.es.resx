@@ -1192,6 +1192,9 @@
   <data name="Select_IP" xml:space="preserve">
     <value>[Seleccione IP]</value>
   </data>
+  <data name="Select_MAC" xml:space="preserve">
+    <value>[Seleccione MAC]</value>
+  </data>
   <data name="Select_Zone" xml:space="preserve">
     <value>[Seleccione Zona]</value>
   </data>

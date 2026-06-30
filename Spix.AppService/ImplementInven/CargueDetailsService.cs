@@ -69,7 +69,7 @@ public class CargueDetailsService : ICargueDetailsService
                 ListMac.Insert(0, new GuidItemModel
                 {
                     Value = Guid.Empty,
-                    Name = _localizer[nameof(Resource.Select_IP)]
+                    Name = _localizer[nameof(Resource.Select_MAC)]
                 });
             }
             else

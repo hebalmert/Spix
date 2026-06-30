@@ -93,6 +93,7 @@ public class ContractClient
     //Fin quien creo el registro
 
     public int ControlIpCount => ContractIps == null ? 0 : ContractIps.Count;
+    public int ControlMacCount => ContractMacs == null ? 0 : ContractMacs.Count;
 
 
     public Corporation? Corporation { get; set; }

@@ -7,7 +7,7 @@
     else
     {
         <div class="input-group">
-            <span class="input-group-text" style="width:150px">IP Clients</span>
+            <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.MAC)]</span>
             <select class="form-select" value="@ContractMac?.CargueDetailId" @onchange="MacsChanged">
                 @foreach (var item in ListMacs!)
                 {
