@@ -27,6 +27,18 @@ public class NodesController : ControllerBase
         _localizer = localizer;
     }
 
+    [HttpGet("loadCombo/{id?}")]
+    public async Task<ActionResult<IEnumerable<Node>>> GetComboAsync([FromRoute] Guid? id = null)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _nodeUnitOfWork.ComboAsync(userClaimsInfo.UserName, id);
+        if (!response.WasSuccess)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Result);
+    }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Node>>> GetAll([FromQuery] PaginationDTO pagination)
     {

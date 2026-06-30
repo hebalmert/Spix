@@ -15,6 +15,8 @@ public class NodeServiceX : INodeServiceX
         _nodeService = nodeService;
     }
 
+    public async Task<ActionResponse<IEnumerable<Node>>> ComboAsync(string username, Guid? id = null) => await _nodeService.ComboAsync(username, id);
+
     public async Task<ActionResponse<IEnumerable<Node>>> GetAsync(PaginationDTO pagination, string email) => await _nodeService.GetAsync(pagination, email);
 
     public async Task<ActionResponse<Node>> GetAsync(Guid id) => await _nodeService.GetAsync(id);

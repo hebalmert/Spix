@@ -15,6 +15,8 @@ public class PlanCategoryServiceX : IPlanCategoryServiceX
         _planCategoryService = planCategoryService;
     }
 
+    public async Task<ActionResponse<IEnumerable<PlanCategory>>> ComboAsync(string username) => await _planCategoryService.ComboAsync(username);
+
     public async Task<ActionResponse<IEnumerable<PlanCategory>>> GetAsync(PaginationDTO pagination, string username) => await _planCategoryService.GetAsync(pagination, username);
 
     public async Task<ActionResponse<PlanCategory>> GetAsync(Guid id) => await _planCategoryService.GetAsync(id);

@@ -94,6 +94,9 @@ public class ContractClient
 
     public int ControlIpCount => ContractIps == null ? 0 : ContractIps.Count;
     public int ControlMacCount => ContractMacs == null ? 0 : ContractMacs.Count;
+    public int ControlServerCount => ContractServers == null ? 0 : ContractServers.Count;
+    public int ControlPlanCount => ContractPlans == null ? 0 : ContractPlans.Count;
+    public int ControlNodeCount => ContractNodes == null ? 0 : ContractNodes.Count;
 
 
     public Corporation? Corporation { get; set; }

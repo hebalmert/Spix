@@ -42,6 +42,53 @@ public class NodeService : INodeService
         _httpErrorHandler = httpErrorHandler;
     }
 
+    public async Task<ActionResponse<IEnumerable<Node>>> ComboAsync(string username, Guid? id = null)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<Node>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            List<Node> nodes;
+            if (id == null)
+            {
+                nodes = await _context.Nodes
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId)
+                    .OrderBy(x => x.NodesName)
+                    .ToListAsync();
+                nodes.Insert(0, new Node
+                {
+                    NodeId = Guid.Empty,
+                    NodesName = _localizer[nameof(Resource.Select_Node)]
+                });
+            }
+            else
+            {
+                nodes = await _context.Nodes
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId || x.NodeId == id)
+                    .OrderBy(x => x.NodesName)
+                    .ToListAsync();
+            }
+
+            return new ActionResponse<IEnumerable<Node>>
+            {
+                WasSuccess = true,
+                Result = nodes
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Node>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<Node>>> GetAsync(PaginationDTO pagination, string username)
     {
         try

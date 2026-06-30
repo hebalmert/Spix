@@ -1,289 +1,258 @@
-﻿@page "/detailscontractcontrol/{Id:guid}"
+@page "/detailscontractcontrol/{Id:guid}"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
-<div class="container pt-4">
-    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+<div class="container-fluid contract-detail-page py-4">
+    <div class="contract-shell">
+        @if (ContractClient is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <section class="contract-summary">
+                <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                    <h2 class="contract-title">Detalle Contrato</h2>
 
-        <!-- Card del Contrato -->
-        <div class="row mt-2">
-            <div class="col-12">
-                <div class="card shadow-lg p-4" style="border-radius: 12px;">
-                    @if (ContractClient is null)
-                    {
-                        <Loading />
-                    }
-                    else
-                    {
-                        <div class="row align-items-center ">
-
-                            <!-- Título -->
-                            <div class="col-md-6 mb-3">
-                                <h2>Detalle Contrato</h2>
-                            </div>
-
-                            <!-- Botones alineados a la izquierda ocupando todo el ancho -->
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex justify-content-end gap-3">
-                                    <AnchorFormBack Href="/contractcontrol" CssClass="btn btn-outline-dark btn-bor" />
-                                    <ButtonFormNew Icon="fa fa-pencil-square" CssClass="btn btn-outline-primary btn-bor"
-                                                   OnClick="() => ShowEditContractClient(ContractClient!.ContractClientId)" TooTip="@Localizer[nameof(Resource.Edit)]" />
-                                    @*                                 <a title="Editar" asp-action="Edit" class="btn btn-outline-primary btn-bor">
-                                    <i class="fa fa-pencil-square" style="font-size: 20px;"></i>
-                                    Editar
-                                </a> *@
-                                    <button type="button" title="Retirar" class="btn btn-danger btn-bor btn-bor">
-                                        <i class="fa fa-cloud-arrow-down" style="font-size: 20px;"></i>
-                                        Retirar
-                                    </button>
-                                </div>
-                            </div>
-
-                            <hr style="height:2px;border:none;color:#333;background-color:#333;" />
-
-                            <div class="row mb-2">
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Created)]</span>
-                                        <text class="form-control">@ContractClient!.DateCreado</text>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Contract)]</span>
-                                        <text class="form-control" style="font-weight:bold">@ContractClient!.ControlContrato</text>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Contractor)]</span>
-                                        <text class="form-control">@ContractClient!.Contractor!.FirstName @ContractClient!.Contractor.LastName</text>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr style="height:2px;border:none;color:#333;background-color:#333;" />
-
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Client)]</span>
-                                        <text class="form-control">@ContractClient.Client!.FirstName @ContractClient.Client.LastName</text>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Document)]</span>
-                                        <text class="form-control flex-fill">@ContractClient.Client.DocumentType!.DocumentName</text>
-                                        <text class="form-control flex-fill">@ContractClient.Client.Document</text>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Phone)]</span>
-                                        <text class="form-control">@ContractClient.PhoneNumber</text>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Email)]</span>
-                                        <text class="form-control">@ContractClient.Client.Email</text>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Address)]</span>
-                                        <text class="form-control">@ContractClient.Address</text>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.City)]</span>
-                                        <text class="form-control">@ContractClient.Zone!.City!.Name</text>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Zone)]</span>
-                                        <text class="form-control">@ContractClient.Zone.ZoneName</text>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr style="height:2px;border:none;color:#333;background-color:#333;" />
-
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-control input-group" style="text-align:center; align-items:center">
-                                        <div class="form-check form-switch" style="pointer-events: none;">
-                                            <input class="form-check-input" type="checkbox" role="switch" checked="@ContractClient.EquipoEmpres">
-                                            <label class="form-check-label" style="color: forestgreen; font-weight: bold; font-size:14px">
-                                                Equipo
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-control input-group" style="text-align:center; align-items:center">
-                                        <div class="form-check form-switch" style="pointer-events: none;">
-                                            <input class="form-check-input" type="checkbox" role="switch" checked="@ContractClient.EnvoiceClient">
-                                            <label class="form-check-label" style="color: forestgreen; font-weight: bold; font-size:14px">
-                                                Invoice
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4" style="text-align:center">
-                                    @switch (ContractClient!.ContractState.ToString())
-                                    {
-                                        case "Exempt":
-                                            <strong><text class="form-control" style="color : darkorange; font-weight: bold">@ContractClient.ContractState</text></strong>
-
-                                            break;
-
-                                        case "Active":
-                                            <h5>
-                                                <strong><text class="form-control" style="color : darkgreen; font-weight: bold; background-color:whitesmoke; font-size:20px">@ContractClient.ContractState</text></strong>
-                                            </h5>
-                                            break;
-
-                                        case "Suspended":
-                                            <h5>
-                                                <strong><text class="form-control" style="color : red; font-weight: bold">@ContractClient.ContractState</text></strong>
-                                            </h5>
-                                            break;
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    }
+                    <div class="contract-actions">
+                        <AnchorFormBack Href="/contractcontrol"
+                                        CssClass="btn btn-outline-dark contract-action"
+                                        Style="" />
+                        <ButtonFormNew Icon="fa fa-pencil-square"
+                                       CssClass="btn btn-outline-primary contract-action"
+                                       Style=""
+                                       OnClick="() => ShowEditContractClient(ContractClient!.ContractClientId)"
+                                       TooTip="@Localizer[nameof(Resource.Edit)]" />
+                        <button type="button" title="Retirar" class="btn contract-action contract-action-danger">
+                            <i class="fa fa-cloud-arrow-down"></i>
+                            <span>Retirar</span>
+                        </button>
+                    </div>
                 </div>
 
-            </div>
-        </div>
-        <div class="row mt-2">
-            <!-- IP Cliente -->
-            <div class="col-md-4">
-                <div class="card shadow-lg p-4" style="border-radius: 12px;">
-                    <div class="card-header bg-transparent border-dark  text-dark">
-                        <div class="row">
-                            <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
-                                <div style="margin-left:5px">
-                                    <i class="fa fa-ethernet" style="color:#27A844; font-size: 20px"></i>
-                                    <strong>IP Cliente</strong>
-                                </div>
-                            </div>
-                        </div>
+                <hr class="summary-divider" />
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.Created)]</span>
+                        <span class="info-value">@ContractClient.DateCreado</span>
                     </div>
-                    <table class="table table-borderless table-sm mt-3" id="MyTable">
-                        <tbody id="reordenable">
-                            @if (ContractIp is null || ContractIp!.ContractIpId == Guid.Empty)
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.Contract)]</span>
+                        <span class="info-value info-value-strong">@ContractClient.ControlContrato</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.Contractor)]</span>
+                        <span class="info-value">@ContractClient.Contractor!.FirstName @ContractClient.Contractor.LastName</span>
+                    </div>
+                </div>
+
+                <div class="info-grid info-grid-wide client-info-grid summary-section">
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.Client)]</span>
+                        <span class="info-value">@ContractClient.Client!.FirstName @ContractClient.Client.LastName</span>
+                    </div>
+                    <div class="info-item info-item-document">
+                        <span class="info-label">@Localizer[nameof(Resource.Document)]</span>
+                        <span class="info-value">@ContractClient.Client.DocumentType!.DocumentName</span>
+                        <span class="info-value">@ContractClient.Client.Document</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.Phone)]</span>
+                        <span class="info-value">@ContractClient.PhoneNumber</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.Email)]</span>
+                        <span class="info-value">@ContractClient.Client.Email</span>
+                    </div>
+                    <div class="info-item info-item-wide">
+                        <span class="info-label">@Localizer[nameof(Resource.Address)]</span>
+                        <span class="info-value">@ContractClient.Address</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.City)]</span>
+                        <span class="info-value">@ContractClient.Zone!.City!.Name</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">@Localizer[nameof(Resource.Zone)]</span>
+                        <span class="info-value">@ContractClient.Zone.ZoneName</span>
+                    </div>
+                </div>
+
+                <div class="status-row summary-section">
+                    <div class="status-tile">
+                        <input class="form-check-input" type="checkbox" checked="@ContractClient.EquipoEmpres" disabled />
+                        <span>Equipo</span>
+                    </div>
+                    <div class="status-tile">
+                        <input class="form-check-input" type="checkbox" checked="@ContractClient.EnvoiceClient" disabled />
+                        <span>Invoice</span>
+                    </div>
+                    <div class="status-tile">
+                        <span class="status-pill">@ContractClient.ContractState</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="row g-4 mt-1 control-grid">
+                <div class="col-xl-4 col-md-6">
+                    <article class="control-card">
+                        <header class="control-card-header">
+                            <span class="control-icon"><i class="fa fa-ethernet"></i></span>
+                            <span>IP Cliente</span>
+                        </header>
+                        <div class="control-body">
+                            @if (ContractIp is null || ContractIp.ContractIpId == Guid.Empty)
                             {
-                                <tr>
-                                    <td>
-                                        <h5 class="m-0">Sin IP Asignada...</h5>
-                                    </td>
-                                    <td>
-                                        <ButtonGeneric OnClick="() => ShowContractIpsAsyn(ContractClient!.ContractClientId)"
-                                                       TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
-                                                       Icon="fa fa-plus" />
-                                    </td>
-                                </tr>
+                                <p class="control-empty">Sin IP Asignada...</p>
+                                <div class="control-action">
+                                    <ButtonGeneric OnClick="() => ShowContractIpsAsyn(ContractClient!.ContractClientId)"
+                                                   TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                   Icon="fa fa-plus" />
+                                </div>
                             }
                             else
                             {
-                                <tr>
-                                    <td>
-                                        @ContractIp.IpNet!.Ip
-                                    </td>
-
-                                    <td style="width:1px; padding-left:1px; padding-right:4px">
-                                        <ButtonDelete OnClick="() => DeleteContractIpAsync(ContractIp!.ContractIpId)"
-                                                      TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
-                                                      Icon="fa fa-trash" />
-                                    </td>
-                                </tr>
-
-                            }
-
-                        </tbody>
-                    </table>        
-                </div>
-            </div>
-            <!-- Mac Client -->
-            <div class="col-md-4">
-                <div class="card shadow-lg p-4" style="border-radius: 12px;">
-                    <div class="card-header bg-transparent border-dark  text-dark">
-                        <div class="row">
-                            <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
-                                <div style="margin-left:5px">
-                                    <i class="fa fa-gears" style=" color:#27A844; font-size: 20px"></i>
-                                    <strong>Mac Equipo</strong>
+                                <div class="control-data control-data-one">
+                                    <span class="control-value">@ContractIp.IpNet!.Ip</span>
                                 </div>
-                            </div>
+                                <div class="control-action">
+                                    <ButtonDelete OnClick="() => DeleteContractIpAsync(ContractIp!.ContractIpId)"
+                                                  TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                  Icon="fa fa-trash" />
+                                </div>
+                            }
                         </div>
-                    </div>
-                    <table class="table table-borderless table-sm mt-3" id="MyTable">
-                        <tbody id="reordenable">
-                            @if (ContractMac is null || ContractMac!.ContractMacId == Guid.Empty)
+                    </article>
+                </div>
+
+                <div class="col-xl-4 col-md-6">
+                    <article class="control-card">
+                        <header class="control-card-header">
+                            <span class="control-icon"><i class="fa fa-gears"></i></span>
+                            <span>Mac Equipo</span>
+                        </header>
+                        <div class="control-body">
+                            @if (ContractMac is null || ContractMac.ContractMacId == Guid.Empty)
                             {
-                                <tr>
-                                    <td>
-                                        <h5 class="m-0">Sin MAC Asignada...</h5>
-                                    </td>
-                                    <td>
-                                        <ButtonGeneric OnClick="() => ShowContractMacsAsyn(ContractClient!.ContractClientId)"
-                                                       TooTip="@Localizer[nameof(Resource.Create_Mac)]"
-                                                       Icon="fa fa-plus" />
-                                    </td>
-                                </tr>
+                                <p class="control-empty">Sin MAC Asignada...</p>
+                                <div class="control-action">
+                                    <ButtonGeneric OnClick="() => ShowContractMacsAsyn(ContractClient!.ContractClientId)"
+                                                   TooTip="@Localizer[nameof(Resource.Create_Mac)]"
+                                                   Icon="fa fa-plus" />
+                                </div>
                             }
                             else
                             {
-                                <tr>
-                                    <td>
-                                        @ContractMac.CargueDetail!.MacWlan
-                                    </td>
-
-                                    <td style="width:1px; padding-left:1px; padding-right:4px">
-                                        <ButtonDelete OnClick="() => DeleteContractMacAsync(ContractMac!.ContractMacId)"
-                                                      TooTip="@Localizer[nameof(Resource.Create_Mac)]"
-                                                      Icon="fa fa-trash" />
-                                    </td>
-                                </tr>
-
-                            }
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <!-- Server Client -->
-            <div class="col-md-4">
-                <div class="card shadow-lg p-4" style="border-radius: 12px;">
-
-                    <div class="card-header bg-transparent border-dark  text-dark">
-                        <div class="row">
-                            <div class="col-md-12" style="text-align:left; align-content:center; justify-content: center">
-                                <div style="margin-left:5px">
-                                    <i class="fa fa-server" style=" color:#27A844; font-size: 20px"></i>
-                                    <strong>Servidor Gateway</strong>
+                                <div class="control-data control-data-one">
+                                    <span class="control-value">@ContractMac.CargueDetail!.MacWlan</span>
                                 </div>
-                            </div>
+                                <div class="control-action">
+                                    <ButtonDelete OnClick="() => DeleteContractMacAsync(ContractMac!.ContractMacId)"
+                                                  TooTip="@Localizer[nameof(Resource.Create_Mac)]"
+                                                  Icon="fa fa-trash" />
+                                </div>
+                            }
                         </div>
-
-                    </div>
-                    <div class="card-body text-dark">
-                    </div>
+                    </article>
                 </div>
-            </div>
-        </div>
+
+                <div class="col-xl-4 col-md-6">
+                    <article class="control-card">
+                        <header class="control-card-header">
+                            <span class="control-icon"><i class="fa fa-server"></i></span>
+                            <span>Servidor Gateway</span>
+                        </header>
+                        <div class="control-body">
+                            @if (ContractServer is null || ContractServer.ContractServerId == Guid.Empty)
+                            {
+                                <p class="control-empty">Sin Servidor Asignado...</p>
+                                <div class="control-action">
+                                    <ButtonGeneric OnClick="() => ShowContractServersAsyn(ContractClient!.ContractClientId)"
+                                                   TooTip="@Localizer[nameof(Resource.Create_Server)]"
+                                                   Icon="fa fa-plus" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="control-data control-data-one">
+                                    <span class="control-value">@ContractServer.Server!.ServerName</span>
+                                </div>
+                                <div class="control-action">
+                                    <ButtonDelete OnClick="() => DeleteContractServerAsync(ContractServer!.ContractServerId)"
+                                                  TooTip="@Localizer[nameof(Resource.Create_Server)]"
+                                                  Icon="fa fa-trash" />
+                                </div>
+                            }
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-xl-6">
+                    <article class="control-card">
+                        <header class="control-card-header">
+                            <span class="control-icon"><i class="fa fa-gauge-high"></i></span>
+                            <span>Plan Cliente</span>
+                        </header>
+                        <div class="control-body">
+                            @if (ContractPlan is null || ContractPlan.ContractPlanId == Guid.Empty)
+                            {
+                                <p class="control-empty">Sin Plan Asignado...</p>
+                                <div class="control-action">
+                                    <ButtonGeneric OnClick="() => ShowContractPlansAsyn(ContractClient!.ContractClientId)"
+                                                   TooTip="@Localizer[nameof(Resource.ClientPlan)]"
+                                                   Icon="fa fa-plus" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="control-data">
+                                    <span class="control-value">@ContractPlan.Plan!.PlanName</span>
+                                    <span class="control-value control-value-center">@ContractPlan.Plan!.VelocidadTotal</span>
+                                    <span class="control-value control-value-end">@ContractPlan.Plan!.PrecioconImpuesto?.ToString("N2")</span>
+                                </div>
+                                <div class="control-action">
+                                    <ButtonDelete OnClick="() => DeleteContractPlanAsync(ContractPlan!.ContractPlanId)"
+                                                  TooTip="@Localizer[nameof(Resource.ClientPlan)]"
+                                                  Icon="fa fa-trash" />
+                                </div>
+                            }
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-xl-6">
+                    <article class="control-card">
+                        <header class="control-card-header">
+                            <span class="control-icon"><i class="fa fa-tower-broadcast"></i></span>
+                            <span>Nodo Acceso</span>
+                        </header>
+                        <div class="control-body">
+                            @if (ContractNode is null || ContractNode.ContractNodeId == Guid.Empty)
+                            {
+                                <p class="control-empty">Sin Nodo Asignado...</p>
+                                <div class="control-action">
+                                    <ButtonGeneric OnClick="() => ShowContractNodesAsyn(ContractClient!.ContractClientId)"
+                                                   TooTip="@Localizer[nameof(Resource.ClientAP)]"
+                                                   Icon="fa fa-plus" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="control-data control-data-two">
+                                    <span class="control-value">@ContractNode.Node!.NodesName</span>
+                                    <span class="control-value control-value-center">@ContractNode.Node!.IpNetwork?.Ip</span>
+                                </div>
+                                <div class="control-action">
+                                    <ButtonDelete OnClick="() => DeleteContractNodeAsync(ContractNode!.ContractNodeId)"
+                                                  TooTip="@Localizer[nameof(Resource.ClientAP)]"
+                                                  Icon="fa fa-trash" />
+                                </div>
+                            }
+                        </div>
+                    </article>
+                </div>
+            </section>
+        }
     </div>
 </div>

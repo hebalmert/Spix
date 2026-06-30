@@ -3328,6 +3328,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select Node].
+        /// </summary>
+        public static string Select_Node {
+            get {
+                return ResourceManager.GetString("Select_Node", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Plan].
         /// </summary>
         public static string Select_Plan {
@@ -3337,11 +3346,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select Plan Category].
+        /// </summary>
+        public static string Select_PlanCategory {
+            get {
+                return ResourceManager.GetString("Select_PlanCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Role].
         /// </summary>
         public static string Select_Role {
             get {
                 return ResourceManager.GetString("Select_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select Server].
+        /// </summary>
+        public static string Select_Server {
+            get {
+                return ResourceManager.GetString("Select_Server", resourceCulture);
             }
         }
         

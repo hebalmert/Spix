@@ -7,6 +7,10 @@ namespace Spix.AppService.InterfacesEntitiesGen;
 
 public interface IPlanService
 {
+    Task<ActionResponse<IEnumerable<Plan>>> ComboAsync(string username, Guid? id = null);
+
+    Task<ActionResponse<IEnumerable<Plan>>> ComboByCategoryAsync(string username, Guid planCategoryId, Guid? id = null);
+
     Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboUpAsync();
 
     Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboDownAsync();

@@ -36,6 +36,43 @@ public class PlanCategoryService : IPlanCategoryService
         _localizer = localizer;
     }
 
+    public async Task<ActionResponse<IEnumerable<PlanCategory>>> ComboAsync(string username)
+    {
+        try
+        {
+            User user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<PlanCategory>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            var planCategories = await _context.PlanCategories
+                .Where(x => x.Active && x.CorporationId == user.CorporationId)
+                .OrderBy(x => x.PlanCategoryName)
+                .ToListAsync();
+
+            planCategories.Insert(0, new PlanCategory
+            {
+                PlanCategoryId = Guid.Empty,
+                PlanCategoryName = _localizer[nameof(Resource.Select_PlanCategory)]
+            });
+
+            return new ActionResponse<IEnumerable<PlanCategory>>
+            {
+                WasSuccess = true,
+                Result = planCategories
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<PlanCategory>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<PlanCategory>>> GetAsync(PaginationDTO pagination, string username)
     {
         try

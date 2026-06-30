@@ -1,0 +1,24 @@
+<EditForm Model="ContractServer" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    @if (Servers is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="input-group">
+            <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Server)]</span>
+            <select class="form-select" value="@ContractServer?.ServerId" @onchange="ServerChanged">
+                @foreach (var item in Servers!)
+                {
+                    <option value="@item.ServerId">@item.ServerName</option>
+                }
+            </select>
+        </div>
+    }
+
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

@@ -15,6 +15,8 @@ public class ServerServiceX : IServerServiceX
         _serverService = serverService;
     }
 
+    public async Task<ActionResponse<IEnumerable<Server>>> ComboAsync(string username, Guid? id = null) => await _serverService.ComboAsync(username, id);
+
     public async Task<ActionResponse<IEnumerable<Server>>> GetAsync(PaginationDTO pagination, string email) => await _serverService.GetAsync(pagination, email);
 
     public async Task<ActionResponse<Server>> GetAsync(Guid id) => await _serverService.GetAsync(id);

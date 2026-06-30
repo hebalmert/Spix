@@ -1195,6 +1195,15 @@
   <data name="Select_MAC" xml:space="preserve">
     <value>[Select MAC]</value>
   </data>
+  <data name="Select_Server" xml:space="preserve">
+    <value>[Select Server]</value>
+  </data>
+  <data name="Select_Node" xml:space="preserve">
+    <value>[Select Node]</value>
+  </data>
+  <data name="Select_PlanCategory" xml:space="preserve">
+    <value>[Select Plan Category]</value>
+  </data>
   <data name="Select_Zone" xml:space="preserve">
     <value>[Select Zone]</value>
   </data>

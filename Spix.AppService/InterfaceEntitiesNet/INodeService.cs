@@ -6,6 +6,8 @@ namespace Spix.AppService.InterfaceEntitiesNet;
 
 public interface INodeService
 {
+    Task<ActionResponse<IEnumerable<Node>>> ComboAsync(string username, Guid? id = null);
+
     Task<ActionResponse<IEnumerable<Node>>> GetAsync(PaginationDTO pagination, string email);
 
     Task<ActionResponse<Node>> GetAsync(Guid id);

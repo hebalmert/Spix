@@ -27,6 +27,43 @@ public class PlansController : ControllerBase
         _localizer = localizer;
     }
 
+    [HttpGet("loadCombo/{id?}")]
+    public async Task<IActionResult> GetComboAsync([FromRoute] Guid? id = null)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.ComboAsync(userClaimsInfo.UserName, id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpGet("loadComboByCategory/{planCategoryId}/{id?}")]
+    public async Task<IActionResult> GetComboByCategoryAsync([FromRoute] Guid planCategoryId, [FromRoute] Guid? id = null)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.ComboByCategoryAsync(userClaimsInfo.UserName, planCategoryId, id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)

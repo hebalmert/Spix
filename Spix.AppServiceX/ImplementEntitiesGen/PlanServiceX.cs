@@ -16,6 +16,10 @@ public class PlanServiceX : IPlanServiceX
         _planService = planService;
     }
 
+    public async Task<ActionResponse<IEnumerable<Plan>>> ComboAsync(string username, Guid? id = null) => await _planService.ComboAsync(username, id);
+
+    public async Task<ActionResponse<IEnumerable<Plan>>> ComboByCategoryAsync(string username, Guid planCategoryId, Guid? id = null) => await _planService.ComboByCategoryAsync(username, planCategoryId, id);
+
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboUpAsync() => await _planService.GetComboUpAsync();
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboDownAsync() => await _planService.GetComboDownAsync();

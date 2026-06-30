@@ -38,6 +38,105 @@ public class PlanService : IPlanService
         _localizer = localizer;
     }
 
+    public async Task<ActionResponse<IEnumerable<Plan>>> ComboAsync(string username, Guid? id = null)
+    {
+        try
+        {
+            User user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<Plan>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            List<Plan> plans;
+            if (id == null)
+            {
+                plans = await _context.Plans
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId)
+                    .OrderBy(x => x.PlanName)
+                    .ToListAsync();
+                plans.Insert(0, new Plan
+                {
+                    PlanId = Guid.Empty,
+                    PlanName = _localizer[nameof(Resource.Select_Plan)]
+                });
+            }
+            else
+            {
+                plans = await _context.Plans
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId || x.PlanId == id)
+                    .OrderBy(x => x.PlanName)
+                    .ToListAsync();
+            }
+
+            return new ActionResponse<IEnumerable<Plan>>
+            {
+                WasSuccess = true,
+                Result = plans
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Plan>>(ex);
+        }
+    }
+
+    public async Task<ActionResponse<IEnumerable<Plan>>> ComboByCategoryAsync(string username, Guid planCategoryId, Guid? id = null)
+    {
+        try
+        {
+            User user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<Plan>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            List<Plan> plans;
+            if (planCategoryId == Guid.Empty)
+            {
+                plans = new List<Plan>();
+            }
+            else if (id == null || id == Guid.Empty)
+            {
+                plans = await _context.Plans
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId && x.PlanCategoryId == planCategoryId)
+                    .OrderBy(x => x.PlanName)
+                    .ToListAsync();
+            }
+            else
+            {
+                plans = await _context.Plans
+                    .Where(x => x.CorporationId == user.CorporationId && x.PlanCategoryId == planCategoryId && (x.Active || x.PlanId == id))
+                    .OrderBy(x => x.PlanName)
+                    .ToListAsync();
+            }
+
+            plans.Insert(0, new Plan
+            {
+                PlanId = Guid.Empty,
+                PlanName = _localizer[nameof(Resource.Select_Plan)]
+            });
+
+            return new ActionResponse<IEnumerable<Plan>>
+            {
+                WasSuccess = true,
+                Result = plans
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Plan>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboUpAsync()
     {
         try

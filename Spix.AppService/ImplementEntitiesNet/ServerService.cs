@@ -42,6 +42,53 @@ public class ServerService : IServerService
         _httpErrorHandler = httpErrorHandler;
     }
 
+    public async Task<ActionResponse<IEnumerable<Server>>> ComboAsync(string username, Guid? id = null)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<Server>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            List<Server> servers;
+            if (id == null)
+            {
+                servers = await _context.Servers
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId)
+                    .OrderBy(x => x.ServerName)
+                    .ToListAsync();
+                servers.Insert(0, new Server
+                {
+                    ServerId = Guid.Empty,
+                    ServerName = _localizer[nameof(Resource.Select_Server)]
+                });
+            }
+            else
+            {
+                servers = await _context.Servers
+                    .Where(x => x.Active && x.CorporationId == user.CorporationId || x.ServerId == id)
+                    .OrderBy(x => x.ServerName)
+                    .ToListAsync();
+            }
+
+            return new ActionResponse<IEnumerable<Server>>
+            {
+                WasSuccess = true,
+                Result = servers
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Server>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<Server>>> GetAsync(PaginationDTO pagination, string username)
     {
         try

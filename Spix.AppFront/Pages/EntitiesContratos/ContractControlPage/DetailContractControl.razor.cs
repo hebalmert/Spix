@@ -6,6 +6,9 @@ using Spix.AppFront.Helper;
 using Spix.AppFront.Pages.EntitiesContratos.ContractClientPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractIpPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMacPage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractNodePage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractPlanPage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractServerPage;
 using Spix.Domain.EntitiesContratos;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -28,10 +31,16 @@ public partial class DetailContractControl
     private ContractClient? ContractClient { get; set; }
     private ContractIp? ContractIp { get; set; } = new();
     private ContractMac? ContractMac { get; set; } = new();
+    private ContractServer? ContractServer { get; set; } = new();
+    private ContractPlan? ContractPlan { get; set; } = new();
+    private ContractNode? ContractNode { get; set; } = new();
 
     private string BaseUrl = "/api/v1/contractcontrols";
     private string BaseContractIpUrl = "/api/v1/contractips";
     private string BaseContractMacUrl = "/api/v1/contractmacs";
+    private string BaseContractServerUrl = "/api/v1/contractservers";
+    private string BaseContractPlanUrl = "/api/v1/contractplans";
+    private string BaseContractNodeUrl = "/api/v1/contractnodes";
     private bool isLoading = false;
     private bool IsSaving = false;
 
@@ -47,6 +56,18 @@ public partial class DetailContractControl
             if (ContractClient.ControlMacCount > 0)
             {
                 await LoadContractMac(Id);
+            }
+            if (ContractClient.ControlServerCount > 0)
+            {
+                await LoadContractServer(Id);
+            }
+            if (ContractClient.ControlPlanCount > 0)
+            {
+                await LoadContractPlan(Id);
+            }
+            if (ContractClient.ControlNodeCount > 0)
+            {
+                await LoadContractNode(Id);
             }
         }
     }
@@ -86,6 +107,63 @@ public partial class DetailContractControl
         {
             if (result.Succeeded)
                 await LoadContractMac(Id);   //solo refresca si hubo cambios
+        });
+    }
+
+    private async Task ShowContractServersAsyn(Guid? id)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractServer);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Create_Server)]}"  }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractServer(Id);
+        });
+    }
+
+    private async Task ShowContractPlansAsyn(Guid? id)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractPlan);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.ClientPlan)]}"  }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractPlan(Id);
+        });
+    }
+
+    private async Task ShowContractNodesAsyn(Guid? id)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractNode);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.ClientAP)]}"  }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractNode(Id);
         });
     }
 
@@ -137,6 +215,78 @@ public partial class DetailContractControl
         await LoadContractip(Id);
     }
 
+    private async Task DeleteContractServerAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{BaseContractServerUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await LoadContractServer(Id);
+    }
+
+    private async Task DeleteContractPlanAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{BaseContractPlanUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await LoadContractPlan(Id);
+    }
+
+    private async Task DeleteContractNodeAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{BaseContractNodeUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await LoadContractNode(Id);
+    }
+
     private async Task LoadContractip(Guid? id)
     {
         isLoading = true;
@@ -169,6 +319,60 @@ public partial class DetailContractControl
         }
 
         ContractMac = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadContractServer(Guid? id)
+    {
+        isLoading = true;
+        var responseHTTP = await _repository.GetAsync<ContractServer>($"{BaseContractServerUrl}/{Id}");
+        isLoading = false;
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            ContractServer = null;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        ContractServer = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadContractPlan(Guid? id)
+    {
+        isLoading = true;
+        var responseHTTP = await _repository.GetAsync<ContractPlan>($"{BaseContractPlanUrl}/{Id}");
+        isLoading = false;
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            ContractPlan = null;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        ContractPlan = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadContractNode(Guid? id)
+    {
+        isLoading = true;
+        var responseHTTP = await _repository.GetAsync<ContractNode>($"{BaseContractNodeUrl}/{Id}");
+        isLoading = false;
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            ContractNode = null;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        ContractNode = responseHTTP.Response;
 
         await InvokeAsync(StateHasChanged);
     }

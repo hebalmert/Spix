@@ -6,6 +6,8 @@ namespace Spix.AppServiceX.InterfaceEntitiesNet;
 
 public interface IServerServiceX
 {
+    Task<ActionResponse<IEnumerable<Server>>> ComboAsync(string username, Guid? id = null);
+
     Task<ActionResponse<IEnumerable<Server>>> GetAsync(PaginationDTO pagination, string email);
 
     Task<ActionResponse<Server>> GetAsync(Guid id);

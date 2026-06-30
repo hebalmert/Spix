@@ -1,0 +1,34 @@
+<EditForm Model="ContractPlan" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    @if (PlanCategories is null || Plans is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="input-group mb-3">
+            <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.PlanCategory)]</span>
+            <select class="form-select" value="@PlanCategoryId" @onchange="PlanCategoryChanged">
+                @foreach (var item in PlanCategories!)
+                {
+                    <option value="@item.PlanCategoryId">@item.PlanCategoryName</option>
+                }
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.ClientPlan)]</span>
+            <select class="form-select" value="@ContractPlan?.PlanId" @onchange="PlanChanged">
+                @foreach (var item in Plans!)
+                {
+                    <option value="@item.PlanId">@item.PlanName</option>
+                }
+            </select>
+        </div>
+    }
+
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

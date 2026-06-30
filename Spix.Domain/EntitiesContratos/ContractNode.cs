@@ -10,7 +10,6 @@ public class ContractNode
     public Guid ContractNodeId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
-    [Range(1, double.MaxValue, ErrorMessage = "Debe Seleccionar un {0}")]
     [Display(Name = nameof(Resource.Contract), ResourceType = typeof(Resource))]
     public Guid ContractClientId { get; set; }
 
