@@ -3094,6 +3094,60 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        public static string ScheduleStatus_Cancelled {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string ScheduleStatus_Completed {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress.
+        /// </summary>
+        public static string ScheduleStatus_InProgress {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On hold.
+        /// </summary>
+        public static string ScheduleStatus_OnHold {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_OnHold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string ScheduleStatus_Pending {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rescheduled.
+        /// </summary>
+        public static string ScheduleStatus_Rescheduled {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_Rescheduled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Security.
         /// </summary>
         public static string Security {

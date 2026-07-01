@@ -101,9 +101,6 @@ public class ContractQueService : IContractQueService
                 };
             }
 
-            _context.ContractQues.Add(modelo);
-            await _transactionManager.SaveChangesAsync();
-
             var conContract = await _context.ContractClients
                 .AsNoTracking()
                 .Include(x => x.ContractPlans)
@@ -118,7 +115,25 @@ public class ContractQueService : IContractQueService
                 .FirstOrDefaultAsync(x => x.IpNetId == modelo.IpNetId);
             var conPlan = await _context.Plans
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.PlanId == conContract!.ContractPlans!.FirstOrDefault()!.PlanId);
+                .FirstOrDefaultAsync(x => x.PlanId == modelo.PlanId);
+
+            if (conContract == null ||
+                conCliente == null ||
+                conServer?.IpNetwork?.Ip == null ||
+                conIpClient?.Ip == null ||
+                conPlan?.SpeedUp == null ||
+                conPlan.SpeedDown == null ||
+                conPlan.TasaReuso == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractQue>
+                {
+                    WasSuccess = false,
+                    Result = modelo,
+                    Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+                };
+            }
+
             var dato = new
             {
                 nameserver = conServer!.ServerName,
@@ -171,22 +186,32 @@ public class ContractQueService : IContractQueService
             string PcqUp = string.Empty;
 
             //calculamos todo en kbps para poder trabajar el Parent mejor
-            int UpSpeed = 0;
-            int DownSpeed = 0;
-            UpSpeed = conPlan.SpeedUpType == SpeedUpType.M ? conPlan.SpeedUp * 1024 : conPlan.SpeedUp;
-            DownSpeed = conPlan.SpeedDownType == SpeedDownType.M ? conPlan.SpeedDown * 1024 : conPlan.SpeedUp;
-            int UpSpeedLimitAt = (UpSpeed / conPlan.TasaReuso);
-            int DownSpeedLimitAt = (DownSpeed / conPlan.TasaReuso);
-            int UpSpeedFather = cantQueueClients + 1 < conPlan.TasaReuso + 1 ? UpSpeed : (UpSpeedLimitAt * (cantQueueClients + 1));
-            int DownSpeedFather = cantQueueClients + 1 < conPlan.TasaReuso + 1 ? DownSpeed : (DownSpeedLimitAt * (cantQueueClients + 1));
+            int tasaReuso = conPlan.TasaReuso.Value;
+            int UpSpeed = conPlan.SpeedUpType == SpeedUpType.M ? conPlan.SpeedUp.Value * 1024 : conPlan.SpeedUp.Value;
+            int DownSpeed = conPlan.SpeedDownType == SpeedDownType.M ? conPlan.SpeedDown.Value * 1024 : conPlan.SpeedDown.Value;
+            int UpSpeedLimitAt = UpSpeed / tasaReuso;
+            int DownSpeedLimitAt = DownSpeed / tasaReuso;
+            int UpSpeedFather = cantQueueClients + 1 < tasaReuso + 1 ? UpSpeed : UpSpeedLimitAt * (cantQueueClients + 1);
+            int DownSpeedFather = cantQueueClients + 1 < tasaReuso + 1 ? DownSpeed : DownSpeedLimitAt * (cantQueueClients + 1);
 
 
             var quetype = await _context.QueueTypes.Where(x => x.CorporationId == user!.CorporationId).ToListAsync();
             PcqDown = quetype.Where(x => x.Down == true).Select(x => x.TypeName).FirstOrDefault()!;
             PcqUp = quetype.Where(x => x.Up == true).Select(x => x.TypeName).FirstOrDefault()!;
 
+            if (string.IsNullOrWhiteSpace(PcqDown) || string.IsNullOrWhiteSpace(PcqUp))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractQue>
+                {
+                    WasSuccess = false,
+                    Result = modelo,
+                    Message = "Debe configurar un Queue Type Down y un Queue Type Up para esta corporacion."
+                };
+            }
+
             string nomQueues = $"{PcqUp}/{PcqDown}";
-            string nomParent = $"Parent {dato.nomPlan} 1 a {conPlan.TasaReuso}";
+            string nomParent = $"Parent {dato.nomPlan} 1 a {tasaReuso}";
 
 
 
@@ -338,20 +363,15 @@ public class ContractQueService : IContractQueService
 
             mikrotik.Close();
 
-            ContractQue modelo = new()
-            {
-                ContractId = Convert.ToInt32(idquecontract),
-                ServerId = Convert.ToInt32(contratos.ContractServers!.FirstOrDefault()!.ServerId),
-                PlanId = Convert.ToInt32(contratos.ContractPlans!.FirstOrDefault()!.PlanId),
-                IpNetId = Convert.ToInt32(contratos.ContractIps!.FirstOrDefault()!.IpNetId),
-                ServerName = contratos.ContractServers!.FirstOrDefault()!.Server!.ServerName,
-                IpServer = contratos.ContractServers!.FirstOrDefault()!.Server!.IpNetwork!.Ip!,
-                IpCliente = contratos.ContractIps!.FirstOrDefault()!.IpNet!.Ip!,
-                PlanName = contratos.ContractPlans!.FirstOrDefault()!.Plan!.PlanName,
-                TotalVelocidad = contratos.ContractPlans!.FirstOrDefault()!.Plan!.VelocidadTotal,
-                MikrotikId = mikrotiIndex
-            };
+            modelo.ServerName = conServer.ServerName;
+            modelo.IpServer = conServer.IpNetwork.Ip;
+            modelo.IpCliente = conIpClient.Ip;
+            modelo.PlanName = conPlan.PlanName;
+            modelo.TotalVelocidad = conPlan.VelocidadTotal;
+            modelo.MikrotikId = mikrotiIndex;
 
+            _context.ContractQues.Add(modelo);
+            await _transactionManager.SaveChangesAsync();
 
             await _transactionManager.CommitTransactionAsync();
 
@@ -385,6 +405,176 @@ public class ContractQueService : IContractQueService
 
             _context.ContractQues.Remove(dataRemove);
             await _transactionManager.SaveChangesAsync();
+
+            var conContract = await _context.ContractClients
+                .AsNoTracking()
+                .Include(x => x.ContractPlans)
+                .FirstOrDefaultAsync(x => x.ContractClientId == dataRemove.ContractClientId);
+            var conCliente = await _context.Clients.
+                FirstOrDefaultAsync(x => x.ClientId == conContract!.ClientId);
+            var conServer = await _context.Servers
+                .AsNoTracking()
+                .Include(x => x.IpNetwork).FirstOrDefaultAsync(x => x.ServerId == dataRemove.ServerId);
+            var conIpClient = await _context.IpNets
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.IpNetId == dataRemove.IpNetId);
+            var conPlan = await _context.Plans
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.PlanId == dataRemove.PlanId);
+
+            if (conContract == null ||
+                conCliente == null ||
+                conServer?.IpNetwork?.Ip == null ||
+                conIpClient?.Ip == null ||
+                conPlan?.SpeedUp == null ||
+                conPlan.SpeedDown == null ||
+                conPlan.TasaReuso == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+                };
+            }
+
+            var dato = new
+            {
+                nameserver = conServer!.ServerName,
+                ipservidor = conServer.IpNetwork!.Ip,
+                us = conServer.Usuario,
+                pss = conServer.Clave,
+                puerto = conServer.ApiPort,
+                velocidad = $"{conPlan!.VelocidadUp}/{conPlan.VelocidadDown}",
+                ipcliente = conIpClient!.Ip,
+                nomCliente = $"{conCliente!.FirstName} {conCliente!.LastName} - ({conContract!.ControlContrato})",
+                nomPlan = conPlan.PlanName
+            };
+
+            // Verificamos que en QueueParent no se haya creaco un Queu Paren para el plan nuevo
+            var anyQueueParent = await _context.QueueParents.FirstOrDefaultAsync(x => x.ServerId == dataRemove.ServerId
+            && x.PlanId == dataRemove.PlanId);
+
+            var CantCLientes = (from cn in _context.ContractClients
+                                join ip in _context.ContractIps on cn.ContractClientId equals ip.ContractClientId
+                                join qu in _context.ContractQues on cn.ContractClientId equals qu.ContractClientId
+                                where qu.PlanId == dataRemove.PlanId && qu.ServerId == dataRemove.ServerId
+                                select new
+                                {
+                                    ips = ip.IpNet!.Ip
+                                }).ToList();
+
+            int cantQueueClients = CantCLientes.Count;
+
+            string ListaClientsIP = string.Empty;
+            if (cantQueueClients == 0)
+            {
+                ListaClientsIP = "0.0.0.0/0";
+            }
+            if (cantQueueClients > 0)
+            {
+                foreach (var item in CantCLientes)
+                {
+                    ListaClientsIP += item.ips + ", ";
+                }
+                ListaClientsIP = ListaClientsIP.TrimEnd(',', ' ');
+            }
+
+            //Vamos a cargar en nombre del PCQ en las variables para poderlas agregar a la Mikrotik
+            string PcqDown = string.Empty;
+            string PcqUp = string.Empty;
+
+            //calculamos todo en kbps para poder trabajar el Parent mejor
+            int tasaReuso = conPlan.TasaReuso.Value <= 0 ? 1 : conPlan.TasaReuso.Value;
+            int UpSpeed = conPlan.SpeedUpType == SpeedUpType.M ? conPlan.SpeedUp.Value * 1024 : conPlan.SpeedUp.Value;
+            int DownSpeed = conPlan.SpeedDownType == SpeedDownType.M ? conPlan.SpeedDown.Value * 1024 : conPlan.SpeedDown.Value;
+            int UpSpeedLimitAt = UpSpeed / tasaReuso;
+            int DownSpeedLimitAt = DownSpeed / tasaReuso;
+            int UpSpeedFather = cantQueueClients < tasaReuso + 1 ? UpSpeed : UpSpeedLimitAt * cantQueueClients;
+            int DownSpeedFather = cantQueueClients < tasaReuso + 1 ? DownSpeed : DownSpeedLimitAt * cantQueueClients;
+
+            var quetype = await _context.QueueTypes.Where(x => x.CorporationId == conContract!.CorporationId).ToListAsync();
+            PcqDown = quetype.Where(x => x.Down == true).Select(x => x.TypeName).FirstOrDefault()!;
+            PcqUp = quetype.Where(x => x.Up == true).Select(x => x.TypeName).FirstOrDefault()!;
+
+            string nomQueues = $"{PcqUp}/{PcqDown}";
+            string nomParent = $"Parent {dato.nomPlan} 1 a {tasaReuso}";
+
+            //Se hace con conexion a la Mikroti y se deja abierto
+            ////////////////////////////////////////////////////////////
+            MK mikrotik = new MK(dato.ipservidor!, dato.puerto);
+            if (!mikrotik.Login(dato.us, dato.pss))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            mikrotik.Send("/queue/simple/remove");
+            mikrotik.Send("=.id=" + dataRemove.MikrotikId, true);
+
+            int total = 0;
+            int rest = 0;
+            string idmk;
+
+            foreach (var item in mikrotik.Read())
+            {
+                idmk = item;
+                total = idmk.Length;
+                rest = total - 10;
+            }
+
+            //Se aplica cuando existe Parent, pero tiene por lo menos un Cliente asignado.
+            if (anyQueueParent != null && ListaClientsIP != "0.0.0.0/0")
+            {
+                mikrotik.Send("/queue/simple/set");
+                mikrotik.Send("=.id=" + anyQueueParent!.MkId);
+                mikrotik.Send("=limit-at=" + $"{UpSpeedFather}k/{DownSpeedFather}k");
+                mikrotik.Send("=max-limit=" + $"{UpSpeedFather}k/{DownSpeedFather}k");
+                mikrotik.Send("=target=" + ListaClientsIP);
+                mikrotik.Send("/queue/simple/print", true);
+                foreach (var item in mikrotik.Read())
+                {
+                    idmk = item;
+                    total = idmk.Length;
+                    rest = total - 10;
+                }
+
+                anyQueueParent.Down = $"{DownSpeed}k";
+                anyQueueParent.Up = $"{UpSpeed}k";
+
+                _context.Update(anyQueueParent);
+                await _context.SaveChangesAsync();
+            }
+            //Fin Si existe algun anyQueuesParent
+
+            //Se aplica cuando existe Parent, pero queda sin ningun Cliente asignado.
+            if (anyQueueParent != null && ListaClientsIP == "0.0.0.0/0")
+            {
+                mikrotik.Send("/queue/simple/remove");
+                mikrotik.Send("=.id=" + anyQueueParent!.MkId, true);
+
+                foreach (var item in mikrotik.Read())
+                {
+                    idmk = item;
+                    total = idmk.Length;
+                    rest = total - 10;
+                }
+
+                _context.Remove(anyQueueParent);
+                await _context.SaveChangesAsync();
+            }
+            //Fin Si existe algun anyQueuesParent
+
+
+            mikrotik.Close();
+            ///////////////////////////////////////////////////////////////////////////////////
+            /// 
+
+
             await _transactionManager.CommitTransactionAsync();
 
             return new ActionResponse<bool>

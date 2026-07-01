@@ -146,6 +146,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IMkConnectionService, MkConnectionService>();
             services.AddScoped<IConnectionMikrotikControlServiceX, ConnectionMikrotikControlServiceX>();
             services.AddScoped<IConnectionMikrotikControlService, ConnectionMikrotikControlService>();
+            services.AddScoped<IQueueTypeServiceX, QueueTypeServiceX>();
+            services.AddScoped<IQueueTypeService, QueueTypeService>();
 
             //Operaciones
             services.AddScoped<IClientServiceX, ClientServiceX>();

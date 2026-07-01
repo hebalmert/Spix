@@ -8,7 +8,7 @@ public interface IScheduleServiceX
 {
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusAsync(string username);
     Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id);
-    Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? usuarioId);
+    Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId);
     Task<ActionResponse<ScheduleItemDto>> CreateAsync(ScheduleItemDto dto, string UserName);
     Task<ActionResponse<ScheduleItemDto>> UpdateAsync(Guid id, ScheduleItemDto dto);
     Task<ActionResponse<bool>> DeleteAsync(Guid id);

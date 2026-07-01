@@ -327,6 +327,15 @@ public partial class DetailContractControl
 
     private async Task DeleteContractPlanAsync(Guid id)
     {
+        if (HasHotSpotDependencies)
+        {
+            await _sweetAlert.FireAsync(
+                "Plan Cliente",
+                "Debe eliminar Queues Velocidad e IpBinding Acceso antes de cambiar el Plan Cliente.",
+                SweetAlertIcon.Warning);
+            return;
+        }
+
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
             Title = Localizer[nameof(Resource.msg_DeleteTitle)],

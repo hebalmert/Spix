@@ -23,7 +23,7 @@ public class ScheduleServiceX : IScheduleServiceX
 
     public Task<ActionResponse<bool>> DeleteAsync(Guid id) => _scheduleService.DeleteAsync(id);
 
-    public Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? usuarioId) => _scheduleService.GetAsync(fromUtc, toUtc, usuarioId);
+    public Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId) => _scheduleService.GetAsync(fromUtc, toUtc, technicianId);
 
     public Task<ActionResponse<ScheduleItemDto>> UpdateAsync(Guid id, ScheduleItemDto dto) => _scheduleService.UpdateAsync(id, dto);
 

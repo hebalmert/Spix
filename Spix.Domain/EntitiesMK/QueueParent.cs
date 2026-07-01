@@ -15,9 +15,9 @@ public class QueueParent
     [Required(ErrorMessage = "El campo {0} es obligatorio.")]
     public string ParentName { get; set; } = null!;
 
-    public int ServerId { get; set; }
+    public Guid ServerId { get; set; }
 
-    public int PlanId { get; set; }
+    public Guid PlanId { get; set; }
 
     [Display(Name = "Down")]
     [MaxLength(15, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]

@@ -40,8 +40,8 @@
     <div class="mb-3 mt-3">
         <div class="input-group">
             <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.AssignTo)]</span>
-            <InputSelect class="form-control" @bind-Value="Model.UsuarioId">
-                @foreach (var u in Usuarios)
+            <InputSelect class="form-control" @bind-Value="Model.TechnicianId">
+                @foreach (var u in Technicians)
                 {
                     <option value="@u.Value">@u.Name</option>
                 }
@@ -91,16 +91,16 @@
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
-    private List<GuidItemModel> Usuarios = new();
+    private List<GuidItemModel> Technicians = new();
     private List<IntItemModel>? ScheduleStatuses;
     private string BaseComboStatus = "/api/v1/schedulecontrol/loadStatus";
 
     protected override async Task OnInitializedAsync()
     {
         await LoadStatus();
-        var response = await _repository.GetAsync<IEnumerable<GuidItemModel>>("/api/v1/combosData/ComboUsuarios");
+        var response = await _repository.GetAsync<IEnumerable<GuidItemModel>>("/api/v1/combosData/ComboTechnicians");
         if (!await _responseHandler.HandleErrorAsync(response))
-            Usuarios = response.Response!.ToList();
+            Technicians = response.Response!.ToList();
     }
 
     private void OnDateTimeStartUtc(ChangeEventArgs e)

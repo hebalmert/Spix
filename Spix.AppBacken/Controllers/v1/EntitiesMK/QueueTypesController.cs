@@ -1,56 +1,44 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Spix.AppBack.Helper;
 using Spix.AppInfra.ErrorHandling;
-using Spix.AppServiceX.InterfaceSchedule;
-using Spix.Domain.EntitiesSchedule;
+using Spix.AppServiceX.InterfacesMk;
+using Spix.Domain.EntitiesMK;
 using Spix.DomainLogic.AppResponses;
-using Spix.DomainLogic.ItemsGeneric;
+using Spix.DomainLogic.Pagination;
 
-namespace Spix.AppBacken.Controllers.v1.EntitiesGen;
+namespace Spix.AppBacken.Controllers.v1.EntitiesMK;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/schedulecontrol")]
+[Route("api/v{version:apiVersion}/queuetypes")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
 [ApiController]
-public class ScheduleController : ControllerBase
+public class QueueTypesController : ControllerBase
 {
-    private readonly IScheduleServiceX _unitOfWork;
+    private readonly IQueueTypeServiceX _unitOfWork;
     private readonly IStringLocalizer _localizer;
 
-    public ScheduleController(IScheduleServiceX scheduleServiceX, IStringLocalizer localizer)
+    public QueueTypesController(IQueueTypeServiceX unitOfWork, IStringLocalizer localizer)
     {
-        _unitOfWork = scheduleServiceX;
+        _unitOfWork = unitOfWork;
         _localizer = localizer;
     }
 
-    [HttpGet("loadStatus")]
-    public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStatus()
-    {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-        var response = await _unitOfWork.ComboStatusAsync(userClaimsInfo.UserName);
-        if (response.WasSuccess)
-        {
-            return Ok(response.Result);
-        }
-        return BadRequest(response.Message);
-    }
-
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] DateTime fromUtc, [FromQuery] DateTime toUtc, [FromQuery] Guid? technicianId)
+    public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
     {
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-            var response = await _unitOfWork.GetAsync(fromUtc, toUtc, technicianId);
+            var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya está localizado
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -59,11 +47,29 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetAsync(Guid id)
     {
         try
         {
-            var response = await _unitOfWork.GetByIdAsync(id);
+            var response = await _unitOfWork.GetAsync(id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> PutAsync(QueueType modelo)
+    {
+        try
+        {
+            var response = await _unitOfWork.UpdateAsync(modelo);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
@@ -77,35 +83,17 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> PostAsync([FromBody] ScheduleItemDto dto)
+    public async Task<IActionResult> PostAsync(QueueType modelo)
     {
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-            var response = await _unitOfWork.CreateAsync(dto, userClaimsInfo.UserName);
+            var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya está localizado
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
-        }
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync(Guid id, [FromBody] ScheduleItemDto dto)
-    {
-        try
-        {
-            var response = await _unitOfWork.UpdateAsync(id, dto);
-            return ResponseHelper.Format(response);
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(ex.Message); // Ya está localizado
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -123,7 +111,7 @@ public class ScheduleController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya está localizado
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {

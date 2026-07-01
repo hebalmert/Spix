@@ -1,5 +1,5 @@
-﻿using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
+using Spix.Domain.EntitiesOper;
 using System.ComponentModel.DataAnnotations;
 
 namespace Spix.Domain.EntitiesSchedule;
@@ -9,7 +9,7 @@ public class ScheduleItem
     [Key]
     public Guid ScheduleItemId { get; set; }
 
-    // Título y descripción
+    // Titulo y descripcion
     [MaxLength(100)]
     [Required]
     public string Title { get; set; } = null!;
@@ -30,23 +30,23 @@ public class ScheduleItem
     [MaxLength(100)]
     public string? TimeZoneId { get; set; }
 
-    // Usuario al que se le asigna la tarea (Spix.Usuario)
+    // Tecnico al que se le asigna la tarea
     [Required]
-    public Guid UsuarioId { get; set; }
-    public Usuario? Usuario { get; set; }
+    public Guid TechnicianId { get; set; }
+    public Technician? Technician { get; set; }
 
-    //Cual fue el usuario que Creo el Registro
-    [Display(Name = "Quien Creo el QcGeneral")]  //El usuario que creo el QC su nombre en base al logueo del usuario.
+    //Cual fue el usuario que creo el registro
+    [Display(Name = "Quien Creo el QcGeneral")]
     public string? UsuarioOwner { get; set; }
 
-    [Display(Name = "Quien Creo el QcGeneral")]  //El UserId del usuario que lo creo para ubicarle sus credenciales.
+    [Display(Name = "Quien Creo el QcGeneral")]
     public Guid? UserId { get; set; }
 
-    // Recurrencia simple (puedes crecer esto luego)
+    // Recurrencia simple
     public bool IsRecurring { get; set; }
 
     [MaxLength(200)]
-    public string? RecurrenceRule { get; set; } // estilo RRULE: "FREQ=WEEKLY;BYDAY=MO,WE"
+    public string? RecurrenceRule { get; set; }
 
     public DateTime? RecurrenceEndUtc { get; set; }
 

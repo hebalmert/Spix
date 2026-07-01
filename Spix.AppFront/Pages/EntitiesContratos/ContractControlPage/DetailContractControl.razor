@@ -239,9 +239,9 @@
                                     <span class="control-value control-value-end">@ContractPlan.Plan!.PrecioconImpuesto?.ToString("N2")</span>
                                 </div>
                                 <div class="control-action">
-                                    @if (HasContractQue)
+                                    @if (HasHotSpotDependencies)
                                     {
-                                        <button type="button" class="btn-mini-danger control-action-disabled" disabled title="Elimine Queues Velocidad primero">
+                                        <button type="button" class="btn-mini-danger control-action-disabled" disabled title="Elimine Queues Velocidad e IpBinding Acceso primero">
                                             <i class="fa fa-lock"></i>
                                         </button>
                                     }

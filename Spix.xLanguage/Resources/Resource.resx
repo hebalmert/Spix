@@ -1372,5 +1372,23 @@
   <data name="PurchaseStatus_Completado" xml:space="preserve">
     <value>Completed</value>
   </data>
+  <data name="ScheduleStatus_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="ScheduleStatus_InProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="ScheduleStatus_OnHold" xml:space="preserve">
+    <value>On hold</value>
+  </data>
+  <data name="ScheduleStatus_Rescheduled" xml:space="preserve">
+    <value>Rescheduled</value>
+  </data>
+  <data name="ScheduleStatus_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="ScheduleStatus_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
 </root>
 

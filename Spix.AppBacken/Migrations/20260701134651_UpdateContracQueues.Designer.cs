@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spix.AppInfra;
 
@@ -11,9 +12,11 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260701134651_UpdateContracQueues")]
+    partial class UpdateContracQueues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2633,8 +2636,7 @@ namespace Spix.AppBacken.Migrations
                 {
                     b.Property<Guid>("ScheduleItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -2677,9 +2679,6 @@ namespace Spix.AppBacken.Migrations
                     b.Property<DateTime>("StartUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("TechnicianId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("TimeZoneId")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -2695,6 +2694,9 @@ namespace Spix.AppBacken.Migrations
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UsuarioOwner")
                         .HasColumnType("nvarchar(max)");
 
@@ -2702,7 +2704,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId");
 
-                    b.HasIndex("TechnicianId");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("ScheduleItems");
                 });
@@ -3821,18 +3823,18 @@ namespace Spix.AppBacken.Migrations
                     b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
                         .WithMany()
                         .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Spix.Domain.EntitiesOper.Technician", "Technician")
+                    b.HasOne("Spix.Domain.EntitesSoftSec.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Corporation");
 
-                    b.Navigation("Technician");
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitesSoftSec.Usuario", b =>

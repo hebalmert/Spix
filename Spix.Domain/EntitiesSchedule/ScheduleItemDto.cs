@@ -10,8 +10,8 @@ public class ScheduleItemDto
     public DateTime EndUtc { get; set; }
     public bool IsAllDay { get; set; }
 
-    public Guid UsuarioId { get; set; }
-    public string? UsuarioNombreCompleto { get; set; }
+    public Guid TechnicianId { get; set; }
+    public string? TechnicianName { get; set; }
 
     public bool IsRecurring { get; set; }
     public string? RecurrenceRule { get; set; }
