@@ -11,7 +11,6 @@ using Spix.xFiles.FileHelper;
 using Spix.xFiles.QRgenerate;
 using Spix.xNetwork.IpHelper;
 using Spix.xNetwork.MacHelper;
-using Spix.xNetwork.MkHelper;
 using Spix.xNetwork.PingHelper;
 using Spix.xNotification.Implements;
 using Spix.xNotification.Interfaces;
@@ -30,9 +29,6 @@ namespace Spix.AppBack.DependencyInjection
 
             // Manejo de transacciones por request
             services.AddScoped<ITransactionManager, TransactionManager>();
-
-            // Controladores para manejo de dispositivos Mikrotik
-            services.AddScoped<IMikrotikControl, MikrotikControl>();
 
             // Manejo de Ping para verificar la conectividad de red
             services.AddScoped<IPingControl, PingControl>();
