@@ -1,6 +1,7 @@
 ﻿using Spix.Domain.Entities;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.EntitiesMK;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -70,5 +71,5 @@ public class Server
     public ICollection<ContractServer>? ContractServers { get; set; }
     public ICollection<ContractQue>? ContractQues { get; set; }
     public ICollection<ContractBind>? ContractBinds { get; set; }
-
+    public ICollection<QueueParent>? QueueParents { get; set; }
 }

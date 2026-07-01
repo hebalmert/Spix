@@ -88,6 +88,8 @@ public class DataContext : IdentityDbContext<User>
     //EntitiesMK
 
     public DbSet<ConnectionMikrotikControl> ConnectionMikrotikControls => Set<ConnectionMikrotikControl>();
+    public DbSet<QueueParent> QueueParents => Set<QueueParent>();
+    public DbSet<QueueType> QueueTypes => Set<QueueType>();
 
 
     //EntitiesOper
