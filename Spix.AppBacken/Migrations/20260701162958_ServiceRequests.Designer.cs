@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spix.AppInfra;
 
@@ -11,9 +12,11 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260701162958_ServiceRequests")]
+    partial class ServiceRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2458,7 +2461,10 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("UserName")
                         .IsUnique();
 
-                    b.HasIndex("CorporationId", "FirstName", "LastName", "Document")
+                    b.HasIndex("CorporationId", "DocumentTypeId", "Document")
+                        .IsUnique();
+
+                    b.HasIndex("CorporationId", "FirstName", "LastName")
                         .IsUnique();
 
                     b.ToTable("Clients");
@@ -2541,7 +2547,10 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("UserName")
                         .IsUnique();
 
-                    b.HasIndex("CorporationId", "FirstName", "LastName", "Document")
+                    b.HasIndex("CorporationId", "DocumentTypeId", "Document")
+                        .IsUnique();
+
+                    b.HasIndex("CorporationId", "FirstName", "LastName")
                         .IsUnique();
 
                     b.ToTable("Contractors");
@@ -2615,6 +2624,9 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique();
 
                     b.HasIndex("CorporationId", "DocumentTypeId", "Document")
+                        .IsUnique();
+
+                    b.HasIndex("CorporationId", "FirstName", "LastName")
                         .IsUnique();
 
                     b.ToTable("Technicians");

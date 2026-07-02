@@ -1,0 +1,140 @@
+.tech-dashboard {
+    min-height: calc(100vh - 2rem);
+    padding: 2rem;
+    background: #f4f6f8;
+}
+
+.tech-dashboard__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tech-dashboard__eyebrow {
+    margin: 0 0 .25rem;
+    color: #52616f;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.tech-dashboard__header h1 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.tech-dashboard__status {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .85rem;
+    border-radius: 8px;
+    background: #fff4e5;
+    color: #9a5b00;
+    font-weight: 700;
+}
+
+.tech-dashboard__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.tech-card {
+    position: relative;
+    min-height: 190px;
+    overflow: hidden;
+    border-radius: 8px;
+    padding: 1.5rem;
+    color: #fff;
+}
+
+.tech-card--agenda {
+    background: #0f766e;
+}
+
+.tech-card--requests {
+    background: #334155;
+}
+
+.tech-card--network {
+    background: #2563eb;
+}
+
+.tech-card__content {
+    position: relative;
+    z-index: 1;
+    max-width: 78%;
+}
+
+.tech-card__label {
+    display: block;
+    margin-bottom: .75rem;
+    font-weight: 700;
+    opacity: .9;
+}
+
+.tech-card h2,
+.tech-dashboard__panel h2 {
+    margin: 0 0 .5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.tech-card p,
+.tech-dashboard__panel p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.tech-card__icon {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1rem;
+    font-size: 4.5rem;
+    opacity: .28;
+}
+
+.tech-dashboard__panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
+}
+
+.tech-dashboard__panel i {
+    color: #0f766e;
+    font-size: 2.25rem;
+}
+
+@media (max-width: 992px) {
+    .tech-dashboard__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .tech-dashboard {
+        padding: 1rem;
+    }
+
+    .tech-dashboard__header,
+    .tech-dashboard__panel {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tech-card__content {
+        max-width: 100%;
+    }
+}

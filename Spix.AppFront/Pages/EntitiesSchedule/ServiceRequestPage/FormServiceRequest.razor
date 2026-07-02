@@ -1,0 +1,207 @@
+<EditForm Model="Model" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    @if (!IsEditControl)
+    {
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="input-group position-relative">
+                    <span class="input-group-text" style="width:150px">Cliente</span>
+                    <input class="form-control"
+                           placeholder="Escriba para buscar cliente o contrato..."
+                           @bind="ContractFilter"
+                           @bind:event="oninput"
+                           @bind:after="SearchContracts" />
+
+                    @if (Contracts.Count > 0)
+                    {
+                        <ul class="list-group position-absolute w-100 shadow-sm"
+                            style="top:100%; left:0; z-index:2000; max-height:240px; overflow-y:auto;">
+                            @foreach (var contract in Contracts)
+                            {
+                                <li class="list-group-item list-group-item-action"
+                                    @onclick="() => SelectContract(contract)">
+                                    @contract.ClientFullName - Contrato @contract.ControlContrato - @contract.ZoneName
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-12 col-md-4 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Contrato</span>
+                <input class="form-control" value="@Model.ControlContrato" disabled />
+            </div>
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Telefono</span>
+                <input class="form-control" value="@Model.PhoneNumber" disabled />
+            </div>
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            @if (ScheduleStatuses is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Estatus</span>
+                    <select class="form-select" value="@(IsEditControl ? ((int)Model.ScheduleStatus).ToString() : "1")" @onchange="StatusChanged" disabled="@IsCompleted">
+                        @foreach (var item in ScheduleStatuses!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-8 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Direccion</span>
+                <input class="form-control" value="@($"{Model.Address} - {Model.CityName} / {Model.ZoneName}")" disabled />
+            </div>
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Programada</span>
+                <input type="datetime-local" class="form-control" disabled="@IsCompleted"
+                       value="@Model.ScheduledAtUtc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
+                       @oninput="OnScheduledChanged" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-4 mb-2">
+            @if (Technicians is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">Tecnico</span>
+                    <select class="form-select" value="@Model.TechnicianId" @onchange="TechnicianChanged" disabled="@IsCompleted">
+                        @foreach (var technician in Technicians)
+                        {
+                            <option value="@technician.Value">@technician.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+        <div class="col-12 col-md-8 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Red</span>
+                <input class="form-control" value="@($"Srv: {Model.ServerName} | IP: {Model.IpCliente} | MAC: {Model.MacCliente} | Plan: {Model.PlanName} {Model.PlanSpeed}")" disabled />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Razon</span>
+                <InputTextArea class="form-control" @bind-Value="Model.ClientReason" disabled="@IsCompleted" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Comentario tecnico</span>
+                <InputTextArea class="form-control" @bind-Value="Model.TechnicianComment" disabled="@IsCompleted" />
+            </div>
+        </div>
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">Recomendacion</span>
+                <InputTextArea class="form-control" @bind-Value="Model.Recommendation" disabled="@IsCompleted" />
+            </div>
+        </div>
+    </div>
+
+    @if (IsEditControl && Model.ServiceRequestId != Guid.Empty)
+    {
+        <hr />
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Servicios realizados</h5>
+        </div>
+
+        @if (!IsCompleted)
+        {
+            <div class="row mb-3">
+                <div class="col-12 col-md-3 mb-2">
+                    <select class="form-select" value="@Detail.ServiceCategoryId" @onchange="CategoryChanged">
+                        <option value="@Guid.Empty">[Categoria]</option>
+                        @foreach (var category in ServiceCategories)
+                        {
+                            <option value="@category.ServiceCategoryId">@category.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 mb-2">
+                    <InputSelect class="form-select" @bind-Value="Detail.ServiceClientId">
+                        <option value="@Guid.Empty">[Servicio]</option>
+                        @foreach (var service in ServiceClients)
+                        {
+                            <option value="@service.ServiceClientId">@service.ServiceName</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-12 col-md-4 mb-2">
+                    <InputText class="form-control" placeholder="Detalle" @bind-Value="Detail.Detail" />
+                </div>
+                <div class="col-12 col-md-2 mb-2">
+                    <ButtonFormNew OnClick="AddDetail" TooTip="Agregar" Style="width:100%" />
+                </div>
+            </div>
+        }
+
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Servicio</th>
+                    <th>Detalle</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detail in Model.Details)
+                {
+                    <tr>
+                        <td>@detail.ServiceCategoryName</td>
+                        <td>@detail.ServiceClientName</td>
+                        <td>@detail.Detail</td>
+                        <td class="text-end">
+                            @if (!IsCompleted)
+                            {
+                                <ButtonDelete OnClick="() => DeleteDetail(detail.ServiceRequestDetailId)" />
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="mb-4 d-flex justify-content-center gap-2 mt-4">
+        @if (!IsCompleted)
+        {
+            <ButtonFormSave IsSaving="IsSaving" />
+        }
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

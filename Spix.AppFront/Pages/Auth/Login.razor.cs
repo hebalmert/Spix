@@ -52,9 +52,12 @@ public partial class Login
         await _sessionModel.SetSessionAsync(sessionModelDTO, "SessionDTO");
 
         isProcessing = false;
-        var dashboardUrl = string.Equals(role, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)
-            ? "/client-dashboard"
-            : "/dashboard";
+        var dashboardUrl = role switch
+        {
+            var r when string.Equals(r, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase) => "/client-dashboard",
+            var r when string.Equals(r, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase) => "/tech-dashboard",
+            _ => "/dashboard"
+        };
 
         _navigation.NavigateTo(dashboardUrl);
     }

@@ -46,9 +46,12 @@ public partial class ChangePassword
             .FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role")
             ?.Value;
 
-        var dashboardUrl = string.Equals(role, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)
-            ? "/client-dashboard"
-            : "/dashboard";
+        var dashboardUrl = role switch
+        {
+            var r when string.Equals(r, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase) => "/client-dashboard",
+            var r when string.Equals(r, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase) => "/tech-dashboard",
+            _ => "/dashboard"
+        };
 
         _navigation.NavigateTo(dashboardUrl);
     }

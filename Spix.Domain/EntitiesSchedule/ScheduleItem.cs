@@ -1,5 +1,6 @@
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.EnumTypes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Spix.Domain.EntitiesSchedule;
@@ -63,8 +64,14 @@ public class ScheduleItem
     //Status
     public ScheduleStatus? ScheduleStatus { get; set; }
 
+    public ScheduleOrigin Origin { get; set; }
+
+    public Guid? ServiceRequestId { get; set; }
+
     //Relaciones
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
+
+    public ServiceRequest? ServiceRequest { get; set; }
 }

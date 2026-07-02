@@ -1,0 +1,72 @@
+@page "/servicerequests"
+@page "/servicerequests/{Id:guid}"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.Domain.EntitiesSchedule
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3 class="mb-4">Solicitudes de Servicio</h3>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <ButtonFormNew OnClick="() => ShowModalAsync()" TooTip="Nueva" Style="width:130px" />
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="Requests">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Cliente</th>
+                                <th>Contrato</th>
+                                <th>Tecnico</th>
+                                <th>Programada</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Requests!)
+                            {
+                                <tr>
+                                    <td>@item.RequestNumber</td>
+                                    <td>@item.ClientFullName</td>
+                                    <td>@item.ControlContrato</td>
+                                    <td>@item.TechnicianName</td>
+                                    <td>@item.ScheduledAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td><ScheduleStatusBadge Value="@item.ScheduleStatus" /></td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceRequestId, true)" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (item.ScheduleStatus != ScheduleStatus.Completed)
+                                        {
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.ServiceRequestId)" />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+
+        <hr />
+        @if (Requests is not null)
+        {
+            <Pagination CurrentPage="CurrentPage"
+                        SelectedPage="SelectedPage"
+                        TotalPages="TotalPages" />
+        }
+    </div>
+</div>

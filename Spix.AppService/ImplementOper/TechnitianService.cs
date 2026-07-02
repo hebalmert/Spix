@@ -250,6 +250,7 @@ public class TechnitianService : ITechnitianService
             User UserLogin = await _userHelper.GetUserByUserNameAsync(username);
             if (UserLogin == null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<Technician>
                 {
                     WasSuccess = false,
@@ -260,6 +261,7 @@ public class TechnitianService : ITechnitianService
             User CheckUserName = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
             if (CheckUserName != null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<Technician>
                 {
                     WasSuccess = false,
@@ -270,6 +272,7 @@ public class TechnitianService : ITechnitianService
             var user = await _userHelper.GetUserByEmailAsync(modelo.Email);
             if (user != null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<Technician>
                 {
                     WasSuccess = false,
@@ -380,6 +383,15 @@ public class TechnitianService : ITechnitianService
     {
         User user = await _userHelper.AddUserUsuarioAsync(modelo.FirstName, modelo.LastName, modelo.UserName, modelo.Email,
             modelo.PhoneNumber, modelo.Address, "Technician", modelo.CorporationId, modelo.Imagen!, "Technician", modelo.Active, modelo.UserType);
+
+        if (user == null)
+        {
+            return new Response
+            {
+                IsSuccess = false,
+                Message = _localizer["Generic_UserCreationFail"]
+            };
+        }
 
         //Envio de Correo con Token de seguridad para Verificar el correo
         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);

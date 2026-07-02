@@ -113,6 +113,8 @@ public class DataContext : IdentityDbContext<User>
 
     //EntitiesSchedule
     public DbSet<ScheduleItem> ScheduleItems => Set<ScheduleItem>();
+    public DbSet<ServiceRequest> ServiceRequests => Set<ServiceRequest>();
+    public DbSet<ServiceRequestDetail> ServiceRequestDetails => Set<ServiceRequestDetail>();
 
 
 

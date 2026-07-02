@@ -11,8 +11,7 @@ public class ContractorConfig : IEntityTypeConfiguration<Contractor>
         builder.HasKey(e => e.ContractorId);
         builder.Property(x => x.ContractorId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => e.UserName).IsUnique();
-        builder.HasIndex(e => new { e.CorporationId, e.DocumentTypeId, e.Document }).IsUnique();
-        builder.HasIndex(e => new { e.CorporationId, e.FirstName, e.LastName }).IsUnique();
+        builder.HasIndex(e => new { e.CorporationId, e.FirstName, e.LastName, e.Document }).IsUnique();
         builder.Property(e => e.Rate).HasPrecision(15, 2);
         builder.Property(e => e.DateCreated).HasColumnType("date");
         //Evitar el borrado en cascada

@@ -96,7 +96,9 @@ public class ScheduleService : IScheduleService
                 TechnicianName = $"{x.Technician!.FirstName} {x.Technician.LastName}",
                 IsRecurring = x.IsRecurring,
                 RecurrenceRule = x.RecurrenceRule,
-                ScheduleStatus = x.ScheduleStatus
+                ScheduleStatus = x.ScheduleStatus,
+                Origin = x.Origin,
+                ServiceRequestId = x.ServiceRequestId
             }).ToList();
 
             return new ActionResponse<IEnumerable<ScheduleItemDto>>
@@ -140,7 +142,9 @@ public class ScheduleService : IScheduleService
                 TechnicianName = $"{entity.Technician!.FirstName} {entity.Technician.LastName}",
                 IsRecurring = entity.IsRecurring,
                 RecurrenceRule = entity.RecurrenceRule,
-                ScheduleStatus = entity.ScheduleStatus
+                ScheduleStatus = entity.ScheduleStatus,
+                Origin = entity.Origin,
+                ServiceRequestId = entity.ServiceRequestId
             };
 
             return new ActionResponse<ScheduleItemDto>
@@ -199,7 +203,8 @@ public class ScheduleService : IScheduleService
                 CorporationId = Convert.ToInt32(user.CorporationId),
                 UserId = Guid.Parse(user.Id),
                 UsuarioOwner = $"{user.FirstName!} {user.LastName!}",
-                ScheduleStatus = dto.ScheduleStatus
+                ScheduleStatus = dto.ScheduleStatus,
+                Origin = ScheduleOrigin.Schedule
             };
 
             _context.ScheduleItems.Add(entity);
@@ -252,6 +257,17 @@ public class ScheduleService : IScheduleService
                 };
             }
 
+            if (entity.Origin == Spix.DomainLogic.EnumTypes.ScheduleOrigin.ServiceRequest)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ScheduleItemDto>
+                {
+                    WasSuccess = false,
+                    Result = dto,
+                    Message = "Esta agenda fue creada desde una Solicitud de Servicio. Debe modificarse desde Solicitudes de Servicio."
+                };
+            }
+
             entity.Title = dto.Title!;
             entity.Description = dto.Description;
             entity.StartUtc = dto.StartUtc;
@@ -293,6 +309,16 @@ public class ScheduleService : IScheduleService
                 {
                     WasSuccess = false,
                     Message = "Problemas para Enconstrar el Registro Indicado"
+                };
+            }
+
+            if (entity.Origin == Spix.DomainLogic.EnumTypes.ScheduleOrigin.ServiceRequest)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "Esta agenda fue creada desde una Solicitud de Servicio. Debe modificarse desde Solicitudes de Servicio."
                 };
             }
 

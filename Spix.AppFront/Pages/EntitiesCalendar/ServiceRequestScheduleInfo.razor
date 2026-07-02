@@ -1,0 +1,115 @@
+@using Spix.AppFront.Helper
+@using Spix.Domain.EntitiesSchedule
+@using Spix.HttpService
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (IsLoading)
+            {
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.Title)]</span>
+                        <input class="form-control" value="@Schedule.Title" disabled />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.Description)]</span>
+                        <textarea class="form-control" disabled>@Schedule.Description</textarea>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.StartDate)]</span>
+                        <input class="form-control" value="@Schedule.StartUtc.ToLocalTime().ToString("MM/dd/yyyy hh:mm tt")" disabled />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.EndDate)]</span>
+                        <input class="form-control" value="@Schedule.EndUtc.ToLocalTime().ToString("MM/dd/yyyy hh:mm tt")" disabled />
+                    </div>
+                </div>
+
+                <div class="mb-3 mt-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.AssignTo)]</span>
+                        <input class="form-control" value="@Schedule.TechnicianName" disabled />
+                    </div>
+                </div>
+
+                <hr />
+                <div class="mb-3 mt-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.Status)]</span>
+                        <div class="form-control">
+                            @if (Schedule.ScheduleStatus.HasValue)
+                            {
+                                <ScheduleStatusBadge Value="@Schedule.ScheduleStatus.Value" />
+                            }
+                        </div>
+                    </div>
+                </div>
+                <hr />
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <ButtonFormBack OnClick="Return" TooTip="Volver" Style="width:120px" />
+                    <ButtonFormNew OnClick="GoToServiceRequest" TooTip="Ver Solicitud" Icon="fa fa-external-link-alt" Style="width:150px" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] private ModalService ModalService { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private IRepository _repository { get; set; } = null!;
+    [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
+
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public SpixCalendar.CalendarEventDto Event { get; set; } = null!;
+
+    private ScheduleItemDto Schedule = new();
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _repository.GetAsync<ScheduleItemDto>($"/api/v1/schedulecontrol/{Event.id}");
+        if (!await _responseHandler.HandleErrorAsync(response))
+        {
+            Schedule = response.Response ?? new();
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task GoToServiceRequest()
+    {
+        await ModalService.CloseAsync(ModalResult.Ok());
+        NavigationManager.NavigateTo($"/servicerequests/{Event.serviceRequestId}");
+    }
+
+    private async Task Return()
+    {
+        await ModalService.CloseAsync(ModalResult.Cancel());
+    }
+}

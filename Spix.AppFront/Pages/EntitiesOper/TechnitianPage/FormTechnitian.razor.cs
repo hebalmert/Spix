@@ -53,6 +53,11 @@ public partial class FormTechnitian
             return;
         }
         DocumentTypes = responseHttp.Response;
+
+        if (!IsEditControl && Technician.DocumentTypeId == Guid.Empty && DocumentTypes?.Count > 0)
+        {
+            Technician.DocumentTypeId = DocumentTypes[0].DocumentTypeId;
+        }
     }
 
     private async Task DocuementTypeChanged(ChangeEventArgs e)

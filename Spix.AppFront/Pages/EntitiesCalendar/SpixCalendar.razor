@@ -1,6 +1,7 @@
 ﻿@using Spix.AppFront.GenericModel
 @using Spix.AppFront.Helper
 @using Spix.Domain.EntitiesSchedule
+@using Spix.DomainLogic.EnumTypes
 @using Spix.HttpService
 
 <div id="spix-calendar" class="spix-calendar"></div>
@@ -11,6 +12,7 @@
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private IJSRuntime JS { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
     private DotNetObjectReference<SpixCalendar>? _objRef;
     private List<CalendarEventDto> _events = new();
@@ -72,7 +74,9 @@
                 title = $"{x.Title} - {x.TechnicianName}",
                 start = DateTime.SpecifyKind(x.StartUtc, DateTimeKind.Utc).ToLocalTime(),
                 end = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc).ToLocalTime(),
-                allDay = x.IsAllDay
+                allDay = x.IsAllDay,
+                origin = x.Origin,
+                serviceRequestId = x.ServiceRequestId
             })
             .ToList();
     }
@@ -86,6 +90,13 @@
     [JSInvokable]
     public async Task OnEventClick(string id)
     {
+        var item = _events.FirstOrDefault(x => x.id == id);
+        if (item?.origin == ScheduleOrigin.ServiceRequest)
+        {
+            await ShowServiceRequestScheduleModalAsync(item);
+            return;
+        }
+
         await ShowModalAsync(Guid.Parse(id), true, null);
     }
 
@@ -123,6 +134,17 @@
         });
     }
 
+    private async Task ShowServiceRequestScheduleModalAsync(CalendarEventDto item)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Title", "Solicitud de Servicio" },
+            { "Event", item }
+        };
+
+        await _modalService.ShowAsync(typeof(ServiceRequestScheduleInfo), parameters);
+    }
+
     public async Task ReloadAsync()
     {
         await LoadEventsAsync();
@@ -136,5 +158,7 @@
         public DateTime start { get; set; }
         public DateTime end { get; set; }
         public bool allDay { get; set; }
+        public ScheduleOrigin origin { get; set; }
+        public Guid? serviceRequestId { get; set; }
     }
 }

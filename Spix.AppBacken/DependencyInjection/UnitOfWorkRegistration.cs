@@ -184,6 +184,8 @@ namespace Spix.AppBack.DependencyInjection
             //Schedule
             services.AddScoped<IScheduleServiceX, ScheduleServiceX>();
             services.AddScoped<IScheduleService, ScheduleService>();
+            services.AddScoped<IServiceRequestServiceX, ServiceRequestServiceX>();
+            services.AddScoped<IServiceRequestService, ServiceRequestService>();
 
         }
     }

@@ -1,0 +1,55 @@
+@page "/tech-dashboard"
+@attribute [Authorize(Roles = "Technician")]
+@layout MainLayout
+
+<PageTitle>Tech Dashboard</PageTitle>
+
+<section class="tech-dashboard">
+    <div class="tech-dashboard__header">
+        <div>
+            <p class="tech-dashboard__eyebrow">Portal Tecnico</p>
+            <h1>Mis Servicios</h1>
+        </div>
+        <span class="tech-dashboard__status">
+            <i class="fa fa-screwdriver-wrench"></i>
+            En ruta
+        </span>
+    </div>
+
+    <div class="tech-dashboard__grid">
+        <div class="tech-card tech-card--agenda">
+            <div class="tech-card__content">
+                <span class="tech-card__label">Agenda</span>
+                <h2>Servicios asignados</h2>
+                <p>Vista base para turnos, visitas programadas y prioridades del dia.</p>
+            </div>
+            <i class="fa fa-calendar-check tech-card__icon"></i>
+        </div>
+
+        <div class="tech-card tech-card--requests">
+            <div class="tech-card__content">
+                <span class="tech-card__label">Solicitudes</span>
+                <h2>Ordenes de servicio</h2>
+                <p>Espacio reservado para diagnostico, comentarios y cierre tecnico.</p>
+            </div>
+            <i class="fa fa-clipboard-list tech-card__icon"></i>
+        </div>
+
+        <div class="tech-card tech-card--network">
+            <div class="tech-card__content">
+                <span class="tech-card__label">Red</span>
+                <h2>Herramientas de campo</h2>
+                <p>Base para revisar cliente, IP, MAC, nodo y estado del enlace.</p>
+            </div>
+            <i class="fa fa-network-wired tech-card__icon"></i>
+        </div>
+    </div>
+
+    <div class="tech-dashboard__panel">
+        <div>
+            <h2>Actividad tecnica</h2>
+            <p>Este bloque queda listo para mostrar servicios pendientes, rutas, alertas o cambios de estado.</p>
+        </div>
+        <i class="fa fa-bell"></i>
+    </div>
+</section>

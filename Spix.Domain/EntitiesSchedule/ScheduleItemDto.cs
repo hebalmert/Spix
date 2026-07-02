@@ -1,4 +1,6 @@
-﻿namespace Spix.Domain.EntitiesSchedule;
+using Spix.DomainLogic.EnumTypes;
+
+namespace Spix.Domain.EntitiesSchedule;
 
 public class ScheduleItemDto
 {
@@ -17,5 +19,8 @@ public class ScheduleItemDto
     public string? RecurrenceRule { get; set; }
 
     public ScheduleStatus? ScheduleStatus { get; set; }
-}
 
+    public ScheduleOrigin Origin { get; set; }
+
+    public Guid? ServiceRequestId { get; set; }
+}
