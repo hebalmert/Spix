@@ -1,0 +1,66 @@
+@page "/preexonerateds"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesPayment
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Exoneraciones Programadas</h3>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <ButtonFormNew OnClick="ShowModalAsync" TooTip="Nuevo" />
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="PreExonerateds">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Contrato</th>
+                                <th>Plan</th>
+                                <th>Ano</th>
+                                <th>Mes</th>
+                                <th class="text-end">Exonerado</th>
+                                <th colspan="2" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in PreExonerateds!)
+                            {
+                                <tr>
+                                    <td>@item.DateExonerated.ToString("dd/MM/yyyy")</td>
+                                    <td>@($"{item.Client?.FirstName} {item.Client?.LastName}")</td>
+                                    <td>@item.ContractClient?.ControlContrato</td>
+                                    <td>@item.Plan?.PlanName</td>
+                                    <td>@item.YearNumber</td>
+                                    <td>@GetMonthName(item.MonthType)</td>
+                                    <td class="text-end">@item.PriceWithTax.ToString("N2")</td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowEditAsync(item.PreExoneratedId)" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonDelete OnClick="() => DeleteAsync(item.PreExoneratedId)" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+        <hr />
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    </div>
+</div>

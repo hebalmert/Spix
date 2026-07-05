@@ -20,5 +20,11 @@ public class BillingContractDto
 
     public string? PlanName { get; set; }
 
+    public Guid PlanId { get; set; }
+
     public decimal? PlanPrice { get; set; }
+
+    public decimal? TaxRate { get; set; }
+
+    public decimal? PlanPriceWithTax { get; set; }
 }

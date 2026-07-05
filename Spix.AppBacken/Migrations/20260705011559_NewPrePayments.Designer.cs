@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spix.AppInfra;
 
@@ -11,9 +12,11 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260705011559_NewPrePayments")]
+    partial class NewPrePayments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3006,81 +3009,6 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("CxCBillDetails");
                 });
 
-            modelBuilder.Entity("Spix.Domain.EntitiesPayment.PreExonerated", b =>
-                {
-                    b.Property<Guid>("PreExoneratedId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.Property<bool>("Billed")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ContractClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CorporationId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("CxCBillId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DateBilled")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("DateExonerated")
-                        .HasColumnType("date");
-
-                    b.Property<string>("ExoneratedControl")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<int>("MonthType")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("PlanId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("PriceWithTax")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TaxRate")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UsuarioOwner")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("YearNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("PreExoneratedId");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("ContractClientId");
-
-                    b.HasIndex("CxCBillId");
-
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("CorporationId", "ContractClientId", "YearNumber", "MonthType")
-                        .IsUnique();
-
-                    b.ToTable("PreExonerateds");
-                });
-
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.PrePayment", b =>
                 {
                     b.Property<Guid>("PrePaymentId")
@@ -4744,48 +4672,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("CxCBill");
                 });
 
-            modelBuilder.Entity("Spix.Domain.EntitiesPayment.PreExonerated", b =>
-                {
-                    b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
-                        .WithMany()
-                        .HasForeignKey("ContractClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
-                        .WithMany()
-                        .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.EntitiesPayment.CxCBill", "CxCBill")
-                        .WithMany("PreExonerateds")
-                        .HasForeignKey("CxCBillId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Spix.Domain.EntitiesGen.Plan", "Plan")
-                        .WithMany()
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("ContractClient");
-
-                    b.Navigation("Corporation");
-
-                    b.Navigation("CxCBill");
-
-                    b.Navigation("Plan");
-                });
-
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.PrePayment", b =>
                 {
                     b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
@@ -5214,8 +5100,6 @@ namespace Spix.AppBacken.Migrations
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.CxCBill", b =>
                 {
                     b.Navigation("CxCBillDetails");
-
-                    b.Navigation("PreExonerateds");
 
                     b.Navigation("PrePayments");
                 });

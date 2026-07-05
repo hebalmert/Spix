@@ -62,4 +62,8 @@ public class CxCBill
     public BillingNoteOne? BillingNoteOne { get; set; }
 
     public ICollection<CxCBillDetail>? CxCBillDetails { get; set; }
+
+    public ICollection<PrePayment>? PrePayments { get; set; }
+
+    public ICollection<PreExonerated>? PreExonerateds { get; set; }
 }
