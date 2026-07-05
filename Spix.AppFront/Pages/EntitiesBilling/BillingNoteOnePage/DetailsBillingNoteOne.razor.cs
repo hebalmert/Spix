@@ -57,7 +57,25 @@ public partial class DetailsBillingNoteOne
 
     private async Task LaunchNotes()
     {
-        await _sweetAlert.FireAsync("Pendiente", "El lanzamiento de nota individual es el siguiente paso de implementacion.", SweetAlertIcon.Info);
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Lanzar",
+            Text = "Desea lanzar esta nota individual?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Lanzar",
+            CancelButtonText = "Cancelar"
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Id}/launch", new { });
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync("Lanzado", "Nota generada correctamente.", SweetAlertIcon.Success);
+        await _modalService.CloseAsync(ModalResult.Ok());
     }
 
     private async Task Return()

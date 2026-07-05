@@ -78,6 +78,14 @@ public class BillingNoteOnesController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    [HttpPost("{id}/launch")]
+    public async Task<IActionResult> LaunchAsync(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _billingService.LaunchBillingNoteOneAsync(id, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     [HttpPut]
     public async Task<IActionResult> PutAsync(BillingNoteOne model)
     {

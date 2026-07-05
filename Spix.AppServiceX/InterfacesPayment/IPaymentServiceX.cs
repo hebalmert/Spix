@@ -10,6 +10,12 @@ public interface IPaymentServiceX
 {
     Task<ActionResponse<IEnumerable<CxCBill>>> GetCxCBillsAsync(PaginationDTO pagination, string username);
 
+    Task<ActionResponse<CxCBill>> GetCxCBillAsync(Guid id, string username);
+
+    Task<ActionResponse<CxCBill>> PayCxCBillAsync(CxCBillPaymentDto model, string username);
+
+    Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username);
+
     Task<ActionResponse<IEnumerable<PrePayment>>> GetPrePaymentsAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<PrePayment>> GetPrePaymentAsync(Guid id, string username);

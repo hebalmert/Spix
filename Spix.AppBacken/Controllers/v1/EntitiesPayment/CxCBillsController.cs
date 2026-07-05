@@ -6,6 +6,7 @@ using Microsoft.Extensions.Localization;
 using Spix.AppBack.Helper;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfacesPayment;
+using Spix.Domain.EntitiesPayment;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
 
@@ -43,5 +44,37 @@ public class CxCBillsController : ControllerBase
         {
             return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
         }
+    }
+
+    [HttpGet("searchcontracts")]
+    public async Task<IActionResult> SearchContractsAsync([FromQuery] string filter)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.SearchContractsAsync(filter, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.GetCxCBillAsync(id, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    [HttpPost("pay")]
+    public async Task<IActionResult> PayAsync(CxCBillPaymentDto model)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.PayCxCBillAsync(model, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    [HttpPost("cancel")]
+    public async Task<IActionResult> CancelAsync(CxCBillCancelDto model)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.CancelCxCBillAsync(model, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
     }
 }

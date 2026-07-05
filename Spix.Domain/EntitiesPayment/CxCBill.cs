@@ -41,9 +41,20 @@ public class CxCBill
 
     public DateTime? DatePaid { get; set; }
 
+    //Anulacion del CxCBill, si se anula el CxCBill, no se puede pagar, ni se puede facturar, ni se puede generar nota de credito
     public bool Cancelled { get; set; }
 
     public DateTime? DateCancelled { get; set; }
+
+    [MaxLength(250)]
+    public string? DescriptionCancelled { get; set; }
+
+    public string? UsuarioOwnerCancelled { get; set; }
+
+    public Guid? UserIdCancelled { get; set; }
+
+    //Fin Auditoria de Control Anulacion 
+
 
     public int CorporationId { get; set; }
 

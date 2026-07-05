@@ -19,6 +19,8 @@ public interface IBillingService
 
     Task<ActionResponse<bool>> DeleteBillingNoteAsync(Guid id, string username);
 
+    Task<ActionResponse<BillingNote>> LaunchBillingNoteAsync(Guid id, string username);
+
     Task<ActionResponse<IEnumerable<BillingNoteOne>>> GetBillingNoteOnesAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<BillingNoteOne>> GetBillingNoteOneAsync(Guid id, string username);
@@ -28,6 +30,8 @@ public interface IBillingService
     Task<ActionResponse<BillingNoteOne>> UpdateBillingNoteOneAsync(BillingNoteOne model, string username);
 
     Task<ActionResponse<bool>> DeleteBillingNoteOneAsync(Guid id, string username);
+
+    Task<ActionResponse<BillingNoteOne>> LaunchBillingNoteOneAsync(Guid id, string username);
 
     Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username);
 

@@ -1,0 +1,109 @@
+@inherits ComponentBase
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (isLoading || Model is null)
+            {
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
+            }
+            else
+            {
+                <EditForm Model="Payment" OnValidSubmit="PayAsync">
+                    <DataAnnotationsValidator />
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-12 col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:125px">Cliente</span>
+                                <input class="form-control" value="@($"{Model.Client?.FirstName} {Model.Client?.LastName}")" disabled />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:110px">Contrato</span>
+                                <input class="form-control" value="@Model.ContractClient?.ControlContrato" disabled />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:90px">Nota</span>
+                                <input class="form-control" value="@Model.CollectionNote" disabled />
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-12 col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:105px">Deuda</span>
+                                <input class="form-control text-end" value="@Debt.ToString("N2")" disabled />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:105px">Abono</span>
+                                <input class="form-control text-end" value="@PaymentAmount.ToString("N2")" disabled />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:105px">Descuento</span>
+                                <input class="form-control text-end" value="@DiscountAmount.ToString("N2")" disabled />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:105px">Saldo</span>
+                                <input class="form-control text-end" value="@Balance.ToString("N2")" disabled />
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" style="width:125px">Modo Pago</span>
+                        <div class="form-control d-flex flex-wrap gap-3">
+                            <label><input type="radio" name="paymentMode" value="Cash" checked="@(Payment.PaymentMode == "Cash")" @onchange="PaymentModeChanged" /> Efectivo</label>
+                            <label><input type="radio" name="paymentMode" value="Card" checked="@(Payment.PaymentMode == "Card")" @onchange="PaymentModeChanged" /> Tarjeta</label>
+                            <label><input type="radio" name="paymentMode" value="Transfer" checked="@(Payment.PaymentMode == "Transfer")" @onchange="PaymentModeChanged" /> Transferencia</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" style="width:125px">Descuento</span>
+                        <div class="form-control d-flex flex-wrap gap-3">
+                            @foreach (var item in DiscountOptions)
+                            {
+                                <label><input type="radio" name="discount" value="@item" checked="@(Payment.DiscountPercent == item)" @onchange="DiscountChanged" /> @(item == 0 ? "Ninguno" : $"{item}%")</label>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:125px">Detalle</span>
+                        <textarea class="form-control" rows="3" @bind="Payment.Detail"></textarea>
+                    </div>
+
+                    <hr />
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <ButtonFormSave IsSaving="IsSaving" />
+                        <ButtonFormBack OnClick="Return" />
+                    </div>
+                </EditForm>
+            }
+        </div>
+    </div>
+</div>

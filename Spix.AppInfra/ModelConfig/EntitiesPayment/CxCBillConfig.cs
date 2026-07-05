@@ -14,6 +14,7 @@ public class CxCBillConfig : IEntityTypeConfiguration<CxCBill>
         builder.Property(e => e.DateNote).HasColumnType("date");
         builder.Property(e => e.DatePaid).HasColumnType("date");
         builder.Property(e => e.DateCancelled).HasColumnType("date");
+        builder.Property(e => e.UsuarioOwnerCancelled).HasMaxLength(150);
         builder.Property(e => e.Total).HasPrecision(18, 2);
         builder.Property(e => e.Balance).HasPrecision(18, 2);
 

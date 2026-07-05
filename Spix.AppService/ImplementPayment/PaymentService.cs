@@ -57,6 +57,9 @@ public class PaymentService : IPaymentService
                 .Where(x => x.CorporationId == user.CorporationId)
                 .AsQueryable();
 
+            if (pagination.GuidId.HasValue && pagination.GuidId.Value != Guid.Empty)
+                queryable = queryable.Where(x => x.ContractClientId == pagination.GuidId.Value);
+
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 var filter = pagination.Filter.Trim();
@@ -81,6 +84,191 @@ public class PaymentService : IPaymentService
             return await _httpErrorHandler.HandleErrorAsync<IEnumerable<CxCBill>>(ex);
         }
     }
+
+    public async Task<ActionResponse<CxCBill>> GetCxCBillAsync(Guid id, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<CxCBill>();
+
+            var model = await _context.CxCBills
+                .Include(x => x.Client)
+                .Include(x => x.ContractClient)
+                .Include(x => x.CxCBillDetails)
+                .FirstOrDefaultAsync(x => x.CxCBillId == id && x.CorporationId == user.CorporationId);
+
+            if (model == null)
+            {
+                return new ActionResponse<CxCBill>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            return new ActionResponse<CxCBill> { WasSuccess = true, Result = model };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<CxCBill>(ex);
+        }
+    }
+
+    public async Task<ActionResponse<CxCBill>> PayCxCBillAsync(CxCBillPaymentDto model, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return AuthFail<CxCBill>();
+            }
+
+            var bill = await _context.CxCBills
+                .Include(x => x.CxCBillDetails)
+                .FirstOrDefaultAsync(x => x.CxCBillId == model.CxCBillId && x.CorporationId == user.CorporationId);
+
+            if (bill == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            if (bill.Cancelled)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "La cuenta por cobrar esta anulada." };
+            }
+
+            if (bill.Paid || bill.Balance <= 0)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "La cuenta por cobrar ya esta pagada." };
+            }
+
+            if (!IsValidDiscount(model.DiscountPercent))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "El descuento seleccionado no es valido." };
+            }
+
+            if (model.DiscountPercent > 0 && string.IsNullOrWhiteSpace(model.Detail))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "Debe especificar la razon del descuento." };
+            }
+
+            var debt = bill.Balance;
+            var discount = Math.Round((debt * model.DiscountPercent) / 100, 2);
+            var payment = debt - discount;
+            var balance = debt - discount - payment;
+
+            var detail = new CxCBillDetail
+            {
+                CxCBillId = bill.CxCBillId,
+                DatePayment = DateTime.UtcNow.Date,
+                PaymentMode = model.PaymentMode,
+                DiscountRate = model.DiscountPercent == 0 ? null : $"{model.DiscountPercent}%",
+                Detail = model.Detail,
+                Debt = debt,
+                Payment = payment,
+                Discount = discount,
+                Balance = balance,
+                CorporationId = bill.CorporationId,
+                UsuarioOwner = $"{user.FirstName} {user.LastName}",
+                UserId = Guid.Parse(user.Id)
+            };
+
+            _context.CxCBillDetails.Add(detail);
+
+            bill.Balance = balance;
+            bill.Paid = balance == 0;
+            bill.DatePaid = bill.Paid ? DateTime.UtcNow.Date : null;
+
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return new ActionResponse<CxCBill> { WasSuccess = true, Result = bill };
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<CxCBill>(ex);
+        }
+    }
+
+    public async Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return AuthFail<CxCBill>();
+            }
+
+            if (string.IsNullOrWhiteSpace(model.DescriptionCancelled))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "Debe especificar el motivo de anulacion." };
+            }
+
+            var bill = await _context.CxCBills
+                .FirstOrDefaultAsync(x => x.CxCBillId == model.CxCBillId && x.CorporationId == user.CorporationId);
+
+            if (bill == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            if (bill.Paid)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "No se puede anular una cuenta por cobrar pagada." };
+            }
+
+            if (bill.Cancelled)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "La cuenta por cobrar ya esta anulada." };
+            }
+
+            bill.Cancelled = true;
+            bill.DateCancelled = DateTime.UtcNow.Date;
+            bill.DescriptionCancelled = model.DescriptionCancelled.Trim();
+            bill.UsuarioOwnerCancelled = $"{user.FirstName} {user.LastName}";
+            bill.UserIdCancelled = Guid.Parse(user.Id);
+            bill.Balance = 0;
+
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return new ActionResponse<CxCBill> { WasSuccess = true, Result = bill };
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<CxCBill>(ex);
+        }
+    }
+
+    private static bool IsValidDiscount(int discount) =>
+        discount is 0 or 25 or 50 or 75 or 100;
 
     public async Task<ActionResponse<IEnumerable<PrePayment>>> GetPrePaymentsAsync(PaginationDTO pagination, string username)
     {

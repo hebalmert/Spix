@@ -3,14 +3,42 @@
 @attribute [Authorize(Roles = "Administrator")]
 
 @using Spix.Domain.EntitiesPayment
+@using Spix.Domain.EntitiesBilling
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
         <h3>Cuentas por Cobrar</h3>
 
-        <div class="row align-items-center mb-3">
-            <div class="col-md-12 d-flex justify-content-end">
-                <FilterComponent ApplyFilter="SetFilterValue" />
+        <div class="row g-2 align-items-start mb-3">
+            <div class="col-12 col-md-8">
+                <div class="input-group position-relative">
+                    <span class="input-group-text" style="width:125px">Cliente</span>
+                    <input class="form-control"
+                           placeholder="Buscar Cliente..."
+                           value="@ContractFilter"
+                           @oninput="FilterContractsChanged" />
+
+                    @if (Contracts.Count > 0)
+                    {
+                        <ul class="list-group position-absolute w-100 shadow-sm"
+                            style="top:100%; left:0; z-index:2000; max-height:240px; overflow-y:auto;">
+                            @foreach (var contract in Contracts)
+                            {
+                                <li class="list-group-item list-group-item-action"
+                                    @onclick="() => SelectContract(contract)">
+                                    @contract.ClientFullName - Contrato @contract.ControlContrato - @contract.ZoneName
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-end">
+                <ButtonGeneric OnClick="ClearContractAsync"
+                               Icon="fa fa-rotate"
+                               TooTip="Limpiar"
+                               CssClass="btn-mini"
+                               Style="font-size:17px;" />
             </div>
         </div>
 
@@ -21,28 +49,54 @@
                     <table class="table table-hover table-striped align-middle">
                         <thead class="table-dark">
                             <tr>
-                                <th>Nota</th>
                                 <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Contrato</th>
-                                <th>Detalle</th>
+                                <th># Contrato</th>
+                                <th>Nombre</th>
                                 <th class="text-end">Total</th>
+                                <th class="text-end">Abono</th>
+                                <th class="text-end">Descuento</th>
                                 <th class="text-end">Saldo</th>
-                                <th>Pagado</th>
+                                <th>Estado</th>
+                                <th colspan="2" class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in CxCBills!)
                             {
                                 <tr>
-                                    <td>@item.CollectionNote</td>
                                     <td>@item.DateNote.ToString("dd/MM/yyyy")</td>
-                                    <td>@($"{item.Client?.FirstName} {item.Client?.LastName}")</td>
                                     <td>@item.ContractClient?.ControlContrato</td>
-                                    <td>@item.Description</td>
+                                    <td>@($"{item.Client?.FirstName} {item.Client?.LastName}")</td>
                                     <td class="text-end">@item.Total.ToString("N2")</td>
+                                    <td class="text-end">@item.TotalPayment.ToString("N2")</td>
+                                    <td class="text-end">@item.TotalDiscount.ToString("N2")</td>
                                     <td class="text-end">@item.Balance.ToString("N2")</td>
-                                    <td>@(item.Paid ? "Si" : "No")</td>
+                                    <td>
+                                        @if (item.Cancelled)
+                                        {
+                                            <span class="text-danger fw-bold">@CancelledText</span>
+                                        }
+                                        else if (item.Paid)
+                                        {
+                                            <span class="text-success fw-bold">@PaidText</span>
+                                        }
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (!item.Paid && !item.Cancelled && item.Balance > 0)
+                                        {
+                                            <ButtonGeneric OnClick="() => ShowPayAsync(item.CxCBillId)"
+                                                           Icon="fa fa-building-columns"
+                                                           TooTip="Pagar"
+                                                           CssClass="btn-mini"
+                                                           Style="font-size:17px;color:#198754;" />
+                                        }
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (!item.Paid && !item.Cancelled)
+                                        {
+                                            <ButtonDelete OnClick="() => CancelAsync(item.CxCBillId)" />
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>

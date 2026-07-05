@@ -20,6 +20,15 @@ public class PaymentServiceX : IPaymentServiceX
     public async Task<ActionResponse<IEnumerable<CxCBill>>> GetCxCBillsAsync(PaginationDTO pagination, string username) =>
         await _paymentService.GetCxCBillsAsync(pagination, username);
 
+    public async Task<ActionResponse<CxCBill>> GetCxCBillAsync(Guid id, string username) =>
+        await _paymentService.GetCxCBillAsync(id, username);
+
+    public async Task<ActionResponse<CxCBill>> PayCxCBillAsync(CxCBillPaymentDto model, string username) =>
+        await _paymentService.PayCxCBillAsync(model, username);
+
+    public async Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username) =>
+        await _paymentService.CancelCxCBillAsync(model, username);
+
     public async Task<ActionResponse<IEnumerable<PrePayment>>> GetPrePaymentsAsync(PaginationDTO pagination, string username) =>
         await _paymentService.GetPrePaymentsAsync(pagination, username);
 
