@@ -11,11 +11,35 @@
     <nav class="nav flex-column">
 
         <!-- HOME -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu"></span> Home
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/dashboard">
+                        <span class="bi bi-house-door-fill-nav-menu"></span> Home
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Client">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/client-dashboard">
+                        <span class="bi bi-house-door-fill-nav-menu"></span> Portal Cliente
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Technician">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/tech-dashboard">
+                        <span class="bi bi-house-door-fill-nav-menu"></span> Portal Tecnico
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
 
         <!-- PLATFORM SETUP -->
         <AuthorizeView Roles="Admin">

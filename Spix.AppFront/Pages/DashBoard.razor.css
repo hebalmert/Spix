@@ -1,57 +1,389 @@
-﻿.spix-card {
-    border-radius: 16px;
-    overflow: hidden;
-    min-height: 200px;
+.general-dashboard {
+    min-height: calc(100vh - 2rem);
+    padding: 2rem;
+    background: #f4f6f8;
 }
 
-.spix-link {
+.general-dashboard__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.general-dashboard__eyebrow {
+    margin: 0 0 .25rem;
+    color: #52616f;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.general-dashboard__header h1 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.general-dashboard__status {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .85rem;
+    border-radius: 8px;
+    background: #e8f7ef;
+    color: #157347;
+    font-weight: 700;
+}
+
+.general-dashboard__insights {
+    display: grid;
+    grid-template-columns: .85fr 1.15fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.insight-card {
+    min-height: 210px;
+    padding: 1.25rem;
+    border-radius: 8px;
+    background: #fff;
+    color: #1f2937;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, .1);
+}
+
+.insight-card--billing {
+    background: linear-gradient(135deg, #172554, #0f766e);
+    color: #fff;
+}
+
+.insight-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.insight-card__header h2 {
+    margin: .25rem 0 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.insight-card__header i {
+    color: #0f766e;
+    font-size: 2rem;
+}
+
+.insight-card--billing .insight-card__header i {
+    color: rgba(255, 255, 255, .72);
+}
+
+.insight-card__label {
+    display: block;
+    color: #64748b;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.insight-card--billing .insight-card__label {
+    color: rgba(255, 255, 255, .72);
+}
+
+.insight-card__loading {
+    display: flex;
+    align-items: center;
+    min-height: 120px;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.contract-chart {
+    display: grid;
+    place-items: center;
+    width: 118px;
+    height: 118px;
+    margin: 1rem auto .75rem;
+    border-radius: 50%;
+    background: conic-gradient(#198754 0 var(--active), #dc3545 var(--active) 100%);
+    box-shadow: inset 0 0 0 17px #fff, 0 10px 24px rgba(15, 23, 42, .16);
+}
+
+.contract-chart span {
+    color: #1f2937;
+    font-size: 1.45rem;
+    font-weight: 900;
+}
+
+.insight-card__legend {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    color: #334155;
+    font-weight: 700;
+}
+
+.legend-dot {
+    display: inline-block;
+    width: .65rem;
+    height: .65rem;
+    margin-right: .35rem;
+    border-radius: 50%;
+}
+
+.legend-dot--active {
+    background: #198754;
+}
+
+.legend-dot--suspended {
+    background: #dc3545;
+}
+
+.billing-chart {
+    display: flex;
+    height: 18px;
+    margin: 2rem 0 1.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .18);
+}
+
+.billing-chart__bar {
+    min-width: 0;
+}
+
+.billing-chart__bar--collected {
+    width: var(--collected);
+    background: #22c55e;
+}
+
+.billing-chart__bar--pending {
+    width: var(--pending);
+    background: #f59e0b;
+}
+
+.insight-card__totals {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.insight-card__totals div {
+    padding: .85rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .12);
+}
+
+.insight-card__totals span,
+.insight-card__totals strong {
+    display: block;
+}
+
+.insight-card__totals span {
+    margin-bottom: .25rem;
+    color: rgba(255, 255, 255, .72);
+    font-weight: 700;
+}
+
+.insight-card__totals strong {
+    font-size: 1.15rem;
+    font-weight: 900;
+}
+
+.general-dashboard__sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.general-dashboard__section {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.general-dashboard__section-title {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: #334155;
+    font-weight: 800;
+}
+
+.general-dashboard__section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #d7dde4;
+}
+
+.general-dashboard__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.general-dashboard__grid--primary {
+    grid-template-columns: 1.35fr 1fr 1fr;
+}
+
+.general-dashboard__grid--finance {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.general-card {
+    position: relative;
+    min-height: 190px;
+    overflow: hidden;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.general-card__link {
+    display: block;
+    min-height: 190px;
+    padding: 1.5rem;
+    color: inherit;
     text-decoration: none;
+}
+
+.general-card__link:hover {
     color: inherit;
 }
 
-.spix-card-body {
-    padding: 2rem;
+.general-card__link:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, .75);
+    outline-offset: -6px;
+}
+
+.general-card--clients {
+    background: #0f766e;
+}
+
+.general-card--contract-client {
+    background: #1d4ed8;
+}
+
+.general-card--network {
+    background: #115e59;
+}
+
+.general-card--nodes {
+    background: #334155;
+}
+
+.general-card--inventory {
+    background: #2563eb;
+}
+
+.general-card--schedule {
+    background: #7c3aed;
+}
+
+.general-card--contracts {
+    background: #0e7490;
+}
+
+.general-card--requests {
+    background: #be123c;
+}
+
+.general-card--technicians {
+    background: #475569;
+}
+
+.general-card--billing {
+    background: #6d28d9;
+}
+
+.general-card--finance {
+    background: #9a5b00;
+}
+
+.general-card--prepay {
+    background: #15803d;
+}
+
+.general-card__content {
+    position: relative;
+    z-index: 1;
+    max-width: 78%;
+}
+
+.general-card__label {
+    display: block;
+    margin-bottom: .75rem;
+    font-weight: 700;
+    opacity: .9;
+}
+
+.general-card h2,
+.general-dashboard__panel h2 {
+    margin: 0 0 .5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.general-card p,
+.general-dashboard__panel p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.general-card__icon {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1rem;
+    font-size: 4.5rem;
+    opacity: .28;
+}
+
+.general-dashboard__panel {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    height: 200px;
-    border-radius: 16px;
-}
-
-.spix-text h1,
-.spix-text p,
-.spix-goto {
-    color: white;
-}
-
-.spix-goto {
+    justify-content: space-between;
+    gap: 1rem;
     margin-top: 1rem;
-    font-weight: 500;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
 }
 
-.spix-icon i {
-    font-size: 5rem;
-    color: white;
-    opacity: 0.9;
+.general-dashboard__panel i {
+    color: #0f766e;
+    font-size: 2.25rem;
 }
 
-/* Hace los fondos más sólidos sin perder el color original */
-.spix-card-body.bg-success {
-    background-color: #28a745 !important;
+@media (max-width: 992px) {
+    .general-dashboard__insights,
+    .general-dashboard__grid,
+    .general-dashboard__grid--primary,
+    .general-dashboard__grid--finance {
+        grid-template-columns: 1fr;
+    }
 }
 
-.spix-card-body.bg-primary {
-    background-color: #007bff !important;
-}
+@media (max-width: 576px) {
+    .general-dashboard {
+        padding: 1rem;
+    }
 
-.spix-card-body.bg-secondary {
-    background-color: #6c757d !important;
-}
+    .general-dashboard__header,
+    .general-dashboard__panel {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 
-.spix-card-body.bg-info {
-    background-color: #17a2b8 !important;
-}
+    .insight-card__totals {
+        grid-template-columns: 1fr;
+    }
 
-.spix-card-body.bg-warning {
-    background-color: #ffc107 !important;
+    .general-card__content {
+        max-width: 100%;
+    }
 }

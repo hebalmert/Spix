@@ -50,6 +50,23 @@ main {
     height: 3.5rem;
     display: flex;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 3000;
+}
+
+.setting-dropdown {
+    display: inline-block;
+    position: relative;
+    z-index: 4000;
+}
+
+.settings-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 18rem;
+    z-index: 5000;
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
@@ -87,12 +104,6 @@ main {
         height: 100vh;
         position: sticky;
         top: 0;
-    }
-
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
     }
 
         .top-row.auth ::deep a:first-child {

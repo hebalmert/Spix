@@ -11,7 +11,7 @@
 
     <main>
         <div class="top-row px-4">
-            <div class="position-relative" @onmouseover="ShowMenu" @onmouseleave="HideMenu" style="display:inline-block;">
+            <div class="setting-dropdown" @onmouseover="ShowMenu" @onmouseleave="HideMenu">
                 <button class="btn btn-link p-0" style="text-decoration: none;">
                     Setting
                     <i class="fa fa-cog"></i> <!-- Ícono de configuración -->
@@ -19,7 +19,7 @@
 
                 @if (isMenuVisible)
                 {
-                    <div class="dropdown-menu show shadow border bg-white" style="position: absolute; right: 0; top: 100%; min-width: 18rem; z-index: 1000;">
+                    <div class="dropdown-menu show shadow border bg-white settings-dropdown-menu">
                         <AuthLinks />
                     </div>
                 }

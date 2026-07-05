@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Spix.DomainLogic.EnumTypes;
+using System.Security.Claims;
 
 namespace Spix.AppFront.Pages;
 
@@ -17,11 +19,31 @@ public partial class LoginPage
 
         if (user.Identity?.IsAuthenticated == true)
         {
-            _navigationManager.NavigateTo("/dashboard");
+            var roles = user.Claims
+                .Where(c => c.Type == ClaimTypes.Role || c.Type == "role")
+                .Select(c => c.Value)
+                .ToList();
+
+            _navigationManager.NavigateTo(GetDashboardUrl(roles));
         }
         else
         {
             _checkingAuth = false;
         }
+    }
+
+    private static string GetDashboardUrl(IEnumerable<string> roles)
+    {
+        if (roles.Any(x => string.Equals(x, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return "/client-dashboard";
+        }
+
+        if (roles.Any(x => string.Equals(x, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return "/tech-dashboard";
+        }
+
+        return "/dashboard";
     }
 }

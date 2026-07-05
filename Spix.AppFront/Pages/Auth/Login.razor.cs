@@ -44,7 +44,11 @@ public partial class Login
         // Extraer claims directamente del token
         var handler = new JwtSecurityTokenHandler();
         var jwt = handler.ReadJwtToken(token);
-        var role = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role")?.Value ?? string.Empty;
+        var roles = jwt.Claims
+            .Where(c => c.Type == ClaimTypes.Role || c.Type == "role")
+            .Select(c => c.Value)
+            .ToList();
+        var role = roles.FirstOrDefault() ?? string.Empty;
         sessionModelDTO.PhotoBase64 = responseHttp.Response.PhotoBase64;
         sessionModelDTO.LogoBase64 = responseHttp.Response.LogoBase64;
         sessionModelDTO.Role = role;
@@ -52,14 +56,24 @@ public partial class Login
         await _sessionModel.SetSessionAsync(sessionModelDTO, "SessionDTO");
 
         isProcessing = false;
-        var dashboardUrl = role switch
-        {
-            var r when string.Equals(r, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase) => "/client-dashboard",
-            var r when string.Equals(r, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase) => "/tech-dashboard",
-            _ => "/dashboard"
-        };
+        var dashboardUrl = GetDashboardUrl(roles);
 
         _navigation.NavigateTo(dashboardUrl);
+    }
+
+    private static string GetDashboardUrl(IEnumerable<string> roles)
+    {
+        if (roles.Any(x => string.Equals(x, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return "/client-dashboard";
+        }
+
+        if (roles.Any(x => string.Equals(x, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return "/tech-dashboard";
+        }
+
+        return "/dashboard";
     }
 
     private async Task OpenRecoverPasswordModal()

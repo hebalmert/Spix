@@ -1,137 +1,277 @@
-﻿@page "/dashboard"
-@attribute [Authorize(Roles = "Admin, Administrator, Coordinator, Investigator, QcUser, QcRemote, FrontUser")]
+@page "/dashboard"
+@attribute [Authorize(Roles = "Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead")]
 @layout MainLayout
-<PageTitle>Home</PageTitle>
 
-<div class="full-bg">
-    <div class="dashboard-content">
+<PageTitle>Dashboard</PageTitle>
 
-        <div class="row g-4">
-
-            <!-- CARD 1 -->
-            <div class="col-md-4">
-                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, FrontUser">
-                    <div class="spix-card shadow">
-                        <a href="/dashboard" class="spix-link">
-                            <div class="spix-card-body bg-success">
-                                <div class="spix-text">
-                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Server)]</h1>
-                                    <p class="mb-0">@Localizer[nameof(Resource.Server)]</p>
-                                    <div class="spix-goto">
-                                        @Localizer[nameof(Resource.GoTo)]
-                                        <i class="fa fa-square-caret-right"></i>
-                                    </div>
-                                </div>
-                                <div class="spix-icon">
-                                    <i class="fa fa-calendar-check"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </AuthorizeView>
-            </div>
-
-            <!-- CARD 2 -->
-            <div class="col-md-4">
-                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, FrontUser">
-                    <div class="spix-card shadow">
-                        <a href="/dashboard" class="spix-link">
-                            <div class="spix-card-body bg-primary">
-                                <div class="spix-text">
-                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Node)]</h1>
-                                    <p class="mb-0">@Localizer[nameof(Resource.Node)]</p>
-                                    <div class="spix-goto">
-                                        @Localizer[nameof(Resource.GoTo)]
-                                        <i class="fa fa-square-caret-right"></i>
-                                    </div>
-                                </div>
-                                <div class="spix-icon">
-                                    <i class="fa fa-user"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </AuthorizeView>
-            </div>
-
-            <!-- CARD 3 -->
-            <div class="col-md-4">
-                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, QcRemote">
-                    <div class="spix-card shadow">
-                        <a href="/dashboard" class="spix-link">
-                            <div class="spix-card-body bg-secondary">
-                                <div class="spix-text">
-                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Purchase)]</h1>
-                                    <p class="mb-0">@Localizer[nameof(Resource.Purchase)]</p>
-                                    <div class="spix-goto">
-                                        @Localizer[nameof(Resource.GoTo)]
-                                        <i class="fa fa-user-shield"></i>
-                                    </div>
-                                </div>
-                                <div class="spix-icon">
-                                    <i class="fa fa-clipboard-check"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </AuthorizeView>
-            </div>
-
+<section class="general-dashboard">
+    <div class="general-dashboard__header">
+        <div>
+            <p class="general-dashboard__eyebrow">Panel Principal</p>
+            <h1>Dashboard</h1>
         </div>
-
-        <div class="row mt-4 g-4">
-
-            <!-- CARD 4 -->
-            <div class="col-md-4">
-                <AuthorizeView Roles="Administrator, Coordinator, Investigator, QcUser, FrontUser">
-                    <div class="spix-card shadow">
-                        <a href="/schedule" class="spix-link">
-                            <div class="spix-card-body bg-info">
-                                <div class="spix-text">
-                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Node)]</h1>
-                                    <p class="mb-0">@Localizer[nameof(Resource.Node)]</p>
-                                    <div class="spix-goto">
-                                        @Localizer[nameof(Resource.GoTo)]
-                                        <i class="fa fa-square-caret-right"></i>
-                                    </div>
-                                </div>
-                                <div class="spix-icon">
-                                    <i class="fa fa-calendar-days"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </AuthorizeView>
-            </div>
-
-            <div class="col-md-4"></div>
-
-            <!-- CARD 5 -->
-            <div class="col-md-4">
-                <AuthorizeView Roles="Administrator">
-                    <div class="spix-card shadow">
-                        <a href="/dashboard" class="spix-link">
-                            <div class="spix-card-body bg-warning">
-                                <div class="spix-text">
-                                    <h1 class="h4 mb-1">@Localizer[nameof(Resource.Node)]</h1>
-                                    <p class="mb-0">@Localizer[nameof(Resource.Node)]</p>
-                                    <div class="spix-goto">
-                                        @Localizer[nameof(Resource.GoTo)]
-                                        <i class="fa fa-square-caret-right"></i>
-                                    </div>
-                                </div>
-                                <div class="spix-icon">
-                                    <i class="fa fa-file-excel"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </AuthorizeView>
-            </div>
-
-        </div>
-
+        <span class="general-dashboard__status">
+            <i class="fa fa-gauge-high"></i>
+            Operativo
+        </span>
     </div>
-</div>
 
+    <div class="general-dashboard__insights">
+        <div class="insight-card">
+            <div class="insight-card__header">
+                <div>
+                    <span class="insight-card__label">Contratos</span>
+                    <h2>Activos vs Suspendidos</h2>
+                </div>
+                <i class="fa fa-chart-pie"></i>
+            </div>
 
+            @if (IsLoadingMetrics)
+            {
+                <div class="insight-card__loading">Cargando...</div>
+            }
+            else
+            {
+                <div class="contract-chart" style="@ContractChartStyle">
+                    <span>@ContractTotal</span>
+                </div>
+
+                <div class="insight-card__legend">
+                    <span><i class="legend-dot legend-dot--active"></i> Activos @ActiveContracts</span>
+                    <span><i class="legend-dot legend-dot--suspended"></i> Suspendidos @SuspendedContracts</span>
+                </div>
+            }
+        </div>
+
+        <div class="insight-card insight-card--billing">
+            <div class="insight-card__header">
+                <div>
+                    <span class="insight-card__label">@CurrentMonthName</span>
+                    <h2>Cobros del Mes</h2>
+                </div>
+                <i class="fa fa-chart-line"></i>
+            </div>
+
+            @if (IsLoadingMetrics)
+            {
+                <div class="insight-card__loading">Cargando...</div>
+            }
+            else
+            {
+                <div class="billing-chart" style="@BillingChartStyle">
+                    <div class="billing-chart__bar billing-chart__bar--collected"></div>
+                    <div class="billing-chart__bar billing-chart__bar--pending"></div>
+                </div>
+
+                <div class="insight-card__totals">
+                    <div>
+                        <span>Total</span>
+                        <strong>@FormatMoney(MonthTotal)</strong>
+                    </div>
+                    <div>
+                        <span>Cobrado</span>
+                        <strong>@FormatMoney(MonthCollected)</strong>
+                    </div>
+                    <div>
+                        <span>Por recoger</span>
+                        <strong>@FormatMoney(MonthBalance)</strong>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="general-dashboard__sections">
+        <div class="general-dashboard__section">
+            <div class="general-dashboard__section-title">
+                <span>Operacion Cliente</span>
+            </div>
+
+            <div class="general-dashboard__grid general-dashboard__grid--primary">
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--clients general-card--wide">
+                        <a href="/clients" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Clientes</span>
+                                <h2>Clientes</h2>
+                                <p>Registro, cuentas de acceso, datos de contacto y foto del cliente.</p>
+                            </div>
+                            <i class="fa fa-users general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--contract-client">
+                        <a href="/contractclients" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Contratos</span>
+                                <h2>Contratos Cliente</h2>
+                                <p>Contrato, zona, direccion y plan comercial.</p>
+                            </div>
+                            <i class="fa fa-file-signature general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--contracts">
+                        <a href="/contractcontrol" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Control</span>
+                                <h2>Control Contratos</h2>
+                                <p>Detalle tecnico del cliente, IP, MAC, nodo, mapa y plan.</p>
+                            </div>
+                            <i class="fa fa-network-wired general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+        </div>
+
+        <div class="general-dashboard__section">
+            <div class="general-dashboard__section-title">
+                <span>Servicios y Agenda</span>
+            </div>
+
+            <div class="general-dashboard__grid">
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--requests">
+                        <a href="/servicerequests" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Servicio</span>
+                                <h2>Solicitudes</h2>
+                                <p>Ordenes de servicio, tecnico asignado, fotos y cierre operativo.</p>
+                            </div>
+                            <i class="fa fa-clipboard-list general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--schedule">
+                        <a href="/schedule" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Agenda</span>
+                                <h2>Schedule</h2>
+                                <p>Calendario de visitas, tareas programadas y servicios completados.</p>
+                            </div>
+                            <i class="fa fa-calendar-days general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--technicians">
+                        <a href="/technitians" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Equipo</span>
+                                <h2>Tecnicos</h2>
+                                <p>Personal tecnico, acceso al portal y asignacion de servicios.</p>
+                            </div>
+                            <i class="fa fa-user-gear general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+        </div>
+
+        <div class="general-dashboard__section">
+            <div class="general-dashboard__section-title">
+                <span>Red e Inventario</span>
+            </div>
+
+            <div class="general-dashboard__grid">
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--network">
+                        <a href="/servers" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Red</span>
+                                <h2>@Localizer[nameof(Resource.Server)]</h2>
+                                <p>Servidores MikroTik y controles base de red.</p>
+                            </div>
+                            <i class="fa fa-server general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--nodes">
+                        <a href="/nodes" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Infraestructura</span>
+                                <h2>@Localizer[nameof(Resource.Node)]</h2>
+                                <p>Puntos de acceso, coordenadas, enlaces y cobertura.</p>
+                            </div>
+                            <i class="fa fa-tower-broadcast general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+                    <div class="general-card general-card--inventory">
+                        <a href="/purchases" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Inventario</span>
+                                <h2>@Localizer[nameof(Resource.Purchase)]</h2>
+                                <p>Compras, equipos, seriales y disponibilidad.</p>
+                            </div>
+                            <i class="fa fa-boxes-stacked general-card__icon"></i>
+                        </a>
+                    </div>
+                </AuthorizeView>
+            </div>
+        </div>
+
+        <AuthorizeView Roles="Administrator">
+            <div class="general-dashboard__section">
+                <div class="general-dashboard__section-title">
+                    <span>Cobros y Facturacion</span>
+                </div>
+
+                <div class="general-dashboard__grid general-dashboard__grid--finance">
+                    <div class="general-card general-card--billing">
+                        <a href="/billingnotes" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Facturacion</span>
+                                <h2>Notas Generales</h2>
+                                <p>Tiraje mensual para contratos activos.</p>
+                            </div>
+                            <i class="fa fa-file-invoice general-card__icon"></i>
+                        </a>
+                    </div>
+
+                    <div class="general-card general-card--finance">
+                        <a href="/cxcbills" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Cobros</span>
+                                <h2>Cuentas por Cobrar</h2>
+                                <p>Pagos, facturas, notas y saldos pendientes.</p>
+                            </div>
+                            <i class="fa fa-file-invoice-dollar general-card__icon"></i>
+                        </a>
+                    </div>
+
+                    <div class="general-card general-card--prepay">
+                        <a href="/prepayments" class="general-card__link">
+                            <div class="general-card__content">
+                                <span class="general-card__label">Anticipos</span>
+                                <h2>Pagos Adelantados</h2>
+                                <p>Abonos de plan listos para aplicar en facturacion.</p>
+                            </div>
+                            <i class="fa fa-money-check-dollar general-card__icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </AuthorizeView>
+    </div>
+
+    <div class="general-dashboard__panel">
+        <div>
+            <h2>Actividad del sistema</h2>
+            <p>Accesos rapidos para controlar operacion, red, inventario y facturacion.</p>
+        </div>
+        <i class="fa fa-bell"></i>
+    </div>
+</section>
