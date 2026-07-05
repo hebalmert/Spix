@@ -76,7 +76,10 @@
                 end = DateTime.SpecifyKind(x.EndUtc, DateTimeKind.Utc).ToLocalTime(),
                 allDay = x.IsAllDay,
                 origin = x.Origin,
-                serviceRequestId = x.ServiceRequestId
+                serviceRequestId = x.ServiceRequestId,
+                scheduleStatus = x.ScheduleStatus,
+                color = x.ScheduleStatus == ScheduleStatus.Completed ? "#6B8E23" : null,
+                textColor = x.ScheduleStatus == ScheduleStatus.Completed ? "#FFFFFF" : null
             })
             .ToList();
     }
@@ -160,5 +163,8 @@
         public bool allDay { get; set; }
         public ScheduleOrigin origin { get; set; }
         public Guid? serviceRequestId { get; set; }
+        public ScheduleStatus? scheduleStatus { get; set; }
+        public string? color { get; set; }
+        public string? textColor { get; set; }
     }
 }

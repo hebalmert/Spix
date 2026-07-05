@@ -23,8 +23,10 @@
 
             events: events.map(e => ({
                 ...e,
+                display: e.color ? 'block' : undefined,
                 backgroundColor: e.color,
-                borderColor: e.color
+                borderColor: e.color,
+                textColor: e.textColor
             })),
 
             dateClick: function (info) {
@@ -37,6 +39,7 @@
 
             eventDidMount: function (info) {
                 info.el.setAttribute("title", info.event.title);
+                window.SpixCalendar.applyEventStyle(info);
             }
         });
 
@@ -54,10 +57,37 @@
             calendar.addEventSource(
                 events.map(e => ({
                     ...e,
+                    display: e.color ? 'block' : undefined,
                     backgroundColor: e.color,
-                    borderColor: e.color
+                    borderColor: e.color,
+                    textColor: e.textColor
                 }))
             );
+        }
+    },
+
+    applyEventStyle: function (info) {
+        var backgroundColor = info.event.backgroundColor;
+        var textColor = info.event.textColor;
+
+        if (!backgroundColor || !textColor) {
+            return;
+        }
+
+        info.el.style.backgroundColor = backgroundColor;
+        info.el.style.borderColor = backgroundColor;
+        info.el.style.color = textColor;
+
+        info.el.querySelectorAll("a, td, .fc-event-title, .fc-event-time, .fc-list-event-title, .fc-list-event-time")
+            .forEach(function (item) {
+                item.style.backgroundColor = backgroundColor;
+                item.style.borderColor = backgroundColor;
+                item.style.color = textColor;
+            });
+
+        var dot = info.el.querySelector(".fc-daygrid-event-dot, .fc-list-event-dot");
+        if (dot) {
+            dot.style.borderColor = textColor;
         }
     }
 };
