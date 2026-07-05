@@ -7,6 +7,7 @@ using Spix.AppFront.Pages.EntitiesContratos.ContractClientPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractIpPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMacPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractBindPage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMapPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractNodePage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractPlanPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractQuePage;
@@ -37,6 +38,7 @@ public partial class DetailContractControl
     private ContractServer? ContractServer { get; set; } = new();
     private ContractPlan? ContractPlan { get; set; } = new();
     private ContractNode? ContractNode { get; set; } = new();
+    private ContractMap? ContractMap { get; set; } = new();
     private ContractQue? ContractQue { get; set; } = new();
     private ContractBind? ContractBind { get; set; } = new();
     private bool UseHotSpotControl { get; set; }
@@ -50,6 +52,7 @@ public partial class DetailContractControl
     private string BaseContractServerUrl = "/api/v1/contractservers";
     private string BaseContractPlanUrl = "/api/v1/contractplans";
     private string BaseContractNodeUrl = "/api/v1/contractnodes";
+    private string BaseContractMapUrl = "/api/v1/contractmaps";
     private string BaseContractQueUrl = "/api/v1/contractques";
     private string BaseContractBindUrl = "/api/v1/contractbinds";
     private string BaseConnectionMikrotikControlUrl = "/api/v1/connectionmikrotikcontrols";
@@ -81,6 +84,10 @@ public partial class DetailContractControl
             if (ContractClient.ControlNodeCount > 0)
             {
                 await LoadContractNode(Id);
+            }
+            if (ContractClient.ControlMapCount > 0)
+            {
+                await LoadContractMap(Id);
             }
             if (UseHotSpotControl)
             {
@@ -183,6 +190,79 @@ public partial class DetailContractControl
             if (result.Succeeded)
                 await LoadContractNode(Id);
         });
+    }
+
+    private async Task ShowContractMapAsyn(Guid? id)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractMap);
+        parameters = new Dictionary<string, object>
+            {
+                { "Id", id! },
+                { "Title", "Client Map" }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractMap(Id);
+        });
+    }
+
+    private async Task ShowContractMapEditAsync(ContractMap? model)
+    {
+        if (model is null || model.ContractMapId == Guid.Empty)
+        {
+            return;
+        }
+
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(CreateContractMap);
+        parameters = new Dictionary<string, object>
+            {
+                { "Model", model },
+                { "Title", "Editar Client Map" }
+            };
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+                await LoadContractMap(Id);
+        });
+    }
+
+    private async Task ShowContractMapViewAsync(ContractMap? model)
+    {
+        if (model is null || !model.Latitude.HasValue || !model.Longitude.HasValue)
+        {
+            await _sweetAlert.FireAsync("Client Map", "No hay coordenadas para mostrar.", SweetAlertIcon.Warning);
+            return;
+        }
+
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(ViewContractMap);
+        parameters = new Dictionary<string, object>
+            {
+                { "Latitude", model.Latitude },
+                { "Longitude", model.Longitude },
+                { "FirstLabel", "Cliente" },
+                { "Title", "Client Map" }
+            };
+
+        if (ContractNode?.Node?.Latitude is not null && ContractNode.Node.Longitude is not null)
+        {
+            parameters.Add("SecondLatitude", ContractNode.Node.Latitude);
+            parameters.Add("SecondLongitude", ContractNode.Node.Longitude);
+            parameters.Add("SecondLabel", ContractNode.Node.NodesName ?? "Nodo");
+        }
+
+        await _modalService.ShowAsync(component, parameters);
     }
 
     private async Task ShowContractQuesAsyn(Guid? id)
@@ -382,6 +462,30 @@ public partial class DetailContractControl
         await LoadContractNode(Id);
     }
 
+    private async Task DeleteContractMapAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{BaseContractMapUrl}/{id}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await LoadContractMap(Id);
+    }
+
     private async Task DeleteContractQueAsync(Guid id)
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
@@ -516,6 +620,24 @@ public partial class DetailContractControl
         }
 
         ContractNode = responseHTTP.Response;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadContractMap(Guid? id)
+    {
+        isLoading = true;
+        var responseHTTP = await _repository.GetAsync<ContractMap>($"{BaseContractMapUrl}/{Id}");
+        isLoading = false;
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHTTP);
+        if (errorHandler)
+        {
+            ContractMap = null;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        ContractMap = responseHTTP.Response;
 
         await InvokeAsync(StateHasChanged);
     }

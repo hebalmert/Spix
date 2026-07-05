@@ -95,7 +95,7 @@
             </section>
 
             <section class="row g-4 mt-1 control-grid">
-                <div class="col-xl-4 col-md-6">
+                <div class="col-xl-6 col-md-6 order-xl-6">
                     <article class="control-card">
                         <header class="control-card-header">
                             <span class="control-icon"><i class="fa fa-ethernet"></i></span>
@@ -135,7 +135,7 @@
                     </article>
                 </div>
 
-                <div class="col-xl-4 col-md-6">
+                <div class="col-xl-6 col-md-6 order-xl-3">
                     <article class="control-card">
                         <header class="control-card-header">
                             <span class="control-icon"><i class="fa fa-gears"></i></span>
@@ -175,7 +175,7 @@
                     </article>
                 </div>
 
-                <div class="col-xl-4 col-md-6">
+                <div class="col-xl-6 col-md-6 order-xl-1">
                     <article class="control-card">
                         <header class="control-card-header">
                             <span class="control-icon"><i class="fa fa-server"></i></span>
@@ -215,7 +215,44 @@
                     </article>
                 </div>
 
-                <div class="col-xl-6">
+                <div class="col-xl-6 col-md-6 order-xl-4">
+                    <article class="control-card">
+                        <header class="control-card-header">
+                            <span class="control-icon"><i class="fa fa-map-location-dot"></i></span>
+                            <span>Client Map</span>
+                        </header>
+                        <div class="control-body">
+                            @if (ContractMap is null || ContractMap.ContractMapId == Guid.Empty)
+                            {
+                                <p class="control-empty">Sin coordenadas...</p>
+                                <div class="control-action">
+                                    <ButtonGeneric OnClick="() => ShowContractMapAsyn(ContractClient!.ContractClientId)"
+                                                   TooTip="Client Map"
+                                                   Icon="fa fa-plus" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="control-data control-data-two">
+                                    <span class="control-value">@ContractMap.Latitude</span>
+                                    <span class="control-value control-value-center">@ContractMap.Longitude</span>
+                                </div>
+                                <div class="control-action">
+                                    <ButtonGeneric OnClick="() => ShowContractMapViewAsync(ContractMap)"
+                                                   TooTip="Ver Mapa"
+                                                   Icon="fa fa-map-location-dot" />
+                                    <ButtonEdit OnClick="() => ShowContractMapEditAsync(ContractMap)"
+                                                TooTip="Editar Client Map" />
+                                    <ButtonDelete OnClick="() => DeleteContractMapAsync(ContractMap!.ContractMapId)"
+                                                  TooTip="Client Map"
+                                                  Icon="fa fa-trash" />
+                                </div>
+                            }
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-xl-6 order-xl-2">
                     <article class="control-card">
                         <header class="control-card-header">
                             <span class="control-icon"><i class="fa fa-gauge-high"></i></span>
@@ -257,7 +294,7 @@
                     </article>
                 </div>
 
-                <div class="col-xl-6">
+                <div class="col-xl-6 order-xl-5">
                     <article class="control-card">
                         <header class="control-card-header">
                             <span class="control-icon"><i class="fa fa-tower-broadcast"></i></span>

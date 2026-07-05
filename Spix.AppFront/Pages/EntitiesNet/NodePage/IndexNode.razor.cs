@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMapPage;
 using Spix.Domain.EntitiesNet;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -103,6 +104,28 @@ public partial class IndexNode
                 );
             }
         });
+    }
+
+    private async Task ShowMapAsync(Node node)
+    {
+        if (!node.Latitude.HasValue || !node.Longitude.HasValue)
+        {
+            await _sweetAlert.FireAsync("Mapa", "Este nodo no tiene coordenadas.", SweetAlertIcon.Warning);
+            return;
+        }
+
+        Type component;
+        Dictionary<string, object> parameters;
+
+        component = typeof(ViewContractMap);
+        parameters = new Dictionary<string, object>
+            {
+                { "Latitude", node.Latitude },
+                { "Longitude", node.Longitude },
+                { "Title", node.NodesName ?? "Mapa" }
+            };
+
+        await _modalService.ShowAsync(component, parameters);
     }
 
     private async Task DeleteAsync(Guid id)

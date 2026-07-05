@@ -97,6 +97,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.ContractServers)
                     .Include(x => x.ContractPlans)
                     .Include(x => x.ContractNodes)
+                    .Include(x => x.ContractMaps)
                     .FirstOrDefaultAsync(x => x.ContractClientId == id);
                 var ZoneDetail = await _context.Zones.FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
                 modelo!.StateId = ZoneDetail!.StateId;

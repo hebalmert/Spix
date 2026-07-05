@@ -8,6 +8,7 @@ using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using System.Globalization;
 
 namespace Spix.AppFront.Pages.EntitiesNet.NodePage;
 
@@ -37,6 +38,7 @@ public partial class FormNode
     private List<IntItemModel>? FrecuencyTypes = new();
     private List<IntItemModel>? Frecuencies = new();
     private bool showClave = false;
+    private string CoordinatesText { get; set; } = string.Empty;
     private string BaseView = "/zones";
     private string BaseComboState = "/api/v1/combosData/ComboState";
     private string BaseComboCity = "/api/v1/combosData/ComboCity";
@@ -62,9 +64,33 @@ public partial class FormNode
         await LoadFrecuencyType();
     }
 
+    protected override void OnParametersSet()
+    {
+        if (Node.Latitude.HasValue && Node.Longitude.HasValue && string.IsNullOrWhiteSpace(CoordinatesText))
+        {
+            CoordinatesText = $"{Node.Latitude.Value.ToString(CultureInfo.InvariantCulture)}, {Node.Longitude.Value.ToString(CultureInfo.InvariantCulture)}";
+        }
+    }
+
     private void TogglePasswordVisibility()
     {
         showClave = !showClave;
+    }
+
+    private async Task CoordinatesChanged(ChangeEventArgs e)
+    {
+        CoordinatesText = e.Value?.ToString() ?? string.Empty;
+        var parts = CoordinatesText.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length != 2 ||
+            !decimal.TryParse(parts[0], NumberStyles.Number, CultureInfo.InvariantCulture, out var latitude) ||
+            !decimal.TryParse(parts[1], NumberStyles.Number, CultureInfo.InvariantCulture, out var longitude))
+        {
+            await _sweetAlert.FireAsync("Coordenadas", "Formato invalido. Use: 25.82370270482433, -80.38556718743175", SweetAlertIcon.Warning);
+            return;
+        }
+
+        Node.Latitude = latitude;
+        Node.Longitude = longitude;
     }
 
     private async Task LoadFrecuencyType()

@@ -107,6 +107,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractServer> ContractServers => Set<ContractServer>();
     public DbSet<ContractPlan> ContractPlans => Set<ContractPlan>();
     public DbSet<ContractNode> ContractNodes => Set<ContractNode>();
+    public DbSet<ContractMap> ContractMaps => Set<ContractMap>();
     public DbSet<ContractQue> ContractQues => Set<ContractQue>();
     public DbSet<ContractBind> ContractBinds => Set<ContractBind>();
     public DbSet<ContractClient> ContractClients => Set<ContractClient>();

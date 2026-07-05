@@ -1,0 +1,43 @@
+@inherits ComponentBase
+@using Spix.AppFront.SharedMap
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <MapViewer Latitude="Latitude"
+                       Longitude="Longitude"
+                       SecondLatitude="SecondLatitude"
+                       SecondLongitude="SecondLongitude"
+                       FirstLabel="@FirstLabel"
+                       SecondLabel="@SecondLabel"
+                       Title="@(Title ?? "Map")"
+                       Height="520" />
+            <hr />
+            <div class="d-flex justify-content-center">
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] private ModalService ModalService { get; set; } = null!;
+    [Parameter] public decimal? Latitude { get; set; }
+    [Parameter] public decimal? Longitude { get; set; }
+    [Parameter] public decimal? SecondLatitude { get; set; }
+    [Parameter] public decimal? SecondLongitude { get; set; }
+    [Parameter] public string FirstLabel { get; set; } = "Cliente";
+    [Parameter] public string SecondLabel { get; set; } = "Nodo";
+    [Parameter] public string? Title { get; set; }
+
+    private async Task Return()
+    {
+        await ModalService.CloseAsync(ModalResult.Cancel());
+    }
+}

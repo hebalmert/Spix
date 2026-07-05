@@ -97,6 +97,7 @@ public class ContractClient
     public int ControlServerCount => ContractServers == null ? 0 : ContractServers.Count;
     public int ControlPlanCount => ContractPlans == null ? 0 : ContractPlans.Count;
     public int ControlNodeCount => ContractNodes == null ? 0 : ContractNodes.Count;
+    public int ControlMapCount => ContractMaps == null ? 0 : ContractMaps.Count;
 
 
     public Corporation? Corporation { get; set; }
@@ -111,6 +112,7 @@ public class ContractClient
     public ICollection<ContractServer>? ContractServers { get; set; } 
     public ICollection<ContractPlan>? ContractPlans { get; set; }
     public ICollection<ContractNode>? ContractNodes { get; set; } 
+    public ICollection<ContractMap>? ContractMaps { get; set; }
     public ICollection<ContractQue>? ContractQues { get; set; } 
     public ICollection<ContractBind>? ContractBinds { get; set; } 
 

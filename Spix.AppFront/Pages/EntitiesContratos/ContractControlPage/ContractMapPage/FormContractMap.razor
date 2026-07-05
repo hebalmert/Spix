@@ -1,0 +1,36 @@
+@using Spix.Domain.EntitiesContratos
+
+<EditForm Model="ContractMap" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="input-group mb-2">
+        <span class="input-group-text" style="width:130px">Coordenadas</span>
+        <input class="form-control"
+               placeholder="25.82370270482433, -80.38556718743175"
+               value="@CoordinatesText"
+               @onchange="CoordinatesChanged" />
+    </div>
+
+    <div class="row g-2 mb-2">
+        <div class="col-12 col-md-6">
+            <div class="input-group">
+                <span class="input-group-text" style="width:130px">Latitud</span>
+                <InputNumber class="form-control" @bind-Value="ContractMap.Latitude" />
+            </div>
+            <ValidationMessage For="@(() => ContractMap.Latitude)" />
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="input-group">
+                <span class="input-group-text" style="width:130px">Longitud</span>
+                <InputNumber class="form-control" @bind-Value="ContractMap.Longitude" />
+            </div>
+            <ValidationMessage For="@(() => ContractMap.Longitude)" />
+        </div>
+    </div>
+
+    <hr />
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

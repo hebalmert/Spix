@@ -1,6 +1,7 @@
 ﻿using Spix.Domain.EntitiesNet;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Spix.Domain.EntitiesContratos;
 
@@ -21,3 +22,4 @@ public class ContractIp
     public IpNet? IpNet { get; set; }
 
 }
+
