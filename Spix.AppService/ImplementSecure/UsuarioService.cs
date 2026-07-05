@@ -8,6 +8,7 @@ using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
+using Spix.AppInfra.UtilityTools;
 using Spix.AppService.InterfacesSecure;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
@@ -30,12 +31,13 @@ public class UsuarioService : IUsuarioService
     private readonly IFileStorage _fileStorage;
     private readonly IUserHelper _userHelper;
     private readonly IEmailHelper _emailHelper;
+    private readonly IUtilityTools _utilityTools;
     private readonly ImgSetting _imgOption;
     private readonly IStringLocalizer _localizer;
 
     public UsuarioService(DataContext context, IHttpContextAccessor httpContextAccessor, HttpErrorHandler httpErrorHandle,
         ITransactionManager transactionManager, IFileStorage fileStorage, IStringLocalizer localizer,
-        IUserHelper userHelper, IEmailHelper emailHelper, IOptions<ImgSetting> ImgOption)
+        IUserHelper userHelper, IEmailHelper emailHelper, IUtilityTools utilityTools, IOptions<ImgSetting> ImgOption)
     {
         _context = context;
         _httpErrorHandler = httpErrorHandle;
@@ -44,6 +46,7 @@ public class UsuarioService : IUsuarioService
         _fileStorage = fileStorage;
         _userHelper = userHelper;
         _emailHelper = emailHelper;
+        _utilityTools = utilityTools;
         _imgOption = ImgOption.Value;
         _localizer = localizer;
     }
@@ -119,6 +122,10 @@ public class UsuarioService : IUsuarioService
                     var FileResult = await _fileStorage.GetBlobSasUrlAsync(option.Photo, _imgOption.ImgUsuario, TimeSpan.FromMinutes(3));
                     option.ImageFullPath = FileResult;
                 }
+                else
+                {
+                    option.ImageFullPath = _imgOption.ImgNoImage;
+                }
             }));
 
             return new ActionResponse<IEnumerable<Usuario>>
@@ -151,6 +158,10 @@ public class UsuarioService : IUsuarioService
             {
                 var FileResult = await _fileStorage.GetBlobSasUrlAsync(modelo.Photo, _imgOption.ImgUsuario, TimeSpan.FromMinutes(2));
                 modelo.ImageFullPath = FileResult;
+            }
+            else
+            {
+                modelo.ImageFullPath = _imgOption.ImgNoImage;
             }
 
             return new ActionResponse<Usuario>
@@ -307,6 +318,104 @@ public class UsuarioService : IUsuarioService
         }
     }
 
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string urlFront)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_InvalidId)]
+                };
+            }
+
+            var modelo = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(x => x.UsuarioId == id);
+            if (modelo == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            if (!modelo.Active)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "El Usuario no esta activo."
+                };
+            }
+
+            User user = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No existe un usuario creado para este registro."
+                };
+            }
+
+            if (user.EmailConfirmed)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "La cuenta de este Usuario ya fue confirmada."
+                };
+            }
+
+            var password = _utilityTools.GeneratePass(8);
+            var resetToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+            var resetResult = await _userHelper.ResetPasswordAsync(user, resetToken, password);
+            if (!resetResult.Succeeded)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No se pudo generar una nueva clave temporal para el usuario."
+                };
+            }
+
+            user.Pass = password;
+            user.Active = true;
+
+            var updateResult = await _userHelper.UpdateUserAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No se pudo activar el usuario para reenviar el correo."
+                };
+            }
+
+            Response response = await SendActivationEmailAsync(user, urlFront);
+            if (!response.IsSuccess)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = response.Message ?? "No se pudo enviar el correo de activacion."
+                };
+            }
+
+            return new ActionResponse<bool>
+            {
+                WasSuccess = true,
+                Result = true
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -358,6 +467,21 @@ public class UsuarioService : IUsuarioService
     {
         User user = await _userHelper.AddUserUsuarioSoftAsync(modelo.FirstName, modelo.LastName, modelo.UserName, modelo.Email,
             modelo.PhoneNumber!, modelo.Address!, modelo.Job!, modelo.CorporationId, modelo.Photo!, "UsuarioSoftware", modelo.Active);
+
+        if (user == null)
+        {
+            return new Response
+            {
+                IsSuccess = false,
+                Message = "No se pudo crear el usuario."
+            };
+        }
+
+        return await SendActivationEmailAsync(user, urlFront);
+    }
+
+    private async Task<Response> SendActivationEmailAsync(User user, string urlFront)
+    {
         //Envio de Correo con Token de seguridad para Verificar el correo
         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
         // Construir la URL sin `Url.Action`

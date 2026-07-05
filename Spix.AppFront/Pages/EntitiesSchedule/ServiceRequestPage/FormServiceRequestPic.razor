@@ -1,0 +1,84 @@
+<EditForm Model="Model" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    @if (IsCompleted)
+    {
+        <div class="text-center mb-3">
+            <h5>@CurrentPhoto.Title</h5>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-2 col-md-1 text-center">
+                <ButtonGeneric OnClick="PreviousPhoto"
+                               TooTip="Anterior"
+                               Icon="fa fa-chevron-left" />
+            </div>
+
+            <div class="col-8 col-md-10 text-center">
+                <img src="@CurrentPhoto.ImageUrl" class="img-fluid rounded border" style="max-height:520px; width:100%; object-fit:contain;" />
+            </div>
+
+            <div class="col-2 col-md-1 text-center">
+                <ButtonGeneric OnClick="NextPhoto"
+                               TooTip="Siguiente"
+                               Icon="fa fa-chevron-right" />
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-2 mb-3">
+            @for (var i = 0; i < Photos.Count; i++)
+            {
+                var index = i;
+                <button type="button"
+                        class="btn btn-sm @(CurrentPhotoIndex == index ? "btn-primary" : "btn-outline-primary")"
+                        @onclick="() => SelectPhoto(index)">
+                    @(index + 1)
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-center gap-2 mb-3">
+            <button type="button" class="btn @(ShowBefore ? "btn-primary" : "btn-outline-primary")" @onclick="ShowBeforePics">Antes</button>
+            <button type="button" class="btn @(!ShowBefore ? "btn-primary" : "btn-outline-primary")" @onclick="ShowAfterPics">Despues</button>
+        </div>
+
+        <div class="container">
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    @if (ShowBefore)
+                    {
+                        <h6 class="text-center">Antes 1</h6>
+                        <InputImageIDfront @key="FrontKey" ImageSelected="Before1Selected" ImageUrl="@Model.ImageBefore1FullPath" />
+                    }
+                    else
+                    {
+                        <h6 class="text-center">Despues 1</h6>
+                        <InputImageIDfront @key="FrontKey" ImageSelected="After1Selected" ImageUrl="@Model.ImageAfter1FullPath" />
+                    }
+                </div>
+                <div class="col-md-6">
+                    @if (ShowBefore)
+                    {
+                        <h6 class="text-center">Antes 2</h6>
+                        <InputImageIDBack @key="BackKey" ImageSelected="Before2Selected" ImageUrl="@Model.ImageBefore2FullPath" />
+                    }
+                    else
+                    {
+                        <h6 class="text-center">Despues 2</h6>
+                        <InputImageIDBack @key="BackKey" ImageSelected="After2Selected" ImageUrl="@Model.ImageAfter2FullPath" />
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        @if (!IsCompleted)
+        {
+            <ButtonFormSave IsSaving="IsSaving" />
+        }
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

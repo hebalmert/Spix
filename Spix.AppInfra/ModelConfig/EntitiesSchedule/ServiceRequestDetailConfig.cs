@@ -10,6 +10,9 @@ public class ServiceRequestDetailConfig : IEntityTypeConfiguration<ServiceReques
     {
         builder.HasKey(e => e.ServiceRequestDetailId);
         builder.Property(e => e.ServiceRequestDetailId).HasDefaultValueSql("NEWSEQUENTIALID()");
+        builder.Property(e => e.TaxRate).HasPrecision(5, 2);
+        builder.Property(e => e.Price).HasPrecision(18, 2);
+        builder.Property(e => e.TaxAmount).HasPrecision(18, 2);
 
         builder.HasOne(e => e.ServiceRequest)
             .WithMany(e => e.ServiceRequestDetails)
@@ -20,6 +23,14 @@ public class ServiceRequestDetailConfig : IEntityTypeConfiguration<ServiceReques
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(e => e.ServiceClient)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(e => e.Tax)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(e => e.SellDetail)
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
     }

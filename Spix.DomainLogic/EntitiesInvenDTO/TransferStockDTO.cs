@@ -1,4 +1,4 @@
-﻿namespace Spix.DomainLogic.EntitiesDTO;
+namespace Spix.DomainLogic.EntitiesInvenDTO;
 
 public class TransferStockDTO
 {

@@ -26,5 +26,11 @@ public class ServiceRequestDto
     public string? MacCliente { get; set; }
     public string? PlanName { get; set; }
     public string? PlanSpeed { get; set; }
+    public bool Billed { get; set; }
+    public Guid? SellId { get; set; }
+    public decimal SubTotal { get; set; }
+    public decimal TotalTax { get; set; }
+    public decimal Total { get; set; }
+    public Guid? ServiceRequestPicId { get; set; }
     public List<ServiceRequestDetailDto> Details { get; set; } = new();
 }

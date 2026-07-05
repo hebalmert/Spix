@@ -29,5 +29,9 @@ public class ServiceRequestConfig : IEntityTypeConfiguration<ServiceRequest>
             .WithOne(e => e.ServiceRequest)
             .HasForeignKey<ScheduleItem>(e => e.ServiceRequestId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(e => e.Sell)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

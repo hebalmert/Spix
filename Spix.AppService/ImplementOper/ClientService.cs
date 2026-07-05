@@ -9,6 +9,7 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
+using Spix.AppInfra.UtilityTools;
 using Spix.AppService.InterfacesOper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesOper;
@@ -33,12 +34,13 @@ namespace Spix.Services.ImplementOper
         private readonly IFileStorage _fileStorage;
         private readonly IUserHelper _userHelper;
         private readonly IEmailHelper _emailHelper;
+        private readonly IUtilityTools _utilityTools;
         private readonly IStringLocalizer _localizer;
         private readonly ImgSetting _imgOption;
 
         public ClientService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
             ITransactionManager transactionManager, IMemoryCache cache, IFileStorage fileStorage, HttpErrorHandler httpErrorHandle,
-            IUserHelper userHelper, IEmailHelper emailHelper, IOptions<ImgSetting> ImgOption, IStringLocalizer localizer)
+            IUserHelper userHelper, IEmailHelper emailHelper, IUtilityTools utilityTools, IOptions<ImgSetting> ImgOption, IStringLocalizer localizer)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -47,6 +49,7 @@ namespace Spix.Services.ImplementOper
             _fileStorage = fileStorage;
             _userHelper = userHelper;
             _emailHelper = emailHelper;
+            _utilityTools = utilityTools;
             _localizer = localizer;
             _imgOption = ImgOption.Value;
             _httpErrorHandler = httpErrorHandle;
@@ -135,6 +138,10 @@ namespace Spix.Services.ImplementOper
                         var FileResult = await _fileStorage.GetBlobSasUrlAsync(option.Imagen, _imgOption.ImgClient, TimeSpan.FromMinutes(3));
                         option.ImageFullPath = FileResult;
                     }
+                    else
+                    {
+                        option.ImageFullPath = _imgOption.ImgNoImage;
+                    }
                 }));
 
                 return new ActionResponse<IEnumerable<Client>>
@@ -218,17 +225,24 @@ namespace Spix.Services.ImplementOper
 
                 if (UserCurrent != null)
                 {
-                    // Actualizar solo si tiene cuenta
-                    UserCurrent.FirstName = modelo.FirstName;
-                    UserCurrent.LastName = modelo.LastName;
-                    UserCurrent.PhoneNumber = modelo.PhoneNumber;
-                    UserCurrent.PhotoUser = modelo.Imagen;
-                    UserCurrent.JobPosition = "Client";
+                    if (!modelo.CreateAccount)
+                    {
+                        await _userHelper.DeleteUser(modelo.UserName);
+                    }
+                    else
+                    {
+                        // Actualizar solo si tiene cuenta
+                        UserCurrent.FirstName = modelo.FirstName;
+                        UserCurrent.LastName = modelo.LastName;
+                        UserCurrent.PhoneNumber = modelo.PhoneNumber;
+                        UserCurrent.PhotoUser = modelo.Imagen;
+                        UserCurrent.JobPosition = "Client";
 
-                    // Active del IdentityUser ahora depende de CreateAccount
-                    UserCurrent.Active = modelo.CreateAccount;
+                        // Active del IdentityUser ahora depende de CreateAccount
+                        UserCurrent.Active = modelo.CreateAccount;
 
-                    await _userHelper.UpdateUserAsync(UserCurrent);
+                        await _userHelper.UpdateUserAsync(UserCurrent);
+                    }
                 }
                 else
                 {
@@ -347,6 +361,93 @@ namespace Spix.Services.ImplementOper
 
         }
 
+        public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = _localizer["Generic_InvalidId"]
+                    };
+                }
+
+                var modelo = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(x => x.ClientId == id);
+                if (modelo == null)
+                {
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "Problemas para Enconstrar el Registro Indicado"
+                    };
+                }
+
+                if (!modelo.Active || !modelo.CreateAccount)
+                {
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "El Cliente no tiene activa la creacion de cuenta."
+                    };
+                }
+
+                User user = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+                if (user == null)
+                {
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "No existe un usuario creado para este Cliente."
+                    };
+                }
+
+                if (user.EmailConfirmed)
+                {
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "La cuenta de este Cliente ya fue confirmada."
+                    };
+                }
+
+                var password = _utilityTools.GeneratePass(8);
+                var resetToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                var resetResult = await _userHelper.ResetPasswordAsync(user, resetToken, password);
+                if (!resetResult.Succeeded)
+                {
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "No se pudo generar una nueva clave temporal para el usuario."
+                    };
+                }
+
+                user.Pass = password;
+
+                Response response = await SendActivationEmailAsync(user, frontUrl);
+                if (!response.IsSuccess)
+                {
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = response.Message ?? "No se pudo enviar el correo de activacion."
+                    };
+                }
+
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+            }
+        }
+
         public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
         {
             await _transactionManager.BeginTransactionAsync();
@@ -362,12 +463,16 @@ namespace Spix.Services.ImplementOper
                     };
                 }
                 var user = await _userHelper.GetUserByUserNameAsync(DataRemove.UserName);
-                var RemoveRoleDetail = await _context.UserRoleDetails.Where(x => x.UserId == user.Id).ToListAsync();
-                if (RemoveRoleDetail != null)
+                if (user != null)
                 {
-                    _context.UserRoleDetails.RemoveRange(RemoveRoleDetail!);
+                    var RemoveRoleDetail = await _context.UserRoleDetails.Where(x => x.UserId == user.Id).ToListAsync();
+                    if (RemoveRoleDetail != null)
+                    {
+                        _context.UserRoleDetails.RemoveRange(RemoveRoleDetail!);
+                    }
+
+                    await _userHelper.DeleteUser(DataRemove.UserName);
                 }
-                await _userHelper.DeleteUser(DataRemove.UserName);
 
                 _context.Clients.Remove(DataRemove);
 
@@ -405,6 +510,20 @@ namespace Spix.Services.ImplementOper
             User user = await _userHelper.AddUserUsuarioAsync(modelo.FirstName, modelo.LastName, modelo.UserName, modelo.Email,
                 modelo.PhoneNumber, modelo.Address, "Client", modelo.CorporationId, modelo.Imagen!, "Client", modelo.Active, modelo.UserType);
 
+            if (user == null)
+            {
+                return new Response
+                {
+                    IsSuccess = false,
+                    Message = "No se pudo crear el usuario."
+                };
+            }
+
+            return await SendActivationEmailAsync(user, frontUrl);
+        }
+
+        private async Task<Response> SendActivationEmailAsync(User user, string frontUrl)
+        {
             //Envio de Correo con Token de seguridad para Verificar el correo
             string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 

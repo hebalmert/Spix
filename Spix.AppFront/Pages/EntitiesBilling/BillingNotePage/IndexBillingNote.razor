@@ -1,0 +1,72 @@
+@page "/billingnotes"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesBilling
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Billing Notes</h3>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <ButtonFormNew OnClick="ShowModalAsync" TooTip="Nuevo" />
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="BillingNotes">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Año</th>
+                                <th>Mes</th>
+                                <th class="text-center">Creado</th>
+                                <th>Fecha Creado</th>
+                                <th colspan="3" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in BillingNotes!)
+                            {
+                                <tr>
+                                    <td>@item.DateBill.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.YearNumber</td>
+                                    <td>@GetMonthName(item.MonthType)</td>
+                                    <td class="text-center">
+                                        <input class="form-check-input" type="checkbox" checked="@item.Created" disabled />
+                                    </td>
+                                    <td>@item.DateCreated?.ToString("dd/MM/yyyy")</td>
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ShowDetailsAsync(item.BillingNoteId)"
+                                                       TooTip="Detalle"
+                                                       Icon="fa fa-list-alt" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowEditAsync(item.BillingNoteId)" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (!item.Created)
+                                        {
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.BillingNoteId)" />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+        <hr />
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    </div>
+</div>

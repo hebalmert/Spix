@@ -17,5 +17,7 @@ public interface IUsuarioServiceX
 
     Task<ActionResponse<Usuario>> AddAsync(Usuario modelo, string urlFront, string username);
 
+    Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string urlFront);
+
     Task<ActionResponse<bool>> DeleteAsync(Guid id);
 }

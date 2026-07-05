@@ -26,5 +26,7 @@ public class ClientServiceX : IClientServiceX
 
     public async Task<ActionResponse<Client>> AddAsync(Client modelo, string username, string frontUrl) => await _clientService.AddAsync(modelo, username, frontUrl);
 
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl) => await _clientService.ResendActivationEmailAsync(id, frontUrl);
+
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _clientService.DeleteAsync(id);
 }

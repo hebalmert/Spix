@@ -1,3 +1,4 @@
+using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesGen;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,6 +18,18 @@ public class ServiceRequestDetail
     [Required]
     public Guid ServiceClientId { get; set; }
 
+    public Guid? TaxId { get; set; }
+
+    public decimal TaxRate { get; set; }
+
+    public decimal Price { get; set; }
+
+    public decimal TaxAmount { get; set; }
+
+    public decimal Total => Price + TaxAmount;
+
+    public Guid? SellDetailId { get; set; }
+
     [MaxLength(500)]
     public string? Detail { get; set; }
 
@@ -25,4 +38,8 @@ public class ServiceRequestDetail
     public ServiceCategory? ServiceCategory { get; set; }
 
     public ServiceClient? ServiceClient { get; set; }
+
+    public Tax? Tax { get; set; }
+
+    public SellDetail? SellDetail { get; set; }
 }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.Entities;
+using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesData;
 using Spix.Domain.EntitiesGen;
@@ -9,6 +10,7 @@ using Spix.Domain.EntitiesInven;
 using Spix.Domain.EntitiesMK;
 using Spix.Domain.EntitiesNet;
 using Spix.Domain.EntitiesOper;
+using Spix.Domain.EntitiesPayment;
 using Spix.Domain.EntitiesSchedule;
 using System.Reflection;
 
@@ -115,6 +117,19 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ScheduleItem> ScheduleItems => Set<ScheduleItem>();
     public DbSet<ServiceRequest> ServiceRequests => Set<ServiceRequest>();
     public DbSet<ServiceRequestDetail> ServiceRequestDetails => Set<ServiceRequestDetail>();
+    public DbSet<ServiceRequestPic> ServiceRequestPics => Set<ServiceRequestPic>();
+
+
+    //EntitiesBilling
+    public DbSet<Sell> Sells => Set<Sell>();
+    public DbSet<SellDetail> SellDetails => Set<SellDetail>();
+    public DbSet<BillingNote> BillingNotes => Set<BillingNote>();
+    public DbSet<BillingNoteOne> BillingNoteOnes => Set<BillingNoteOne>();
+
+
+    //EntitiesPayment
+    public DbSet<CxCBill> CxCBills => Set<CxCBill>();
+    public DbSet<CxCBillDetail> CxCBillDetails => Set<CxCBillDetail>();
 
 
 

@@ -22,6 +22,7 @@ public partial class EditContractor
     private string BaseUrl = "/api/v1/contractors";
     private bool isLoading = false;
     private bool IsSaving = false;
+    private bool IsSendingEmail = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,5 +60,20 @@ public partial class EditContractor
     private async Task Return()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+
+    private async Task ResendActivationEmailAsync()
+    {
+        if (Contractor is null)
+            return;
+
+        IsSendingEmail = true;
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Contractor.ContractorId}/re-email", new { });
+        IsSendingEmail = false;
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
     }
 }

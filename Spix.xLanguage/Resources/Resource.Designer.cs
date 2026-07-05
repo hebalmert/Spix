@@ -2545,6 +2545,114 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to April.
+        /// </summary>
+        public static string MonthType_April {
+            get {
+                return ResourceManager.GetString("MonthType_April", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to August.
+        /// </summary>
+        public static string MonthType_August {
+            get {
+                return ResourceManager.GetString("MonthType_August", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to December.
+        /// </summary>
+        public static string MonthType_December {
+            get {
+                return ResourceManager.GetString("MonthType_December", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to February.
+        /// </summary>
+        public static string MonthType_February {
+            get {
+                return ResourceManager.GetString("MonthType_February", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to January.
+        /// </summary>
+        public static string MonthType_January {
+            get {
+                return ResourceManager.GetString("MonthType_January", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to July.
+        /// </summary>
+        public static string MonthType_July {
+            get {
+                return ResourceManager.GetString("MonthType_July", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to June.
+        /// </summary>
+        public static string MonthType_June {
+            get {
+                return ResourceManager.GetString("MonthType_June", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to March.
+        /// </summary>
+        public static string MonthType_March {
+            get {
+                return ResourceManager.GetString("MonthType_March", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to May.
+        /// </summary>
+        public static string MonthType_May {
+            get {
+                return ResourceManager.GetString("MonthType_May", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to November.
+        /// </summary>
+        public static string MonthType_November {
+            get {
+                return ResourceManager.GetString("MonthType_November", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to October.
+        /// </summary>
+        public static string MonthType_October {
+            get {
+                return ResourceManager.GetString("MonthType_October", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to September.
+        /// </summary>
+        public static string MonthType_September {
+            get {
+                return ResourceManager.GetString("MonthType_September", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Record was successfully registered.
         /// </summary>
         public static string msg_CreateSuccessMessage {
@@ -3378,6 +3486,15 @@ namespace Spix.xLanguage.Resources {
         public static string Select_Mark {
             get {
                 return ResourceManager.GetString("Select_Mark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select Month].
+        /// </summary>
+        public static string Select_Month {
+            get {
+                return ResourceManager.GetString("Select_Month", resourceCulture);
             }
         }
         

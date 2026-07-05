@@ -26,5 +26,7 @@ public class TechnitianServiceX : ITechnitianServiceX
 
     public async Task<ActionResponse<Technician>> AddAsync(Technician modelo, string username, string frontUrl) => await _technitianService.AddAsync(modelo, username, frontUrl);
 
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl) => await _technitianService.ResendActivationEmailAsync(id, frontUrl);
+
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _technitianService.DeleteAsync(id);
 }

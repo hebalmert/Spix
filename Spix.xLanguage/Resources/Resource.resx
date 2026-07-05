@@ -1390,5 +1390,44 @@
   <data name="ScheduleStatus_Cancelled" xml:space="preserve">
     <value>Cancelled</value>
   </data>
+  <data name="Select_Month" xml:space="preserve">
+    <value>[Select Month]</value>
+  </data>
+  <data name="MonthType_January" xml:space="preserve">
+    <value>January</value>
+  </data>
+  <data name="MonthType_February" xml:space="preserve">
+    <value>February</value>
+  </data>
+  <data name="MonthType_March" xml:space="preserve">
+    <value>March</value>
+  </data>
+  <data name="MonthType_April" xml:space="preserve">
+    <value>April</value>
+  </data>
+  <data name="MonthType_May" xml:space="preserve">
+    <value>May</value>
+  </data>
+  <data name="MonthType_June" xml:space="preserve">
+    <value>June</value>
+  </data>
+  <data name="MonthType_July" xml:space="preserve">
+    <value>July</value>
+  </data>
+  <data name="MonthType_August" xml:space="preserve">
+    <value>August</value>
+  </data>
+  <data name="MonthType_September" xml:space="preserve">
+    <value>September</value>
+  </data>
+  <data name="MonthType_October" xml:space="preserve">
+    <value>October</value>
+  </data>
+  <data name="MonthType_November" xml:space="preserve">
+    <value>November</value>
+  </data>
+  <data name="MonthType_December" xml:space="preserve">
+    <value>December</value>
+  </data>
 </root>
 

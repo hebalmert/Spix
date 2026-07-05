@@ -22,6 +22,7 @@ public partial class EditClient
     private string BaseUrl = "/api/v1/clients";
     private bool isLoading = false;
     private bool IsSaving = false;
+    private bool IsSendingEmail = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,5 +64,20 @@ public partial class EditClient
     private async Task Return()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+
+    private async Task ResendActivationEmailAsync()
+    {
+        if (Client is null)
+            return;
+
+        IsSendingEmail = true;
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Client.ClientId}/re-email", new { });
+        IsSendingEmail = false;
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
     }
 }

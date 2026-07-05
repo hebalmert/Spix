@@ -20,6 +20,17 @@
             }
             else
             {
+                @if (Contractor.CreateAccount)
+                {
+                    <div class="d-flex justify-content-end mb-3">
+                        <ButtonFormSaveOnClick OnClick="ResendActivationEmailAsync"
+                                               IsSaving="IsSendingEmail"
+                                               TooTip="Re-Email"
+                                               Icon="fa fa-envelope"
+                                               Style="width:140px" />
+                    </div>
+                }
+
                 <FormContractor Contractor="Contractor"
                              IsSaving="IsSaving"
                              IsEditControl="true"

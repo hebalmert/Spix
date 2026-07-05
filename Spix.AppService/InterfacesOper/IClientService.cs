@@ -17,5 +17,7 @@ public interface IClientService
 
     Task<ActionResponse<Client>> AddAsync(Client modelo, string username, string frontUrl);
 
+    Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl);
+
     Task<ActionResponse<bool>> DeleteAsync(Guid id);
 }

@@ -1,5 +1,5 @@
 ﻿using Spix.Domain.EntitiesInven;
-using Spix.DomainLogic.EntitiesDTO;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 

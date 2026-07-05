@@ -26,5 +26,7 @@ public class UsuarioServiceX : IUsuarioServiceX
 
     public async Task<ActionResponse<Usuario>> AddAsync(Usuario modelo, string urlFront, string username) => await _usuarioService.AddAsync(modelo, urlFront, username);
 
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string urlFront) => await _usuarioService.ResendActivationEmailAsync(id, urlFront);
+
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _usuarioService.DeleteAsync(id);
 }

@@ -99,9 +99,19 @@ public partial class IndexUsuarios
         });
     }
 
-    private void ShowModalDetailsAsync(Guid id)
+    private async Task ShowModalDetailsAsync(Guid id)
     {
-        _navigationManager.NavigateTo($"/usuarios/detailusuario/{id}");
+        var parameters = new Dictionary<string, object>
+        {
+            { "Id", id },
+            { "Title", $"{Localizer[nameof(Resource.UserRole)]}" }
+        };
+
+        await _modalService.ShowAsync(typeof(ManageUsuarioRoles), parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar(CurrentPage);
+        });
     }
 
     private async Task DeleteAsync(Guid id)
@@ -126,5 +136,15 @@ public partial class IndexUsuarios
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
+    }
+
+    private async Task ResendActivationEmailAsync(Guid id)
+    {
+        var responseHttp = await _repository.PostAsync($"{baseUrl}/{id}/re-email", new { });
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
     }
 }

@@ -1,0 +1,58 @@
+@page "/cxcbills"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesPayment
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Cuentas por Cobrar</h3>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-12 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="CxCBills">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nota</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Contrato</th>
+                                <th>Detalle</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Saldo</th>
+                                <th>Pagado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in CxCBills!)
+                            {
+                                <tr>
+                                    <td>@item.CollectionNote</td>
+                                    <td>@item.DateNote.ToString("dd/MM/yyyy")</td>
+                                    <td>@($"{item.Client?.FirstName} {item.Client?.LastName}")</td>
+                                    <td>@item.ContractClient?.ControlContrato</td>
+                                    <td>@item.Description</td>
+                                    <td class="text-end">@item.Total.ToString("N2")</td>
+                                    <td class="text-end">@item.Balance.ToString("N2")</td>
+                                    <td>@(item.Paid ? "Si" : "No")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+        <hr />
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    </div>
+</div>

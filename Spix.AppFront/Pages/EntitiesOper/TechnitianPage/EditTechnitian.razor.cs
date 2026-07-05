@@ -22,6 +22,7 @@ public partial class EditTechnitian
     private string BaseUrl = "/api/v1/technitians";
     private bool isLoading = false;
     private bool IsSaving = false;
+    private bool IsSendingEmail = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,5 +55,20 @@ public partial class EditTechnitian
     private async Task Return()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+
+    private async Task ResendActivationEmailAsync()
+    {
+        if (Technician is null)
+            return;
+
+        IsSendingEmail = true;
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Technician.TechnicianId}/re-email", new { });
+        IsSendingEmail = false;
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
     }
 }

@@ -105,6 +105,24 @@ namespace Spix.AppBack.Controllers
             }
         }
 
+        [HttpPost("{id}/re-email")]
+        public async Task<IActionResult> ResendActivationEmailAsync(Guid id)
+        {
+            try
+            {
+                var response = await _unitOfWork.ResendActivationEmailAsync(id, _configuration["UrlFrontend"]!);
+                return ResponseHelper.Format(response);
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {

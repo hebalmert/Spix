@@ -85,6 +85,17 @@ namespace Spix.AppBack.Controllers.v1
             return BadRequest(response.Message);
         }
 
+        [HttpPost("{id}/re-email")]
+        public async Task<ActionResult<bool>> ResendActivationEmailAsync(Guid id)
+        {
+            var response = await _clientServiceX.ResendActivationEmailAsync(id, _configuration["UrlFrontend"]!);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest(response.Message);
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> DeleteAsync(Guid id)
         {

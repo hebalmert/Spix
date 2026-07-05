@@ -34,7 +34,7 @@ public partial class FormServiceRequest
     private List<ServiceClient> ServiceClients = new();
     private ServiceRequestDetailDto Detail = new();
     private string ContractFilter = string.Empty;
-    private bool IsCompleted => Model.ScheduleStatus == ScheduleStatus.Completed;
+    private bool IsCompleted;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,6 +44,7 @@ public partial class FormServiceRequest
 
         if (IsEditControl)
         {
+            IsCompleted = Model.ScheduleStatus == ScheduleStatus.Completed;
             Detail = new() { ServiceRequestId = Model.ServiceRequestId };
         }
     }
@@ -188,7 +189,16 @@ public partial class FormServiceRequest
         var responseHttp = await _repository.GetAsync<ServiceRequestDto>($"{BaseUrl}/{Model.ServiceRequestId}");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            Model.Details = responseHttp.Response?.Details ?? new();
+            var request = responseHttp.Response;
+            if (request == null)
+                return;
+
+            Model.Details = request.Details;
+            Model.Billed = request.Billed;
+            Model.SellId = request.SellId;
+            Model.SubTotal = request.SubTotal;
+            Model.TotalTax = request.TotalTax;
+            Model.Total = request.Total;
         }
     }
 }

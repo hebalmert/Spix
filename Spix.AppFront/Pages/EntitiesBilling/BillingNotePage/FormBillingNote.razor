@@ -1,0 +1,78 @@
+<EditForm Model="BillingNote" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row mb-3">
+        <div class="col-12 col-md-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:120px">Fecha</span>
+                <input type="date" class="form-control"
+                       value="@BillingNote.DateBill.ToString("yyyy-MM-dd")"
+                       disabled="@IsReadOnly"
+                       @onchange="DateChanged" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:120px">Año</span>
+                <input type="number" class="form-control"
+                       value="@BillingNote.YearNumber"
+                       disabled="@IsReadOnly"
+                       @onchange="YearChanged" />
+            </div>
+        </div>
+        <div class="col-12 col-md-6 mb-2">
+            @if (Months is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:120px">Mes</span>
+                    <select class="form-select"
+                            value="@((int)BillingNote.MonthType)"
+                            disabled="@IsReadOnly"
+                            @onchange="MonthChanged">
+                        @foreach (var item in Months)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row mb-3">
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:120px">Creado</span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="BillingNote.Created" class="form-check-input me-2" disabled />
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:120px">Fecha</span>
+                <input class="form-control" value="@BillingNote.DateCreated?.ToString("dd/MM/yyyy")" disabled />
+            </div>
+        </div>
+    </div>
+
+    @if (ShowButtons)
+    {
+        <div class="d-flex justify-content-center gap-3 mt-5">
+            @if (!IsReadOnly)
+            {
+                <ButtonFormSave IsSaving="IsSaving" />
+            }
+            <ButtonFormBack OnClick="ReturnAction" />
+        </div>
+    }
+</EditForm>

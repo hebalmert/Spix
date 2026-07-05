@@ -24,6 +24,7 @@ public partial class EditUsuario
     private string BaseUrl = "/api/v1/usuarios";
     private bool isLoading = false;
     private bool IsSaving = false;
+    private bool IsSendingEmail = false;
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
@@ -51,5 +52,20 @@ public partial class EditUsuario
     private async Task Return()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+
+    private async Task ResendActivationEmailAsync()
+    {
+        if (Usuario is null)
+            return;
+
+        IsSendingEmail = true;
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Usuario.UsuarioId}/re-email", new { });
+        IsSendingEmail = false;
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
     }
 }

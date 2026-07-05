@@ -7,7 +7,7 @@ using Spix.AppBack.Helper;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.DomainLogic.AppResponses;
-using Spix.DomainLogic.EntitiesDTO;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppBack.Controllers.EntitiesInven

@@ -119,6 +119,41 @@ public partial class IndexServiceRequest
         });
     }
 
+    private async Task ShowModalPicsAsync(Guid serviceRequestId, Guid? serviceRequestPicId, bool isCompleted)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        if (serviceRequestPicId.HasValue)
+        {
+            component = typeof(EditServiceRequestPic);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", serviceRequestPicId.Value },
+                { "Title", "Fotos de Solicitud" },
+                { "IsCompleted", isCompleted }
+            };
+        }
+        else
+        {
+            component = typeof(CreateServiceRequestPic);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", serviceRequestId },
+                { "Title", "Fotos de Solicitud" },
+                { "IsCompleted", isCompleted }
+            };
+        }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                await Cargar(CurrentPage);
+            }
+        });
+    }
+
     private async Task DeleteAsync(Guid id)
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions

@@ -32,6 +32,7 @@
                                 <th>Status</th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,6 +45,11 @@
                                     <td>@item.TechnicianName</td>
                                     <td>@item.ScheduledAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                                     <td><ScheduleStatusBadge Value="@item.ScheduleStatus" /></td>
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ShowModalPicsAsync(item.ServiceRequestId, item.ServiceRequestPicId, item.ScheduleStatus == ScheduleStatus.Completed)"
+                                                       TooTip="Fotos"
+                                                       Icon="fa fa-camera" />
+                                    </td>
                                     <td style="width:1px;">
                                         <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceRequestId, true)" />
                                     </td>

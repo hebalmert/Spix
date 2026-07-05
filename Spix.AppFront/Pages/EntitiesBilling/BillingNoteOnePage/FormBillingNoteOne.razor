@@ -1,0 +1,156 @@
+<EditForm Model="BillingNoteOne" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row g-2 mb-2">
+        <div class="col-12 col-md-5">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Fecha</span>
+                <input type="date" class="form-control"
+                       value="@BillingNoteOne.DateBill.ToString("yyyy-MM-dd")"
+                       disabled="@IsReadOnly"
+                       @onchange="DateChanged" />
+            </div>
+        </div>
+        <div class="col-12 col-md-7">
+            <div class="input-group position-relative">
+                <span class="input-group-text" style="width:125px">Cliente</span>
+                <input class="form-control"
+                       placeholder="Buscar Cliente..."
+                       value="@ContractFilter"
+                       disabled="@IsReadOnly"
+                       @oninput="FilterChanged" />
+
+                @if (!IsReadOnly && Contracts.Count > 0)
+                {
+                    <ul class="list-group position-absolute w-100 shadow-sm"
+                        style="top:100%; left:0; z-index:2000; max-height:240px; overflow-y:auto;">
+                        @foreach (var contract in Contracts)
+                        {
+                            <li class="list-group-item list-group-item-action"
+                                @onclick="() => SelectContract(contract)">
+                                @contract.ClientFullName - Contrato @contract.ControlContrato - @contract.ZoneName
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2 mb-2">
+        <div class="col-12 col-md-4">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Contrato</span>
+                <input class="form-control" value="@SelectedContract?.ControlContrato" disabled />
+            </div>
+        </div>
+        <div class="col-12 col-md-8">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Direccion</span>
+                <input class="form-control" value="@SelectedContract?.Address" disabled />
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2 mb-2">
+        <div class="col-12 col-md-4">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Ciudad</span>
+                <input class="form-control" value="@SelectedContract?.CityName" disabled />
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Zona</span>
+                <input class="form-control" value="@SelectedContract?.ZoneName" disabled />
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Telefono</span>
+                <input class="form-control" value="@SelectedContract?.PhoneNumber" disabled />
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row g-2 mb-2">
+        <div class="col-12 col-md-8">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Plan</span>
+                <input class="form-control" value="@SelectedContract?.PlanName" disabled />
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Precio</span>
+                <input class="form-control" value="@SelectedContract?.PlanPrice?.ToString("N2")" disabled />
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2 mb-2">
+        <div class="col-12 col-md-5">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Año</span>
+                <input type="number" class="form-control"
+                       value="@BillingNoteOne.YearNumber"
+                       disabled="@IsReadOnly"
+                       @onchange="YearChanged" />
+            </div>
+        </div>
+        <div class="col-12 col-md-7">
+            @if (Months is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="input-group">
+                    <span class="input-group-text" style="width:125px">Mes</span>
+                    <select class="form-select"
+                            value="@((int)BillingNoteOne.MonthType)"
+                            disabled="@IsReadOnly"
+                            @onchange="MonthChanged">
+                        @foreach (var item in Months)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row g-2 mb-2">
+        <div class="col-12 col-md-5">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Creado</span>
+                <div class="form-control d-flex align-items-center">
+                    <input class="form-check-input" type="checkbox" checked="@BillingNoteOne.Created" disabled />
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-7">
+            <div class="input-group">
+                <span class="input-group-text" style="width:125px">Fecha</span>
+                <input class="form-control" value="@BillingNoteOne.DateCreated?.ToString("dd/MM/yyyy")" disabled />
+            </div>
+        </div>
+    </div>
+
+    @if (ShowButtons)
+    {
+        <hr />
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            @if (!IsReadOnly)
+            {
+                <ButtonFormSave IsSaving="IsSaving" />
+            }
+            <ButtonFormBack OnClick="ReturnAction" />
+        </div>
+    }
+</EditForm>

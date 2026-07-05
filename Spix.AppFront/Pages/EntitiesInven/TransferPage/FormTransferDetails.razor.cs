@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
-using Spix.DomainLogic.EntitiesDTO;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;

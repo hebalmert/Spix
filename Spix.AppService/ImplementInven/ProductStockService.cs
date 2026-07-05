@@ -9,7 +9,7 @@ using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesInven;
 using Spix.Domain.EntitiesInven;
-using Spix.DomainLogic.EntitiesDTO;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using System.Net.NetworkInformation;

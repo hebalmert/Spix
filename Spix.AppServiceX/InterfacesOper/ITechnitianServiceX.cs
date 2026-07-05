@@ -17,5 +17,7 @@ public interface ITechnitianServiceX
 
     Task<ActionResponse<Technician>> AddAsync(Technician modelo, string username, string frontUrl);
 
+    Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl);
+
     Task<ActionResponse<bool>> DeleteAsync(Guid id);
 }

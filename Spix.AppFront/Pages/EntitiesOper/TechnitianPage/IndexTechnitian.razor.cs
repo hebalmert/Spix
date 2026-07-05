@@ -128,4 +128,14 @@ public partial class IndexTechnitian
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar(CurrentPage);
     }
+
+    private async Task ResendActivationEmailAsync(Guid id)
+    {
+        var responseHttp = await _repository.PostAsync($"{baseUrl}/{id}/re-email", new { });
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
+    }
 }

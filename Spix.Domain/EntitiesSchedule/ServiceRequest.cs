@@ -1,4 +1,5 @@
 using Spix.Domain.Entities;
+using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesOper;
 using System.ComponentModel.DataAnnotations;
@@ -73,6 +74,10 @@ public class ServiceRequest
 
     public bool Active { get; set; } = true;
 
+    public bool Billed { get; set; }
+
+    public Guid? SellId { get; set; }
+
     public int CorporationId { get; set; }
 
     public string? UsuarioOwner { get; set; }
@@ -87,5 +92,15 @@ public class ServiceRequest
 
     public ScheduleItem? ScheduleItem { get; set; }
 
+    public ServiceRequestPic? ServiceRequestPic { get; set; }
+
+    public Sell? Sell { get; set; }
+
     public ICollection<ServiceRequestDetail>? ServiceRequestDetails { get; set; }
+
+    public decimal SubTotal => ServiceRequestDetails == null ? 0 : ServiceRequestDetails.Sum(x => x.Price);
+
+    public decimal TotalTax => ServiceRequestDetails == null ? 0 : ServiceRequestDetails.Sum(x => x.TaxAmount);
+
+    public decimal Total => ServiceRequestDetails == null ? 0 : ServiceRequestDetails.Sum(x => x.Total);
 }

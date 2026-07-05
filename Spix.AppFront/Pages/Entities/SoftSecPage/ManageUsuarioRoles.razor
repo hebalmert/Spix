@@ -1,0 +1,87 @@
+@inherits ComponentBase
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (Usuario is null || UsuarioRoles is null)
+            {
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
+            }
+            else
+            {
+                <h5 class="mb-3">@Usuario.FirstName @Usuario.LastName</h5>
+
+                <div class="row mb-3">
+                    <div class="col-12 col-md-8 mb-2">
+                        @if (ListUserType is null)
+                        {
+                            <Loading />
+                        }
+                        else
+                        {
+                            <div class="input-group">
+                                <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.UserRole)]</span>
+                                <select class="form-select" value="@SelectedUserType" @onchange="RoleChanged">
+                                    @foreach (var item in ListUserType)
+                                    {
+                                        <option value="@item.Value">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-12 col-md-4 mb-2">
+                        <ButtonFormNew CssClass="btn btn-gradient-primary d-flex align-items-center justify-content-center gap-2"
+                                       Style="width:100%"
+                                       OnClick="AddRoleAsync"
+                                       TooTip="Agregar" />
+                    </div>
+                </div>
+
+                <GenericList MyList="UsuarioRoles">
+                    <Body>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>@Localizer[nameof(Resource.Role)]</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in UsuarioRoles!)
+                                    {
+                                        <tr>
+                                            <td>@item.UserType.ToString()</td>
+                                            <td style="width:1px;">
+                                                <ButtonDelete OnClick="() => DeleteAsync(item.UsuarioRoleId)" />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </Body>
+                </GenericList>
+
+                <hr />
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <ButtonFormBack OnClick="Return" />
+                </div>
+            }
+        </div>
+    </div>
+</div>

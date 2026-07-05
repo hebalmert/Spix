@@ -17,5 +17,7 @@ public interface IContractorService
 
     Task<ActionResponse<Contractor>> AddAsync(Contractor modelo, string username, string frontUrl);
 
+    Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl);
+
     Task<ActionResponse<bool>> DeleteAsync(Guid id);
 }

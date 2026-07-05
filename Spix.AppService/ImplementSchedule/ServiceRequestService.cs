@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
@@ -13,7 +14,9 @@ using Spix.Domain.EntitiesSchedule;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using Spix.DomainLogic.SettingModels;
 using Spix.xLanguage.Resources;
+using Spix.xFiles.FileHelper;
 
 namespace Spix.AppService.ImplementSchedule;
 
@@ -25,9 +28,12 @@ public class ServiceRequestService : IServiceRequestService
     private readonly IUserHelper _userHelper;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
+    private readonly IFileStorage _fileStorage;
+    private readonly ImgSetting _imgOption;
 
     public ServiceRequestService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, IUserHelper userHelper, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
+        ITransactionManager transactionManager, IUserHelper userHelper, HttpErrorHandler httpErrorHandler,
+        IStringLocalizer localizer, IFileStorage fileStorage, IOptions<ImgSetting> imgOption)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -35,6 +41,8 @@ public class ServiceRequestService : IServiceRequestService
         _userHelper = userHelper;
         _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
+        _fileStorage = fileStorage;
+        _imgOption = imgOption.Value;
     }
 
     public async Task<ActionResponse<IEnumerable<ServiceRequestDto>>> GetAsync(PaginationDTO pagination, string username)
@@ -49,6 +57,7 @@ public class ServiceRequestService : IServiceRequestService
 
             var queryable = _context.ServiceRequests
                 .Include(x => x.Technician)
+                .Include(x => x.ServiceRequestPic)
                 .Where(x => x.CorporationId == user.CorporationId && x.Active)
                 .AsQueryable();
 
@@ -132,8 +141,10 @@ public class ServiceRequestService : IServiceRequestService
 
             var entity = await _context.ServiceRequests
                 .Include(x => x.Technician)
+                .Include(x => x.ServiceRequestPic)
                 .Include(x => x.ServiceRequestDetails)!.ThenInclude(x => x.ServiceCategory)
                 .Include(x => x.ServiceRequestDetails)!.ThenInclude(x => x.ServiceClient)
+                .Include(x => x.ServiceRequestDetails)!.ThenInclude(x => x.Tax)
                 .FirstOrDefaultAsync(x => x.ServiceRequestId == id && x.CorporationId == user.CorporationId && x.Active);
 
             if (entity == null)
@@ -312,6 +323,7 @@ public class ServiceRequestService : IServiceRequestService
 
             var entity = await _context.ServiceRequests
                 .Include(x => x.ScheduleItem)
+                .Include(x => x.ServiceRequestPic)
                 .Include(x => x.ServiceRequestDetails)
                 .FirstOrDefaultAsync(x => x.ServiceRequestId == id && x.CorporationId == user.CorporationId && x.Active);
             if (entity == null)
@@ -335,6 +347,15 @@ public class ServiceRequestService : IServiceRequestService
             if (entity.ServiceRequestDetails?.Any() == true)
             {
                 _context.ServiceRequestDetails.RemoveRange(entity.ServiceRequestDetails);
+            }
+
+            if (entity.ServiceRequestPic != null)
+            {
+                DeletePicImage(entity.ServiceRequestPic.PhotoBefore1);
+                DeletePicImage(entity.ServiceRequestPic.PhotoBefore2);
+                DeletePicImage(entity.ServiceRequestPic.PhotoAfter1);
+                DeletePicImage(entity.ServiceRequestPic.PhotoAfter2);
+                _context.ServiceRequestPics.Remove(entity.ServiceRequestPic);
             }
 
             _context.ServiceRequests.Remove(entity);
@@ -375,11 +396,36 @@ public class ServiceRequestService : IServiceRequestService
                 return Fail<ServiceRequestDetailDto>("La solicitud completada no puede modificarse.");
             }
 
+            if (request.Billed)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDetailDto>("La solicitud facturada no puede modificarse.");
+            }
+
+            var service = await _context.ServiceClients
+                .Include(x => x.Tax)
+                .FirstOrDefaultAsync(x => x.ServiceClientId == dto.ServiceClientId &&
+                                          x.ServiceCategoryId == dto.ServiceCategoryId &&
+                                          x.CorporationId == user.CorporationId &&
+                                          x.Active);
+            if (service == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDetailDto>("Debe seleccionar un servicio activo.");
+            }
+
+            var taxRate = service.Tax?.Rate ?? 0;
+            var taxAmount = taxRate == 0 ? 0 : (((taxRate / 100) + 1) * service.Price) - service.Price;
+
             var detail = new ServiceRequestDetail
             {
                 ServiceRequestId = dto.ServiceRequestId,
                 ServiceCategoryId = dto.ServiceCategoryId,
                 ServiceClientId = dto.ServiceClientId,
+                TaxId = service.TaxId,
+                TaxRate = taxRate,
+                Price = service.Price,
+                TaxAmount = taxAmount,
                 Detail = dto.Detail
             };
 
@@ -388,6 +434,11 @@ public class ServiceRequestService : IServiceRequestService
             await _transactionManager.CommitTransactionAsync();
 
             dto.ServiceRequestDetailId = detail.ServiceRequestDetailId;
+            dto.TaxId = detail.TaxId;
+            dto.TaxRate = detail.TaxRate;
+            dto.Price = detail.Price;
+            dto.TaxAmount = detail.TaxAmount;
+            dto.Total = detail.Total;
             return new ActionResponse<ServiceRequestDetailDto> { WasSuccess = true, Result = dto };
         }
         catch (Exception ex)
@@ -422,6 +473,12 @@ public class ServiceRequestService : IServiceRequestService
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return Fail<bool>("La solicitud completada no puede modificarse.");
+            }
+
+            if (detail.ServiceRequest.Billed)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<bool>("La solicitud facturada no puede modificarse.");
             }
 
             _context.ServiceRequestDetails.Remove(detail);
@@ -499,7 +556,13 @@ public class ServiceRequestService : IServiceRequestService
             IpCliente = entity.IpCliente,
             MacCliente = entity.MacCliente,
             PlanName = entity.PlanName,
-            PlanSpeed = entity.PlanSpeed
+            PlanSpeed = entity.PlanSpeed,
+            Billed = entity.Billed,
+            SellId = entity.SellId,
+            SubTotal = entity.SubTotal,
+            TotalTax = entity.TotalTax,
+            Total = entity.Total,
+            ServiceRequestPicId = entity.ServiceRequestPic?.ServiceRequestPicId
         };
 
         if (includeDetails && entity.ServiceRequestDetails != null)
@@ -512,6 +575,12 @@ public class ServiceRequestService : IServiceRequestService
                 ServiceCategoryName = x.ServiceCategory?.Name,
                 ServiceClientId = x.ServiceClientId,
                 ServiceClientName = x.ServiceClient?.ServiceName,
+                TaxId = x.TaxId,
+                TaxRate = x.TaxRate,
+                Price = x.Price,
+                TaxAmount = x.TaxAmount,
+                Total = x.Total,
+                SellDetailId = x.SellDetailId,
                 Detail = x.Detail
             }).ToList();
         }
@@ -540,6 +609,12 @@ public class ServiceRequestService : IServiceRequestService
     }
 
     private async Task<User?> GetUserAsync(string username) => await _userHelper.GetUserByUserNameAsync(username);
+
+    private void DeletePicImage(string? photo)
+    {
+        if (!string.IsNullOrWhiteSpace(photo))
+            _fileStorage.DeleteImage(_imgOption.ImgContractIDPic!, photo);
+    }
 
     private async Task<bool> TechnicianIsValidAsync(Guid technicianId, int corporationId)
     {

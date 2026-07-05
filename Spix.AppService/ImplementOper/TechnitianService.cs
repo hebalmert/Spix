@@ -11,6 +11,7 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
+using Spix.AppInfra.UtilityTools;
 using Spix.AppService.InterfacesOper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesOper;
@@ -35,12 +36,13 @@ public class TechnitianService : ITechnitianService
     private readonly IFileStorage _fileStorage;
     private readonly IUserHelper _userHelper;
     private readonly IEmailHelper _emailHelper;
+    private readonly IUtilityTools _utilityTools;
     private readonly IStringLocalizer _localizer;
     private readonly ImgSetting _imgOption;
 
     public TechnitianService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
         ITransactionManager transactionManager, IMemoryCache cache, IFileStorage fileStorage, HttpErrorHandler httpErrorHandler,
-        IUserHelper userHelper, IEmailHelper emailHelper, IOptions<ImgSetting> ImgOption, IStringLocalizer localizer)
+        IUserHelper userHelper, IEmailHelper emailHelper, IUtilityTools utilityTools, IOptions<ImgSetting> ImgOption, IStringLocalizer localizer)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -49,6 +51,7 @@ public class TechnitianService : ITechnitianService
         _fileStorage = fileStorage;
         _userHelper = userHelper;
         _emailHelper = emailHelper;
+        _utilityTools = utilityTools;
         _localizer = localizer;
         _imgOption = ImgOption.Value;
         _httpErrorHandler = httpErrorHandler;
@@ -124,6 +127,10 @@ public class TechnitianService : ITechnitianService
                 {
                     var FileResult = await _fileStorage.GetBlobSasUrlAsync(option.Imagen, _imgOption.ImgTechnicians, TimeSpan.FromMinutes(3));
                     option.ImageFullPath = FileResult;
+                }
+                else
+                {
+                    option.ImageFullPath = _imgOption.ImgNoImage;
                 }
             }));
 
@@ -204,12 +211,12 @@ public class TechnitianService : ITechnitianService
                 UserCurrent.PhoneNumber = modelo.PhoneNumber;
                 UserCurrent.PhotoUser = modelo.Imagen;
                 UserCurrent.JobPosition = "Technician";
+                UserCurrent.Active = modelo.Active;
 
                 await _userHelper.UpdateUserAsync(UserCurrent);
             }
             else
             {
-                // Crear usuario solo si CreateAccount = true
                 if (modelo.Active)
                 {
                     Response response = await AcivateUser(modelo, frontUrl);
@@ -294,7 +301,6 @@ public class TechnitianService : ITechnitianService
             _context.Technicians.Add(modelo);
             await _transactionManager.SaveChangesAsync();
 
-            // Crear cuenta SOLO si CreateAccount = true
             if (modelo.Active)
             {
                 Response response = await AcivateUser(modelo, frontUrl);
@@ -326,6 +332,93 @@ public class TechnitianService : ITechnitianService
         }
     }
 
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Generic_InvalidId"]
+                };
+            }
+
+            var modelo = await _context.Technicians.AsNoTracking().FirstOrDefaultAsync(x => x.TechnicianId == id);
+            if (modelo == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas para Enconstrar el Registro Indicado"
+                };
+            }
+
+            if (!modelo.Active)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "El Tecnico no esta activo."
+                };
+            }
+
+            User user = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No existe un usuario creado para este Tecnico."
+                };
+            }
+
+            if (user.EmailConfirmed)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "La cuenta de este Tecnico ya fue confirmada."
+                };
+            }
+
+            var password = _utilityTools.GeneratePass(8);
+            var resetToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+            var resetResult = await _userHelper.ResetPasswordAsync(user, resetToken, password);
+            if (!resetResult.Succeeded)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No se pudo generar una nueva clave temporal para el usuario."
+                };
+            }
+
+            user.Pass = password;
+
+            Response response = await SendActivationEmailAsync(user, frontUrl);
+            if (!response.IsSuccess)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = response.Message ?? "No se pudo enviar el correo de activacion."
+                };
+            }
+
+            return new ActionResponse<bool>
+            {
+                WasSuccess = true,
+                Result = true
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -341,12 +434,15 @@ public class TechnitianService : ITechnitianService
                 };
             }
             var user = await _userHelper.GetUserByUserNameAsync(DataRemove.UserName);
-            var RemoveRoleDetail = await _context.UserRoleDetails.Where(x => x.UserId == user.Id).ToListAsync();
-            if (RemoveRoleDetail != null)
+            if (user != null)
             {
-                _context.UserRoleDetails.RemoveRange(RemoveRoleDetail!);
+                var RemoveRoleDetail = await _context.UserRoleDetails.Where(x => x.UserId == user.Id).ToListAsync();
+                if (RemoveRoleDetail != null)
+                {
+                    _context.UserRoleDetails.RemoveRange(RemoveRoleDetail!);
+                }
+                await _userHelper.DeleteUser(DataRemove.UserName);
             }
-            await _userHelper.DeleteUser(DataRemove.UserName);
 
             _context.Technicians.Remove(DataRemove);
 
@@ -393,6 +489,11 @@ public class TechnitianService : ITechnitianService
             };
         }
 
+        return await SendActivationEmailAsync(user, frontUrl);
+    }
+
+    private async Task<Response> SendActivationEmailAsync(User user, string frontUrl)
+    {
         //Envio de Correo con Token de seguridad para Verificar el correo
         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
