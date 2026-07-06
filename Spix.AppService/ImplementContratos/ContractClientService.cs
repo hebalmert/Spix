@@ -17,7 +17,7 @@ using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
 
-namespace Spix.Services.ImplementContratos
+namespace Spix.AppService.ImplementContratos
 {
     public class ContractClientService : IContractClientService
     {
