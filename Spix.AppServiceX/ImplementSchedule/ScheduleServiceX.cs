@@ -17,14 +17,14 @@ public class ScheduleServiceX : IScheduleServiceX
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusAsync(string username) => await _scheduleService.ComboStatusAsync(username);
 
-    public Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id) => _scheduleService.GetByIdAsync(id);
+    public Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id, string username) => _scheduleService.GetByIdAsync(id, username);
 
     public Task<ActionResponse<ScheduleItemDto>> CreateAsync(ScheduleItemDto dto, string UserName) => _scheduleService.CreateAsync(dto, UserName);
 
-    public Task<ActionResponse<bool>> DeleteAsync(Guid id) => _scheduleService.DeleteAsync(id);
+    public Task<ActionResponse<bool>> DeleteAsync(Guid id, string username) => _scheduleService.DeleteAsync(id, username);
 
-    public Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId) => _scheduleService.GetAsync(fromUtc, toUtc, technicianId);
+    public Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId, string username) => _scheduleService.GetAsync(fromUtc, toUtc, technicianId, username);
 
-    public Task<ActionResponse<ScheduleItemDto>> UpdateAsync(Guid id, ScheduleItemDto dto) => _scheduleService.UpdateAsync(id, dto);
+    public Task<ActionResponse<ScheduleItemDto>> UpdateAsync(Guid id, ScheduleItemDto dto, string username) => _scheduleService.UpdateAsync(id, dto, username);
 
 }

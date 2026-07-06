@@ -22,6 +22,20 @@ public partial class ResetPassword
 
     [Parameter, SupplyParameterFromQuery] public string token { get; set; } = string.Empty;
 
+    private bool ShowPasswordMatch => !string.IsNullOrWhiteSpace(resetPasswordDTO.ConfirmPassword);
+
+    private bool PasswordsMatch => string.Equals(resetPasswordDTO.NewPassword, resetPasswordDTO.ConfirmPassword, StringComparison.Ordinal);
+
+    private void NewPasswordChanged(ChangeEventArgs e)
+    {
+        resetPasswordDTO.NewPassword = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private void ConfirmPasswordChanged(ChangeEventArgs e)
+    {
+        resetPasswordDTO.ConfirmPassword = e.Value?.ToString() ?? string.Empty;
+    }
+
     private async Task ChangePasswordAsync()
     {
         resetPasswordDTO.Token = token;

@@ -7,6 +7,8 @@ public class ServiceRequestDto
     public DateTime CreatedAtUtc { get; set; }
     public DateTime ScheduledAtUtc { get; set; }
     public DateTime? CompletedAtUtc { get; set; }
+    public string? UsuarioOwnerCompleted { get; set; }
+    public Guid? UserIdCompleted { get; set; }
     public Guid ContractClientId { get; set; }
     public Guid TechnicianId { get; set; }
     public string? TechnicianName { get; set; }

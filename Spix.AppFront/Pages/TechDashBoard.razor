@@ -18,21 +18,25 @@
 
     <div class="tech-dashboard__grid">
         <div class="tech-card tech-card--agenda">
-            <div class="tech-card__content">
-                <span class="tech-card__label">Agenda</span>
-                <h2>Servicios asignados</h2>
-                <p>Vista base para turnos, visitas programadas y prioridades del dia.</p>
-            </div>
-            <i class="fa fa-calendar-check tech-card__icon"></i>
+            <a href="/schedule" class="tech-card__link">
+                <div class="tech-card__content">
+                    <span class="tech-card__label">Agenda</span>
+                    <h2>Servicios asignados</h2>
+                    <p>Vista base para turnos, visitas programadas y prioridades del dia.</p>
+                </div>
+                <i class="fa fa-calendar-check tech-card__icon"></i>
+            </a>
         </div>
 
         <div class="tech-card tech-card--requests">
-            <div class="tech-card__content">
-                <span class="tech-card__label">Solicitudes</span>
-                <h2>Ordenes de servicio</h2>
-                <p>Espacio reservado para diagnostico, comentarios y cierre tecnico.</p>
-            </div>
-            <i class="fa fa-clipboard-list tech-card__icon"></i>
+            <a href="/servicerequests" class="tech-card__link">
+                <div class="tech-card__content">
+                    <span class="tech-card__label">Solicitudes</span>
+                    <h2>Ordenes de servicio</h2>
+                    <p>Espacio reservado para diagnostico, comentarios y cierre tecnico.</p>
+                </div>
+                <i class="fa fa-clipboard-list tech-card__icon"></i>
+            </a>
         </div>
 
         <div class="tech-card tech-card--network">
@@ -42,6 +46,17 @@
                 <p>Base para revisar cliente, IP, MAC, nodo y estado del enlace.</p>
             </div>
             <i class="fa fa-network-wired tech-card__icon"></i>
+        </div>
+
+        <div class="tech-card tech-card--payments">
+            <a href="/cxcbills" class="tech-card__link">
+                <div class="tech-card__content">
+                    <span class="tech-card__label">Cobros</span>
+                    <h2>Cuentas por cobrar</h2>
+                    <p>Recepcion de pagos en campo con auditoria por usuario.</p>
+                </div>
+                <i class="fa fa-cash-register tech-card__icon"></i>
+            </a>
         </div>
     </div>
 

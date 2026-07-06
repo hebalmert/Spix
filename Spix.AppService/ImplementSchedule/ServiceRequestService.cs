@@ -61,6 +61,12 @@ public class ServiceRequestService : IServiceRequestService
                 .Where(x => x.CorporationId == user.CorporationId && x.Active)
                 .AsQueryable();
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+            if (loggedTechnicianId.HasValue)
+            {
+                queryable = queryable.Where(x => x.TechnicianId == loggedTechnicianId.Value);
+            }
+
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 var filter = pagination.Filter.Trim();
@@ -139,13 +145,18 @@ public class ServiceRequestService : IServiceRequestService
                 return AuthFail<ServiceRequestDto>();
             }
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var entity = await _context.ServiceRequests
                 .Include(x => x.Technician)
                 .Include(x => x.ServiceRequestPic)
                 .Include(x => x.ServiceRequestDetails)!.ThenInclude(x => x.ServiceCategory)
                 .Include(x => x.ServiceRequestDetails)!.ThenInclude(x => x.ServiceClient)
                 .Include(x => x.ServiceRequestDetails)!.ThenInclude(x => x.Tax)
-                .FirstOrDefaultAsync(x => x.ServiceRequestId == id && x.CorporationId == user.CorporationId && x.Active);
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
+                                          x.Active);
 
             if (entity == null)
             {
@@ -180,6 +191,12 @@ public class ServiceRequestService : IServiceRequestService
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return Fail<ServiceRequestDto>("Debe seleccionar un contrato activo.");
+            }
+
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+            if (loggedTechnicianId.HasValue)
+            {
+                dto.TechnicianId = loggedTechnicianId.Value;
             }
 
             if (!await TechnicianIsValidAsync(dto.TechnicianId, Convert.ToInt32(user.CorporationId)))
@@ -257,9 +274,14 @@ public class ServiceRequestService : IServiceRequestService
                 return AuthFail<ServiceRequestDto>();
             }
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var entity = await _context.ServiceRequests
                 .Include(x => x.ScheduleItem)
-                .FirstOrDefaultAsync(x => x.ServiceRequestId == dto.ServiceRequestId && x.CorporationId == user.CorporationId && x.Active);
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == dto.ServiceRequestId &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
+                                          x.Active);
             if (entity == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -272,11 +294,19 @@ public class ServiceRequestService : IServiceRequestService
                 return Fail<ServiceRequestDto>("La solicitud completada no puede modificarse.");
             }
 
+            if (loggedTechnicianId.HasValue)
+            {
+                dto.TechnicianId = loggedTechnicianId.Value;
+            }
+
             if (!await TechnicianIsValidAsync(dto.TechnicianId, entity.CorporationId))
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return Fail<ServiceRequestDto>("Debe seleccionar un tecnico activo.");
             }
+
+            var markCompleted = entity.ScheduleStatus != ScheduleStatus.Completed &&
+                                dto.ScheduleStatus == ScheduleStatus.Completed;
 
             entity.TechnicianId = dto.TechnicianId;
             entity.ScheduledAtUtc = dto.ScheduledAtUtc;
@@ -284,7 +314,13 @@ public class ServiceRequestService : IServiceRequestService
             entity.ClientReason = dto.ClientReason;
             entity.TechnicianComment = dto.TechnicianComment;
             entity.Recommendation = dto.Recommendation;
-            entity.CompletedAtUtc = dto.ScheduleStatus == ScheduleStatus.Completed ? DateTime.UtcNow : null;
+
+            if (markCompleted)
+            {
+                entity.CompletedAtUtc = DateTime.UtcNow;
+                entity.UserIdCompleted = Guid.Parse(user.Id);
+                entity.UsuarioOwnerCompleted = $"{user.FirstName} {user.LastName}";
+            }
 
             var schedule = entity.ScheduleItem ?? await _context.ScheduleItems.FirstOrDefaultAsync(x => x.ServiceRequestId == entity.ServiceRequestId);
             if (schedule != null)
@@ -321,11 +357,16 @@ public class ServiceRequestService : IServiceRequestService
                 return AuthFail<bool>();
             }
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var entity = await _context.ServiceRequests
                 .Include(x => x.ScheduleItem)
                 .Include(x => x.ServiceRequestPic)
                 .Include(x => x.ServiceRequestDetails)
-                .FirstOrDefaultAsync(x => x.ServiceRequestId == id && x.CorporationId == user.CorporationId && x.Active);
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
+                                          x.Active);
             if (entity == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -383,7 +424,13 @@ public class ServiceRequestService : IServiceRequestService
                 return AuthFail<ServiceRequestDetailDto>();
             }
 
-            var request = await _context.ServiceRequests.FirstOrDefaultAsync(x => x.ServiceRequestId == dto.ServiceRequestId && x.CorporationId == user.CorporationId && x.Active);
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
+            var request = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == dto.ServiceRequestId &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
+                                          x.Active);
             if (request == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -460,9 +507,13 @@ public class ServiceRequestService : IServiceRequestService
                 return AuthFail<bool>();
             }
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var detail = await _context.ServiceRequestDetails
                 .Include(x => x.ServiceRequest)
-                .FirstOrDefaultAsync(x => x.ServiceRequestDetailId == id && x.ServiceRequest!.CorporationId == user.CorporationId);
+                .FirstOrDefaultAsync(x => x.ServiceRequestDetailId == id &&
+                                          x.ServiceRequest!.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.ServiceRequest.TechnicianId == loggedTechnicianId.Value));
             if (detail == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -538,6 +589,8 @@ public class ServiceRequestService : IServiceRequestService
             CreatedAtUtc = entity.CreatedAtUtc,
             ScheduledAtUtc = entity.ScheduledAtUtc,
             CompletedAtUtc = entity.CompletedAtUtc,
+            UserIdCompleted = entity.UserIdCompleted,
+            UsuarioOwnerCompleted = entity.UsuarioOwnerCompleted,
             ContractClientId = entity.ContractClientId,
             TechnicianId = entity.TechnicianId,
             TechnicianName = entity.Technician == null ? null : $"{entity.Technician.FirstName} {entity.Technician.LastName}",
@@ -609,6 +662,24 @@ public class ServiceRequestService : IServiceRequestService
     }
 
     private async Task<User?> GetUserAsync(string username) => await _userHelper.GetUserByUserNameAsync(username);
+
+    private async Task<Guid?> GetLoggedTechnicianIdAsync(User user)
+    {
+        var isTechnician = await _context.UserRoleDetails
+            .AnyAsync(x => x.UserId == user.Id && x.UserType == UserType.Technician);
+
+        if (!isTechnician)
+            return null;
+
+        var technicianId = await _context.Technicians
+            .Where(x => x.UserName == user.UserName &&
+                        x.CorporationId == user.CorporationId &&
+                        x.Active)
+            .Select(x => (Guid?)x.TechnicianId)
+            .FirstOrDefaultAsync();
+
+        return technicianId ?? Guid.Empty;
+    }
 
     private void DeletePicImage(string? photo)
     {

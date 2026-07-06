@@ -77,7 +77,7 @@ public partial class FormServiceRequest
 
     private async Task LoadServiceCategories()
     {
-        var responseHttp = await _repository.GetAsync<List<ServiceCategory>>("/api/v1/servicecategories/loadCombo");
+        var responseHttp = await _repository.GetAsync<List<ServiceCategory>>("/api/v1/combosData/ComboServiceCategories");
         var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandler)
         {
@@ -156,7 +156,7 @@ public partial class FormServiceRequest
         }
 
         Detail.ServiceCategoryId = categoryId;
-        var responseHttp = await _repository.GetAsync<List<ServiceClient>>($"/api/v1/serviceclients/loadCombo/{categoryId}");
+        var responseHttp = await _repository.GetAsync<List<ServiceClient>>($"/api/v1/combosData/ComboServiceClients/{categoryId}");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
         {
             ServiceClients = responseHttp.Response ?? new();

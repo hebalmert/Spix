@@ -19,6 +19,10 @@ public class ServiceRequest
 
     public DateTime? CompletedAtUtc { get; set; }
 
+    public string? UsuarioOwnerCompleted { get; set; }
+
+    public Guid? UserIdCompleted { get; set; }
+
     [Required]
     public Guid ContractClientId { get; set; }
 

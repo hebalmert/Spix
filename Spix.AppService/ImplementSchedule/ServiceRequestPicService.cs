@@ -8,6 +8,7 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceSchedule;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesSchedule;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.SettingModels;
 using Spix.xFiles.FileHelper;
@@ -45,15 +46,20 @@ public class ServiceRequestPicService : IServiceRequestPicService
             if (user == null)
                 return AuthFail<ServiceRequestPic>();
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var modelo = await _context.ServiceRequestPics
                 .Include(x => x.ServiceRequest)
-                .FirstOrDefaultAsync(x => x.ServiceRequestId == serviceRequestId && x.CorporationId == user.CorporationId);
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == serviceRequestId &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.ServiceRequest!.TechnicianId == loggedTechnicianId.Value));
 
             if (modelo == null)
             {
                 var requestExists = await _context.ServiceRequests.AnyAsync(x =>
                     x.ServiceRequestId == serviceRequestId &&
                     x.CorporationId == user.CorporationId &&
+                    (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
                     x.Active);
                 if (!requestExists)
                     return new ActionResponse<ServiceRequestPic> { WasSuccess = false, Message = "Solicitud de servicio no encontrada." };
@@ -82,9 +88,13 @@ public class ServiceRequestPicService : IServiceRequestPicService
             if (user == null)
                 return AuthFail<ServiceRequestPic>();
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var modelo = await _context.ServiceRequestPics
                 .Include(x => x.ServiceRequest)
-                .FirstOrDefaultAsync(x => x.ServiceRequestPicId == id && x.CorporationId == user.CorporationId);
+                .FirstOrDefaultAsync(x => x.ServiceRequestPicId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.ServiceRequest!.TechnicianId == loggedTechnicianId.Value));
 
             if (modelo == null)
                 return new ActionResponse<ServiceRequestPic> { WasSuccess = false, Message = "Problemas para Enconstrar el Registro Indicado" };
@@ -111,9 +121,13 @@ public class ServiceRequestPicService : IServiceRequestPicService
                 return AuthFail<ServiceRequestPic>();
             }
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var current = await _context.ServiceRequestPics
                 .Include(x => x.ServiceRequest)
-                .FirstOrDefaultAsync(x => x.ServiceRequestPicId == modelo.ServiceRequestPicId && x.CorporationId == user.CorporationId);
+                .FirstOrDefaultAsync(x => x.ServiceRequestPicId == modelo.ServiceRequestPicId &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.ServiceRequest!.TechnicianId == loggedTechnicianId.Value));
             if (current == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -157,9 +171,12 @@ public class ServiceRequestPicService : IServiceRequestPicService
                 return AuthFail<ServiceRequestPic>();
             }
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var request = await _context.ServiceRequests.FirstOrDefaultAsync(x =>
                 x.ServiceRequestId == modelo.ServiceRequestId &&
                 x.CorporationId == user.CorporationId &&
+                (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
                 x.Active);
             if (request == null)
             {
@@ -213,9 +230,13 @@ public class ServiceRequestPicService : IServiceRequestPicService
                 return AuthFail<bool>();
             }
 
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var modelo = await _context.ServiceRequestPics
                 .Include(x => x.ServiceRequest)
-                .FirstOrDefaultAsync(x => x.ServiceRequestPicId == id && x.CorporationId == user.CorporationId);
+                .FirstOrDefaultAsync(x => x.ServiceRequestPicId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.ServiceRequest!.TechnicianId == loggedTechnicianId.Value));
             if (modelo == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -287,6 +308,24 @@ public class ServiceRequestPicService : IServiceRequestPicService
     }
 
     private async Task<User?> GetUserAsync(string username) => await _userHelper.GetUserByUserNameAsync(username);
+
+    private async Task<Guid?> GetLoggedTechnicianIdAsync(User user)
+    {
+        var isTechnician = await _context.UserRoleDetails
+            .AnyAsync(x => x.UserId == user.Id && x.UserType == UserType.Technician);
+
+        if (!isTechnician)
+            return null;
+
+        var technicianId = await _context.Technicians
+            .Where(x => x.UserName == user.UserName &&
+                        x.CorporationId == user.CorporationId &&
+                        x.Active)
+            .Select(x => (Guid?)x.TechnicianId)
+            .FirstOrDefaultAsync();
+
+        return technicianId ?? Guid.Empty;
+    }
 
     private static ActionResponse<T> AuthFail<T>() => new()
     {

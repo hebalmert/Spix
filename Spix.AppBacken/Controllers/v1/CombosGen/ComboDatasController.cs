@@ -19,7 +19,7 @@ namespace Spix.AppBacken.Controllers.v1.CombosGen;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/combosData")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar, Technician")]
 [ApiController]
 public class ComboDatasController : ControllerBase
 {
@@ -44,6 +44,8 @@ public class ComboDatasController : ControllerBase
     private readonly IContractorServiceX _contractorServiceX;
     private readonly ITechnitianServiceX _technitianService;
     private readonly IUsuarioServiceX _usuarioServiceX;
+    private readonly IServiceCategoryServiceX _serviceCategoryServiceX;
+    private readonly IServiceClientServiceX _serviceClientServiceX;
 
     public ComboDatasController(ISecurityServiceX securityUnitOfWork, IOperationServiceX operationUnitOfWork,
         IHotSpotTypeServiceX hotSpotTypeUnitOfWork, IFrecuencyTypeServiceX frecuencyTypeUnitOfWork,
@@ -52,7 +54,8 @@ public class ComboDatasController : ControllerBase
         IProductCategoryServiceX productCategory, IProductServiceX productService, IPlanServiceX planServiceX,
         ISupplierServiceX supplierServiceX, IProductStorageServiceX productStorageService, IClientServiceX clientServiceX,
         IChainTypesServiceX chainTypesUnitOfWork, IStringLocalizer localizer, IContractorServiceX contractorServiceX,
-        ITechnitianServiceX technitianService, IUsuarioServiceX usuarioServiceX)
+        ITechnitianServiceX technitianService, IUsuarioServiceX usuarioServiceX,
+        IServiceCategoryServiceX serviceCategoryServiceX, IServiceClientServiceX serviceClientServiceX)
     {
         _securityUnitOfWork = securityUnitOfWork;
         _operationUnitOfWork = operationUnitOfWork;
@@ -75,6 +78,8 @@ public class ComboDatasController : ControllerBase
         _contractorServiceX = contractorServiceX;
         _technitianService = technitianService;
         _usuarioServiceX = usuarioServiceX;
+        _serviceCategoryServiceX = serviceCategoryServiceX;
+        _serviceClientServiceX = serviceClientServiceX;
     }
 
     [HttpGet("ComboUsuarios")]
@@ -270,6 +275,44 @@ public class ComboDatasController : ControllerBase
         catch (ApplicationException ex)
         {
             return BadRequest(ex.Message); // Ya está localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpGet("ComboServiceCategories")]
+    public async Task<IActionResult> GetComboServiceCategoriesAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _serviceCategoryServiceX.ComboAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpGet("ComboServiceClients/{id}")]
+    public async Task<IActionResult> GetComboServiceClientsAsync(Guid id)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _serviceClientServiceX.ComboAsync(userClaimsInfo.UserName, id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {

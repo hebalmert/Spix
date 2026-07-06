@@ -160,17 +160,10 @@ public class AccountService : IAccountService
 
     public async Task<ActionResponse<bool>> RecoverPasswordAsync(RecoveryPassDTO modelo, string frontUrl)
     {
-        var CheckEmail = await _userHelper.GetUserByEmailAsync(modelo.Email);
-        if (CheckEmail == null)
-        {
-            return new ActionResponse<bool>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_RegisterNotFound)]
-            };
-        }
+        var email = modelo.Email.Trim();
+        var userName = modelo.UserName.Trim();
 
-        var user = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+        var user = await _userHelper.GetUserByUserNameAsync(userName);
         if (user == null)
         {
             return new ActionResponse<bool>
@@ -180,7 +173,7 @@ public class AccountService : IAccountService
             };
         }
 
-        if (user.Id != CheckEmail.Id)
+        if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase))
         {
             return new ActionResponse<bool>
             {
@@ -208,17 +201,10 @@ public class AccountService : IAccountService
 
     public async Task<ActionResponse<bool>> ResetPasswordAsync(ResetPasswordDTO modelo)
     {
-        var userEmail = await _userHelper.GetUserByEmailAsync(modelo.Email);
-        if (userEmail == null)
-        {
-            return new ActionResponse<bool>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_UserFail)]
-            };
-        }
+        var email = modelo.Email.Trim();
+        var userName = modelo.UserName.Trim();
 
-        var user = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+        var user = await _userHelper.GetUserByUserNameAsync(userName);
         if (user == null)
         {
             return new ActionResponse<bool>
@@ -228,7 +214,7 @@ public class AccountService : IAccountService
             };
         }
 
-        if (user.Id != userEmail.Id)
+        if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase))
         {
             return new ActionResponse<bool>
             {

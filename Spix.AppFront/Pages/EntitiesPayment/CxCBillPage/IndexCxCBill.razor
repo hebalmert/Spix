@@ -1,6 +1,6 @@
 @page "/cxcbills"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar, Technician")]
 
 @using Spix.Domain.EntitiesPayment
 @using Spix.Domain.EntitiesBilling
@@ -92,10 +92,14 @@
                                         }
                                     </td>
                                     <td style="width:1px;">
-                                        @if (!item.Paid && !item.Cancelled)
-                                        {
-                                            <ButtonDelete OnClick="() => CancelAsync(item.CxCBillId)" />
-                                        }
+                                        <AuthorizeView Roles="Administrator, Auxiliar">
+                                            <Authorized>
+                                                @if (!item.Paid && !item.Cancelled)
+                                                {
+                                                    <ButtonDelete OnClick="() => CancelAsync(item.CxCBillId)" />
+                                                }
+                                            </Authorized>
+                                        </AuthorizeView>
                                     </td>
                                 </tr>
                             }

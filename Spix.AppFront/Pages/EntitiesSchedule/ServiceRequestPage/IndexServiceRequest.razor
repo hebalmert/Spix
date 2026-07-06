@@ -1,7 +1,7 @@
 @page "/servicerequests"
 @page "/servicerequests/{Id:guid}"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar, Technician")]
 @using Spix.Domain.EntitiesSchedule
 
 <div class="container pt-4">

@@ -149,7 +149,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
 {
     cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
     cfg.SignIn.RequireConfirmedEmail = false;
-    cfg.User.RequireUniqueEmail = false;
+    cfg.User.RequireUniqueEmail = true;
     cfg.Password.RequireDigit = false;
     cfg.Password.RequiredUniqueChars = 0;
     cfg.Password.RequireLowercase = false;

@@ -217,6 +217,15 @@ public class PaymentService : IPaymentService
                 return AuthFail<CxCBill>();
             }
 
+            var isTechnician = await _context.UserRoleDetails
+                .AnyAsync(x => x.UserId == user.Id && x.UserType == UserType.Technician);
+
+            if (isTechnician)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "El tecnico no puede anular cuentas por cobrar." };
+            }
+
             if (string.IsNullOrWhiteSpace(model.DescriptionCancelled))
             {
                 await _transactionManager.RollbackTransactionAsync();

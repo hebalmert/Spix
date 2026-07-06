@@ -14,7 +14,7 @@ namespace Spix.AppBacken.Controllers.v1.EntitiesGen;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/schedulecontrol")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar, Technician")]
 [ApiController]
 public class ScheduleController : ControllerBase
 {
@@ -45,7 +45,7 @@ public class ScheduleController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
-            var response = await _unitOfWork.GetAsync(fromUtc, toUtc, technicianId);
+            var response = await _unitOfWork.GetAsync(fromUtc, toUtc, technicianId, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
@@ -63,7 +63,8 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            var response = await _unitOfWork.GetByIdAsync(id);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetByIdAsync(id, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
@@ -100,7 +101,8 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            var response = await _unitOfWork.UpdateAsync(id, dto);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.UpdateAsync(id, dto, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
@@ -118,7 +120,8 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            var response = await _unitOfWork.DeleteAsync(id);
+            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)

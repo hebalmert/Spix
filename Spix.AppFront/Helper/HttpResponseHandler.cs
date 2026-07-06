@@ -72,7 +72,9 @@ public class HttpResponseHandler
 
             case HttpStatusCode.InternalServerError:
                 title = title = Localizer[nameof(Resource.HttpCode_ServerErrorTitle)];
-                message = title = Localizer[nameof(Resource.HttpCode_ServerErrorMsg)];
+                message = !string.IsNullOrWhiteSpace(errorMessage)
+                    ? errorMessage
+                    : Localizer[nameof(Resource.HttpCode_ServerErrorMsg)];
                 icon = SweetAlertIcon.Error;
                 break;
 

@@ -14,7 +14,7 @@ namespace Spix.AppBack.Controllers.EntitiesPayment;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/cxcbills")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar, Technician")]
 [ApiController]
 public class CxCBillsController : ControllerBase
 {

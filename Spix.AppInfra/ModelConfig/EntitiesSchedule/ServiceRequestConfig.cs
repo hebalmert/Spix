@@ -13,6 +13,8 @@ public class ServiceRequestConfig : IEntityTypeConfiguration<ServiceRequest>
 
         builder.HasIndex(e => new { e.CorporationId, e.RequestNumber }).IsUnique();
 
+        builder.Property(e => e.UsuarioOwnerCompleted).HasMaxLength(256);
+
         builder.HasOne(e => e.Corporation)
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);

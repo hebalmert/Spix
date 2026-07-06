@@ -13,7 +13,7 @@ namespace Spix.AppBacken.Controllers.v1.EntitiesSchedule;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/servicerequestpics")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar, Technician")]
 [ApiController]
 public class ServiceRequestPicsController : ControllerBase
 {

@@ -1,6 +1,6 @@
 ﻿@page "/schedule"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Technician")]
 @using Spix.AppFront.GenericModel
 
 <PageTitle>@Localizer["Schedule"]</PageTitle>

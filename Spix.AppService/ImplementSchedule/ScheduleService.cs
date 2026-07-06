@@ -69,17 +69,32 @@ public class ScheduleService : IScheduleService
     }
 
 
-    public async Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId)
+    public async Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId, string username)
     {
         try
         {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<ScheduleItemDto>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var query = _context.ScheduleItems
                 .Include(x => x.Technician)
                 .Where(x => x.Active &&
+                            x.CorporationId == user.CorporationId &&
                             x.StartUtc < toUtc &&
                             x.EndUtc > fromUtc);
 
-            if (technicianId.HasValue)
+            if (loggedTechnicianId.HasValue)
+                query = query.Where(x => x.TechnicianId == loggedTechnicianId.Value);
+            else if (technicianId.HasValue)
                 query = query.Where(x => x.TechnicianId == technicianId.Value);
 
             var items = await query.ToListAsync();
@@ -113,13 +128,28 @@ public class ScheduleService : IScheduleService
         }
     }
 
-    public async Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id)
+    public async Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id, string username)
     {
         try
         {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<ScheduleItemDto>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
             var entity = await _context.ScheduleItems
                 .Include(x => x.Technician)
-                .FirstOrDefaultAsync(x => x.ScheduleItemId == id && x.Active);
+                .FirstOrDefaultAsync(x => x.ScheduleItemId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
+                                          x.Active);
 
             if (entity == null)
             {
@@ -178,6 +208,13 @@ public class ScheduleService : IScheduleService
 
             var technicianExists = await _context.Technicians
                 .AnyAsync(x => x.TechnicianId == dto.TechnicianId && x.CorporationId == user.CorporationId && x.Active);
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+            if (loggedTechnicianId.HasValue)
+            {
+                dto.TechnicianId = loggedTechnicianId.Value;
+                technicianExists = true;
+            }
+
             if (!technicianExists)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -227,13 +264,29 @@ public class ScheduleService : IScheduleService
         }
     }
 
-    public async Task<ActionResponse<ScheduleItemDto>> UpdateAsync(Guid id, ScheduleItemDto dto)
+    public async Task<ActionResponse<ScheduleItemDto>> UpdateAsync(Guid id, ScheduleItemDto dto, string username)
     {
         try
         {
             await _transactionManager.BeginTransactionAsync();
 
-            var entity = await _context.ScheduleItems.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ScheduleItemDto>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
+            var entity = await _context.ScheduleItems
+                .FirstOrDefaultAsync(x => x.ScheduleItemId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value));
             if (entity == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -246,6 +299,12 @@ public class ScheduleService : IScheduleService
 
             var technicianExists = await _context.Technicians
                 .AnyAsync(x => x.TechnicianId == dto.TechnicianId && x.CorporationId == entity.CorporationId && x.Active);
+            if (loggedTechnicianId.HasValue)
+            {
+                dto.TechnicianId = loggedTechnicianId.Value;
+                technicianExists = true;
+            }
+
             if (!technicianExists)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -295,13 +354,29 @@ public class ScheduleService : IScheduleService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         try
         {
             await _transactionManager.BeginTransactionAsync();
 
-            var entity = await _context.ScheduleItems.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
+            var entity = await _context.ScheduleItems
+                .FirstOrDefaultAsync(x => x.ScheduleItemId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value));
             if (entity == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -338,5 +413,23 @@ public class ScheduleService : IScheduleService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
         }
+    }
+
+    private async Task<Guid?> GetLoggedTechnicianIdAsync(Spix.Domain.Entities.User user)
+    {
+        var isTechnician = await _context.UserRoleDetails
+            .AnyAsync(x => x.UserId == user.Id && x.UserType == UserType.Technician);
+
+        if (!isTechnician)
+            return null;
+
+        var technicianId = await _context.Technicians
+            .Where(x => x.UserName == user.UserName &&
+                        x.CorporationId == user.CorporationId &&
+                        x.Active)
+            .Select(x => (Guid?)x.TechnicianId)
+            .FirstOrDefaultAsync();
+
+        return technicianId ?? Guid.Empty;
     }
 }
