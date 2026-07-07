@@ -5,6 +5,7 @@ using Spix.Domain.Entities;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesData;
+using Spix.Domain.EntitiesEmails;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
 using Spix.Domain.EntitiesMK;
@@ -113,6 +114,9 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractClient> ContractClients => Set<ContractClient>();
     public DbSet<ContractIDPic> ContractIDPics => Set<ContractIDPic>();
     public DbSet<ContractMac> ContractMacs => Set<ContractMac>();
+    public DbSet<ContractDocumentTemplate> ContractDocumentTemplates => Set<ContractDocumentTemplate>();
+    public DbSet<ContractDocumentTemplateField> ContractDocumentTemplateFields => Set<ContractDocumentTemplateField>();
+    public DbSet<ContractSignedDocument> ContractSignedDocuments => Set<ContractSignedDocument>();
 
     //EntitiesSchedule
     public DbSet<ScheduleItem> ScheduleItems => Set<ScheduleItem>();
@@ -133,6 +137,9 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<CxCBillDetail> CxCBillDetails => Set<CxCBillDetail>();
     public DbSet<PrePayment> PrePayments => Set<PrePayment>();
     public DbSet<PreExonerated> PreExonerateds => Set<PreExonerated>();
+
+    //EntitiesEmails
+    public DbSet<EmailProviderSetting> EmailProviderSettings => Set<EmailProviderSetting>();
 
 
 

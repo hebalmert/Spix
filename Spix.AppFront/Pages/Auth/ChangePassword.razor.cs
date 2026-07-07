@@ -23,6 +23,39 @@ public partial class ChangePassword
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
 
     private ChangePasswordDTO changePasswordDTO = new();
+    private bool showCurrentPassword;
+    private bool showNewPassword;
+    private bool showConfirmPassword;
+    private string CurrentPasswordInputType => showCurrentPassword ? "text" : "password";
+    private string NewPasswordInputType => showNewPassword ? "text" : "password";
+    private string ConfirmPasswordInputType => showConfirmPassword ? "text" : "password";
+    private bool ShowPasswordMatch => !string.IsNullOrWhiteSpace(changePasswordDTO.Confirm);
+    private bool PasswordsMatch => string.Equals(changePasswordDTO.NewPassword, changePasswordDTO.Confirm, StringComparison.Ordinal);
+
+    private void ToggleCurrentPassword()
+    {
+        showCurrentPassword = !showCurrentPassword;
+    }
+
+    private void ToggleNewPassword()
+    {
+        showNewPassword = !showNewPassword;
+    }
+
+    private void ToggleConfirmPassword()
+    {
+        showConfirmPassword = !showConfirmPassword;
+    }
+
+    private void NewPasswordChanged(ChangeEventArgs e)
+    {
+        changePasswordDTO.NewPassword = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private void ConfirmPasswordChanged(ChangeEventArgs e)
+    {
+        changePasswordDTO.Confirm = e.Value?.ToString() ?? string.Empty;
+    }
 
     private async Task ChangePasswordAsync()
     {

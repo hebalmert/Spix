@@ -1,38 +1,46 @@
 ﻿using Spix.AppService.ImplementContratos;
+using Spix.AppService.ImplementEmails;
 using Spix.AppService.ImplementEntitiesData;
 using Spix.AppService.ImplementEntitiesGen;
 using Spix.AppService.ImplementEntitiesNet;
 using Spix.AppService.ImplementMk;
 using Spix.AppService.ImplementSchedule;
+using Spix.AppService.ImplementSignature;
 using Spix.AppService.InterfaceContratos;
 using Spix.AppService.InterfaceContratos.InterfaceContractControl;
 using Spix.AppService.InterfaceEntities;
 using Spix.AppService.InterfaceEntitiesNet;
 using Spix.AppService.InterfaceSchedule;
+using Spix.AppService.InterfacesEmails;
 using Spix.AppService.InterfacesEntitiesData;
 using Spix.AppService.InterfacesEntitiesGen;
 using Spix.AppService.InterfacesInven;
 using Spix.AppService.InterfacesMk;
 using Spix.AppService.InterfacesOper;
 using Spix.AppService.InterfacesSecure;
+using Spix.AppService.InterfacesSignature;
 using Spix.AppServiceX.ImplementContratos;
 using Spix.AppServiceX.ImplementContratos.ImplementContractControl;
+using Spix.AppServiceX.ImplementEmails;
 using Spix.AppServiceX.ImplementEntitiesGen;
 using Spix.AppServiceX.ImplementEntitiesNet;
 using Spix.AppServiceX.ImplementInven;
 using Spix.AppServiceX.ImplementMk;
 using Spix.AppServiceX.ImplementSchedule;
+using Spix.AppServiceX.ImplementSignature;
 using Spix.AppServiceX.InterfaceContratos;
 using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
 using Spix.AppServiceX.InterfaceEntities;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.AppServiceX.InterfaceSchedule;
+using Spix.AppServiceX.InterfacesEmails;
 using Spix.AppServiceX.InterfacesEntitiesData;
 using Spix.AppServiceX.InterfacesEntitiesGen;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.AppServiceX.InterfacesMk;
 using Spix.AppServiceX.InterfacesOper;
 using Spix.AppServiceX.InterfacesSecure;
+using Spix.AppServiceX.InterfacesSignature;
 using Spix.Services.ImplementContratos;
 using Spix.Services.ImplementEntties;
 using Spix.Services.ImplementInven;
@@ -203,6 +211,15 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<Spix.AppServiceX.InterfacesDashboard.IDashboardServiceX, Spix.AppServiceX.ImplementDashboard.DashboardServiceX>();
             services.AddScoped<Spix.AppService.InterfacesDashboard.IDashboardService, Spix.AppService.ImplementDashboard.DashboardService>();
 
+            //Emails
+            services.AddScoped<IEmailProviderSettingServiceX, EmailProviderSettingServiceX>();
+            services.AddScoped<IEmailProviderSettingService, EmailProviderSettingService>();
+
+            //Signature
+            services.AddScoped<ISignatureServiceX, SignatureServiceX>();
+            services.AddScoped<ISignatureService, SignatureService>();
+
         }
     }
 }
+

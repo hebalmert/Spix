@@ -163,6 +163,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
 
 //Configuraciones de sistemas IOption para inyectar en Proyectos fuera de AppBack dentro del Solution Aban.
 builder.Services.Configure<SendGridSettings>(builder.Configuration.GetSection("SendGrid"));
+builder.Services.Configure<SecretProtectionSettings>(builder.Configuration.GetSection("SecretProtection"));
 builder.Services.Configure<ImgSetting>(builder.Configuration.GetSection("ImgSoftware"));
 builder.Services.Configure<AzureSetting>(builder.Configuration.GetSection("ConnectionStrings"));
 builder.Services.Configure<JwtKeySetting>(options => options.jwtKey = jwtKey);

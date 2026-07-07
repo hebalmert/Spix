@@ -4,7 +4,9 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.AppFront.Pages.EntitiesContratos.ContracIDPicPage;
+using Spix.AppFront.Pages.EntitiesContratos.ContractDocumentTemplatePage;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -127,6 +129,23 @@ public partial class IndexContractClient
         {
             if (result.Succeeded)
                 await Cargar(CurrentPage);   //solo refresca si hubo cambios
+        });
+    }
+
+    private async Task ShowContractDocumentAsync(Guid id, ContractDocumentType documentType)
+    {
+        var title = documentType == ContractDocumentType.Contract ? "Contrato" : "Consentimiento";
+        var parameters = new Dictionary<string, object>
+        {
+            { "ContractClientId", id },
+            { "DocumentType", documentType },
+            { "Title", title }
+        };
+
+        await _modalService.ShowAsync(typeof(SignContractDocument), parameters, async result =>
+        {
+            if (result.Succeeded)
+                await Cargar(CurrentPage);
         });
     }
 

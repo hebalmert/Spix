@@ -1,6 +1,8 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Spix.AppFront</a>
+        <a class="navbar-brand sidebar-brand" href="/dashboard">
+            <img src="Images/LogoNexxtplanet.png" alt="NexxtPlanet" />
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -107,6 +109,12 @@
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/registers">
                             <span class="fa fa-book nav-subicon me-2"></span> Registros
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractdocumenttemplates">
+                            <span class="fa fa-file-signature nav-subicon me-2"></span> Plantillas PDF
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/emailproviders">
+                            <span class="fa fa-envelope nav-subicon me-2"></span> Setup Emails
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />

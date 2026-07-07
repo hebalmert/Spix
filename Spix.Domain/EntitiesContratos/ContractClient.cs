@@ -107,6 +107,7 @@ public class ContractClient
 
 
     public ContractIDPic? ContractIDPic { get; set; }
+    public ICollection<ContractSignedDocument>? ContractSignedDocuments { get; set; }
     public ICollection<ContractIp>? ContractIps { get; set; } 
     public ICollection<ContractMac>? ContractMacs { get; set; }
     public ICollection<ContractServer>? ContractServers { get; set; } 

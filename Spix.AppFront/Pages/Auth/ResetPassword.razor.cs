@@ -1,7 +1,6 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.DomainLogic.AppResponses;
 using Spix.HttpService;
@@ -15,7 +14,6 @@ public partial class ResetPassword
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigation { get; set; } = null!;
     [Inject] private HttpResponseHandler _httpHandler { get; set; } = null!;
-    [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
 
     private ResetPasswordDTO resetPasswordDTO = new();
@@ -43,6 +41,5 @@ public partial class ResetPassword
         if (await _httpHandler.HandleErrorAsync(responseHttp)) return;
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.PasswordUpdateTitle)], Localizer[nameof(Resource.PasswordUpdateMsg)], SweetAlertIcon.Success);
         _navigation.NavigateTo("/");
-        await _modalService.ShowAsync<Login>();
     }
 }

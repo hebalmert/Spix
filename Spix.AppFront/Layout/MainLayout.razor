@@ -5,8 +5,21 @@
 </AuthorizeView>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
+    <div class="@SidebarCssClass">
+        <button type="button" class="sidebar-toggle" title="@SidebarToggleTitle" @onclick="ToggleSidebar">
+            <i class="fa @SidebarToggleIcon"></i>
+        </button>
+
+        @if (!isSidebarCollapsed)
+        {
+            <NavMenu />
+        }
+        else
+        {
+            <a class="sidebar-collapsed-logo" href="/dashboard">
+                <img src="Images/LogoNexxtplanet.png" alt="NexxtPlanet" />
+            </a>
+        }
     </div>
 
     <main>

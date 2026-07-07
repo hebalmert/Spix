@@ -20,6 +20,10 @@ public class ImgSetting
 
     public string ImgContractIDPic { get; set; } = null!;
 
+    public string ContractConsent { get; set; } = null!;
+
+    public string ContractContract { get; set; } = null!;
+
     public string LogoSoftware { get; set; } = null!;
 
     public string ImgNoImage { get; set; } = null!;

@@ -1,0 +1,81 @@
+@page "/contractdocumenttemplates"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Plantillas PDF</h3>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <ButtonFormNew OnClick="ShowModalAsync" TooTip="Nueva" />
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="Templates">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Paginas</th>
+                                <th>Campos</th>
+                                <th>Activo</th>
+                                <th colspan="4" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Templates!)
+                            {
+                                <tr>
+                                    <td>@item.Name</td>
+                                    <td>@GetDocumentTypeName(item.DocumentType)</td>
+                                    <td>@item.PageCount</td>
+                                    <td>@(item.ContractDocumentTemplateFields?.Count ?? 0)</td>
+                                    <td>
+                                        <input class="form-check-input" type="checkbox" checked="@item.Active" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (!string.IsNullOrWhiteSpace(item.FileFullPath))
+                                        {
+                                            <ButtonGeneric OnClick="() => ShowPdfAsync(item.FileFullPath)"
+                                                           Icon="fa fa-file-pdf"
+                                                           TooTip="Ver PDF"
+                                                           CssClass="btn-mini"
+                                                           Style="font-size:17px;color:#dc3545;" />
+                                        }
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => TestTemplateAsync(item.ContractDocumentTemplateId)"
+                                                       Icon="fa fa-vial"
+                                                       TooTip="Test"
+                                                       CssClass="btn-mini"
+                                                       Style="font-size:17px;color:#0d6efd;" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowEditAsync(item.ContractDocumentTemplateId)" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonDelete OnClick="() => DeleteAsync(item.ContractDocumentTemplateId)" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+        <hr />
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    </div>
+</div>

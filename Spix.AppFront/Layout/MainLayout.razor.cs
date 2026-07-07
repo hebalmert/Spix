@@ -8,8 +8,12 @@ public partial class MainLayout
     [Inject] private ModalService _modalService { get; set; } = null!;
 
     private bool isMenuVisible = false;
+    private bool isSidebarCollapsed = false;
     private Type? modalType;
     private Dictionary<string, object>? modalParameters;
+    private string SidebarCssClass => isSidebarCollapsed ? "sidebar sidebar-collapsed" : "sidebar";
+    private string SidebarToggleIcon => isSidebarCollapsed ? "fa-chevron-right" : "fa-chevron-left";
+    private string SidebarToggleTitle => isSidebarCollapsed ? "Expandir menu" : "Contraer menu";
 
     protected override void OnInitialized()
     {
@@ -35,4 +39,6 @@ public partial class MainLayout
     private void ShowMenu() => isMenuVisible = true;
 
     private void HideMenu() => isMenuVisible = false;
+
+    private void ToggleSidebar() => isSidebarCollapsed = !isSidebarCollapsed;
 }

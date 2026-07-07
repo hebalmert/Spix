@@ -21,12 +21,12 @@
         File: <strong>@FileName</strong>
     </div>
 }
-@if (!string.IsNullOrEmpty(PreviewUrl))
+@if (!string.IsNullOrEmpty(CurrentPreviewUrl))
 {
-    <div class="mt-3">
-        <iframe src="@PreviewUrl"
+    <div class="mt-3 d-flex justify-content-center">
+        <iframe src="@CurrentPreviewUrl"
                 class="pdf-thumb-frame"
-                style="border-radius: 10px;">
+                style="border:1px solid #ddd; border-radius: 8px; width:100%; max-width:520px; height:420px;">
         </iframe>
     </div>
 }

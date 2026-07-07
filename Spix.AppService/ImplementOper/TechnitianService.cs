@@ -9,12 +9,15 @@ using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
+using Spix.AppInfra.SecretProtection;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppInfra.UtilityTools;
 using Spix.AppService.InterfacesOper;
 using Spix.Domain.Entities;
+using Spix.Domain.EntitiesEmails;
 using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.EntitiesEmailDTO;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
@@ -35,14 +38,16 @@ public class TechnitianService : ITechnitianService
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IFileStorage _fileStorage;
     private readonly IUserHelper _userHelper;
-    private readonly IEmailHelper _emailHelper;
+    private readonly IEmailDeliveryService _emailDeliveryService;
+    private readonly ISecretProtector _secretProtector;
     private readonly IUtilityTools _utilityTools;
     private readonly IStringLocalizer _localizer;
     private readonly ImgSetting _imgOption;
 
     public TechnitianService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
         ITransactionManager transactionManager, IMemoryCache cache, IFileStorage fileStorage, HttpErrorHandler httpErrorHandler,
-        IUserHelper userHelper, IEmailHelper emailHelper, IUtilityTools utilityTools, IOptions<ImgSetting> ImgOption, IStringLocalizer localizer)
+        IUserHelper userHelper, IEmailDeliveryService emailDeliveryService, ISecretProtector secretProtector,
+        IUtilityTools utilityTools, IOptions<ImgSetting> ImgOption, IStringLocalizer localizer)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -50,7 +55,8 @@ public class TechnitianService : ITechnitianService
         _transactionManager = transactionManager;
         _fileStorage = fileStorage;
         _userHelper = userHelper;
-        _emailHelper = emailHelper;
+        _emailDeliveryService = emailDeliveryService;
+        _secretProtector = secretProtector;
         _utilityTools = utilityTools;
         _localizer = localizer;
         _imgOption = ImgOption.Value;
@@ -509,11 +515,57 @@ public class TechnitianService : ITechnitianService
             $"Para Activar su vuenta, " +
             $"Has Click en el siguiente Link:</br></br><strong><a href = \"{tokenLink}\">Confirmar Correo</a></strong>");
 
-        Response response = await _emailHelper.ConfirmarCuenta(user.Email!, $"{user.FirstName} {user.LastName}", subject, body);
+        Response response = await SendCorporateEmailAsync(user, subject, body);
         if (response.IsSuccess == false)
         {
             return response;
         }
         return response;
+    }
+
+    private async Task<Response> SendCorporateEmailAsync(User user, string subject, string body)
+    {
+        if (!user.CorporationId.HasValue)
+        {
+            return new Response
+            {
+                IsSuccess = false,
+                Message = "El usuario no tiene corporacion asignada para enviar el correo."
+            };
+        }
+
+        EmailProviderSetting? provider = await _context.EmailProviderSettings
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.CorporationId == user.CorporationId.Value &&
+                                      x.Active &&
+                                      x.IsDefault);
+
+        if (provider == null)
+        {
+            return new Response
+            {
+                IsSuccess = false,
+                Message = "La corporacion no tiene proveedor de correo default activo."
+            };
+        }
+
+        var model = new EmailDeliveryDTO
+        {
+            ProviderType = provider.ProviderType,
+            SendGridApiKey = _secretProtector.Unprotect(provider.SendGridApiKeyEncrypted),
+            SmtpHost = provider.SmtpHost,
+            SmtpPort = provider.SmtpPort ?? 0,
+            SmtpUseSsl = provider.SmtpUseSsl,
+            SmtpUser = provider.SmtpUser,
+            SmtpPassword = _secretProtector.Unprotect(provider.SmtpPasswordEncrypted),
+            FromEmail = provider.FromEmail,
+            FromName = provider.FromName,
+            To = user.Email!,
+            NameTo = $"{user.FirstName} {user.LastName}",
+            Subject = subject,
+            Body = body
+        };
+
+        return await _emailDeliveryService.SendAsync(model);
     }
 }

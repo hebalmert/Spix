@@ -1,0 +1,123 @@
+<EditForm Model="EmailProvider" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <div class="col-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:130px">Nombre</span>
+                <InputText class="form-control" @bind-Value="EmailProvider.Name" />
+            </div>
+            <ValidationMessage For="@(() => EmailProvider.Name)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:130px">Tipo</span>
+                <select class="form-select" value="@((int)EmailProvider.ProviderType)" @onchange="ProviderChanged">
+                    <option value="@((int)EmailProviderType.SendGrid)">SendGrid</option>
+                    <option value="@((int)EmailProviderType.Gmail)">Gmail</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:95px">Activo</span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="EmailProvider.Active" class="form-check-input" />
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:95px">Default</span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="EmailProvider.IsDefault" class="form-check-input" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:170px">Correo Remitente</span>
+                <InputText class="form-control" @bind-Value="EmailProvider.FromEmail" />
+            </div>
+            <ValidationMessage For="@(() => EmailProvider.FromEmail)" />
+        </div>
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:170px">Nombre Remitente</span>
+                <InputText class="form-control" @bind-Value="EmailProvider.FromName" />
+            </div>
+            <ValidationMessage For="@(() => EmailProvider.FromName)" />
+        </div>
+    </div>
+
+    @if (EmailProvider.ProviderType == EmailProviderType.SendGrid)
+    {
+        <div class="row">
+            <div class="col-12 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:130px">API Key</span>
+                    <InputText type="@SendGridInputType" class="form-control" @bind-Value="EmailProvider.SendGridApiKey" />
+                    <button type="button" class="btn btn-outline-secondary" @onclick="ToggleSendGridSecret">
+                        <i class="fa @(showSendGridSecret ? "fa-eye-slash" : "fa-eye")"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12 col-md-6 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:130px">SMTP Host</span>
+                    <InputText class="form-control" @bind-Value="EmailProvider.SmtpHost" />
+                </div>
+            </div>
+            <div class="col-12 col-md-3 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:90px">Port</span>
+                    <InputNumber class="form-control" @bind-Value="EmailProvider.SmtpPort" />
+                </div>
+            </div>
+            <div class="col-12 col-md-3 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:90px">SSL</span>
+                    <div class="d-flex align-items-center ps-3">
+                        <InputCheckbox @bind-Value="EmailProvider.SmtpUseSsl" class="form-check-input" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-md-6 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:130px">SMTP User</span>
+                    <InputText class="form-control" @bind-Value="EmailProvider.SmtpUser" />
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:130px">Password</span>
+                    <InputText type="@SmtpPasswordInputType" class="form-control" @bind-Value="EmailProvider.SmtpPassword" />
+                    <button type="button" class="btn btn-outline-secondary" @onclick="ToggleSmtpSecret">
+                        <i class="fa @(showSmtpSecret ? "fa-eye-slash" : "fa-eye")"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <hr />
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

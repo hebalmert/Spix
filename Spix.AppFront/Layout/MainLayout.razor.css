@@ -37,11 +37,63 @@ main {
 
 .sidebar {
     background: #1f2937;
-    width: 250px;
+    width: 280px;
     height: 100vh;
     position: sticky;
     top: 0;
+    transition: width 0.18s ease;
+    overflow: visible;
+    z-index: 3500;
 }
+
+.sidebar-collapsed {
+    width: 58px;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 1.15rem;
+    right: -14px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 50%;
+    background: #111827;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 7px 16px rgba(0,0,0,0.3);
+    z-index: 5000;
+}
+
+    .sidebar-toggle:hover {
+        background: #263241;
+    }
+
+    .sidebar-toggle i {
+        font-size: 0.82rem;
+    }
+
+.sidebar-collapsed .sidebar-toggle {
+    right: -15px;
+}
+
+.sidebar-collapsed-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 4.25rem;
+    padding: 0.65rem 0.45rem;
+}
+
+    .sidebar-collapsed-logo img {
+        width: 42px;
+        max-height: 42px;
+        object-fit: contain;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+    }
 
 .top-row {
     background-color: #f7f7f7;
@@ -100,10 +152,14 @@ main {
     }
 
     .sidebar {
-        width: 250px;
+        width: 280px;
         height: 100vh;
         position: sticky;
         top: 0;
+    }
+
+    .sidebar.sidebar-collapsed {
+        width: 58px;
     }
 
         .top-row.auth ::deep a:first-child {
