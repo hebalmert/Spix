@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,13 +33,13 @@ public class TransferDetailsController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _transferDetailsUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya está localizado
+            return BadRequest(ex.Message); // Ya est� localizado
         }
         catch (Exception ex)
         {
@@ -72,13 +72,9 @@ public class TransferDetailsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TransferDetails>> PostAsync(TransferDetails modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _transferDetailsUnitOfWork.AddAsync(modelo, email);
+        var response = await _transferDetailsUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
@@ -89,13 +85,9 @@ public class TransferDetailsController : ControllerBase
     [HttpPost("CerrarTrans")]
     public async Task<ActionResult<Transfer>> PostCerrarTransAsyncAsync(Transfer modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _transferDetailsUnitOfWork.CerrarTransAsync(modelo, email);
+        var response = await _transferDetailsUnitOfWork.CerrarTransAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);

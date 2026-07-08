@@ -8,24 +8,25 @@ namespace Spix.AppBack.Helper;
 public static class ClaimsPrincipalExtensions
 {
     public static ClaimsDTOs GetEmailOrThrow(this ClaimsPrincipal user, IStringLocalizer localizer, HttpContext httpContext)
+        => user.GetSecurityContextOrThrow(localizer, httpContext);
+
+    public static ClaimsDTOs GetSecurityContextOrThrow(this ClaimsPrincipal user, IStringLocalizer localizer, HttpContext httpContext)
     {
         if (user?.Identity?.IsAuthenticated != true)
             throw new ApplicationException(localizer[nameof(Resource.Generic_AuthRequired)]);
 
-        int Idcorporate;
         string? username = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
         string? id = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        string? role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-        if (role == "Admin")
-        {
-            Idcorporate = 0;
-        }
-        else
-        {
-            Idcorporate = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "CorporateId")?.Value);
-        }
+        string[] roles = user.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .ToArray();
+        string? role = roles.FirstOrDefault();
+        string? corporateIdValue = user.Claims.FirstOrDefault(c => c.Type == "CorporateId")?.Value;
 
-        string ip = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()
+        string forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault() ?? string.Empty;
+        string ip = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault()
             ?? httpContext.Connection.RemoteIpAddress?.ToString()
             ?? "unknown";
 
@@ -41,11 +42,18 @@ public static class ClaimsPrincipalExtensions
         if (string.IsNullOrWhiteSpace(role))
             throw new ApplicationException(localizer[nameof(Resource.Generic_AuthRoleFail)]);
 
+        int corporationId = 0;
+        if (!roles.Contains("Admin", StringComparer.OrdinalIgnoreCase) &&
+            !int.TryParse(corporateIdValue, out corporationId))
+        {
+            throw new ApplicationException(localizer[nameof(Resource.Generic_AuthIdFail)]);
+        }
+
         return new ClaimsDTOs
         {
             UserName = username!,
             Id = id,
-            CorporationId = Idcorporate,
+            CorporationId = corporationId,
             Role = role,
             SourceIp = ip,
             UserAgent = userAgent,

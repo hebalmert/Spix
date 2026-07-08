@@ -32,7 +32,7 @@ public class CxCBillsController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _paymentService.GetCxCBillsAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -49,7 +49,7 @@ public class CxCBillsController : ControllerBase
     [HttpGet("searchcontracts")]
     public async Task<IActionResult> SearchContractsAsync([FromQuery] string filter)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.SearchContractsAsync(filter, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -57,7 +57,7 @@ public class CxCBillsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.GetCxCBillAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -65,7 +65,7 @@ public class CxCBillsController : ControllerBase
     [HttpPost("pay")]
     public async Task<IActionResult> PayAsync(CxCBillPaymentDto model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.PayCxCBillAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -73,7 +73,7 @@ public class CxCBillsController : ControllerBase
     [HttpPost("cancel")]
     public async Task<IActionResult> CancelAsync(CxCBillCancelDto model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.CancelCxCBillAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }

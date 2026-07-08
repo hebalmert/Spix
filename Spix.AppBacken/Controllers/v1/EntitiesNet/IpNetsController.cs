@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +32,7 @@ public class IpNetsController : ControllerBase
     [HttpGet("loadCombo/{id?}")]
     public async Task<ActionResult<IEnumerable<Tax>>> GetComboAsync([FromRoute] Guid? id = null)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -49,7 +49,7 @@ public class IpNetsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IpNet>>> GetAll([FromQuery] PaginationDTO pagination)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -88,13 +88,9 @@ public class IpNetsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<IpNet>> PostAsync(IpNet modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _ipNetUnitOfWork.AddAsync(modelo, email);
+var response = await _ipNetUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
@@ -105,13 +101,9 @@ public class IpNetsController : ControllerBase
     [HttpPost("pool")]
     public async Task<ActionResult<int>> PostPoolAsync(IpNetPoolCreateDTO modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _ipNetUnitOfWork.AddPoolAsync(modelo, email);
+var response = await _ipNetUnitOfWork.AddPoolAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
@@ -122,13 +114,9 @@ public class IpNetsController : ControllerBase
     [HttpPost("pool/delete")]
     public async Task<ActionResult<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _ipNetUnitOfWork.DeletePoolAsync(modelo, email);
+var response = await _ipNetUnitOfWork.DeletePoolAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);

@@ -1,4 +1,4 @@
-Ôªøusing Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,13 +32,13 @@ public class DocumentTypesController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -56,7 +56,7 @@ public class DocumentTypesController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -74,7 +74,7 @@ public class DocumentTypesController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -87,13 +87,13 @@ public class DocumentTypesController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -111,7 +111,7 @@ public class DocumentTypesController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {

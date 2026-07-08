@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,13 +45,13 @@ public class CarguesController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _cargueUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya está localizado
+            return BadRequest(ex.Message); // Ya est� localizado
         }
         catch (Exception ex)
         {
@@ -84,13 +84,9 @@ public class CarguesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Cargue>> PostAsync(Cargue modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _cargueUnitOfWork.AddAsync(modelo, email);
+        var response = await _cargueUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);

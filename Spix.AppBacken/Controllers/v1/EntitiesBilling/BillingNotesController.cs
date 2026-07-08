@@ -32,7 +32,7 @@ public class BillingNotesController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _billingService.GetBillingNotesAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -49,7 +49,7 @@ public class BillingNotesController : ControllerBase
     [HttpGet("combomonths")]
     public async Task<IActionResult> ComboMonthsAsync()
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _billingService.ComboMonthsAsync(userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -57,7 +57,7 @@ public class BillingNotesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _billingService.GetBillingNoteAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -65,7 +65,7 @@ public class BillingNotesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync(BillingNote model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _billingService.AddBillingNoteAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -73,7 +73,7 @@ public class BillingNotesController : ControllerBase
     [HttpPost("{id}/launch")]
     public async Task<IActionResult> LaunchAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _billingService.LaunchBillingNoteAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -81,7 +81,7 @@ public class BillingNotesController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> PutAsync(BillingNote model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _billingService.UpdateBillingNoteAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -89,7 +89,7 @@ public class BillingNotesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _billingService.DeleteBillingNoteAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }

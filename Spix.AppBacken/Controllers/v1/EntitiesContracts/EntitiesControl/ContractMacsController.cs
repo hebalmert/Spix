@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +40,7 @@ public class ContractMacsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ContractMac>> PostAsync(ContractMac modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");

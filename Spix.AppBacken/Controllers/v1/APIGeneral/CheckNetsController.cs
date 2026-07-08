@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,7 @@ public class CheckNetsController : ControllerBase
     [HttpGet("ping/{host}")]
     public async Task<ActionResult<PingResult>> PingHost(string host)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");

@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,13 +32,9 @@ namespace Spix.AppBack.Controllers.v1
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Contractor>>> GetAll([FromQuery] PaginationDTO pagination)
         {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
-            {
-                return BadRequest("Erro en el sistema de Usuarios");
-            }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-            var response = await _technitianService.GetAsync(pagination, email);
+var response = await _technitianService.GetAsync(pagination, userClaimsInfo.UserName);
             if (!response.WasSuccess)
             {
                 return BadRequest(response.Message);
@@ -71,7 +67,7 @@ namespace Spix.AppBack.Controllers.v1
         [HttpPost]
         public async Task<ActionResult<Technician>> PostAsync(Technician modelo)
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");

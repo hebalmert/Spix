@@ -1,4 +1,4 @@
-Ôªøusing Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,13 +33,13 @@ public class CitiesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            //ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            //ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer);
             var response = await _unitOfWork.GetAsync(pagination);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -53,13 +53,13 @@ public class CitiesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            //UserClaimsInfo userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            //UserClaimsInfo userClaimsInfo = User.GetSecurityContextOrThrow(_localizer);
             var response = await _unitOfWork.GetAsync(id);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -73,13 +73,13 @@ public class CitiesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.AddAsync(model);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -93,13 +93,13 @@ public class CitiesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            //UserClaimsInfo userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            //UserClaimsInfo userClaimsInfo = User.GetSecurityContextOrThrow(_localizer);
             var response = await _unitOfWork.UpdateAsync(model);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -113,13 +113,13 @@ public class CitiesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.DeleteAsync(id);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -133,7 +133,7 @@ public class CitiesController : ControllerBase
         try
         {
             //lo usamos para tomar el Email del Claims, pero Verifica que este Authenticated=true.
-            //ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer);
+            //ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer);
             var response = await _unitOfWork.ComboAsync(id);
             return ResponseHelper.Format(response);
         }

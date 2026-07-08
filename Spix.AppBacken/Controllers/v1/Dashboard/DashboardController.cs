@@ -30,7 +30,7 @@ public class DashboardController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _dashboardService.GetSummaryAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfacesSecure;
 using Spix.DomainLogic.AppResponses;
@@ -88,15 +89,11 @@ namespace Spix.AppBack.Controllers
             {
                 return BadRequest(_localizer["Generic_InvalidModel"]);
             }
-            if (string.IsNullOrWhiteSpace(User.Identity!.Name!))
-            {
-                return Unauthorized(_localizer["Generic_AuthRequired"]);
-            }
-            string UserName = User.Identity!.Name!;
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
             try
             {
-                var response = await _unitOfWork.ChangePasswordAsync(modelo, UserName);
+                var response = await _unitOfWork.ChangePasswordAsync(modelo, userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }
             catch (ApplicationException ex)

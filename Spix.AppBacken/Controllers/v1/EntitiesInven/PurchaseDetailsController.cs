@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,13 +45,13 @@ namespace Spix.AppBack.Controllers.EntitiesInven
         {
             try
             {
-                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+                ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
                 var response = await _purchaseDetailsUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya está localizado
+                return BadRequest(ex.Message); // Ya est� localizado
             }
             catch (Exception ex)
             {
@@ -84,13 +84,9 @@ namespace Spix.AppBack.Controllers.EntitiesInven
         [HttpPost]
         public async Task<ActionResult<PurchaseDetail>> PostAsync(PurchaseDetail modelo)
         {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
-            {
-                return BadRequest("Erro en el sistema de Usuarios");
-            }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-            var response = await _purchaseDetailsUnitOfWork.AddAsync(modelo, email);
+var response = await _purchaseDetailsUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);
@@ -101,13 +97,9 @@ namespace Spix.AppBack.Controllers.EntitiesInven
         [HttpPost("CerrarPurchase")]
         public async Task<ActionResult<Purchase>> PostClosePurchaseAsync(Purchase modelo)
         {
-            string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-            if (email == null)
-            {
-                return BadRequest("Erro en el sistema de Usuarios");
-            }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-            var response = await _purchaseDetailsUnitOfWork.ClosePurchaseSync(modelo, email);
+var response = await _purchaseDetailsUnitOfWork.ClosePurchaseSync(modelo, userClaimsInfo.UserName);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);

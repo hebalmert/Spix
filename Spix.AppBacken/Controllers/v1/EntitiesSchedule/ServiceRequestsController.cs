@@ -30,7 +30,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -38,7 +38,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpGet("searchcontracts")]
     public async Task<IActionResult> SearchContractsAsync([FromQuery] string filter)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.SearchContractsAsync(filter, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -46,7 +46,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.GetAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -54,7 +54,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync(ServiceRequestDto dto)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.AddAsync(dto, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -62,7 +62,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> PutAsync(ServiceRequestDto dto)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.UpdateAsync(dto, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -70,7 +70,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -78,7 +78,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpPost("details")]
     public async Task<IActionResult> PostDetailAsync(ServiceRequestDetailDto dto)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.AddDetailAsync(dto, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -86,7 +86,7 @@ public class ServiceRequestsController : ControllerBase
     [HttpDelete("details/{id}")]
     public async Task<IActionResult> DeleteDetailAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.DeleteDetailAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }

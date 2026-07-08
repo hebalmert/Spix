@@ -29,7 +29,7 @@ public class ServiceRequestPicsController : ControllerBase
     [HttpGet("byrequest/{serviceRequestId}")]
     public async Task<IActionResult> GetByServiceRequestAsync(Guid serviceRequestId)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.GetByServiceRequestAsync(serviceRequestId, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -37,7 +37,7 @@ public class ServiceRequestPicsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.GetAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -45,7 +45,7 @@ public class ServiceRequestPicsController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> PutAsync(ServiceRequestPic modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.UpdateAsync(modelo, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -53,7 +53,7 @@ public class ServiceRequestPicsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync(ServiceRequestPic modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -61,7 +61,7 @@ public class ServiceRequestPicsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }

@@ -1,4 +1,4 @@
-Ôªøusing Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,13 +34,13 @@ namespace Spix.AppBack.Controllers.EntitiesInven
         {
             try
             {
-                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+                ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
                 var response = await _productStorageUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est√° localizado
+                return BadRequest(ex.Message); // Ya est· localizado
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace Spix.AppBack.Controllers.EntitiesInven
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est√° localizado
+                return BadRequest(ex.Message); // Ya est· localizado
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace Spix.AppBack.Controllers.EntitiesInven
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est√° localizado
+                return BadRequest(ex.Message); // Ya est· localizado
             }
             catch (Exception ex)
             {
@@ -89,13 +89,13 @@ namespace Spix.AppBack.Controllers.EntitiesInven
         {
             try
             {
-                ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+                ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
                 var response = await _productStorageUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est√° localizado
+                return BadRequest(ex.Message); // Ya est· localizado
             }
             catch (Exception ex)
             {

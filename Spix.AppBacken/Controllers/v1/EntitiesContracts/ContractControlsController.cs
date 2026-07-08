@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +32,7 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ContractClient>>> GetControlContratos([FromQuery] PaginationDTO pagination)
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");

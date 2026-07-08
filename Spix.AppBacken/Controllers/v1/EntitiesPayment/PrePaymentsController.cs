@@ -32,7 +32,7 @@ public class PrePaymentsController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _paymentService.GetPrePaymentsAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -49,7 +49,7 @@ public class PrePaymentsController : ControllerBase
     [HttpGet("combomonths")]
     public async Task<IActionResult> ComboMonthsAsync()
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.ComboMonthsAsync(userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -57,7 +57,7 @@ public class PrePaymentsController : ControllerBase
     [HttpGet("searchcontracts")]
     public async Task<IActionResult> SearchContractsAsync([FromQuery] string filter)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.SearchContractsAsync(filter, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -65,7 +65,7 @@ public class PrePaymentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.GetPrePaymentAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -73,7 +73,7 @@ public class PrePaymentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync(PrePayment model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.AddPrePaymentAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -81,7 +81,7 @@ public class PrePaymentsController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> PutAsync(PrePayment model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.UpdatePrePaymentAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -89,7 +89,7 @@ public class PrePaymentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.DeletePrePaymentAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }

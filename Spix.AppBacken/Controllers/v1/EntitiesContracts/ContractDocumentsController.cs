@@ -33,7 +33,7 @@ public class ContractDocumentsController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _signatureService.GetTemplatesAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -50,7 +50,7 @@ public class ContractDocumentsController : ControllerBase
     [HttpGet("templates/{id}")]
     public async Task<IActionResult> GetTemplateAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.GetTemplateAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -59,7 +59,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> PostTemplateAsync(ContractDocumentTemplate model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.AddTemplateAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -68,7 +68,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> PutTemplateAsync(ContractDocumentTemplate model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.UpdateTemplateAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -77,7 +77,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> TestTemplateAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.TestTemplateAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -86,7 +86,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> DeleteTemplateAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.DeleteTemplateAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -95,7 +95,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> PostFieldAsync(ContractDocumentTemplateField model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.AddTemplateFieldAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -104,7 +104,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> DeleteFieldAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.DeleteTemplateFieldAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -112,7 +112,7 @@ public class ContractDocumentsController : ControllerBase
     [HttpGet("contract/{contractClientId}")]
     public async Task<IActionResult> GetContractDocumentsAsync(Guid contractClientId)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.GetContractDocumentsAsync(contractClientId, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -121,7 +121,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> GenerateAsync(Guid contractClientId, Guid templateId)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.GenerateContractDocumentAsync(contractClientId, templateId, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -130,7 +130,7 @@ public class ContractDocumentsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> GenerateByTypeAsync(Guid contractClientId, ContractDocumentType documentType)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.GenerateContractDocumentByTypeAsync(contractClientId, documentType, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -138,7 +138,7 @@ public class ContractDocumentsController : ControllerBase
     [HttpPost("sign")]
     public async Task<IActionResult> SignAsync(ContractSignedDocument model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.SignContractDocumentAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }

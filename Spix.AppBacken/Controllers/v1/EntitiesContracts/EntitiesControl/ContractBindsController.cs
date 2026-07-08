@@ -39,7 +39,7 @@ public class ContractBindsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ContractBind>> PostAsync(ContractBind modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");

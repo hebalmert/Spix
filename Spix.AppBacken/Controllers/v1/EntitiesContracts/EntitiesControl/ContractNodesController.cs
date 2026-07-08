@@ -39,7 +39,7 @@ public class ContractNodesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ContractNode>> PostAsync(ContractNode modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");

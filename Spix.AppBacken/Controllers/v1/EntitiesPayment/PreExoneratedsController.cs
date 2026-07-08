@@ -32,7 +32,7 @@ public class PreExoneratedsController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _paymentService.GetPreExoneratedsAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -49,7 +49,7 @@ public class PreExoneratedsController : ControllerBase
     [HttpGet("combomonths")]
     public async Task<IActionResult> ComboMonthsAsync()
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.ComboMonthsAsync(userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -57,7 +57,7 @@ public class PreExoneratedsController : ControllerBase
     [HttpGet("searchcontracts")]
     public async Task<IActionResult> SearchContractsAsync([FromQuery] string filter)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.SearchContractsAsync(filter, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -65,7 +65,7 @@ public class PreExoneratedsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.GetPreExoneratedAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -73,7 +73,7 @@ public class PreExoneratedsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync(PreExonerated model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.AddPreExoneratedAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -81,7 +81,7 @@ public class PreExoneratedsController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> PutAsync(PreExonerated model)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.UpdatePreExoneratedAsync(model, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
@@ -89,7 +89,7 @@ public class PreExoneratedsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.DeletePreExoneratedAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }

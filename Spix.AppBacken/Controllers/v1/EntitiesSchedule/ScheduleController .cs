@@ -1,4 +1,4 @@
-Ôªøusing Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ public class ScheduleController : ControllerBase
     [HttpGet("loadStatus")]
     public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStatus()
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.ComboStatusAsync(userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
@@ -44,13 +44,13 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.GetAsync(fromUtc, toUtc, technicianId, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -63,7 +63,7 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.GetByIdAsync(id, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -82,13 +82,13 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.CreateAsync(dto, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -101,13 +101,13 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.UpdateAsync(id, dto, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -120,13 +120,13 @@ public class ScheduleController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {

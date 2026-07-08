@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ public class NodesController : ControllerBase
     [HttpGet("loadCombo/{id?}")]
     public async Task<ActionResult<IEnumerable<Node>>> GetComboAsync([FromRoute] Guid? id = null)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _nodeUnitOfWork.ComboAsync(userClaimsInfo.UserName, id);
         if (!response.WasSuccess)
         {
@@ -42,7 +42,7 @@ public class NodesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Node>>> GetAll([FromQuery] PaginationDTO pagination)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _nodeUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
         if (!response.WasSuccess)
         {
@@ -76,7 +76,7 @@ public class NodesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Node>> PostAsync(Node modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _nodeUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {

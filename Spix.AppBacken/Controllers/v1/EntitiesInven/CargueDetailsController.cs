@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@ public class CargueDetailsController : ControllerBase
     [HttpGet("loadCombo/{id?}")]
     public async Task<ActionResult<IEnumerable<CargueDetail>>> GetComboAsync([FromRoute] Guid? id = null)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -48,13 +48,9 @@ public class CargueDetailsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CargueDetail>>> GetAll([FromQuery] PaginationDTO pagination)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _cargueDetailsUnitOfWork.GetAsync(pagination, email);
+        var response = await _cargueDetailsUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
         if (!response.WasSuccess)
         {
             return BadRequest(response.Message);
@@ -67,13 +63,13 @@ public class CargueDetailsController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _cargueDetailsUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya está localizado
+            return BadRequest(ex.Message); // Ya est� localizado
         }
         catch (Exception ex)
         {
@@ -106,13 +102,9 @@ public class CargueDetailsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CargueDetail>> PostAsync(CargueDetail modelo)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _cargueDetailsUnitOfWork.AddAsync(modelo, email);
+        var response = await _cargueDetailsUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
@@ -123,13 +115,9 @@ public class CargueDetailsController : ControllerBase
     [HttpGet("CerrarTrans/{id}")]
     public async Task<ActionResult<Cargue>> PostCerrarTransAsyncAsync(Guid id)
     {
-        string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
-        if (email == null)
-        {
-            return BadRequest("Erro en el sistema de Usuarios");
-        }
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
-        var response = await _cargueDetailsUnitOfWork.CerrarCargueAsync(id, email);
+        var response = await _cargueDetailsUnitOfWork.CerrarCargueAsync(id, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);

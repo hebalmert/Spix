@@ -31,7 +31,7 @@ public class SellsController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _billingService.GetSellsAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }

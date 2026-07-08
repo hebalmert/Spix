@@ -38,7 +38,7 @@ public class ContractMapsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ContractMap>> PostAsync(ContractMap modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _serverUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
             return Ok(response.Result);

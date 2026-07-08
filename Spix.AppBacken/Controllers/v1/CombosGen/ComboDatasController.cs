@@ -1,4 +1,4 @@
-Ôªøusing Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -85,7 +85,7 @@ public class ComboDatasController : ControllerBase
     [HttpGet("ComboUsuarios")]
     public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboUsuariosAsync()
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -102,7 +102,7 @@ public class ComboDatasController : ControllerBase
     [HttpGet("ComboClients")]
     public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboClientsAsync([FromQuery] string? filter = null)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -119,7 +119,7 @@ public class ComboDatasController : ControllerBase
     [HttpGet("ComboTechnicians")]
     public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboTecniciansAsync(int id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -136,7 +136,7 @@ public class ComboDatasController : ControllerBase
     [HttpGet("ComboContractor")]
     public async Task<ActionResult<IEnumerable<GuidItemModel>>> GetComboAsync(int id)
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -153,7 +153,7 @@ public class ComboDatasController : ControllerBase
     [HttpGet("ComboStorage")]
     public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStorage()
     {
-        ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         if (userClaimsInfo == null)
         {
             return BadRequest("Erro en el sistema de Usuarios");
@@ -172,7 +172,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -182,7 +182,7 @@ public class ComboDatasController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -195,7 +195,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -205,7 +205,7 @@ public class ComboDatasController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -218,7 +218,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -228,7 +228,7 @@ public class ComboDatasController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -241,7 +241,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -251,7 +251,7 @@ public class ComboDatasController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -264,7 +264,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -274,7 +274,7 @@ public class ComboDatasController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -287,7 +287,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _serviceCategoryServiceX.ComboAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
@@ -306,7 +306,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             var response = await _serviceClientServiceX.ComboAsync(userClaimsInfo.UserName, id);
             return ResponseHelper.Format(response);
         }
@@ -339,7 +339,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -358,7 +358,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -368,7 +368,7 @@ public class ComboDatasController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
@@ -458,7 +458,7 @@ public class ComboDatasController : ControllerBase
     {
         try
         {
-            ClaimsDTOs userClaimsInfo = User.GetEmailOrThrow(_localizer, HttpContext);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
             if (userClaimsInfo == null)
             {
                 return BadRequest("Erro en el sistema de Usuarios");
@@ -468,7 +468,7 @@ public class ComboDatasController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est√° localizado
+            return BadRequest(ex.Message); // Ya est· localizado
         }
         catch (Exception ex)
         {
