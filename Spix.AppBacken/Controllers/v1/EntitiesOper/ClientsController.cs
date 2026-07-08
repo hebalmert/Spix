@@ -8,7 +8,6 @@ using Spix.AppServiceX.InterfacesOper;
 using Spix.Domain.EntitiesOper;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
-using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.v1
 {
