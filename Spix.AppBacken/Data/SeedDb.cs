@@ -25,16 +25,43 @@ public class SeedDb
     public async Task SeedAsync()
     {
         await _context.Database.EnsureCreatedAsync();
-        await CheckRolesAsync();
-        await CheckCountries();
-        await CheckSoftPlan();
-        await CheckCorporationAsync();
-        await CheckFrecuencies();
-        await CheckChannel();
-        await CheckHotSpotTypes();
-        await CheckOperations();
-        await CheckSecurity();
-        await CheckUserAsync("Nexxtplanet", "TrialPro", "hebalmert", "nexxtplanet.soft@gmail.com", "+1 786 503", UserType.Admin);
+        LogDatabaseTarget();
+        await RunSeedStepAsync("Roles", CheckRolesAsync);
+        await RunSeedStepAsync("Countries", CheckCountries);
+        await RunSeedStepAsync("SoftPlans", CheckSoftPlan);
+        await RunSeedStepAsync("Corporation", CheckCorporationAsync);
+        await RunSeedStepAsync("Frecuencies", CheckFrecuencies);
+        await RunSeedStepAsync("Channels", CheckChannel);
+        await RunSeedStepAsync("HotSpotTypes", CheckHotSpotTypes);
+        await RunSeedStepAsync("Operations", CheckOperations);
+        await RunSeedStepAsync("Securities", CheckSecurity);
+        await RunSeedStepAsync("AdminUser", () => CheckUserAsync("Nexxtplanet", "TrialPro", "hebalmert", "nexxtplanet.soft@gmail.com", "+1 786 503", UserType.Admin));
+        await LogSeedCountsAsync();
+    }
+
+    private void LogDatabaseTarget()
+    {
+        var connection = _context.Database.GetDbConnection();
+        Console.WriteLine($"Seed DB Target: Server={connection.DataSource}; Database={connection.Database}");
+    }
+
+    private async Task LogSeedCountsAsync()
+    {
+        Console.WriteLine($"Seed Counts: Roles={await _context.Roles.CountAsync()}; Users={await _context.Users.CountAsync()}; Countries={await _context.Countries.CountAsync()}; States={await _context.States.CountAsync()}; Cities={await _context.Cities.CountAsync()}; SoftPlans={await _context.SoftPlans.CountAsync()}; Corporations={await _context.Corporations.CountAsync()}");
+    }
+
+    private static async Task RunSeedStepAsync(string stepName, Func<Task> seedStep)
+    {
+        Console.WriteLine($"Seed: {stepName} iniciado");
+        try
+        {
+            await seedStep();
+            Console.WriteLine($"Seed: {stepName} OK");
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException($"Seed fallo en {stepName}: {ex.Message}", ex);
+        }
     }
 
     private async Task CheckSoftPlan()
@@ -75,14 +102,19 @@ public class SeedDb
     {
         if (!_context.Corporations.Any())
         {
+            Country country = await _context.Countries.FirstOrDefaultAsync(x => x.Name == "United States")
+                ?? await _context.Countries.FirstAsync();
+
+            SoftPlan softPlan = await _context.SoftPlans.OrderByDescending(x => x.Meses).FirstAsync();
+
             Corporation corporation = new()
             {
                 Name = "Nexxtplanet LLC",
                 NroDocument = "3445645645",
                 Phone = "786 503 4489",
                 Address = "Street 45",
-                CountryId = 1,
-                SoftPlanId = 3,
+                CountryId = country.CountryId,
+                SoftPlanId = softPlan.SoftPlanId,
                 DateStart = DateTime.Now,
                 DateEnd = DateTime.Now.AddYears(10),
                 Active = true
@@ -111,12 +143,24 @@ public class SeedDb
                 Active = true,
             };
 
-            await _userHelper.AddUserAsync(user, "hebert1234");
+            var createResult = await _userHelper.AddUserAsync(user, "hebert1234");
+            if (!createResult.Succeeded)
+            {
+                string errors = string.Join(" | ", createResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
+                throw new ApplicationException($"No se pudo crear el usuario seed '{username}': {errors}");
+            }
+
             await _userHelper.AddUserToRoleAsync(user, userType.ToString());
 
             //Para Confirmar automaticamente el Usuario y activar la cuenta
             string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-            await _userHelper.ConfirmEmailAsync(user, token);
+            var confirmResult = await _userHelper.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+            {
+                string errors = string.Join(" | ", confirmResult.Errors.Select(e => $"{e.Code}: {e.Description}"));
+                throw new ApplicationException($"No se pudo confirmar el email del usuario seed '{username}': {errors}");
+            }
+
             await _userHelper.AddUserClaims(userType, username);
         }
         return user;

@@ -154,6 +154,12 @@
   <data name="Db_Error" xml:space="preserve">
     <value>Error general de base de datos</value>
   </data>
+  <data name="Db_Deadlock" xml:space="preserve">
+    <value>La base de datos estaba ocupada procesando otra operación. Intenta nuevamente</value>
+  </data>
+  <data name="Db_LoginFail" xml:space="preserve">
+    <value>No se pudo conectar con la base de datos</value>
+  </data>
   <data name="Db_Reference" xml:space="preserve">
     <value>Error de referencia, clave foránea inválida</value>
   </data>
@@ -241,6 +247,9 @@
   <data name="Generic_InvalidModel" xml:space="preserve">
     <value>Hubo un problema con los datos enviados</value>
   </data>
+  <data name="Generic_InvalidOperation" xml:space="preserve">
+    <value>La operación solicitada no se puede completar en el estado actual</value>
+  </data>
   <data name="Generic_NullException" xml:space="preserve">
     <value>Se intentó acceder a un valor nulo</value>
   </data>
@@ -253,8 +262,14 @@
   <data name="Generic_RegisterNotFound" xml:space="preserve">
     <value>Problemas para Encontrar el Registro Indicado</value>
   </data>
+  <data name="Generic_RequestCanceled" xml:space="preserve">
+    <value>La solicitud fue cancelada antes de completarse</value>
+  </data>
   <data name="Generic_Success" xml:space="preserve">
     <value>Todo se completó exitosamente</value>
+  </data>
+  <data name="Generic_Timeout" xml:space="preserve">
+    <value>La operación tardó demasiado en responder. Intenta nuevamente</value>
   </data>
   <data name="Generic_UnexpectedError" xml:space="preserve">
     <value>Ocurrió un error inesperado. Por favor, intenta nuevamente más tarde</value>

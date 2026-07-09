@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Spix.AppInfra.UtilityTools;
 using Spix.Domain.Entities;
@@ -96,12 +96,26 @@ public class UserHelper : IUserHelper
 
     public async Task CheckRoleAsync(string roleName)
     {
-        if (!await _roleManager.RoleExistsAsync(roleName))
-            await _roleManager.CreateAsync(new IdentityRole(roleName));
+        if (await _roleManager.RoleExistsAsync(roleName))
+            return;
+
+        IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+        if (!result.Succeeded)
+        {
+            string errors = string.Join(" | ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
+            throw new ApplicationException($"No se pudo crear el rol '{roleName}': {errors}");
+        }
     }
 
     public async Task AddUserToRoleAsync(User user, string roleName)
-        => await _userManager.AddToRoleAsync(user, roleName);
+    {
+        IdentityResult result = await _userManager.AddToRoleAsync(user, roleName);
+        if (!result.Succeeded)
+        {
+            string errors = string.Join(" | ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
+            throw new ApplicationException($"No se pudo asignar el rol '{roleName}' al usuario '{user.UserName}': {errors}");
+        }
+    }
 
     public async Task RemoveUserToRoleAsync(User user, string roleName)
         => await _userManager.RemoveFromRoleAsync(user, roleName);
@@ -180,7 +194,7 @@ public class UserHelper : IUserHelper
         => await _userManager.ResetPasswordAsync(user, token, password);
 
     // ============================================================
-    // CUSTOM USER CREATION (TU LÓGICA)
+    // CUSTOM USER CREATION (TU L�GICA)
     // ============================================================
 
     public async Task<User> AddUserUsuarioAsync(string firstname, string lastname, string username,

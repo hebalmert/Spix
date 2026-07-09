@@ -11,7 +11,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background-image: url('/Images/bgCenterImg.jpg');
+        background-image: url('https://spiximage.blob.core.windows.net/imgwwwroot/bgCenterImg.jpg?v=20260708-2');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;

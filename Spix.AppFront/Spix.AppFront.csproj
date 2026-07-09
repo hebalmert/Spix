@@ -10,14 +10,6 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\Images\bgCenterImg.jpg" />
-    <Content Remove="wwwroot\Images\LogoNexxtplanet.png" />
-    <Content Remove="wwwroot\Images\NexxtplanetLLC.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="wwwroot\Images\NexxtplanetLLC.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -42,10 +34,7 @@
 
   <ItemGroup>
     <Resource Include="wwwroot\Images\bgCenterImg.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="wwwroot\Images\LogoNexxtplanet.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

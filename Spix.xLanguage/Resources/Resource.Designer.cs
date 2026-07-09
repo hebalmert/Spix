@@ -1051,6 +1051,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The database was busy processing another operation. Please try again.
+        /// </summary>
+        public static string Db_Deadlock {
+            get {
+                return ResourceManager.GetString("Db_Deadlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate value in the database.
         /// </summary>
         public static string Db_Duplicate {
@@ -1065,6 +1074,15 @@ namespace Spix.xLanguage.Resources {
         public static string Db_Error {
             get {
                 return ResourceManager.GetString("Db_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not connect to the database.
+        /// </summary>
+        public static string Db_LoginFail {
+            get {
+                return ResourceManager.GetString("Db_LoginFail", resourceCulture);
             }
         }
         
@@ -1897,6 +1915,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The requested operation cannot be completed in the current state.
+        /// </summary>
+        public static string Generic_InvalidOperation {
+            get {
+                return ResourceManager.GetString("Generic_InvalidOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tried to access a null value.
         /// </summary>
         public static string Generic_NullException {
@@ -1933,11 +1960,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The request was canceled before it could be completed.
+        /// </summary>
+        public static string Generic_RequestCanceled {
+            get {
+                return ResourceManager.GetString("Generic_RequestCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Everything was completed successfully.
         /// </summary>
         public static string Generic_Success {
             get {
                 return ResourceManager.GetString("Generic_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The operation took too long to respond. Please try again.
+        /// </summary>
+        public static string Generic_Timeout {
+            get {
+                return ResourceManager.GetString("Generic_Timeout", resourceCulture);
             }
         }
         

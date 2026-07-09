@@ -192,8 +192,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("https://localhost:7137", 
-            "https://regixappfront-cngmebf8gsbyehd9.canadacentral-01.azurewebsites.net",
+        builder.WithOrigins("https://localhost:7137",
+            "https://spixappfront-hkcygbatbpgudfby.canadacentral-01.azurewebsites.net",
             "http://localhost:3034")
                .AllowAnyHeader()
                .AllowAnyMethod()

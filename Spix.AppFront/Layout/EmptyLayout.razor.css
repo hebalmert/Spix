@@ -1,7 +1,7 @@
-﻿.authFull {
+.empty-auth-full {
     margin: 0;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     background:
         linear-gradient(135deg, rgba(75,85,99,0.72), rgba(55,65,81,0.72)),
         url("https://spiximage.blob.core.windows.net/imgwwwroot/bgCenterImg.jpg?v=20260708-3");
@@ -13,9 +13,10 @@
     align-items: center;
     overflow: hidden;
     position: relative;
+    padding: 1rem;
 }
 
-    .authFull > * {
+    .empty-auth-full > * {
         position: relative;
         z-index: 1;
     }
