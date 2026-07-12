@@ -39,4 +39,14 @@ internal static class LocalizedEmailTemplateFactory
             ProviderType = providerType,
             Footer = localizer["EmailProviderTest_Footer"]
         });
+
+    public static string BuildPasswordRecovery(IStringLocalizer localizer, string? firstName, string? lastName, string recoveryLink)
+        => PasswordRecoveryEmailTemplate.Build(new PasswordRecoveryEmailTemplateModel
+        {
+            Subject = localizer["PasswordRecovery_Subject"], Eyebrow = localizer["PasswordRecovery_Eyebrow"],
+            Title = localizer["PasswordRecovery_Title"], Hello = localizer["PasswordRecovery_Hello"],
+            Introduction = localizer["PasswordRecovery_Introduction"], Instruction = localizer["PasswordRecovery_Instruction"],
+            ButtonText = localizer["PasswordRecovery_Button"], SecurityNotice = localizer["PasswordRecovery_SecurityNotice"],
+            Footer = localizer["PasswordRecovery_Footer"], FirstName = firstName, LastName = lastName, RecoveryLink = recoveryLink
+        });
 }

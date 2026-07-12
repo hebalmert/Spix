@@ -304,12 +304,8 @@ public class AccountService : IAccountService
         // Construir la URL sin `Url.Action`
         string tokenLink = $"{frontUrl}/api/accounts/ResetPassword?token={encodedToken}";
 
-        string subject = _localizer[nameof(Resource.Password_Recovery)];
-        string body = ($"De: NexxtPlanet" +
-            $"<h1>Para Recuperar su Clave</h1>" +
-            $"<p>" +
-            $"Para Crear una clave nueva " +
-            $"Has Click en el siguiente Link:</br></br><strong><a href = \"{tokenLink}\">Cambiar Clave</a></strong>");
+        string subject = _localizer["PasswordRecovery_Subject"];
+        string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildPasswordRecovery(_localizer, user.FirstName, user.LastName, tokenLink);
 
         Response response = await _emailHelper.ConfirmarCuenta(user.Email!, $"{user.FirstName} {user.LastName}", subject, body);
         if (response.IsSuccess == false)

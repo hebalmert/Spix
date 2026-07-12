@@ -1459,5 +1459,14 @@
   <data name="AccountActivation_Button" xml:space="preserve"><value>Confirm email</value></data>
   <data name="AccountActivation_SecurityNotice" xml:space="preserve"><value>For your security, change the temporary password after signing in. If you did not expect this account, ignore this email.</value></data>
   <data name="AccountActivation_Footer" xml:space="preserve"><value>This is an automated account activation email. Please do not reply.</value></data>
+  <data name="PasswordRecovery_Subject" xml:space="preserve"><value>Reset your password</value></data>
+  <data name="PasswordRecovery_Eyebrow" xml:space="preserve"><value>Account security</value></data>
+  <data name="PasswordRecovery_Title" xml:space="preserve"><value>Password recovery</value></data>
+  <data name="PasswordRecovery_Hello" xml:space="preserve"><value>Hello</value></data>
+  <data name="PasswordRecovery_Introduction" xml:space="preserve"><value>We received a request to reset the password for your account.</value></data>
+  <data name="PasswordRecovery_Instruction" xml:space="preserve"><value>Use the button below to create a new password and regain access.</value></data>
+  <data name="PasswordRecovery_Button" xml:space="preserve"><value>Reset password</value></data>
+  <data name="PasswordRecovery_SecurityNotice" xml:space="preserve"><value>If you did not request a password reset, ignore this email. Your current password will remain unchanged.</value></data>
+  <data name="PasswordRecovery_Footer" xml:space="preserve"><value>This is an automated password recovery email. Please do not reply.</value></data>
 </root>
 

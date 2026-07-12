@@ -1459,5 +1459,14 @@
   <data name="AccountActivation_Button" xml:space="preserve"><value>Confirmar correo</value></data>
   <data name="AccountActivation_SecurityNotice" xml:space="preserve"><value>Por seguridad, cambia la contraseña temporal después de iniciar sesión. Si no esperabas esta cuenta, ignora este correo.</value></data>
   <data name="AccountActivation_Footer" xml:space="preserve"><value>Este es un correo automático de activación de cuenta. Por favor, no respondas.</value></data>
+  <data name="PasswordRecovery_Subject" xml:space="preserve"><value>Restablece tu contraseña</value></data>
+  <data name="PasswordRecovery_Eyebrow" xml:space="preserve"><value>Seguridad de la cuenta</value></data>
+  <data name="PasswordRecovery_Title" xml:space="preserve"><value>Recuperación de contraseña</value></data>
+  <data name="PasswordRecovery_Hello" xml:space="preserve"><value>Hola</value></data>
+  <data name="PasswordRecovery_Introduction" xml:space="preserve"><value>Recibimos una solicitud para restablecer la contraseña de tu cuenta.</value></data>
+  <data name="PasswordRecovery_Instruction" xml:space="preserve"><value>Utiliza el siguiente botón para crear una contraseña nueva y recuperar el acceso.</value></data>
+  <data name="PasswordRecovery_Button" xml:space="preserve"><value>Restablecer contraseña</value></data>
+  <data name="PasswordRecovery_SecurityNotice" xml:space="preserve"><value>Si no solicitaste restablecer tu contraseña, ignora este correo. Tu contraseña actual no cambiará.</value></data>
+  <data name="PasswordRecovery_Footer" xml:space="preserve"><value>Este es un correo automático de recuperación de contraseña. Por favor, no respondas.</value></data>
 </root>
 
