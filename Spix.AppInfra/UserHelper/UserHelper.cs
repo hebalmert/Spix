@@ -148,9 +148,14 @@ public class UserHelper : IUserHelper
     public async Task<SignInResult> LoginAsync(LoginDTO model)
     {
         var user = await _userManager.FindByNameAsync(model.UserName);
-
-        if (user == null || !user.Active)
+        // ASP.NET Identity busca por NormalizedUserName y no distingue mayusculas de minusculas.
+        // El sistema requiere que el nombre coincida exactamente con el valor almacenado.
+        if (user == null
+            || !string.Equals(user.UserName, model.UserName, StringComparison.Ordinal)
+            || !user.Active)
+        {
             return SignInResult.Failed;
+        }
 
         return await _signInManager.PasswordSignInAsync(
             model.UserName,
