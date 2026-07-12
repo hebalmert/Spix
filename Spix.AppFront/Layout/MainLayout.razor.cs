@@ -11,6 +11,7 @@ public partial class MainLayout
     private bool isSidebarCollapsed = false;
     private Type? modalType;
     private Dictionary<string, object>? modalParameters;
+    private string PageCssClass => isSidebarCollapsed ? "page sidebar-layout-collapsed" : "page sidebar-layout-expanded";
     private string SidebarCssClass => isSidebarCollapsed ? "sidebar sidebar-collapsed" : "sidebar";
     private string SidebarToggleIcon => isSidebarCollapsed ? "fa-chevron-right" : "fa-chevron-left";
     private string SidebarToggleTitle => isSidebarCollapsed ? "Expandir menu" : "Contraer menu";
