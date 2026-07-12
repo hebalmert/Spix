@@ -270,8 +270,20 @@ public class UsuarioService : IUsuarioService
                 Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
             };
         }
-        User userCheck = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
-        if (userCheck != null)
+        // El UserName debe ser unico en toda la plataforma, no solamente en la Corporation.
+        User userNameCheck = await _userHelper.GetUserByUserNameAsync(modelo.UserName);
+        if (userNameCheck != null)
+        {
+            return new ActionResponse<Usuario>
+            {
+                WasSuccess = false,
+                Message = _localizer[nameof(Resource.Generic_UserNameAlreadyUsed)]
+            };
+        }
+
+        // El correo tambien debe ser unico globalmente para todas las cuentas de Identity.
+        User emailCheck = await _userHelper.GetUserByEmailAsync(modelo.Email);
+        if (emailCheck != null)
         {
             return new ActionResponse<Usuario>
             {

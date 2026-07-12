@@ -140,8 +140,8 @@ public class UsuarioRoleService : IUsuarioRoleService
                 UserType = modelo.UserType
             };
             _context.UserRoleDetails.Add(newUserRoleDetail);
-            await _userHelper.AddUserToRoleAsync(userAsp, modelo.UserType.ToString());
-            await _userHelper.AddUserClaims(modelo.UserType, userAsp.UserName!);
+            await _userHelper.AddUserToRoleAsync(UserSystem, modelo.UserType.ToString());
+            await _userHelper.AddUserClaims(modelo.UserType, UserSystem.UserName!);
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
