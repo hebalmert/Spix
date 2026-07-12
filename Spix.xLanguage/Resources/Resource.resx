@@ -1444,5 +1444,11 @@
   <data name="MonthType_December" xml:space="preserve">
     <value>December</value>
   </data>
+  <data name="EmailProviderTest_Subject" xml:space="preserve"><value>Email Provider Test</value></data>
+  <data name="EmailProviderTest_Title" xml:space="preserve"><value>Email Provider Test</value></data>
+  <data name="EmailProviderTest_Provider" xml:space="preserve"><value>Email provider</value></data>
+  <data name="EmailProviderTest_SuccessMessage" xml:space="preserve"><value>If you received this email, the email provider is configured correctly.</value></data>
+  <data name="EmailProviderTest_Result" xml:space="preserve"><value>Configuration verified successfully</value></data>
+  <data name="EmailProviderTest_Footer" xml:space="preserve"><value>This is an automated email sent to verify the email provider configuration.</value></data>
 </root>
 
