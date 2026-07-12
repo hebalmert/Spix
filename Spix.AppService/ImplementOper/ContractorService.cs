@@ -512,14 +512,8 @@ public class ContractorService : IContractorService
         // Construir la URL sin `Url.Action`
         string tokenLink = $"{frontUrl}/api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}";
 
-        string subject = "Activacion de Cuenta";
-        string body = ($"De: NexxtPlanet" +
-            $"<h1>Email Confirmation</h1>" +
-            $"<p>" +
-            $"Su Clave Temporal es: <h2> \"{user.Pass}\"</h2>" +
-            $"</p>" +
-            $"Para Activar su vuenta, " +
-            $"Has Click en el siguiente Link:</br></br><strong><a href = \"{tokenLink}\">Confirmar Correo</a></strong>");
+        string subject = _localizer["AccountActivation_Subject"];
+        string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.Pass, tokenLink);
 
         Response response = await SendCorporateEmailAsync(user, subject, body);
         if (response.IsSuccess == false)
