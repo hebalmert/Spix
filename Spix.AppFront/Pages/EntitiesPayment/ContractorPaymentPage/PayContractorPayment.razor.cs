@@ -44,13 +44,18 @@ public partial class PayContractorPayment
         IsSaving = true;
         try
         {
-            var responseHttp = await _repository.PostAsync($"{BaseUrl}/pay", Payment);
+            var responseHttp = await _repository.PostAsync<ContractorPaymentCreateDto, ContractorPayment>($"{BaseUrl}/pay", Payment);
             if (await _responseHandler.HandleErrorAsync(responseHttp))
             {
                 return;
             }
 
-            await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], "Pago al contratista registrado correctamente.", SweetAlertIcon.Success);
+            var paymentNumber = responseHttp.Response?.PaymentNumber ?? string.Empty;
+            var message = string.IsNullOrWhiteSpace(paymentNumber)
+                ? "Pago al contratista registrado correctamente."
+                : $"Pago al contratista registrado correctamente. Comprobante: {paymentNumber}.";
+
+            await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], message, SweetAlertIcon.Success);
             await _modalService.CloseAsync(ModalResult.Ok());
         }
         finally

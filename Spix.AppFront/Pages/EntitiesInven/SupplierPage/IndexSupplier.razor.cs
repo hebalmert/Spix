@@ -100,7 +100,13 @@ public partial class IndexSupplier
 
     private async Task ShowDetailsAsync(Guid id)
     {
-        _navigationManager.NavigateTo($"/suppliers/details/{id}");
+        var parameters = new Dictionary<string, object>
+        {
+            { "Id", id },
+            { "Title", $"{Localizer[nameof(Resource.Supplier)]}" }
+        };
+
+        await _modalService.ShowAsync(typeof(DetailsSupplier), parameters);
     }
 
     private async Task DeleteAsync(Guid id)

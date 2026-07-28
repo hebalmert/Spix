@@ -7,6 +7,7 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesPayment;
+using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesPayment;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
@@ -145,12 +146,13 @@ public class ContractorPaymentService : IContractorPaymentService
         try
         {
             var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
+            if (user == null || !user.CorporationId.HasValue)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return AuthFail<ContractorPayment>();
             }
 
+            var corporationId = user.CorporationId.Value;
             var payableIds = model.ContractorAccountPayableIds
                 .Where(x => x != Guid.Empty)
                 .Distinct()
@@ -164,7 +166,7 @@ public class ContractorPaymentService : IContractorPaymentService
 
             var contractor = await _context.Contractors.FirstOrDefaultAsync(x =>
                 x.ContractorId == model.ContractorId &&
-                x.CorporationId == user.CorporationId &&
+                x.CorporationId == corporationId &&
                 x.Active);
 
             if (contractor == null)
@@ -176,7 +178,7 @@ public class ContractorPaymentService : IContractorPaymentService
             var accountPayables = await _context.ContractorAccountPayables
                 .Where(x => payableIds.Contains(x.ContractorAccountPayableId) &&
                             x.ContractorId == contractor.ContractorId &&
-                            x.CorporationId == user.CorporationId)
+                            x.CorporationId == corporationId)
                 .ToListAsync();
 
             if (accountPayables.Count != payableIds.Count)
@@ -192,16 +194,20 @@ public class ContractorPaymentService : IContractorPaymentService
             }
 
             var total = accountPayables.Sum(x => x.Balance);
+            var register = await GetOrCreateRegisterAsync(corporationId);
+            var paymentNumber = $"PC-{++register.PagoContratista:0000000}";
+
             var contractorPayment = new ContractorPayment
             {
                 ContractorPaymentId = Guid.NewGuid(),
                 DatePayment = DateTime.UtcNow.Date,
+                PaymentNumber = paymentNumber,
                 ContractorId = contractor.ContractorId,
                 PaymentMode = model.PaymentMode.Trim(),
                 Reference = model.Reference?.Trim(),
                 Detail = model.Detail?.Trim(),
                 Total = total,
-                CorporationId = user.CorporationId!.Value,
+                CorporationId = corporationId,
                 UsuarioOwner = $"{user.FirstName} {user.LastName}",
                 UserId = Guid.Parse(user.Id),
                 ContractorPaymentDetails = new List<ContractorPaymentDetail>()
@@ -238,6 +244,26 @@ public class ContractorPaymentService : IContractorPaymentService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<ContractorPayment>(ex);
         }
+    }
+
+    private async Task<Register> GetOrCreateRegisterAsync(int corporationId)
+    {
+        var register = await _context.Registers
+            .FirstOrDefaultAsync(x => x.CorporationId == corporationId);
+
+        if (register != null)
+        {
+            return register;
+        }
+
+        register = new Register
+        {
+            RegisterId = Guid.NewGuid(),
+            CorporationId = corporationId
+        };
+
+        _context.Registers.Add(register);
+        return register;
     }
 
     private ActionResponse<T> AuthFail<T>()

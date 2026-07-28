@@ -1,78 +1,110 @@
-﻿@page "/suppliers/details/{Id:guid}"
-@layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@inherits ComponentBase
 
-<div class="modal-dialog modal-lg">
-    <div class="modal-content p-4">
-
-
-        @if (Supplier is null)
-        {
-            <FullScreenSpinner IsVisible="IsVisible" />
-        }
-        else
-        {
-            <div class="row justify-content-center mb-4">
-                <div class="col-auto">
-                    <img src="@Supplier.ImageFullPath" width="90" height="60" class="img-thumbnail" />
-                </div>
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
             </div>
 
-            <div class="row">
-                <!-- Nombre y Contacto -->
-                <div class="col-md-6 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.Name)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.Name" readonly />
+            @if (IsLoading)
+            {
+                <div class="d-flex justify-content-center py-5">
+                    <Loading />
                 </div>
-                <div class="col-md-6 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.ContactName)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.ContactName" readonly />
-                </div>
-
-                <!-- Documento y Tipo -->
-                <div class="col-md-6 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.Document)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.Document" readonly />
-                </div>
-                <div class="col-md-6 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.DocumentType!.DocumentName)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.DocumentType!.DocumentName" readonly />
+            }
+            else if (Supplier is not null)
+            {
+                <div class="text-center mb-4">
+                    <img src="@Supplier.ImageFullPath"
+                         alt="@Supplier.Name"
+                         width="90"
+                         height="90"
+                         class="img-thumbnail"
+                         onerror="this.src='https://spiximage.blob.core.windows.net/imgwwwroot/NoImage.png'" />
                 </div>
 
-                <!-- Teléfono -->
-                <div class="col-md-4 mb-4">
-                    <label class="form-label">Teléfono</label>
-                    <InputText class="form-control" @bind-Value="Supplier.PhoneNumber" readonly />
-                </div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.Name)]</span>
+                            <input class="form-control" value="@Supplier.Name" readonly />
+                        </div>
+                    </div>
 
-                <!-- Dirección -->
-                <div class="col-md-12 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.Address)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.Address" readonly />
-                </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.Contact)]</span>
+                            <input class="form-control" value="@Supplier.ContactName" readonly />
+                        </div>
+                    </div>
 
-                <!-- Estado y Ciudad -->
-                <div class="col-md-6 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.State!.Name)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.State!.Name" readonly />
-                </div>
-                <div class="col-md-6 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.City!.Name)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.City!.Name" readonly />
-                </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.DocumentType)]</span>
+                            <input class="form-control" value="@Supplier.DocumentType?.DocumentName" readonly />
+                        </div>
+                    </div>
 
-                <!-- Usuario y Activo -->
-                <div class="col-md-6 mb-4">
-                    <label class="form-label">@GetDisplayName(() => Supplier.Email)</label>
-                    <InputText class="form-control" @bind-Value="Supplier.Email" readonly />
-                </div>
-                <div class="col-md-6 mb-4">
-                    <div class="form-check mt-4">
-                        <InputCheckbox class="form-check-input" @bind-Value="Supplier.Active" disabled />
-                        <label class="form-check-label">@GetDisplayName(() => Supplier.Active)</label>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.NroDocuement)]</span>
+                            <input class="form-control" value="@Supplier.Document" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.Phone)]</span>
+                            <input class="form-control" value="@Supplier.PhoneNumber" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.Address)]</span>
+                            <input class="form-control" value="@Supplier.Address" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.State)]</span>
+                            <input class="form-control" value="@Supplier.State?.Name" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.City)]</span>
+                            <input class="form-control" value="@Supplier.City?.Name" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.Email)]</span>
+                            <input class="form-control" value="@Supplier.Email" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="input-group h-100">
+                            <span class="input-group-text" style="width: 110px">@Localizer[nameof(Resource.Active)]</span>
+                            <div class="form-control d-flex align-items-center">
+                                <input type="checkbox" class="form-check-input m-0" checked="@Supplier.Active" disabled />
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+
+                <div class="d-flex justify-content-center mt-4">
+                    <ButtonFormBack OnClick="Return" />
+                </div>
+            }
+        </div>
     </div>
 </div>

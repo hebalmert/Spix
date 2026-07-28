@@ -11,6 +11,9 @@ public class ContractorPayment
 
     public DateTime DatePayment { get; set; }
 
+    [MaxLength(20)]
+    public string PaymentNumber { get; set; } = null!;
+
     public Guid ContractorId { get; set; }
 
     [MaxLength(30)]
