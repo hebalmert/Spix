@@ -15,6 +15,14 @@ public class Product
     [Display(Name = nameof(Resource.Category), ResourceType = typeof(Resource))]
     public Guid ProductCategoryId { get; set; }
 
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.Mark), ResourceType = typeof(Resource))]
+    public Guid? MarkId { get; set; }
+
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.Model), ResourceType = typeof(Resource))]
+    public Guid? MarkModelId { get; set; }
+
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Name), ResourceType = typeof(Resource))]
@@ -52,6 +60,10 @@ public class Product
     public Corporation? Corporation { get; set; }
 
     public ProductCategory? ProductCategory { get; set; }
+
+    public Mark? Mark { get; set; }
+
+    public MarkModel? MarkModel { get; set; }
 
     public Tax? Tax { get; set; }
 

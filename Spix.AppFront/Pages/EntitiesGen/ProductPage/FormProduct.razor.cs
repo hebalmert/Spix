@@ -17,6 +17,11 @@ public partial class FormProduct
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
     private List<GuidItemModel>? Taxes;
+    private List<Mark>? Marks = new();
+    private List<MarkModel>? MarkModels = new();
+
+    private const string BaseComboMark = "/api/v1/marks/loadCombo";
+    private const string BaseComboMarkModel = "/api/v1/marksmodels/loadCombo";
 
     [Parameter, EditorRequired] public Product Product { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
@@ -26,7 +31,54 @@ public partial class FormProduct
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadMarksAsync();
         await LoadTaxes();
+    }
+
+    private async Task LoadMarksAsync()
+    {
+        var responseHttp = await _repository.GetAsync<List<Mark>>(BaseComboMark);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            _navigationManager.NavigateTo("/productcategories");
+            return;
+        }
+
+        Marks = responseHttp.Response;
+        if (IsEditControl)
+        {
+            await LoadMarkModelsAsync(Product.MarkId ?? Guid.Empty);
+        }
+    }
+
+    private async Task LoadMarkModelsAsync(Guid markId)
+    {
+        var responseHttp = await _repository.GetAsync<List<MarkModel>>($"{BaseComboMarkModel}/{markId}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            _navigationManager.NavigateTo("/productcategories");
+            return;
+        }
+
+        MarkModels = responseHttp.Response;
+    }
+
+    private async Task MarkChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var markId))
+        {
+            Product.MarkId = markId;
+            Product.MarkModelId = Guid.Empty;
+            await LoadMarkModelsAsync(markId);
+        }
+    }
+
+    private void MarkModelChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var markModelId))
+        {
+            Product.MarkModelId = markModelId;
+        }
     }
 
     private async Task LoadTaxes()

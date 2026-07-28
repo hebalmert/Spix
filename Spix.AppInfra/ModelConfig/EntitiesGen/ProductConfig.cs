@@ -13,8 +13,12 @@ public class ProductConfig : IEntityTypeConfiguration<Product>
         builder.HasIndex(e => new { e.CorporationId, e.ProductName }).IsUnique();
         builder.Property(e => e.Costo).HasPrecision(18, 2);
         builder.Property(e => e.Price).HasPrecision(18, 2);
+        builder.Property(e => e.MarkId).IsRequired(false);
+        builder.Property(e => e.MarkModelId).IsRequired(false);
         //Borrado En Cascada
         builder.HasOne(e => e.Tax).WithMany(c => c.Products).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.ProductCategory).WithMany(c => c.Products).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.Mark).WithMany().OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.MarkModel).WithMany().OnDelete(DeleteBehavior.Restrict);
     }
 }

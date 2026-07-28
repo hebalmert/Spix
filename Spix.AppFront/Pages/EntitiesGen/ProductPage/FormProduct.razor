@@ -1,4 +1,6 @@
-﻿<EditForm Model="Product" OnValidSubmit="OnSubmit">
+﻿@using Spix.Domain.EntitiesGen
+
+<EditForm Model="Product" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
     <div class="mb-2">
@@ -9,6 +11,42 @@
             <InputText class="form-control" @bind-Value="Product.ProductName" />
         </div>
         <ValidationMessage For="@(() => Product.ProductName)" />
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="Mark" Items="Marks">
+                <Body>
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Mark)]</span>
+                        <select class="form-select" value="@Product.MarkId" @onchange="MarkChanged">
+                            @foreach (var item in Marks!)
+                            {
+                                <option value="@item.MarkId">@item.MarkName</option>
+                            }
+                        </select>
+                    </div>
+                    <ValidationMessage For="@(() => Product.MarkId)" />
+                </Body>
+            </GenericSelectWrapper>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="MarkModel" Items="MarkModels">
+                <Body>
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Model)]</span>
+                        <select class="form-select" value="@Product.MarkModelId" @onchange="MarkModelChanged">
+                            @foreach (var item in MarkModels!)
+                            {
+                                <option value="@item.MarkModelId">@item.MarkModelName</option>
+                            }
+                        </select>
+                    </div>
+                    <ValidationMessage For="@(() => Product.MarkModelId)" />
+                </Body>
+            </GenericSelectWrapper>
+        </div>
     </div>
 
     <div class="mb-2">

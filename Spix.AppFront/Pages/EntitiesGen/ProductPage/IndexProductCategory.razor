@@ -89,7 +89,13 @@
                                                             @foreach (var product in ProductsByCategoryId[item.ProductCategoryId])
                                                             {
                                                                 <div class="products-list-row" role="listitem">
-                                                                    <div class="product-name">@product.ProductName</div>
+                                                                    <div class="product-name">
+                                                                        <div>@product.ProductName</div>
+                                                                        @if (!string.IsNullOrWhiteSpace(product.Mark?.MarkName) || !string.IsNullOrWhiteSpace(product.MarkModel?.MarkModelName))
+                                                                        {
+                                                                            <small class="text-muted">@product.Mark?.MarkName - @product.MarkModel?.MarkModelName</small>
+                                                                        }
+                                                                    </div>
                                                                     <div class="product-stock">@product.TotalInventario</div>
                                                                     <div class="product-serials">
                                                                         <input type="checkbox" class="form-check-input" checked="@product.WithSerials" disabled />

@@ -54,6 +54,8 @@ public class ProductService : IProductService
                 };
             }
             var ListModel = await _context.Products
+                .Include(x => x.Mark)
+                .Include(x => x.MarkModel)
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.ProductCategoryId == id)
                 .ToListAsync();
             var defaultItem = new Product
@@ -92,6 +94,8 @@ public class ProductService : IProductService
             var queryable = _context.Products
                 .Include(x => x.ProductStocks)
                 .Include(x => x.Tax)
+                .Include(x => x.Mark)
+                .Include(x => x.MarkModel)
                 .Where(x => x.CorporationId == user.CorporationId && x.ProductCategoryId == pagination.GuidId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -127,7 +131,8 @@ public class ProductService : IProductService
         try
         {
             var modelo = await _context.Products
-                .Include(x => x.Tax).Include(x => x.ProductStocks)
+                .Include(x => x.Tax)
+                .Include(x => x.ProductStocks)
                 .FirstOrDefaultAsync(x => x.ProductId == id);
             if (modelo == null)
             {
@@ -165,6 +170,26 @@ public class ProductService : IProductService
 
         try
         {
+            var currentProduct = await _context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ProductId == modelo.ProductId);
+            if (currentProduct == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<Product>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            if (!await HasValidMarkAndModelAsync(modelo, currentProduct.CorporationId))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return InvalidMarkOrModel(modelo);
+            }
+
+            modelo.CorporationId = currentProduct.CorporationId;
             Product NewModelo = _mapperService.Map<Product, Product>(modelo);
 
             _context.Products.Update(NewModelo);
@@ -210,6 +235,13 @@ public class ProductService : IProductService
                 };
             }
             modelo.CorporationId = Convert.ToInt32(user.CorporationId);
+
+            if (!await HasValidMarkAndModelAsync(modelo, modelo.CorporationId))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return InvalidMarkOrModel(modelo);
+            }
+
             _context.Products.Add(modelo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
@@ -258,5 +290,40 @@ public class ProductService : IProductService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
         }
+    }
+
+    private async Task<bool> HasValidMarkAndModelAsync(Product product, int corporationId)
+    {
+        if (!product.MarkId.HasValue || product.MarkId.Value == Guid.Empty ||
+            !product.MarkModelId.HasValue || product.MarkModelId.Value == Guid.Empty)
+        {
+            return false;
+        }
+
+        var markExists = await _context.Marks.AnyAsync(x =>
+            x.MarkId == product.MarkId.Value &&
+            x.CorporationId == corporationId &&
+            x.Active);
+
+        if (!markExists)
+        {
+            return false;
+        }
+
+        return await _context.MarkModels.AnyAsync(x =>
+            x.MarkModelId == product.MarkModelId.Value &&
+            x.MarkId == product.MarkId.Value &&
+            x.CorporationId == corporationId &&
+            x.Active);
+    }
+
+    private ActionResponse<Product> InvalidMarkOrModel(Product product)
+    {
+        return new ActionResponse<Product>
+        {
+            WasSuccess = false,
+            Result = product,
+            Message = _localizer[nameof(Resource.Generic_InvalidModel)]
+        };
     }
 }
