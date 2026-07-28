@@ -94,7 +94,13 @@ public partial class IndexManager
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+            {
+                await Cargar();
+                await _sweetAlert.FireAsync(
+                    Localizer[isEdit ? nameof(Resource.msg_UpdateSuccessTitle) : nameof(Resource.msg_CreateSuccessTitle)],
+                    Localizer[isEdit ? nameof(Resource.msg_UpdateSuccessMessage) : nameof(Resource.msg_CreateSuccessMessage)],
+                    SweetAlertIcon.Success);
+            }
         });
     }
 
@@ -120,5 +126,16 @@ public partial class IndexManager
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
+    }
+
+    private async Task ResendActivationEmailAsync(int id)
+    {
+        var responseHttp = await _repository.PostAsync($"{baseUrl}/{id}/re-email", new { });
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            return;
+        }
+
+        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
     }
 }

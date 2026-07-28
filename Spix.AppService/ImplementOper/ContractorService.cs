@@ -348,7 +348,7 @@ public class ContractorService : IContractorService
         }
     }
 
-    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl)
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl, string username)
     {
         try
         {
@@ -361,13 +361,26 @@ public class ContractorService : IContractorService
                 };
             }
 
-            var modelo = await _context.Contractors.AsNoTracking().FirstOrDefaultAsync(x => x.ContractorId == id);
+            User? authenticatedUser = await _userHelper.GetUserByUserNameAsync(username);
+            if (authenticatedUser?.CorporationId == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Generic_AuthIdFail"]
+                };
+            }
+
+            var modelo = await _context.Contractors
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ContractorId == id &&
+                                          x.CorporationId == authenticatedUser.CorporationId.Value);
             if (modelo == null)
             {
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer["Generic_IdNotFound"]
                 };
             }
 
@@ -510,7 +523,7 @@ public class ContractorService : IContractorService
         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
         // Construir la URL sin `Url.Action`
-        string tokenLink = $"{frontUrl}/api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}";
+        string tokenLink = frontUrl.CombineFrontendUrl($"api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}");
 
         string subject = _localizer["AccountActivation_Subject"];
         string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.Pass, tokenLink);

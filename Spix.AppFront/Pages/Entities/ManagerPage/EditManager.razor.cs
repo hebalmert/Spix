@@ -22,7 +22,8 @@ public partial class EditManager
     [Parameter] public string? Title { get; set; }
 
     private Manager? _Manager;
-    private bool isLoading = false;
+    private bool IsSaving;
+    private bool IsSendingEmail;
     private string BaseUrl = "/api/v1/managers";
     private string BaseView = "/managers";
 
@@ -35,25 +36,60 @@ public partial class EditManager
 
     private async Task Edit()
     {
+        if (IsSaving)
+        {
+            return;
+        }
+
         if (_Manager!.CorporationId == 0)
         {
             await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_ValidationWarningTitle)], Localizer[nameof(Resource.msg_ValidationWarningMessage)], SweetAlertIcon.Warning);
             return;
         }
-        isLoading = true;
-        var responseHttp = await _repository.PutAsync($"{BaseUrl}", _Manager);
-        isLoading = false;
-        if (await _responseHandler.HandleErrorAsync(responseHttp))
+
+        IsSaving = true;
+        try
         {
-            await _modalService.CloseAsync(ModalResult.Cancel());
-            return;
+            var responseHttp = await _repository.PutAsync($"{BaseUrl}", _Manager);
+            if (await _responseHandler.HandleErrorAsync(responseHttp))
+            {
+                return;
+            }
+
+            await _modalService.CloseAsync(ModalResult.Ok());
         }
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_UpdateSuccessTitle)], Localizer[nameof(Resource.msg_UpdateSuccessMessage)], SweetAlertIcon.Success);
-        await _modalService.CloseAsync(ModalResult.Ok());
+        finally
+        {
+            IsSaving = false;
+        }
     }
 
     private async Task Return()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+
+    private async Task ResendActivationEmailAsync()
+    {
+        if (_Manager == null || IsSendingEmail)
+        {
+            return;
+        }
+
+        IsSendingEmail = true;
+        try
+        {
+            var responseHttp = await _repository.PostAsync($"{BaseUrl}/{_Manager.ManagerId}/re-email", new { });
+            if (await _responseHandler.HandleErrorAsync(responseHttp))
+            {
+                return;
+            }
+
+            await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
+        }
+        finally
+        {
+            IsSendingEmail = false;
+        }
     }
 }

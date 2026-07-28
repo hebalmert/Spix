@@ -42,7 +42,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est· localizado
+                return BadRequest(ex.Message); // Ya est√° localizado
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est· localizado
+                return BadRequest(ex.Message); // Ya est√° localizado
             }
             catch (Exception ex)
             {
@@ -78,7 +78,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est· localizado
+                return BadRequest(ex.Message); // Ya est√° localizado
             }
             catch (Exception ex)
             {
@@ -97,7 +97,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est· localizado
+                return BadRequest(ex.Message); // Ya est√° localizado
             }
             catch (Exception ex)
             {
@@ -110,7 +110,8 @@ namespace Spix.AppBack.Controllers
         {
             try
             {
-                var response = await _unitOfWork.ResendActivationEmailAsync(id, _configuration["UrlFrontend"]!);
+                ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+                var response = await _unitOfWork.ResendActivationEmailAsync(id, _configuration["UrlFrontend"]!, userClaimsInfo.UserName);
                 return ResponseHelper.Format(response);
             }
             catch (ApplicationException ex)
@@ -133,7 +134,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message); // Ya est· localizado
+                return BadRequest(ex.Message); // Ya est√° localizado
             }
             catch (Exception ex)
             {

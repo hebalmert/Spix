@@ -77,4 +77,6 @@ public class CxCBill
     public ICollection<PrePayment>? PrePayments { get; set; }
 
     public ICollection<PreExonerated>? PreExonerateds { get; set; }
+
+    public ICollection<ContractorAccountPayable>? ContractorAccountPayables { get; set; }
 }

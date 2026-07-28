@@ -22,27 +22,38 @@ public partial class CreateManager
     [Parameter] public string? Title { get; set; }
 
     private Manager _Manager = new() { Active = true };
-    private bool isLoading = false;
+    private bool IsSaving;
 
     private string BaseUrl = "/api/v1/managers";
 
     private async Task Create()
     {
+        if (IsSaving)
+        {
+            return;
+        }
+
         if (_Manager.CorporationId == 0)
         {
             await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_ValidationWarningTitle)], Localizer[nameof(Resource.msg_ValidationWarningMessage)], SweetAlertIcon.Warning);
             return;
         }
-        isLoading = true;
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}", _Manager);
-        isLoading = false;
-        if (await _responseHandler.HandleErrorAsync(responseHttp))
+
+        IsSaving = true;
+        try
         {
-            await _modalService.CloseAsync(ModalResult.Cancel());
-            return;
+            var responseHttp = await _repository.PostAsync($"{BaseUrl}", _Manager);
+            if (await _responseHandler.HandleErrorAsync(responseHttp))
+            {
+                return;
+            }
+
+            await _modalService.CloseAsync(ModalResult.Ok());
         }
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        await _modalService.CloseAsync(ModalResult.Ok());
+        finally
+        {
+            IsSaving = false;
+        }
     }
 
     private async Task Return()

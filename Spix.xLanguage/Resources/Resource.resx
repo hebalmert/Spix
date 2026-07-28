@@ -106,6 +106,9 @@
   <data name="ButtonSend" xml:space="preserve">
     <value>Send</value>
   </data>
+  <data name="ButtonSending" xml:space="preserve">
+    <value>Sending...</value>
+  </data>
   <data name="ButtonSave" xml:space="preserve">
     <value>Save</value>
   </data>

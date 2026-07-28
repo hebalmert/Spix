@@ -40,4 +40,6 @@ public class CxCBillDetail
     public Corporation? Corporation { get; set; }
 
     public CxCBill? CxCBill { get; set; }
+
+    public ICollection<ContractorAccountPayable>? ContractorAccountPayables { get; set; }
 }

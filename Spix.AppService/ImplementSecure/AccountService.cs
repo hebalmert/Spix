@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Spix.AppInfra;
+using Spix.AppInfra.Extensions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesSecure;
 using Spix.Domain.Entities;
@@ -302,7 +303,7 @@ public class AccountService : IAccountService
         var myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
         var encodedToken = HttpUtility.UrlEncode(myToken);
         // Construir la URL sin `Url.Action`
-        string tokenLink = $"{frontUrl}/api/accounts/ResetPassword?token={encodedToken}";
+        string tokenLink = frontUrl.CombineFrontendUrl($"api/accounts/ResetPassword?token={encodedToken}");
 
         string subject = _localizer["PasswordRecovery_Subject"];
         string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildPasswordRecovery(_localizer, user.FirstName, user.LastName, tokenLink);

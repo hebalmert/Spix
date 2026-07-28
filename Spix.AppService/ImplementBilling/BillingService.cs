@@ -7,6 +7,7 @@ using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesBilling;
+using Spix.AppService.InterfacesPayment;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesGen;
@@ -28,10 +29,12 @@ public class BillingService : IBillingService
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
     private readonly IEnumMultilLanguageService _enumMultilLanguageService;
+    private readonly IContractorPaymentService _contractorPaymentService;
 
     public BillingService(DataContext context, IHttpContextAccessor httpContextAccessor,
         IUserHelper userHelper, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer,
-        IEnumMultilLanguageService enumMultilLanguageService)
+        IEnumMultilLanguageService enumMultilLanguageService,
+        IContractorPaymentService contractorPaymentService)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -39,6 +42,7 @@ public class BillingService : IBillingService
         _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
         _enumMultilLanguageService = enumMultilLanguageService;
+        _contractorPaymentService = contractorPaymentService;
     }
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboMonthsAsync(string username)
@@ -748,7 +752,7 @@ public class BillingService : IBillingService
             CxCBillDetails = new List<CxCBillDetail>()
         };
 
-        cxCBill.CxCBillDetails.Add(new CxCBillDetail
+        var cxCBillDetail = new CxCBillDetail
         {
             CxCBillDetailId = Guid.NewGuid(),
             CxCBillId = cxCBill.CxCBillId,
@@ -763,7 +767,10 @@ public class BillingService : IBillingService
             CorporationId = corporationId,
             UsuarioOwner = usuarioOwner,
             UserId = Guid.Parse(userId)
-        });
+        };
+
+        cxCBill.CxCBillDetails.Add(cxCBillDetail);
+        await _contractorPaymentService.CreateAccountPayableAsync(cxCBill, cxCBillDetail);
 
         if (preExonerated != null)
         {

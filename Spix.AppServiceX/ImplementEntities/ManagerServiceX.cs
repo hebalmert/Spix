@@ -24,5 +24,7 @@ public class ManagerServiceX : IManagerServiceX
 
     public async Task<ActionResponse<Manager>> AddAsync(Manager modelo, string frontUrl) => await _managerService.AddAsync(modelo, frontUrl);
 
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(int id, string frontUrl) => await _managerService.ResendActivationEmailAsync(id, frontUrl);
+
     public async Task<ActionResponse<bool>> DeleteAsync(int id) => await _managerService.DeleteAsync(id);
 }

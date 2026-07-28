@@ -15,5 +15,7 @@ public interface IManagerServiceX
 
     Task<ActionResponse<Manager>> AddAsync(Manager modelo, string frontUrl);
 
+    Task<ActionResponse<bool>> ResendActivationEmailAsync(int id, string frontUrl);
+
     Task<ActionResponse<bool>> DeleteAsync(int id);
 }

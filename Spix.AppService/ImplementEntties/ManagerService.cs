@@ -10,6 +10,7 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
+using Spix.AppInfra.UtilityTools;
 using Spix.AppService.InterfaceEntities;
 using Spix.Domain.Entities;
 using Spix.DomainLogic.EnumTypes;
@@ -29,6 +30,7 @@ public class ManagerService : IManagerService
     private readonly IFileStorage _fileStorage;
     private readonly IUserHelper _userHelper;
     private readonly IEmailHelper _emailHelper;
+    private readonly IUtilityTools _utilityTools;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
     private readonly IMapperService _mapperService;
@@ -37,7 +39,8 @@ public class ManagerService : IManagerService
     public ManagerService(DataContext context, IHttpContextAccessor httpContextAccessor,
         ITransactionManager transactionManager, IMemoryCache cache, IFileStorage fileStorage,
         IUserHelper userHelper, IEmailHelper emailHelper, IOptions<ImgSetting> ImgOption,
-        HttpErrorHandler httpErrorHandler, IStringLocalizer localizer, IMapperService mapperService)
+        HttpErrorHandler httpErrorHandler, IStringLocalizer localizer, IMapperService mapperService,
+        IUtilityTools utilityTools)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -45,6 +48,7 @@ public class ManagerService : IManagerService
         _fileStorage = fileStorage;
         _userHelper = userHelper;
         _emailHelper = emailHelper;
+        _utilityTools = utilityTools;
         _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
         _mapperService = mapperService;
@@ -337,6 +341,106 @@ public class ManagerService : IManagerService
         }
     }
 
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(int id, string frontUrl)
+    {
+        try
+        {
+            if (id <= 0)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Generic_InvalidId"]
+                };
+            }
+
+            Manager? manager = await _context.Managers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ManagerId == id);
+            if (manager == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Generic_IdNotFound"]
+                };
+            }
+
+            if (!manager.Active)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "El Manager no esta activo."
+                };
+            }
+
+            User? user = await _userHelper.GetUserByUserNameAsync(manager.UserName);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No existe un usuario creado para este Manager."
+                };
+            }
+
+            if (user.EmailConfirmed)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "La cuenta de este Manager ya fue confirmada."
+                };
+            }
+
+            string password = _utilityTools.GeneratePass(8);
+            string resetToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+            IdentityResult resetResult = await _userHelper.ResetPasswordAsync(user, resetToken, password);
+            if (!resetResult.Succeeded)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No se pudo generar una nueva clave temporal para el usuario."
+                };
+            }
+
+            user.Pass = password;
+            user.Active = true;
+
+            IdentityResult updateResult = await _userHelper.UpdateUserAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No se pudo activar el usuario para reenviar el correo."
+                };
+            }
+
+            Response response = await SendActivationEmailAsync(user, frontUrl);
+            if (!response.IsSuccess)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = response.Message ?? "No se pudo enviar el correo de activacion."
+                };
+            }
+
+            return new ActionResponse<bool>
+            {
+                WasSuccess = true,
+                Result = true
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
     public async Task<ActionResponse<bool>> DeleteAsync(int id)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -395,11 +499,25 @@ public class ManagerService : IManagerService
         User user = await _userHelper.AddUserUsuarioAsync(manager.FirstName, manager.LastName, manager.UserName, manager.Email,
             manager.PhoneNumber, manager.Address, manager.Job, manager.CorporationId, manager.Imagen!, "Manager", manager.Active, manager.UserType);
 
+        if (user == null)
+        {
+            return new Response
+            {
+                IsSuccess = false,
+                Message = _localizer["Generic_UserCreationFail"]
+            };
+        }
+
+        return await SendActivationEmailAsync(user, frontUrl);
+    }
+
+    private async Task<Response> SendActivationEmailAsync(User user, string frontUrl)
+    {
         //Envio de Correo con Token de seguridad para Verificar el correo
         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
         // Construir la URL sin `Url.Action`
-        string tokenLink = $"{frontUrl}/api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}";
+        string tokenLink = frontUrl.CombineFrontendUrl($"api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}");
 
         string subject = _localizer["AccountActivation_Subject"];
         string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.Pass, tokenLink);

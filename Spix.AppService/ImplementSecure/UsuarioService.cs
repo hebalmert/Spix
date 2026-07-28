@@ -316,8 +316,10 @@ public class UsuarioService : IUsuarioService
                     await _transactionManager.RollbackTransactionAsync();
                     return new ActionResponse<Usuario>
                     {
-                        WasSuccess = true,
-                        Message = _localizer[nameof(Resource.Generic_UserCreationFail)]
+                        WasSuccess = false,
+                        Message = string.IsNullOrWhiteSpace(response.Message)
+                            ? _localizer[nameof(Resource.Generic_UserCreationFail)]
+                            : response.Message
                     };
                 }
             }
@@ -337,7 +339,7 @@ public class UsuarioService : IUsuarioService
         }
     }
 
-    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string urlFront)
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string urlFront, string username)
     {
         try
         {
@@ -350,7 +352,20 @@ public class UsuarioService : IUsuarioService
                 };
             }
 
-            var modelo = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(x => x.UsuarioId == id);
+            User? authenticatedUser = await _userHelper.GetUserByUserNameAsync(username);
+            if (authenticatedUser?.CorporationId == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            var modelo = await _context.Usuarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UsuarioId == id &&
+                                          x.CorporationId == authenticatedUser.CorporationId.Value);
             if (modelo == null)
             {
                 return new ActionResponse<bool>
@@ -504,7 +519,7 @@ public class UsuarioService : IUsuarioService
         //Envio de Correo con Token de seguridad para Verificar el correo
         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
         // Construir la URL sin `Url.Action`
-        string tokenLink = $"{urlFront}/api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}";
+        string tokenLink = urlFront.CombineFrontendUrl($"api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}");
 
         string subject = _localizer["AccountActivation_Subject"];
         string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.Pass, tokenLink);

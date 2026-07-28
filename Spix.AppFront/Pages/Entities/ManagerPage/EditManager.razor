@@ -12,7 +12,7 @@
                     <i class="fa fa-times"></i>
                 </button>
             </div>
-            @if (isLoading || _Manager is null)
+            @if (_Manager is null)
             {
                 <div class="loading-overlay">
                     <Loading />
@@ -20,7 +20,20 @@
             }
             else
             {
+                @if (_Manager.Active)
+                {
+                    <div class="d-flex justify-content-end mb-3">
+                        <ButtonFormSaveOnClick OnClick="ResendActivationEmailAsync"
+                                               IsSaving="IsSendingEmail"
+                                               TooTip="Re-Email"
+                                               ProgressText="@Localizer[nameof(Resource.ButtonSending)]"
+                                               Icon="fa fa-envelope"
+                                               Style="width:140px" />
+                    </div>
+                }
+
                 <FormManager Manager="_Manager"
+                             IsSaving="IsSaving"
                              IsEditControl="true"
                              OnSubmit="Edit"
                              ReturnAction="Return" />

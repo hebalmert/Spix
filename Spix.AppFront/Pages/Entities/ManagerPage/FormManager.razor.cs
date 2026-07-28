@@ -24,6 +24,7 @@ public partial class FormManager
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
     [Parameter, EditorRequired] public EventCallback ReturnAction { get; set; }
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
 
     //Local State
 

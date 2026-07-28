@@ -28,10 +28,12 @@ public class PaymentService : IPaymentService
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
     private readonly IEnumMultilLanguageService _enumMultilLanguageService;
+    private readonly IContractorPaymentService _contractorPaymentService;
 
     public PaymentService(DataContext context, IHttpContextAccessor httpContextAccessor,
         IUserHelper userHelper, ITransactionManager transactionManager, HttpErrorHandler httpErrorHandler,
-        IStringLocalizer localizer, IEnumMultilLanguageService enumMultilLanguageService)
+        IStringLocalizer localizer, IEnumMultilLanguageService enumMultilLanguageService,
+        IContractorPaymentService contractorPaymentService)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -40,6 +42,7 @@ public class PaymentService : IPaymentService
         _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
         _enumMultilLanguageService = enumMultilLanguageService;
+        _contractorPaymentService = contractorPaymentService;
     }
 
     public async Task<ActionResponse<IEnumerable<CxCBill>>> GetCxCBillsAsync(PaginationDTO pagination, string username)
@@ -188,6 +191,7 @@ public class PaymentService : IPaymentService
             };
 
             _context.CxCBillDetails.Add(detail);
+            await _contractorPaymentService.CreateAccountPayableAsync(bill, detail);
 
             bill.Balance = balance;
             bill.Paid = balance == 0;

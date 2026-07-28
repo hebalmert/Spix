@@ -26,7 +26,7 @@ public class ContractorServiceX : IContractorServiceX
 
     public async Task<ActionResponse<Contractor>> AddAsync(Contractor modelo, string username, string frontUrl) => await _contractorService.AddAsync(modelo, username, frontUrl);
 
-    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl) => await _contractorService.ResendActivationEmailAsync(id, frontUrl);
+    public async Task<ActionResponse<bool>> ResendActivationEmailAsync(Guid id, string frontUrl, string username) => await _contractorService.ResendActivationEmailAsync(id, frontUrl, username);
 
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _contractorService.DeleteAsync(id);
 }

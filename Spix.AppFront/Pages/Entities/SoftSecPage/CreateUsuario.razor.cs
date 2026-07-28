@@ -31,16 +31,21 @@ public partial class CreateUsuario
     private async Task Create()
     {
         IsSaving = true;
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}", Usuario);
-        IsSaving = false;
-        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        try
         {
-            await _modalService.CloseAsync(ModalResult.Cancel());
-            return;
-        }
+            var responseHttp = await _repository.PostAsync($"{BaseUrl}", Usuario);
+            if (await _responseHandler.HandleErrorAsync(responseHttp))
+            {
+                return;
+            }
 
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
-        await _modalService.CloseAsync(ModalResult.Ok());
+            await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);
+            await _modalService.CloseAsync(ModalResult.Ok());
+        }
+        finally
+        {
+            IsSaving = false;
+        }
     }
 
     private async Task Return()

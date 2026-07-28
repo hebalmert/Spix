@@ -87,7 +87,8 @@ namespace Spix.AppBack.Controllers.v1
         [HttpPost("{id}/re-email")]
         public async Task<ActionResult<bool>> ResendActivationEmailAsync(Guid id)
         {
-            var response = await _clientServiceX.ResendActivationEmailAsync(id, _configuration["UrlFrontend"]!);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _clientServiceX.ResendActivationEmailAsync(id, _configuration["UrlFrontend"]!, userClaimsInfo.UserName);
             if (response.WasSuccess)
             {
                 return Ok(response.Result);

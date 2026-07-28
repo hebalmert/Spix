@@ -1,6 +1,7 @@
 ﻿using Spix.Domain.Entities;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesGen;
+using Spix.Domain.EntitiesPayment;
 using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
@@ -92,5 +93,9 @@ public class Contractor
     public DocumentType? DocumentType { get; set; }
 
     public ICollection<ContractClient>? ContractClients { get; set; }
+
+    public ICollection<ContractorAccountPayable>? ContractorAccountPayables { get; set; }
+
+    public ICollection<ContractorPayment>? ContractorPayments { get; set; }
 
 }

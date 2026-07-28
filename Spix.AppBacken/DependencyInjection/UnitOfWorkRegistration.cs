@@ -206,6 +206,8 @@ namespace Spix.AppBack.DependencyInjection
             //Payment
             services.AddScoped<Spix.AppServiceX.InterfacesPayment.IPaymentServiceX, Spix.AppServiceX.ImplementPayment.PaymentServiceX>();
             services.AddScoped<Spix.AppService.InterfacesPayment.IPaymentService, Spix.AppService.ImplementPayment.PaymentService>();
+            services.AddScoped<Spix.AppServiceX.InterfacesPayment.IContractorPaymentServiceX, Spix.AppServiceX.ImplementPayment.ContractorPaymentServiceX>();
+            services.AddScoped<Spix.AppService.InterfacesPayment.IContractorPaymentService, Spix.AppService.ImplementPayment.ContractorPaymentService>();
 
             //Dashboard
             services.AddScoped<Spix.AppServiceX.InterfacesDashboard.IDashboardServiceX, Spix.AppServiceX.ImplementDashboard.DashboardServiceX>();

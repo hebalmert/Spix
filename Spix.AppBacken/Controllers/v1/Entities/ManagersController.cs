@@ -40,7 +40,7 @@ public class ManagersController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est· localizado
+            return BadRequest(ex.Message); // Ya est√° localizado
         }
         catch (Exception ex)
         {
@@ -58,7 +58,7 @@ public class ManagersController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est· localizado
+            return BadRequest(ex.Message); // Ya est√° localizado
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public class ManagersController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est· localizado
+            return BadRequest(ex.Message); // Ya est√° localizado
         }
         catch (Exception ex)
         {
@@ -95,7 +95,26 @@ public class ManagersController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est· localizado
+            return BadRequest(ex.Message); // Ya est√° localizado
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+        }
+    }
+
+    [HttpPost("{id:int}/re-email")]
+    public async Task<IActionResult> ResendActivationEmailAsync(int id)
+    {
+        try
+        {
+            _ = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _managerUnitOfWork.ResendActivationEmailAsync(id, _configuration["UrlFrontend"]!);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -113,7 +132,7 @@ public class ManagersController : ControllerBase
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est· localizado
+            return BadRequest(ex.Message); // Ya est√° localizado
         }
         catch (Exception ex)
         {

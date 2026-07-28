@@ -135,6 +135,9 @@ public class DataContext : IdentityDbContext<User>
     //EntitiesPayment
     public DbSet<CxCBill> CxCBills => Set<CxCBill>();
     public DbSet<CxCBillDetail> CxCBillDetails => Set<CxCBillDetail>();
+    public DbSet<ContractorAccountPayable> ContractorAccountPayables => Set<ContractorAccountPayable>();
+    public DbSet<ContractorPayment> ContractorPayments => Set<ContractorPayment>();
+    public DbSet<ContractorPaymentDetail> ContractorPaymentDetails => Set<ContractorPaymentDetail>();
     public DbSet<PrePayment> PrePayments => Set<PrePayment>();
     public DbSet<PreExonerated> PreExonerateds => Set<PreExonerated>();
 

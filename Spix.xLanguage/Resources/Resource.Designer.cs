@@ -61,6 +61,87 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Confirm email.
+        /// </summary>
+        public static string AccountActivation_Button {
+            get {
+                return ResourceManager.GetString("AccountActivation_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is an automated account activation email. Please do not reply..
+        /// </summary>
+        public static string AccountActivation_Footer {
+            get {
+                return ResourceManager.GetString("AccountActivation_Footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello.
+        /// </summary>
+        public static string AccountActivation_Hello {
+            get {
+                return ResourceManager.GetString("AccountActivation_Hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the button below to confirm your email and activate your account..
+        /// </summary>
+        public static string AccountActivation_Instruction {
+            get {
+                return ResourceManager.GetString("AccountActivation_Instruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For your security, change the temporary password after signing in. If you did not expect this account, ignore this email..
+        /// </summary>
+        public static string AccountActivation_SecurityNotice {
+            get {
+                return ResourceManager.GetString("AccountActivation_SecurityNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activate your account.
+        /// </summary>
+        public static string AccountActivation_Subject {
+            get {
+                return ResourceManager.GetString("AccountActivation_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Temporary password.
+        /// </summary>
+        public static string AccountActivation_TemporaryPassword {
+            get {
+                return ResourceManager.GetString("AccountActivation_TemporaryPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome! Activate your account.
+        /// </summary>
+        public static string AccountActivation_Title {
+            get {
+                return ResourceManager.GetString("AccountActivation_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account has been created successfully. Complete the activation to access the system..
+        /// </summary>
+        public static string AccountActivation_Welcome {
+            get {
+                return ResourceManager.GetString("AccountActivation_Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Action.
         /// </summary>
         public static string Action {
@@ -246,6 +327,15 @@ namespace Spix.xLanguage.Resources {
         public static string ButtonSend {
             get {
                 return ResourceManager.GetString("ButtonSend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sending....
+        /// </summary>
+        public static string ButtonSending {
+            get {
+                return ResourceManager.GetString("ButtonSending", resourceCulture);
             }
         }
         
@@ -1542,6 +1632,60 @@ namespace Spix.xLanguage.Resources {
         public static string EmailConfirmedMsg {
             get {
                 return ResourceManager.GetString("EmailConfirmedMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is an automated email sent to verify the email provider configuration..
+        /// </summary>
+        public static string EmailProviderTest_Footer {
+            get {
+                return ResourceManager.GetString("EmailProviderTest_Footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email provider.
+        /// </summary>
+        public static string EmailProviderTest_Provider {
+            get {
+                return ResourceManager.GetString("EmailProviderTest_Provider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configuration verified successfully.
+        /// </summary>
+        public static string EmailProviderTest_Result {
+            get {
+                return ResourceManager.GetString("EmailProviderTest_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email Provider Test.
+        /// </summary>
+        public static string EmailProviderTest_Subject {
+            get {
+                return ResourceManager.GetString("EmailProviderTest_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you received this email, the email provider is configured correctly..
+        /// </summary>
+        public static string EmailProviderTest_SuccessMessage {
+            get {
+                return ResourceManager.GetString("EmailProviderTest_SuccessMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email Provider Test.
+        /// </summary>
+        public static string EmailProviderTest_Title {
+            get {
+                return ResourceManager.GetString("EmailProviderTest_Title", resourceCulture);
             }
         }
         
@@ -3000,6 +3144,87 @@ namespace Spix.xLanguage.Resources {
         public static string PasswordRecovery {
             get {
                 return ResourceManager.GetString("PasswordRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset password.
+        /// </summary>
+        public static string PasswordRecovery_Button {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account security.
+        /// </summary>
+        public static string PasswordRecovery_Eyebrow {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Eyebrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is an automated password recovery email. Please do not reply..
+        /// </summary>
+        public static string PasswordRecovery_Footer {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello.
+        /// </summary>
+        public static string PasswordRecovery_Hello {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the button below to create a new password and regain access..
+        /// </summary>
+        public static string PasswordRecovery_Instruction {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Instruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We received a request to reset the password for your account..
+        /// </summary>
+        public static string PasswordRecovery_Introduction {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Introduction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you did not request a password reset, ignore this email. Your current password will remain unchanged..
+        /// </summary>
+        public static string PasswordRecovery_SecurityNotice {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_SecurityNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset your password.
+        /// </summary>
+        public static string PasswordRecovery_Subject {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password recovery.
+        /// </summary>
+        public static string PasswordRecovery_Title {
+            get {
+                return ResourceManager.GetString("PasswordRecovery_Title", resourceCulture);
             }
         }
         

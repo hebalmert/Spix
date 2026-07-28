@@ -1,14 +1,17 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesOper;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesOper.TechnitianPage;
 
 public partial class EditTechnitian
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
@@ -59,16 +62,25 @@ public partial class EditTechnitian
 
     private async Task ResendActivationEmailAsync()
     {
-        if (Technician is null)
+        if (Technician is null || IsSendingEmail)
+        {
             return;
+        }
 
         IsSendingEmail = true;
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Technician.TechnicianId}/re-email", new { });
-        IsSendingEmail = false;
+        try
+        {
+            var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Technician.TechnicianId}/re-email", new { });
+            if (await _responseHandler.HandleErrorAsync(responseHttp))
+            {
+                return;
+            }
 
-        if (await _responseHandler.HandleErrorAsync(responseHttp))
-            return;
-
-        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
+            await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
+        }
+        finally
+        {
+            IsSendingEmail = false;
+        }
     }
 }

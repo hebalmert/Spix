@@ -56,16 +56,25 @@ public partial class EditUsuario
 
     private async Task ResendActivationEmailAsync()
     {
-        if (Usuario is null)
+        if (Usuario is null || IsSendingEmail)
+        {
             return;
+        }
 
         IsSendingEmail = true;
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Usuario.UsuarioId}/re-email", new { });
-        IsSendingEmail = false;
+        try
+        {
+            var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Usuario.UsuarioId}/re-email", new { });
+            if (await _responseHandler.HandleErrorAsync(responseHttp))
+            {
+                return;
+            }
 
-        if (await _responseHandler.HandleErrorAsync(responseHttp))
-            return;
-
-        await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
+            await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
+        }
+        finally
+        {
+            IsSendingEmail = false;
+        }
     }
 }
