@@ -5,6 +5,7 @@ using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesBilling;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
+using System.Net;
 
 namespace Spix.AppFront.Pages.EntitiesBilling.BillingNoteOnePage;
 
@@ -71,6 +72,20 @@ public partial class DetailsBillingNoteOne
             return;
 
         var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Id}/launch", new { });
+
+        if (responseHttp.HttpResponseMessage?.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var errorMessage = await responseHttp.GetErrorMessageAsync();
+            if (errorMessage?.Contains("ya tiene una factura o una cuenta por cobrar", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                await _sweetAlert.FireAsync(
+                    "No se pudo generar la nota de cobro",
+                    "El contrato ya tiene una factura o una cuenta por cobrar vigente para el periodo seleccionado.",
+                    SweetAlertIcon.Warning);
+                return;
+            }
+        }
+
         if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 

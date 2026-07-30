@@ -41,7 +41,8 @@ public class CxCBill
 
     public DateTime? DatePaid { get; set; }
 
-    //Anulacion del CxCBill, si se anula el CxCBill, no se puede pagar, ni se puede facturar, ni se puede generar nota de credito
+    //Anulacion del CxCBill: no puede recibir pagos ni generar nota de credito.
+    //El contrato puede facturarse nuevamente para el periodo anulado.
     public bool Cancelled { get; set; }
 
     public DateTime? DateCancelled { get; set; }

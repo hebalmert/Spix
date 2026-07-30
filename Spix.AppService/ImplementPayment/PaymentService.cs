@@ -244,6 +244,7 @@ public class PaymentService : IPaymentService
             }
 
             var bill = await _context.CxCBills
+                .Include(x => x.Sell)
                 .FirstOrDefaultAsync(x => x.CxCBillId == model.CxCBillId && x.CorporationId == user.CorporationId);
 
             if (bill == null)
@@ -274,6 +275,38 @@ public class PaymentService : IPaymentService
             bill.UsuarioOwnerCancelled = $"{user.FirstName} {user.LastName}";
             bill.UserIdCancelled = Guid.Parse(user.Id);
             bill.Balance = 0;
+            bill.Paid = false;
+            bill.DatePaid = null;
+
+            if (bill.Sell != null)
+            {
+                bill.Sell.Cancelled = true;
+                bill.Sell.DateCancelled = bill.DateCancelled;
+                bill.Sell.Paid = false;
+                bill.Sell.DatePaid = null;
+            }
+
+            var prePayments = await _context.PrePayments
+                .Where(x => x.CorporationId == user.CorporationId && x.CxCBillId == bill.CxCBillId)
+                .ToListAsync();
+
+            foreach (var prePayment in prePayments)
+            {
+                prePayment.Billed = false;
+                prePayment.DateBilled = null;
+                prePayment.CxCBillId = null;
+            }
+
+            var preExonerateds = await _context.PreExonerateds
+                .Where(x => x.CorporationId == user.CorporationId && x.CxCBillId == bill.CxCBillId)
+                .ToListAsync();
+
+            foreach (var preExonerated in preExonerateds)
+            {
+                preExonerated.Billed = false;
+                preExonerated.DateBilled = null;
+                preExonerated.CxCBillId = null;
+            }
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
