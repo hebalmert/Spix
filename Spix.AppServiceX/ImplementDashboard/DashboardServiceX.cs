@@ -16,4 +16,7 @@ public class DashboardServiceX : IDashboardServiceX
 
     public async Task<ActionResponse<DashboardSummaryDto>> GetSummaryAsync(string username) =>
         await _dashboardService.GetSummaryAsync(username);
+
+    public async Task<ActionResponse<SaasDashboardSummaryDto>> GetSaasSummaryAsync(string username) =>
+        await _dashboardService.GetSaasSummaryAsync(username);
 }

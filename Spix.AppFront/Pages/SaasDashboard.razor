@@ -1,0 +1,41 @@
+@page "/saasdashboard"
+@attribute [Authorize(Roles = "Admin")]
+@layout MainLayout
+
+<PageTitle>SaaS Dashboard</PageTitle>
+
+<section class="saas-dashboard">
+    <div class="saas-dashboard__header">
+        <h1>Dashboard</h1>
+    </div>
+
+    <div class="saas-dashboard__grid">
+        <div class="saas-card">
+            <div class="saas-card__header">
+                <div>
+                    <span>Corporaciones</span>
+                    <h2>Total vs Activas</h2>
+                </div>
+                <i class="fa fa-building"></i>
+            </div>
+
+            @if (IsLoading)
+            {
+                <div class="saas-card__loading">Cargando...</div>
+            }
+            else
+            {
+                <div class="saas-card__metrics">
+                    <div>
+                        <span>Total</span>
+                        <strong>@TotalCorporations</strong>
+                    </div>
+                    <div>
+                        <span>Activas</span>
+                        <strong>@ActiveCorporations</strong>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

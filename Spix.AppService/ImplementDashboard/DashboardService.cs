@@ -83,6 +83,38 @@ public class DashboardService : IDashboardService
         }
     }
 
+    public async Task<ActionResponse<SaasDashboardSummaryDto>> GetSaasSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null || !await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString()))
+            {
+                return new ActionResponse<SaasDashboardSummaryDto>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AccessDenied)]
+                };
+            }
+
+            var summary = new SaasDashboardSummaryDto
+            {
+                TotalCorporations = await _context.Corporations.CountAsync(),
+                ActiveCorporations = await _context.Corporations.CountAsync(x => x.Active)
+            };
+
+            return new ActionResponse<SaasDashboardSummaryDto>
+            {
+                WasSuccess = true,
+                Result = summary
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<SaasDashboardSummaryDto>(ex);
+        }
+    }
+
     private ActionResponse<T> AuthFail<T>() => new()
     {
         WasSuccess = false,

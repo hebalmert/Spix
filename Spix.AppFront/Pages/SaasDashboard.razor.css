@@ -1,0 +1,119 @@
+.saas-dashboard {
+    min-height: calc(100vh - 2rem);
+    padding: 2rem;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+    isolation: isolate;
+}
+
+.saas-dashboard__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.saas-dashboard__header h1 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.saas-dashboard__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 440px);
+}
+
+.saas-card {
+    position: relative;
+    z-index: 3;
+    isolation: isolate;
+    min-height: 210px;
+    padding: 1.25rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: rgb(255 255 255) !important;
+    background-image: none !important;
+    color: #1f2937;
+    opacity: 1;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .14);
+}
+
+.saas-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.saas-card__header span {
+    color: #64748b;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.saas-card__header h2 {
+    margin: .25rem 0 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.saas-card__header i {
+    color: #0f766e;
+    font-size: 2rem;
+}
+
+.saas-card__loading {
+    display: flex;
+    align-items: center;
+    min-height: 120px;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.saas-card__metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.saas-card__metrics div {
+    border-left: 4px solid #0f766e;
+    padding-left: 1rem;
+}
+
+.saas-card__metrics span,
+.saas-card__metrics strong {
+    display: block;
+}
+
+.saas-card__metrics span {
+    color: #52616f;
+    font-weight: 700;
+}
+
+.saas-card__metrics strong {
+    margin-top: .25rem;
+    color: #0f766e;
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+@media (max-width: 576px) {
+    .saas-dashboard {
+        padding: 1rem;
+    }
+
+    .saas-dashboard__header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .saas-dashboard__grid,
+    .saas-card__metrics {
+        grid-template-columns: 1fr;
+    }
+}

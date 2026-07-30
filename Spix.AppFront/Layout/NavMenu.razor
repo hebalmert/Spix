@@ -13,7 +13,17 @@
     <nav class="nav flex-column">
 
         <!-- HOME -->
-        <AuthorizeView Roles="Admin, Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/saasdashboard">
+                        <span class="bi bi-house-door-fill-nav-menu"></span> Home
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/dashboard">

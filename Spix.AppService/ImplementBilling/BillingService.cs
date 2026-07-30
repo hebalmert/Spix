@@ -485,6 +485,11 @@ public class BillingService : IBillingService
             var register = await GetOrCreateRegisterAsync(corporationId);
             foreach (var contract in contracts)
             {
+                if (await HasBillingForPeriodAsync(contract.ContractClientId, corporationId, note.YearNumber, note.MonthType))
+                {
+                    continue;
+                }
+
                 var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, register, user.Id, $"{user.FirstName} {user.LastName}");
                 if (!response.WasSuccess)
                 {
@@ -531,6 +536,11 @@ public class BillingService : IBillingService
 
             if (contract == null)
                 return Fail<BillingNoteOne>("Debe seleccionar un contrato activo.");
+
+            if (await HasBillingForPeriodAsync(contract.ContractClientId, corporationId, note.YearNumber, note.MonthType))
+            {
+                return Fail<BillingNoteOne>($"El contrato {contract.ControlContrato} ya tiene una factura o una cuenta por cobrar para el mes y a\u00f1o seleccionados.");
+            }
 
             var register = await GetOrCreateRegisterAsync(corporationId);
             var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, null, note.BillingNoteOneId, register, user.Id, $"{user.FirstName} {user.LastName}");
@@ -614,6 +624,43 @@ public class BillingService : IBillingService
                 .ThenInclude(x => x.Plan!)
                     .ThenInclude(x => x.Tax)
             .Where(x => x.CorporationId == corporationId && x.ContractState == ContractState.Active);
+
+    private async Task<bool> HasBillingForPeriodAsync(
+        Guid contractClientId,
+        int corporationId,
+        int yearNumber,
+        MonthType monthType)
+    {
+        var invoiceExists = await _context.Sells.AnyAsync(x =>
+            x.CorporationId == corporationId &&
+            x.ContractClientId == contractClientId &&
+            ((x.BillingNote != null &&
+              x.BillingNote.YearNumber == yearNumber &&
+              x.BillingNote.MonthType == monthType) ||
+             (x.BillingNoteOne != null &&
+              x.BillingNoteOne.YearNumber == yearNumber &&
+              x.BillingNoteOne.MonthType == monthType)));
+
+        if (invoiceExists)
+        {
+            return true;
+        }
+
+        return await _context.CxCBills.AnyAsync(x =>
+            x.CorporationId == corporationId &&
+            x.ContractClientId == contractClientId &&
+            ((x.BillingNoteOne != null &&
+              x.BillingNoteOne.YearNumber == yearNumber &&
+              x.BillingNoteOne.MonthType == monthType) ||
+             (x.Sell != null &&
+              x.Sell.BillingNote != null &&
+              x.Sell.BillingNote.YearNumber == yearNumber &&
+              x.Sell.BillingNote.MonthType == monthType) ||
+             (x.Sell != null &&
+              x.Sell.BillingNoteOne != null &&
+              x.Sell.BillingNoteOne.YearNumber == yearNumber &&
+              x.Sell.BillingNoteOne.MonthType == monthType)));
+    }
 
     private async Task<ActionResponse<bool>> CreateBillingForContractAsync(
         ContractClient contract,
@@ -733,6 +780,10 @@ public class BillingService : IBillingService
         var discount = preExonerated?.PriceWithTax ?? 0;
         var payment = prePayment?.PriceWithTax ?? 0;
         var balance = total - discount - payment;
+        var paid = balance <= 0;
+
+        sell.Paid = paid;
+        sell.DatePaid = paid ? utcNow.Date : null;
 
         var cxCBill = new CxCBill
         {
@@ -744,6 +795,8 @@ public class BillingService : IBillingService
             Description = $"Nota de cobro {collectionNote} - Contrato {contract.ControlContrato}",
             Total = total,
             Balance = balance,
+            Paid = paid,
+            DatePaid = paid ? utcNow.Date : null,
             SellId = sell.SellId,
             BillingNoteOneId = billingNoteOneId,
             CorporationId = corporationId,

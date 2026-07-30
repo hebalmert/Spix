@@ -81,6 +81,7 @@ public partial class ChangePassword
 
         var dashboardUrl = role switch
         {
+            var r when string.Equals(r, UserType.Admin.ToString(), StringComparison.OrdinalIgnoreCase) => "/saasdashboard",
             var r when string.Equals(r, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase) => "/client-dashboard",
             var r when string.Equals(r, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase) => "/tech-dashboard",
             _ => "/dashboard"

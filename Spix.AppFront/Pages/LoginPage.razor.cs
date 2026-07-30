@@ -34,6 +34,11 @@ public partial class LoginPage
 
     private static string GetDashboardUrl(IEnumerable<string> roles)
     {
+        if (roles.Any(x => string.Equals(x, UserType.Admin.ToString(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return "/saasdashboard";
+        }
+
         if (roles.Any(x => string.Equals(x, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)))
         {
             return "/client-dashboard";

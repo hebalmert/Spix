@@ -133,6 +133,7 @@ public class PaymentService : IPaymentService
 
             var bill = await _context.CxCBills
                 .Include(x => x.CxCBillDetails)
+                .Include(x => x.Sell)
                 .FirstOrDefaultAsync(x => x.CxCBillId == model.CxCBillId && x.CorporationId == user.CorporationId);
 
             if (bill == null)
@@ -196,6 +197,12 @@ public class PaymentService : IPaymentService
             bill.Balance = balance;
             bill.Paid = balance == 0;
             bill.DatePaid = bill.Paid ? DateTime.UtcNow.Date : null;
+
+            if (bill.Sell != null)
+            {
+                bill.Sell.Paid = bill.Paid;
+                bill.Sell.DatePaid = bill.DatePaid;
+            }
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
