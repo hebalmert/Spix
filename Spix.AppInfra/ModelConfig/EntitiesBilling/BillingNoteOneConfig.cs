@@ -10,7 +10,7 @@ public class BillingNoteOneConfig : IEntityTypeConfiguration<BillingNoteOne>
     {
         builder.HasKey(e => e.BillingNoteOneId);
         builder.Property(e => e.BillingNoteOneId).HasDefaultValueSql("NEWSEQUENTIALID()");
-        builder.HasIndex(e => new { e.CorporationId, e.ContractClientId, e.YearNumber, e.MonthType }).IsUnique();
+        builder.HasIndex(e => new { e.CorporationId, e.ContractClientId, e.YearNumber, e.MonthType });
         builder.Property(e => e.DateBill).HasColumnType("date");
         builder.Property(e => e.DateCreated).HasColumnType("date");
 

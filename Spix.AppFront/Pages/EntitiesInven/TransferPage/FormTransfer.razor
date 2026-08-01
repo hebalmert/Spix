@@ -11,12 +11,8 @@
     </div>
 
     <div class="col-md-6 mb-2">
-        @if (ProductStorages1 is null)
-        {
-            <Loading />
-        }
-        else
-        {
+        <GenericSelectWrapper Tmodel="ProductStorage" Items="ProductStorages1">
+            <Body>
             <div class="input-group">
                 <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.FromProductStorage)]</span>
                 <select class="form-select" value="@Transfer.FromProductStorageId" @onchange="ProductStorageChanged1">
@@ -26,16 +22,13 @@
                     }
                 </select>
             </div>
-        }
+            </Body>
+        </GenericSelectWrapper>
     </div>
 
     <div class="col-md-6 mb-2">
-        @if (ProductStorages2 is null)
-        {
-            <Loading />
-        }
-        else
-        {
+        <GenericSelectWrapper Tmodel="ProductStorage" Items="ProductStorages2">
+            <Body>
             <div class="input-group">
                 <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.ToProductStorage)]</span>
                 <select class="form-select" value="@Transfer.ToProductStorageId" @onchange="ProductStorageChanged2">
@@ -45,7 +38,8 @@
                     }
                 </select>
             </div>
-        }
+            </Body>
+        </GenericSelectWrapper>
     </div>
 
     <!-- Botones -->

@@ -29,6 +29,7 @@
                                 <th class="text-end">Tax</th>
                                 <th class="text-end">Total</th>
                                 <th>Pagada</th>
+                                <th>Anulada</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,6 +44,7 @@
                                     <td class="text-end">@item.TotalTax.ToString("N2")</td>
                                     <td class="text-end">@item.Total.ToString("N2")</td>
                                     <td>@(item.Paid ? "Si" : "No")</td>
+                                    <td>@(item.Cancelled ? "Si" : "No")</td>
                                 </tr>
                             }
                         </tbody>

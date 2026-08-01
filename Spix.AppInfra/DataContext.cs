@@ -112,6 +112,9 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractQue> ContractQues => Set<ContractQue>();
     public DbSet<ContractBind> ContractBinds => Set<ContractBind>();
     public DbSet<ContractClient> ContractClients => Set<ContractClient>();
+    public DbSet<ContractSuspendedAudit> ContractSuspendedAudits => Set<ContractSuspendedAudit>();
+    public DbSet<RunSuspended> RunSuspendeds => Set<RunSuspended>();
+    public DbSet<RunSuspendedDetail> RunSuspendedDetails => Set<RunSuspendedDetail>();
     public DbSet<ContractIDPic> ContractIDPics => Set<ContractIDPic>();
     public DbSet<ContractMac> ContractMacs => Set<ContractMac>();
     public DbSet<ContractDocumentTemplate> ContractDocumentTemplates => Set<ContractDocumentTemplate>();

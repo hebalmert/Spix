@@ -17,6 +17,7 @@ using Spix.Domain.EntitiesMK;
 using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using System.Net;
 
 namespace Spix.AppFront.Pages.EntitiesContratos.ContractControlPage;
 
@@ -45,6 +46,7 @@ public partial class DetailContractControl
     private bool HasContractQue => ContractQue is not null && ContractQue.ContractQueId != Guid.Empty;
     private bool HasContractBind => ContractBind is not null && ContractBind.ContractBindId != Guid.Empty;
     private bool HasHotSpotDependencies => HasContractQue || HasContractBind;
+    private bool CanActivateContract => ContractClient?.ContractState == ContractState.InProgress;
 
     private string BaseUrl = "/api/v1/contractcontrols";
     private string BaseContractIpUrl = "/api/v1/contractips";
@@ -532,6 +534,64 @@ public partial class DetailContractControl
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await LoadContractBind(Id);
+    }
+
+    private async Task ActivateContractAsync()
+    {
+        var confirmation = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Activar contrato",
+            Text = "Desea activar este contrato?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Activar",
+            CancelButtonText = "Cancelar"
+        });
+
+        if (confirmation.IsDismissed || confirmation.Value != "true")
+        {
+            return;
+        }
+
+        IsSaving = true;
+        var responseHttp = await _repository.PostAsync<object, ContractClient>(
+            $"{BaseUrl}/{Id}/activate",
+            new { });
+        IsSaving = false;
+
+        if (responseHttp.HttpResponseMessage?.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var errorMessage = await responseHttp.GetErrorMessageAsync();
+            if (errorMessage?.Contains("MikroTik HotSpot", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                await _sweetAlert.FireAsync(
+                    "Contrato pendiente de configuracion MikroTik",
+                    "La corporacion maneja MikroTik HotSpot y el contrato debe tener Contract Queue e IpBinding antes de pasar a Active.",
+                    SweetAlertIcon.Warning);
+                return;
+            }
+
+            var mikrotikConnectionMessage = Localizer[nameof(Resource.Mikrotik_Connection_Error)].Value;
+            if (string.Equals(errorMessage, mikrotikConnectionMessage, StringComparison.OrdinalIgnoreCase))
+            {
+                await _sweetAlert.FireAsync(
+                    "No se pudo conectar con MikroTik",
+                    "No fue posible activar el acceso remoto. El contrato continuara en InProgress.",
+                    SweetAlertIcon.Warning);
+                return;
+            }
+        }
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            return;
+        }
+
+        ContractClient = responseHttp.Response;
+        await _sweetAlert.FireAsync(
+            "Contrato activado",
+            "El contrato fue activado correctamente.",
+            SweetAlertIcon.Success);
     }
 
     private async Task LoadContractip(Guid? id)

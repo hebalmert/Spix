@@ -117,6 +117,7 @@ public class ServiceRequestService : IServiceRequestService
                             (EF.Functions.Like(x.Client!.FirstName, $"%{filter}%") ||
                              EF.Functions.Like(x.Client!.LastName, $"%{filter}%") ||
                              EF.Functions.Like(x.Client!.FirstName + " " + x.Client!.LastName, $"%{filter}%") ||
+                             EF.Functions.Like(x.Client.Document, $"%{filter}%") ||
                              EF.Functions.Like(x.ControlContrato.ToString(), $"%{filter}%")))
                 .OrderBy(x => x.Client!.FirstName)
                 .ThenBy(x => x.Client!.LastName)

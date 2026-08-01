@@ -1,11 +1,7 @@
 <EditForm Model="ContractServer" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    @if (Servers is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="Server" Items="Servers">
+        <Body>
         <div class="input-group">
             <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Server)]</span>
             <select class="form-select" value="@ContractServer?.ServerId" @onchange="ServerChanged">
@@ -15,7 +11,8 @@
                 }
             </select>
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <div class="d-flex justify-content-center gap-3 mt-5">
         <ButtonFormSave IsSaving="IsSaving" />

@@ -4,14 +4,10 @@
     <div class="row">
         <!--Contractors -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Contractors is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="GuidItemModel" Items="Contractors">
+                <Body>
                 <div class="input-group">
-                    <span class="input-group-text" style="width:150px">Contractors</span>
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Contractor)]</span>
                     <select class="form-select" value="@ContractClient.ContractorId" @onchange="ContractorChanged">
                         @foreach (var item in Contractors!)
                         {
@@ -19,7 +15,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">
@@ -69,12 +66,8 @@
     <div class="row">
         <!-- Estado + Zona -->
         <div class="col-12 col-md-4 mb-2">
-            @if (States is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="State" Items="States">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Estado</span>
                     <select class="form-select" value="@ContractClient.StateId" @onchange="StateChanged">
@@ -84,16 +77,13 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-4 mb-2">
-            @if (Cities is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="City" Items="Cities">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Ciudad</span>
                     <select class="form-select" value="@ContractClient?.CityId" @onchange="CityChanged">
@@ -103,17 +93,14 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
 
         </div>
 
         <div class="col-12 col-md-4 mb-2">
-            @if (Zones is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="Zone" Items="Zones">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Zona</span>
                     <select class="form-select" value="@ContractClient!.ZoneId" @onchange="ZoneChanged">
@@ -123,7 +110,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
@@ -160,12 +148,8 @@
             </div>
         </div>
         <div class="col-12 col-md-4 mb-2">
-            @if (WorkStatuses is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="WorkStatuses">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:110px">Estatus</span>
                     <select class="form-select" value="@(IsEditControl ? ((int)ContractClient.ContractState).ToString() : "1")" @onchange="StatusChanged">
@@ -175,7 +159,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
     <!-- SEPARADOR -->

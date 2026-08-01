@@ -13,6 +13,8 @@
     </div>
     <div class="row">
         <div class="col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="ListUserTypeUp">
+                <Body>
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Up)]</span>
                 <select class="form-select" value="@SelectedUserTypeUp!.Value" @onchange="UsertTypeUpChanged">
@@ -22,6 +24,8 @@
                     }
                 </select>
             </div>
+                </Body>
+            </GenericSelectWrapper>
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@GetDisplayName(() => Plan.SpeedUp)</span>
                 <InputNumber class="form-control" @bind-Value="Plan.SpeedUp" />
@@ -30,6 +34,8 @@
 
         </div>
         <div class="col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="ListUserTypeDown">
+                <Body>
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Select_B_Down)]</span>
                 <select class="form-select" value="@SelectedUserTypeDown!.Value" @onchange="UsertTypeDownChanged">
@@ -39,6 +45,8 @@
                     }
                 </select>
             </div>
+                </Body>
+            </GenericSelectWrapper>
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@GetDisplayName(() => Plan.SpeedDown)</span>
                 <InputNumber class="form-control" @bind-Value="Plan.SpeedDown" />
@@ -65,12 +73,8 @@
         <div class="col-md-3 mb-2">
         </div>
         <div class="col-md-6 mb-2">
-            @if (Taxes is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="GuidItemModel" Items="Taxes">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Tax)]</span>
                     <select class="form-select" value="@Plan.TaxId" @onchange="TaxesChanged">
@@ -80,7 +84,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
             <div class="mb-0">
                 <div class="input-group">
                     <span class="input-group-text" style="width: 150px">

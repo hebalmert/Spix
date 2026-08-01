@@ -342,14 +342,14 @@ public class BillingService : IBillingService
             model.UserId = Guid.Parse(user.Id);
             model.UsuarioOwner = $"{user.FirstName} {user.LastName}";
 
-            var exists = await _context.BillingNoteOnes.AnyAsync(x =>
-                x.CorporationId == model.CorporationId &&
-                x.ContractClientId == model.ContractClientId &&
-                x.YearNumber == model.YearNumber &&
-                x.MonthType == model.MonthType);
-
-            if (exists)
-                return Fail<BillingNoteOne>("Ya existe una nota individual para ese contrato, mes y año.");
+            if (await HasBillingForPeriodAsync(
+                model.ContractClientId,
+                model.CorporationId,
+                model.YearNumber,
+                model.MonthType))
+            {
+                return Fail<BillingNoteOne>("El contrato ya tiene una factura o una cuenta por cobrar activa para el mes y año seleccionados.");
+            }
 
             _context.BillingNoteOnes.Add(model);
             await _context.SaveChangesAsync();
@@ -401,15 +401,14 @@ public class BillingService : IBillingService
             if (!Enum.IsDefined(model.MonthType))
                 model.MonthType = (MonthType)model.DateBill.Month;
 
-            var exists = await _context.BillingNoteOnes.AnyAsync(x =>
-                x.BillingNoteOneId != current.BillingNoteOneId &&
-                x.CorporationId == current.CorporationId &&
-                x.ContractClientId == model.ContractClientId &&
-                x.YearNumber == model.YearNumber &&
-                x.MonthType == model.MonthType);
-
-            if (exists)
-                return Fail<BillingNoteOne>("Ya existe una nota individual para ese contrato, mes y año.");
+            if (await HasBillingForPeriodAsync(
+                model.ContractClientId,
+                current.CorporationId,
+                model.YearNumber,
+                model.MonthType))
+            {
+                return Fail<BillingNoteOne>("El contrato ya tiene una factura o una cuenta por cobrar activa para el mes y año seleccionados.");
+            }
 
             current.DateBill = model.DateBill;
             current.ContractClientId = model.ContractClientId;
@@ -631,7 +630,7 @@ public class BillingService : IBillingService
         int yearNumber,
         MonthType monthType)
     {
-        var activeCxCBillExists = await _context.CxCBills.AnyAsync(x =>
+        return await _context.CxCBills.AnyAsync(x =>
             x.CorporationId == corporationId &&
             x.ContractClientId == contractClientId &&
             !x.Cancelled &&
@@ -646,23 +645,6 @@ public class BillingService : IBillingService
               x.Sell.BillingNoteOne != null &&
               x.Sell.BillingNoteOne.YearNumber == yearNumber &&
               x.Sell.BillingNoteOne.MonthType == monthType)));
-
-        if (activeCxCBillExists)
-        {
-            return true;
-        }
-
-        return await _context.Sells.AnyAsync(x =>
-            x.CorporationId == corporationId &&
-            x.ContractClientId == contractClientId &&
-            !x.Cancelled &&
-            !x.CxCBills.Any() &&
-            ((x.BillingNote != null &&
-              x.BillingNote.YearNumber == yearNumber &&
-              x.BillingNote.MonthType == monthType) ||
-             (x.BillingNoteOne != null &&
-              x.BillingNoteOne.YearNumber == yearNumber &&
-              x.BillingNoteOne.MonthType == monthType)));
     }
 
     private async Task<ActionResponse<bool>> CreateBillingForContractAsync(

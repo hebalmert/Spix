@@ -28,10 +28,12 @@ namespace Spix.AppService.ImplementContratos
         private readonly IMapperService _mapperService;
         private readonly HttpErrorHandler _httpErrorHandler;
         private readonly IEnumMultilLanguageService _enumMultilLanguageService;
+        private readonly IContractActivationIntegrityService _contractActivationIntegrityService;
 
         public ContractClientService(DataContext context, IHttpContextAccessor httpContextAccessor,
             ITransactionManager transactionManager, IUserHelper userHelper, IMapperService mapperService,
-            HttpErrorHandler httpErrorHandler, IEnumMultilLanguageService enumMultilLanguageService)
+            HttpErrorHandler httpErrorHandler, IEnumMultilLanguageService enumMultilLanguageService,
+            IContractActivationIntegrityService contractActivationIntegrityService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -40,12 +42,57 @@ namespace Spix.AppService.ImplementContratos
             _mapperService = mapperService;
             _httpErrorHandler = httpErrorHandler;
             _enumMultilLanguageService = enumMultilLanguageService;
+            _contractActivationIntegrityService = contractActivationIntegrityService;
         }
         public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatusAsync()
         {
             try
             {
                 List<IntItemModel> list = _enumMultilLanguageService.GetEnumSelectList<ContractState>(nameof(Resource.Select_Status));
+                int[] contractStateOrder =
+                {
+                    (int)ContractState.Draft,
+                    (int)ContractState.PendingApproval,
+                    (int)ContractState.InProgress,
+                    (int)ContractState.Active,
+                    (int)ContractState.Exempt,
+                    (int)ContractState.Suspended,
+                    (int)ContractState.Cancelled,
+                    (int)ContractState.Terminated
+                };
+
+                list = list
+                    .OrderBy(x => Array.IndexOf(contractStateOrder, x.Value))
+                    .ToList();
+
+                return new ActionResponse<IEnumerable<IntItemModel>>
+                {
+                    WasSuccess = true,
+                    Result = list
+                };
+            }
+            catch (Exception ex)
+            {
+                return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
+            }
+        }
+
+        public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetContractClientComboStatusAsync()
+        {
+            try
+            {
+                int[] contractClientStates =
+                {
+                    (int)ContractState.Draft,
+                    (int)ContractState.PendingApproval,
+                    (int)ContractState.InProgress
+                };
+
+                List<IntItemModel> list = _enumMultilLanguageService
+                    .GetEnumSelectList<ContractState>(nameof(Resource.Select_Status))
+                    .Where(x => contractClientStates.Contains(x.Value))
+                    .OrderBy(x => Array.IndexOf(contractClientStates, x.Value))
+                    .ToList();
 
                 return new ActionResponse<IEnumerable<IntItemModel>>
                 {
@@ -87,7 +134,8 @@ namespace Spix.AppService.ImplementContratos
                     queryable = queryable.Where(u =>
                         EF.Functions.Like(u.Client!.FirstName, $"%{filter}%") ||
                         EF.Functions.Like(u.Client!.LastName, $"%{filter}%") ||
-                        EF.Functions.Like(u.Client!.FirstName + " " + u.Client!.LastName, $"%{filter}%"));
+                        EF.Functions.Like(u.Client!.FirstName + " " + u.Client!.LastName, $"%{filter}%") ||
+                        EF.Functions.Like(u.Client.Document, $"%{filter}%"));
                 }
 
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
@@ -144,7 +192,51 @@ namespace Spix.AppService.ImplementContratos
 
             try
             {
-                
+                var currentContract = await _context.ContractClients
+                    .AsNoTracking()
+                    .Select(x => new
+                    {
+                        x.ContractClientId,
+                        x.ContractState,
+                        x.CorporationId
+                    })
+                    .FirstOrDefaultAsync(x => x.ContractClientId == modelo.ContractClientId);
+
+                bool isChangingContractState = currentContract != null &&
+                    currentContract.ContractState != modelo.ContractState;
+
+                if (isChangingContractState &&
+                    modelo.ContractState == ContractState.Active)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Result = modelo,
+                        Message = "Para activar el contrato debe finalizar su configuracion desde ContractControl."
+                    };
+                }
+
+                bool requiresMikrotikValidation = modelo.ContractState == ContractState.Suspended;
+
+                if (isChangingContractState &&
+                    requiresMikrotikValidation &&
+                    currentContract is not null)
+                {
+                    var integrityResponse = await _contractActivationIntegrityService.ValidateAsync(
+                        modelo.ContractClientId,
+                        currentContract.CorporationId);
+                    if (!integrityResponse.WasSuccess)
+                    {
+                        await _transactionManager.RollbackTransactionAsync();
+                        return new ActionResponse<ContractClient>
+                        {
+                            WasSuccess = false,
+                            Result = modelo,
+                            Message = integrityResponse.Message
+                        };
+                    }
+                }
 
                 //Implementando el Mapeo de Modelos con Mapster
                 _context.ContractClients.Update(modelo);

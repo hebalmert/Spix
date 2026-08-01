@@ -1,0 +1,75 @@
+@inherits ComponentBase
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (IsLoading || Model is null)
+            {
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
+            }
+            else
+            {
+                <FormRunSuspended RunSuspended="Model"
+                                  Months="Months"
+                                  IsReadOnly="true"
+                                  ShowButtons="false"
+                                  OnSubmit="Return"
+                                  ReturnAction="Return" />
+
+                @if (Model.Executed)
+                {
+                    <div class="table-responsive mt-4">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Contrato</th>
+                                    <th>Cliente</th>
+                                    <th>Nota Cobro</th>
+                                    <th>Saldo CxC</th>
+                                    <th>Monto Plan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in Model.RunSuspendedDetails ?? new List<RunSuspendedDetail>())
+                                {
+                                    <tr>
+                                        <td>@detail.ContractClient?.ControlContrato</td>
+                                        <td>@($"{detail.Client?.FirstName} {detail.Client?.LastName}".Trim())</td>
+                                        <td>@detail.CxCBill?.CollectionNote</td>
+                                        <td>@detail.CxCBill?.Balance.ToString("N2")</td>
+                                        <td>@detail.PlanAmount.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-center gap-3 mt-5">
+                    @if (!Model.Executed)
+                    {
+                        <ButtonFormSaveOnClick OnClick="RunAsync"
+                                               TooTip="Correr Corte"
+                                               ProgressText="Corriendo corte"
+                                               Icon="fa fa-ban"
+                                               CssClass="btn btn-danger btn-bor"
+                                               IsSaving="IsRunning"
+                                               Style="width:180px" />
+                    }
+                    <ButtonFormBack OnClick="Return" />
+                </div>
+            }
+        </div>
+    </div>
+</div>

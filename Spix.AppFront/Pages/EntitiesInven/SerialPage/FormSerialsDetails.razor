@@ -16,26 +16,23 @@
     </div>
 
     <!-- Selección de Rol -->
-    @if (ListUserType is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="IntItemModel" Items="ListUserType">
+        <Body>
         <div class="mb-4">
             <label class="form-label">--Seleccione Role--</label>
-            <InputSelect class="form-select"
-                         @bind-Value="SelectedUserType"
-                         @onchange="UsertTypeChanged">
+            <select class="form-select"
+                    value="@SelectedUserType?.Value"
+                    @onchange="UsertTypeChanged">
                 <option value="">Seleccione...</option>
                 @foreach (var item in ListUserType!)
                 {
                     <option value="@item.Value">@item.Name</option>
                 }
-            </InputSelect>
+            </select>
             <ValidationMessage For="@(() => SelectedUserType)" />
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <!-- Botones -->
     <div class="mb-4 d-flex justify-content-center gap-2 mt-2">

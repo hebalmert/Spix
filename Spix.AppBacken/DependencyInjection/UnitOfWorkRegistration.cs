@@ -166,10 +166,17 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<ITechnitianService, TechnitianService>();
 
             //Contratos
+            services.AddScoped<IContractActivationIntegrityService, ContractActivationIntegrityService>();
             services.AddScoped<IContractClientServiceX, ContractClientServiceX>();
             services.AddScoped<IContractClientService, ContractClientService>();
             services.AddScoped<IContractControlServiceX, ContractControlServiceX>();
             services.AddScoped<IContractControlService, ContractControlService>();
+            services.AddScoped<IContractSuspendedServiceX, ContractSuspendedServiceX>();
+            services.AddScoped<IContractSuspendedService, ContractSuspendedService>();
+            services.AddScoped<IContractSuspendedAuditServiceX, ContractSuspendedAuditServiceX>();
+            services.AddScoped<IContractSuspendedAuditService, ContractSuspendedAuditService>();
+            services.AddScoped<IRunSuspendedServiceX, RunSuspendedServiceX>();
+            services.AddScoped<IRunSuspendedService, RunSuspendedService>();
             services.AddScoped<IContractIDPicServiceX, ContractIDPicServiceX>();
             services.AddScoped<IContractIDPicService, ContractIDPicService>();
 

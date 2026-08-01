@@ -8,11 +8,15 @@ using Spix.Domain.EntitiesOper;
 using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using System.Net;
 
 namespace Spix.AppFront.Pages.EntitiesContratos.ContractClientPage;
 
 public partial class EditContractClient
 {
+    private const string MikroTikHotSpotRequirementsMessage = "MikroTik Hotspot";
+    private const string ContractControlActivationMessage = "ContractControl";
+
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
@@ -57,6 +61,29 @@ public partial class EditContractClient
 
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", nModelo);
         IsSaving = false;
+
+        if (responseHttp.HttpResponseMessage?.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var errorMessage = await responseHttp.GetErrorMessageAsync();
+            if (errorMessage?.Contains(ContractControlActivationMessage, StringComparison.OrdinalIgnoreCase) == true)
+            {
+                await _sweetAlert.FireAsync(
+                    "Activacion desde ContractControl",
+                    "Primero coloque el contrato en InProgress. La activacion final se realiza desde ContractControl.",
+                    SweetAlertIcon.Warning);
+                return;
+            }
+
+            if (errorMessage?.Contains(MikroTikHotSpotRequirementsMessage, StringComparison.OrdinalIgnoreCase) == true)
+            {
+                await _sweetAlert.FireAsync(
+                    "No se puede cambiar el estado del contrato",
+                    "La corporacion maneja MikroTik HotSpot y el contrato aun no tiene Contract Queue e IpBinding, por lo que no puede pasar a Active o Suspended.",
+                    SweetAlertIcon.Warning);
+                return;
+            }
+        }
+
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());

@@ -57,5 +57,18 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             return NotFound(response.Message);
         }
 
+        [HttpPost("{id}/activate")]
+        public async Task<IActionResult> ActivateAsync(Guid id)
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _contractControlUnitOfWork.ActivateAsync(id, userClaimsInfo.UserName);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+
+            return BadRequest(response.Message);
+        }
+
     }
 }

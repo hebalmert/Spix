@@ -1,0 +1,75 @@
+@page "/contractsuspendedaudits"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+@using Spix.DomainLogic.EntitiesContractDTO
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Auditoria de Contratos Activados</h3>
+
+        <div class="row g-2 align-items-end mb-3">
+            <div class="col-12 col-md-4">
+                <label class="form-label">Fecha inicial</label>
+                <input type="date"
+                       class="form-control"
+                       value="@StartDate.ToString("yyyy-MM-dd")"
+                       @onchange="ChangeStartDateAsync" />
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label">Fecha final</label>
+                <input type="date"
+                       class="form-control"
+                       value="@EndDate.ToString("yyyy-MM-dd")"
+                       @onchange="ChangeEndDateAsync" />
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-end">
+                <ButtonGeneric OnClick="LoadAsync"
+                               Icon="fa fa-magnifying-glass"
+                               TooTip="Consultar"
+                               CssClass="btn-mini"
+                               Style="font-size:17px;" />
+            </div>
+        </div>
+
+        <hr />
+
+        <GenericList MyList="Audits">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Usuario</th>
+                                <th>Cedula</th>
+                                <th>Cliente</th>
+                                <th>Contrato</th>
+                                <th class="text-center">Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var audit in Audits)
+                            {
+                                <tr>
+                                    <td>@audit.DateModified.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</td>
+                                    <td>@audit.UserByName</td>
+                                    <td>@audit.ClientDocument</td>
+                                    <td>@audit.ClientFullName</td>
+                                    <td>@audit.ControlContrato</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-outline-primary btn-sm"
+                                                @onclick="() => GoToContractControl(audit.ContractId)">
+                                            <i class="fa fa-sliders"></i>
+                                            Ir a ContractControl
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+    </div>
+</div>

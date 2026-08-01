@@ -2,12 +2,8 @@
     <DataAnnotationsValidator />
 
     <div class="col-md-6 mb-2">
-        @if (Categories is null)
-        {
-            <Loading />
-        }
-        else
-        {
+        <GenericSelectWrapper Tmodel="ProductCategory" Items="Categories">
+            <Body>
             <div class="input-group">
                 <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Category)]</span>
                 <select class="form-select" value="@TransferDetails.Product!.ProductCategoryId" @onchange="CategoryChanged">
@@ -17,16 +13,13 @@
                     }
                 </select>
             </div>
-        }
+            </Body>
+        </GenericSelectWrapper>
     </div>
 
     <div class="col-md-6 mb-2">
-        @if (Products is null)
-        {
-            <Loading />
-        }
-        else
-        {
+        <GenericSelectWrapper Tmodel="Product" Items="Products">
+            <Body>
             <div class="input-group">
                 <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Product)]</span>
                 <select class="form-select" value="@TransferDetails.ProductId" @onchange="ProductsChanged">
@@ -36,7 +29,8 @@
                     }
                 </select>
             </div>
-        }
+            </Body>
+        </GenericSelectWrapper>
     </div>
 
     <!-- Disponible -->

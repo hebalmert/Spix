@@ -1300,6 +1300,9 @@
   <data name="ContractState_Terminated" xml:space="preserve">
     <value>Terminated</value>
   </data>
+  <data name="ContractState_InProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
   <data name="Select_Contractor" xml:space="preserve">
     <value>[Select Contractor]</value>
   </data>

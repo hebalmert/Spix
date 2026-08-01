@@ -1,0 +1,76 @@
+@page "/contractsuspended"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+@using Spix.DomainLogic.EntitiesContractDTO
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Contratos Suspendidos</h3>
+
+        <div class="row g-2 align-items-start mb-3">
+            <div class="col-12 col-md-8">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:125px">Cedula o nombre</span>
+                    <input class="form-control"
+                           placeholder="Buscar por cedula o nombre del cliente..."
+                           value="@Filter"
+                           @oninput="SearchAsync" />
+                </div>
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-end">
+                <ButtonGeneric OnClick="ClearAsync"
+                               Icon="fa fa-rotate"
+                               TooTip="Limpiar"
+                               CssClass="btn-mini"
+                               Style="font-size:17px;" />
+            </div>
+        </div>
+
+        <hr />
+
+        <GenericList MyList="Contracts">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Cedula</th>
+                                <th>Cliente</th>
+                                <th>Contrato</th>
+                                <th>Telefono</th>
+                                <th>Direccion</th>
+                                <th>Plan</th>
+                                <th>Estado</th>
+                                <th class="text-center">Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var contract in Contracts)
+                            {
+                                <tr>
+                                    <td>@contract.ClientDocument</td>
+                                    <td>@contract.ClientFullName</td>
+                                    <td>@contract.ControlContrato</td>
+                                    <td>@contract.PhoneNumber</td>
+                                    <td>@($"{contract.Address} - {contract.CityName} / {contract.ZoneName}")</td>
+                                    <td>@contract.PlanName</td>
+                                    <td>
+                                        <StatusBadge Value="ContractState.Suspended" />
+                                    </td>
+                                    <td class="text-center" style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ActivateAsync(contract)"
+                                                       Icon="fa fa-circle-check"
+                                                       TooTip="Activar contrato"
+                                                       CssClass="btn-mini"
+                                                       Style="font-size:17px;color:#198754;" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+    </div>
+</div>

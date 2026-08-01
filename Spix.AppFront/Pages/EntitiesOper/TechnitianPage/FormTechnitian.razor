@@ -26,12 +26,8 @@
                     <ValidationMessage For="@(() => Technician.LastName)" />
                 </div>
                 <div class="mb-2">
-                    @if (DocumentTypes is null)
-                    {
-                        <Loading />
-                    }
-                    else
-                    {
+                    <GenericSelectWrapper Tmodel="DocumentType" Items="DocumentTypes">
+                        <Body>
                         <div class="input-group">
                             <span class="input-group-text" style="width:150px">Tipo Documento</span>
                             <select class="form-select" value="@Technician.DocumentTypeId" @onchange="DocuementTypeChanged">
@@ -41,7 +37,8 @@
                                 }
                             </select>
                         </div>
-                    }
+                        </Body>
+                    </GenericSelectWrapper>
                 </div>
                 <div class="mb-2">
                     <div class="input-group">

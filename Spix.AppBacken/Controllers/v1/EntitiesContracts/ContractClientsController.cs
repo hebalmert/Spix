@@ -41,6 +41,18 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             return BadRequest(response.Message);
         }
 
+        [HttpGet("loadContractClientStatus")]
+        public async Task<ActionResult<IEnumerable<IntItemModel>>> GetContractClientComboStatus()
+        {
+            var response = await _contractClientUnitOfWork.GetContractClientComboStatusAsync();
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+
+            return BadRequest(response.Message);
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ContractClient>>> GetAll([FromQuery] PaginationDTO pagination)
         {

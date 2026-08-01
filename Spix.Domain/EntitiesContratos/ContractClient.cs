@@ -116,5 +116,7 @@ public class ContractClient
     public ICollection<ContractMap>? ContractMaps { get; set; }
     public ICollection<ContractQue>? ContractQues { get; set; } 
     public ICollection<ContractBind>? ContractBinds { get; set; } 
+    public ICollection<ContractSuspendedAudit>? ContractSuspendedAudits { get; set; }
+    public ICollection<RunSuspendedDetail>? RunSuspendedDetails { get; set; }
 
 }

@@ -8,5 +8,6 @@ public enum ContractState
     Exempt = 4,           // Exonerado temporalmente       | Color: #20C997 (Verde agua)
     Suspended = 5,        // Suspendido                    | Color: #DC3545 (Rojo)
     Cancelled = 6,        // Anulado antes de activarse    | Color: #B02A37 (Rojo oscuro)
-    Terminated = 7        // Retirado / Finalizado         | Color: #6F42C1 (Púrpura)
+    Terminated = 7,       // Retirado / Finalizado         | Color: #6F42C1 (Púrpura)
+    InProgress = 8        // Configuracion tecnica         | Color: #0D6EFD (Azul)
 }

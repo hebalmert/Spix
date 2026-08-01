@@ -16,12 +16,8 @@
     <div class="row">
         <!-- Operación + IP Network -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Operations is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="Operations">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Operación</span>
                     <select class="form-select" value="@Node.OperationId" @onchange="OperationChanged">
@@ -31,16 +27,13 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (IpNetworks is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IpNetwork" Items="IpNetworks">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">IP Network</span>
                     <select class="form-select" value="@Node?.IpNetworkId" @onchange="IpNetworkChanged">
@@ -50,7 +43,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
@@ -97,12 +91,8 @@
     <div class="row">
         <!-- Marca + Modelo -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Marks is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="Mark" Items="Marks">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Marca</span>
                     <select class="form-select" value="@Node.MarkId" @onchange="MarkChanged">
@@ -112,16 +102,13 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (MarkModels is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="MarkModel" Items="MarkModels">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Modelo</span>
                     <select class="form-select" value="@Node!.MarkModelId" @onchange="MarkModelChanged">
@@ -131,19 +118,16 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
     <div class="row">
         <!-- Tipo Frecuencia + Seguridad -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Channels is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="Channels">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Ancho Canal</span>
                     <select class="form-select" value="@Node.ChannelId" @onchange="ChannelChanged">
@@ -153,7 +137,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
 
         </div>
 
@@ -170,12 +155,8 @@
     <div class="row">
         <!-- Ancho Canal + Frecuencia -->
         <div class="col-12 col-md-6 mb-2">
-            @if (FrecuencyTypes is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="FrecuencyTypes">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Tipo Frecuencia</span>
                     <select class="form-select" value="@Node.FrecuencyTypeId" @onchange="FrecuencyTypeChanged">
@@ -185,16 +166,13 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (Frecuencies is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="Frecuencies">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Frecuencia</span>
                     <select class="form-select" value="@Node.FrecuencyId" @onchange="FrecuencyChanged">
@@ -204,19 +182,16 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
     <div class="row">
         <!-- MAC + Frase Seguridad -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Securities is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="Securities">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Seguridad</span>
                     <select class="form-select" value="@Node.SecurityId" @onchange="SecurityChanged">
@@ -226,7 +201,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
 
         </div>
 
@@ -294,12 +270,8 @@
     <div class="row">
         <!-- Estado + Zona -->
         <div class="col-12 col-md-6 mb-2">
-            @if (States is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="State" Items="States">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Estado</span>
                     <select class="form-select" value="@Node.StateId" @onchange="StateChanged">
@@ -309,16 +281,13 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (Cities is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="City" Items="Cities">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Ciudad</span>
                     <select class="form-select" value="@Node?.CityId" @onchange="CityChanged">
@@ -328,7 +297,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
 
         </div>
     </div>
@@ -336,12 +306,8 @@
     <div class="row">
         <!-- Ciudad + Activo -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Zones is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="Zone" Items="Zones">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Zona</span>
                     <select class="form-select" value="@Node!.ZoneId" @onchange="ZoneChanged">
@@ -351,7 +317,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">

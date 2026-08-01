@@ -66,12 +66,8 @@
 
     <div class="row">
         <div class="col-12 col-md-4 mb-2">
-            @if (Technicians is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="GuidItemModel" Items="Technicians">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Tecnico</span>
                     <select class="form-select" value="@Model.TechnicianId" @onchange="TechnicianChanged" disabled="@IsCompleted">
@@ -81,7 +77,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
         <div class="col-12 col-md-4 mb-2">
             <div class="input-group">
@@ -92,12 +89,8 @@
             </div>
         </div>
         <div class="col-12 col-md-4 mb-2">
-            @if (ScheduleStatuses is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="ScheduleStatuses">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Estatus</span>
                     <select class="form-select" value="@(IsEditControl ? ((int)Model.ScheduleStatus).ToString() : "1")" @onchange="StatusChanged" disabled="@IsCompleted">
@@ -107,7 +100,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
@@ -146,6 +140,8 @@
         {
             <div class="row mb-3">
                 <div class="col-12 col-md-3 mb-2">
+                    <GenericSelectWrapper Tmodel="ServiceCategory" Items="ServiceCategories">
+                        <Body>
                     <select class="form-select" value="@Detail.ServiceCategoryId" @onchange="CategoryChanged">
                         <option value="@Guid.Empty">[Categoria]</option>
                         @foreach (var category in ServiceCategories)
@@ -153,15 +149,21 @@
                             <option value="@category.ServiceCategoryId">@category.Name</option>
                         }
                     </select>
+                        </Body>
+                    </GenericSelectWrapper>
                 </div>
                 <div class="col-12 col-md-3 mb-2">
-                    <InputSelect class="form-select" @bind-Value="Detail.ServiceClientId">
+                    <GenericSelectWrapper Tmodel="ServiceClient" Items="ServiceClients">
+                        <Body>
+                    <select class="form-select" value="@Detail.ServiceClientId" @onchange="ServiceClientChanged">
                         <option value="@Guid.Empty">[Servicio]</option>
                         @foreach (var service in ServiceClients)
                         {
                             <option value="@service.ServiceClientId">@service.ServiceName</option>
                         }
-                    </InputSelect>
+                    </select>
+                        </Body>
+                    </GenericSelectWrapper>
                 </div>
                 <div class="col-12 col-md-4 mb-2">
                     <InputText class="form-control" placeholder="Detalle" @bind-Value="Detail.Detail" />

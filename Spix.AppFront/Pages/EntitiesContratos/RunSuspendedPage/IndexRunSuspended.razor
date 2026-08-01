@@ -1,0 +1,76 @@
+@page "/runsuspended"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3>Corte General</h3>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <ButtonFormNew OnClick="ShowCreateAsync" TooTip="Nuevo" />
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+
+        <GenericList MyList="Runs">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Ano</th>
+                                <th>Mes</th>
+                                <th class="text-center">Ejecutado</th>
+                                <th>Ejecutado por</th>
+                                <th colspan="3" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Runs!)
+                            {
+                                <tr>
+                                    <td>@item.YearNumber</td>
+                                    <td>@GetMonthName(item.MonthType)</td>
+                                    <td class="text-center">
+                                        <input class="form-check-input" type="checkbox" checked="@item.Executed" disabled />
+                                    </td>
+                                    <td>@item.UserByName</td>
+                                    <td style="width:1px;">
+                                        <ButtonGeneric OnClick="() => ShowDetailsAsync(item.RunSuspendedId)"
+                                                       TooTip="Detalle"
+                                                       Icon="fa fa-list-alt" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (!item.Executed)
+                                        {
+                                            <ButtonEdit OnClick="() => ShowEditAsync(item.RunSuspendedId)" />
+                                        }
+                                    </td>
+                                    <td style="width:1px;">
+                                        @if (!item.Executed)
+                                        {
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.RunSuspendedId)" />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+
+        <hr />
+
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    </div>
+</div>

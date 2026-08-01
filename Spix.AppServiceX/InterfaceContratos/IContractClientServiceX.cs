@@ -10,6 +10,8 @@ public interface IContractClientServiceX
 {
     Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatusAsync();
 
+    Task<ActionResponse<IEnumerable<IntItemModel>>> GetContractClientComboStatusAsync();
+
     Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<ContractClient>> GetAsync(Guid id);

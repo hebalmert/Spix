@@ -749,8 +749,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("ContractClientId");
 
-                    b.HasIndex("CorporationId", "ContractClientId", "YearNumber", "MonthType")
-                        .IsUnique();
+                    b.HasIndex("CorporationId", "ContractClientId", "YearNumber", "MonthType");
 
                     b.ToTable("BillingNoteOnes");
                 });
@@ -1430,6 +1429,121 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique();
 
                     b.ToTable("ContractSignedDocuments");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSuspendedAudit", b =>
+                {
+                    b.Property<Guid>("ContractSuspendedAuditId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContractId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserByName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ContractSuspendedAuditId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("CorporationId", "DateModified");
+
+                    b.ToTable("ContractSuspendedAudits");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.RunSuspended", b =>
+                {
+                    b.Property<Guid>("RunSuspendedId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Executed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MonthType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserByName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("YearNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("RunSuspendedId");
+
+                    b.HasIndex("CorporationId", "YearNumber", "MonthType")
+                        .IsUnique();
+
+                    b.ToTable("RunSuspendeds");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.RunSuspendedDetail", b =>
+                {
+                    b.Property<Guid>("RunSuspendedDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CxCBillId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PlanAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("RunSuspendedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("RunSuspendedDetailId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ContractClientId");
+
+                    b.HasIndex("CxCBillId");
+
+                    b.HasIndex("RunSuspendedId", "ContractClientId")
+                        .IsUnique();
+
+                    b.ToTable("RunSuspendedDetails");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.ChainType", b =>
@@ -4457,6 +4571,79 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Corporation");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSuspendedAudit", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
+                        .WithMany("ContractSuspendedAudits")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany("ContractSuspendedAudits")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("Corporation");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.RunSuspended", b =>
+                {
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Corporation");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.RunSuspendedDetail", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany("RunSuspendedDetails")
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesPayment.CxCBill", "CxCBill")
+                        .WithMany("RunSuspendedDetails")
+                        .HasForeignKey("CxCBillId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesContratos.RunSuspended", "RunSuspended")
+                        .WithMany("RunSuspendedDetails")
+                        .HasForeignKey("RunSuspendedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("CxCBill");
+
+                    b.Navigation("RunSuspended");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesData.Frecuency", b =>
                 {
                     b.HasOne("Spix.Domain.EntitiesData.FrecuencyType", "FrecuencyType")
@@ -5624,6 +5811,10 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ContractServers");
 
                     b.Navigation("ContractSignedDocuments");
+
+                    b.Navigation("ContractSuspendedAudits");
+
+                    b.Navigation("RunSuspendedDetails");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractDocumentTemplate", b =>
@@ -5631,6 +5822,11 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ContractDocumentTemplateFields");
 
                     b.Navigation("ContractSignedDocuments");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.RunSuspended", b =>
+                {
+                    b.Navigation("RunSuspendedDetails");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.Channel", b =>
@@ -5806,6 +6002,8 @@ namespace Spix.AppBacken.Migrations
             modelBuilder.Entity("Spix.Domain.EntitiesOper.Client", b =>
                 {
                     b.Navigation("ContractClients");
+
+                    b.Navigation("ContractSuspendedAudits");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesOper.Contractor", b =>
@@ -5836,6 +6034,8 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("PreExonerateds");
 
                     b.Navigation("PrePayments");
+
+                    b.Navigation("RunSuspendedDetails");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.CxCBillDetail", b =>

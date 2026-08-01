@@ -70,12 +70,8 @@
     </div>
 
     <div class="mb-2">
-        @if (Taxes is null)
-        {
-            <Loading />
-        }
-        else
-        {
+        <GenericSelectWrapper Tmodel="GuidItemModel" Items="Taxes">
+            <Body>
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Tax)]</span>
                 <select class="form-select" value="@Product.TaxId" @onchange="TaxChanged">
@@ -85,7 +81,8 @@
                     }
                 </select>
             </div>
-        }
+            </Body>
+        </GenericSelectWrapper>
     </div>
 
     <div class="mb-2">

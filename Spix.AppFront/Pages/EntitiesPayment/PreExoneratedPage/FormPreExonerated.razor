@@ -113,12 +113,8 @@
             </div>
         </div>
         <div class="col-12 col-md-7">
-            @if (Months is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="Months">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:125px">Mes</span>
                     <select class="form-select"
@@ -130,7 +126,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 

@@ -2,7 +2,9 @@
 
 @if (Items is null)
 {
-    <Loading />
+    <div class="generic-select-loading" role="status" aria-label="Cargando opciones">
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+    </div>
 }
 else
 {

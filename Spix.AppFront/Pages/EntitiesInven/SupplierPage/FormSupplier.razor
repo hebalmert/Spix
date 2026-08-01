@@ -25,12 +25,8 @@
 
         <!-- Estado / Departamento -->
         <div class="col-md-6 mb-2">
-            @if (DocumentTypes is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="DocumentType" Items="DocumentTypes">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.DocumentType)]</span>
                     <select class="form-select" value="@Supplier.DocumentTypeId" @onchange="DocumentChanged">
@@ -40,7 +36,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
         <div class="col-md-6 mb-2">
             <div class="input-group">
@@ -81,12 +78,8 @@
 
         <!-- Estado / Departamento -->
         <div class="col-md-6 mb-4">
-            @if (States is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="State" Items="States">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.State)]</span>
                     <select class="form-select" value="@Supplier.StateId" @onchange="StateChanged">
@@ -96,17 +89,14 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <!-- Ciudad -->
         <div class="col-md-6 mb-4">
-            @if (Cities is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="City" Items="Cities">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.City)]</span>
                     <select class="form-select" value="@Supplier.CityId" @onchange="CityChanged">
@@ -116,7 +106,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-md-12 mb-2">

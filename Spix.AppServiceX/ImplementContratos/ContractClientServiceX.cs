@@ -19,6 +19,8 @@ public class ContractClientServiceX : IContractClientServiceX
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatusAsync() => await _contractClientService.GetComboStatusAsync();
 
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetContractClientComboStatusAsync() => await _contractClientService.GetContractClientComboStatusAsync();
+
     public async Task<ActionResponse<IEnumerable<ContractClient>>> GetAsync(PaginationDTO pagination, string username) => await _contractClientService.GetAsync(pagination, username);
 
     public async Task<ActionResponse<ContractClient>> GetAsync(Guid id) => await _contractClientService.GetAsync(id);

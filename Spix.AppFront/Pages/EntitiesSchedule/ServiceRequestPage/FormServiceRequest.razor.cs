@@ -163,6 +163,14 @@ public partial class FormServiceRequest
         }
     }
 
+    private void ServiceClientChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var serviceClientId))
+        {
+            Detail.ServiceClientId = serviceClientId;
+        }
+    }
+
     private async Task AddDetail()
     {
         Detail.ServiceRequestId = Model.ServiceRequestId;

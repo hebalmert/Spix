@@ -1,7 +1,7 @@
 ﻿<EditForm Model="Purchase" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
     <div class="mb-2">
-        <GenericSelectWrapper Items="Suppliers">
+        <GenericSelectWrapper Tmodel="Supplier" Items="Suppliers">
             <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Provider)]</span>
@@ -19,7 +19,7 @@
 
    
     <div class="mb-2">
-        <GenericSelectWrapper Items="ProductStorages">
+        <GenericSelectWrapper Tmodel="ProductStorage" Items="ProductStorages">
             <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Storage)]</span>

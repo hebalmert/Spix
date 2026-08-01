@@ -12,4 +12,12 @@ public partial class FormConnectionMikrotikControl
     [Parameter] public bool IsSaving { get; set; }
 
     private IEnumerable<MikrotikControlType> ControlTypes => Enum.GetValues<MikrotikControlType>();
+
+    private void ControlTypeChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<MikrotikControlType>(e.Value?.ToString(), out var controlType))
+        {
+            ConnectionMikrotikControl.MikrotikControlType = controlType;
+        }
+    }
 }

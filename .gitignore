@@ -419,6 +419,7 @@ FodyWeavers.xsd
 
 # Codex/local build outputs
 .codex-build/
+.codex-artifacts/
 
 # Local backend configuration with secrets
 Spix.AppBacken/appsettings.json

@@ -13,12 +13,8 @@
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (IpNetworks is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IpNetwork" Items="IpNetworks">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">IP Network</span>
                     <select class="form-select" value="@Server.IpNetworkId" @onchange="IpNetworkChanged">
@@ -28,19 +24,16 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
     <div class="row">
         <!-- Marca + Modelo -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Marks is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="Mark" Items="Marks">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Marca</span>
                     <select class="form-select" value="@Server.MarkId" @onchange="MarkChanged">
@@ -50,16 +43,13 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (MarkModels is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="MarkModel" Items="MarkModels">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Modelo</span>
                     <select class="form-select" value="@Server.MarkModelId" @onchange="MarkModelChanged">
@@ -69,7 +59,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
@@ -143,12 +134,8 @@
     <div class="row">
         <!-- State + City -->
         <div class="col-12 col-md-6 mb-2">
-            @if (States is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="State" Items="States">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Estado</span>
                     <select class="form-select" value="@Server.StateId" @onchange="StateChanged">
@@ -158,16 +145,13 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">
-            @if (Cities is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="City" Items="Cities">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Ciudad</span>
                     <select class="form-select" value="@Server.CityId" @onchange="CityChanged">
@@ -177,19 +161,16 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
 
     <div class="row">
         <!-- Zone + Active -->
         <div class="col-12 col-md-6 mb-2">
-            @if (Zones is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="Zone" Items="Zones">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:150px">Zona</span>
                     <select class="form-select" value="@Server.ZoneId" @onchange="ZoneChanged">
@@ -199,7 +180,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
 
         <div class="col-12 col-md-6 mb-2">

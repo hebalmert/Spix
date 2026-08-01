@@ -1,0 +1,12 @@
+.generic-select-loading {
+    align-items: center;
+    display: flex;
+    height: 38px;
+    justify-content: center;
+    width: 100%;
+}
+
+.generic-select-loading .spinner-border {
+    height: 1rem;
+    width: 1rem;
+}

@@ -24,10 +24,12 @@ namespace Spix.Services.ImplementContratos
         private readonly IMapperService _mapperService;
         private readonly HttpErrorHandler _httpErrorHandler;
         private readonly IStringLocalizer _localizer;
+        private readonly IContractActivationIntegrityService _contractActivationIntegrityService;
 
         public ContractControlService(DataContext context, IHttpContextAccessor httpContextAccessor,
             ITransactionManager transactionManager, IUserHelper userHelper, IMapperService mapperService,
-            HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
+            HttpErrorHandler httpErrorHandler, IStringLocalizer localizer,
+            IContractActivationIntegrityService contractActivationIntegrityService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -36,6 +38,7 @@ namespace Spix.Services.ImplementContratos
             _mapperService = mapperService;
             _httpErrorHandler = httpErrorHandler;
             _localizer = localizer;
+            _contractActivationIntegrityService = contractActivationIntegrityService;
         }
 
         public async Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username)
@@ -57,7 +60,10 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.Contractor)
                     .Include(x => x.Zone).ThenInclude(x => x!.City)
                     .Where(x => x.CorporationId == user.CorporationId &&
-                                (x.ContractState == ContractState.Active || x.ContractState == ContractState.Exempt || x.ContractState == ContractState.Suspended))
+                                (x.ContractState == ContractState.InProgress ||
+                                 x.ContractState == ContractState.Active ||
+                                 x.ContractState == ContractState.Exempt ||
+                                 x.ContractState == ContractState.Suspended))
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -66,7 +72,8 @@ namespace Spix.Services.ImplementContratos
                     queryable = queryable.Where(u =>
                         EF.Functions.Like(u.Client!.FirstName, $"%{filter}%") ||
                         EF.Functions.Like(u.Client!.LastName, $"%{filter}%") ||
-                        EF.Functions.Like(u.Client!.FirstName + " " + u.Client!.LastName, $"%{filter}%"));
+                        EF.Functions.Like(u.Client!.FirstName + " " + u.Client!.LastName, $"%{filter}%") ||
+                        EF.Functions.Like(u.Client.Document, $"%{filter}%"));
                 }
 
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
@@ -119,6 +126,94 @@ namespace Spix.Services.ImplementContratos
             }
             catch (Exception ex)
             {
+                return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
+            }
+        }
+
+        public async Task<ActionResponse<ContractClient>> ActivateAsync(Guid id, string username)
+        {
+            await _transactionManager.BeginTransactionAsync();
+
+            try
+            {
+                var user = await _userHelper.GetUserByUserNameAsync(username);
+                if (user == null)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Message = "Problemas de Validacion de Usuario"
+                    };
+                }
+
+                var contract = await _context.ContractClients
+                    .Include(x => x.Client)
+                    .FirstOrDefaultAsync(x => x.ContractClientId == id &&
+                                              x.CorporationId == user.CorporationId);
+                if (contract == null)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Message = "Problemas para Encontrar el Registro Indicado"
+                    };
+                }
+
+                if (contract.ContractState != ContractState.InProgress)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Message = "El contrato debe estar en InProgress para poder activarse."
+                    };
+                }
+
+                var integrityResponse = await _contractActivationIntegrityService.ValidateAsync(
+                    contract.ContractClientId,
+                    contract.CorporationId);
+                if (!integrityResponse.WasSuccess)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Message = integrityResponse.Message
+                    };
+                }
+
+                bool usesHotSpotControl = await _contractActivationIntegrityService
+                    .UsesHotSpotControlAsync(contract.CorporationId);
+                if (usesHotSpotControl)
+                {
+                    var activationResponse = await _contractActivationIntegrityService
+                        .ActivateHotSpotBindingsAsync(contract);
+                    if (!activationResponse.WasSuccess)
+                    {
+                        await _transactionManager.RollbackTransactionAsync();
+                        return new ActionResponse<ContractClient>
+                        {
+                            WasSuccess = false,
+                            Message = activationResponse.Message
+                        };
+                    }
+                }
+
+                contract.ContractState = ContractState.Active;
+                await _transactionManager.SaveChangesAsync();
+                await _transactionManager.CommitTransactionAsync();
+
+                return new ActionResponse<ContractClient>
+                {
+                    WasSuccess = true,
+                    Result = contract
+                };
+            }
+            catch (Exception ex)
+            {
+                await _transactionManager.RollbackTransactionAsync();
                 return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
             }
         }

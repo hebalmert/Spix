@@ -16,6 +16,7 @@ public partial class StatusBadge
     {
         ContractState.Draft => "#0D6EFD", // Azul
         ContractState.PendingApproval => "#FD7E14", // Naranja
+        ContractState.InProgress => "#0DCAF0", // Azul claro
         ContractState.Active => "#198754", // Verde
         ContractState.Exempt => "#20C997", // Verde agua
         ContractState.Suspended => "#DC3545", // Rojo

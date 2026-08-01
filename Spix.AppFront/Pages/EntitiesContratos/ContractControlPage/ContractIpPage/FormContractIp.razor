@@ -1,11 +1,7 @@
 ﻿<EditForm Model="ContractIp" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    @if (IpNets is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="IpNet" Items="IpNets">
+        <Body>
         <div class="input-group">
             <span class="input-group-text" style="width:150px">IP Clients</span>
             <select class="form-select" value="@ContractIp?.IpNetId" @onchange="IpNetworkChanged">
@@ -15,7 +11,8 @@
                 }
             </select>
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-5">

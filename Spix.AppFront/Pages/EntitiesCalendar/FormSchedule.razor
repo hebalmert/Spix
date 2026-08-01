@@ -38,26 +38,26 @@
     </div>
 
     <div class="mb-3 mt-3">
-        <div class="input-group">
-            <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.AssignTo)]</span>
-            <InputSelect class="form-control" @bind-Value="Model.TechnicianId">
+        <GenericSelectWrapper Tmodel="GuidItemModel" Items="Technicians">
+            <Body>
+            <div class="input-group">
+                <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.AssignTo)]</span>
+                <select class="form-select" value="@Model.TechnicianId" @onchange="TechnicianChanged">
                 @foreach (var u in Technicians)
                 {
                     <option value="@u.Value">@u.Name</option>
                 }
-            </InputSelect>
-        </div>
+                </select>
+            </div>
+            </Body>
+        </GenericSelectWrapper>
     </div>
 
     <hr />
     <div class="mb-3 mt-3">
         <div class="input-group">
-            @if (ScheduleStatuses is null)
-            {
-                <Loading />
-            }
-            else
-            {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="ScheduleStatuses">
+                <Body>
                 <div class="input-group">
                     <span class="input-group-text" style="width:110px">@Localizer[nameof(Resource.Status)]</span>
                     <select class="form-select" value="@(IsEditControl ? ((int)Model.ScheduleStatus!).ToString() : "1")" @onchange="StatusChanged">
@@ -67,7 +67,8 @@
                         }
                     </select>
                 </div>
-            }
+                </Body>
+            </GenericSelectWrapper>
         </div>
     </div>
     <hr />
@@ -124,6 +125,14 @@
             return;
         }
         ScheduleStatuses = responseHttp.Response;
+    }
+
+    private void TechnicianChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var technicianId))
+        {
+            Model.TechnicianId = technicianId;
+        }
     }
 
     private async Task StatusChanged(ChangeEventArgs e)

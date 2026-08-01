@@ -1,11 +1,7 @@
 ﻿<EditForm Model="ContractMac" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    @if (ListMacs is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="GuidItemModel" Items="ListMacs">
+        <Body>
         <div class="input-group">
             <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.MAC)]</span>
             <select class="form-select" value="@ContractMac?.CargueDetailId" @onchange="MacsChanged">
@@ -15,7 +11,8 @@
                 }
             </select>
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-5">

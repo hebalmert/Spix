@@ -1,11 +1,7 @@
 <EditForm Model="ContractNode" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    @if (Nodes is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="Node" Items="Nodes">
+        <Body>
         <div class="input-group">
             <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.ClientAP)]</span>
             <select class="form-select" value="@ContractNode?.NodeId" @onchange="NodeChanged">
@@ -15,7 +11,8 @@
                 }
             </select>
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <div class="d-flex justify-content-center gap-3 mt-5">
         <ButtonFormSave IsSaving="IsSaving" />

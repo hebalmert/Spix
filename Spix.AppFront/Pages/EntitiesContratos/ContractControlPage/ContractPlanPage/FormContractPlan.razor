@@ -1,11 +1,7 @@
 <EditForm Model="ContractPlan" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    @if (PlanCategories is null || Plans is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="PlanCategory" Items="PlanCategories">
+        <Body>
         <div class="input-group mb-3">
             <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.PlanCategory)]</span>
             <select class="form-select" value="@PlanCategoryId" @onchange="PlanCategoryChanged">
@@ -15,7 +11,11 @@
                 }
             </select>
         </div>
+        </Body>
+    </GenericSelectWrapper>
 
+    <GenericSelectWrapper Tmodel="Plan" Items="Plans">
+        <Body>
         <div class="input-group">
             <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.ClientPlan)]</span>
             <select class="form-select" value="@ContractPlan?.PlanId" @onchange="PlanChanged">
@@ -25,7 +25,8 @@
                 }
             </select>
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <div class="d-flex justify-content-center gap-3 mt-5">
         <ButtonFormSave IsSaving="IsSaving" />

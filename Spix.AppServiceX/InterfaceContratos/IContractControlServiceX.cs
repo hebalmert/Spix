@@ -9,4 +9,6 @@ public interface IContractControlServiceX
     Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username);
 
     Task<ActionResponse<ContractClient>> GetAsync(Guid id);
+
+    Task<ActionResponse<ContractClient>> ActivateAsync(Guid id, string username);
 }

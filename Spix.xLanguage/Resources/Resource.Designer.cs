@@ -619,6 +619,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In progress.
+        /// </summary>
+        public static string ContractState_InProgress {
+            get {
+                return ResourceManager.GetString("ContractState_InProgress", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Pending approval.
         /// </summary>
         public static string ContractState_PendingApproval {

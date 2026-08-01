@@ -7,12 +7,14 @@
                 <span class="input-group-text" style="width: 150px">
                     Tipo Control
                 </span>
-                <InputSelect class="form-select" @bind-Value="ConnectionMikrotikControl.MikrotikControlType">
+                <select class="form-select"
+                        value="@ConnectionMikrotikControl.MikrotikControlType"
+                        @onchange="ControlTypeChanged">
                     @foreach (var item in ControlTypes)
                     {
                         <option value="@item">@item</option>
                     }
-                </InputSelect>
+                </select>
             </div>
             <ValidationMessage For="@(() => ConnectionMikrotikControl.MikrotikControlType)" />
         </div>

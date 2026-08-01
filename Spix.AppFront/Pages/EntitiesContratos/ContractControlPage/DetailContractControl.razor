@@ -89,9 +89,21 @@
                         <span>Invoice</span>
                     </div>
                     <div class="status-tile">
-                        <span class="status-pill">@ContractClient.ContractState</span>
+                        <StatusBadge Value="@ContractClient.ContractState" />
                     </div>
                 </div>
+
+                @if (CanActivateContract)
+                {
+                    <div class="contract-activation-action">
+                        <button type="button"
+                                class="btn contract-action contract-action-success"
+                                @onclick="ActivateContractAsync">
+                            <i class="fa fa-circle-check"></i>
+                            <span>Activar contrato</span>
+                        </button>
+                    </div>
+                }
             </section>
 
             <section class="row g-4 mt-1 control-grid">

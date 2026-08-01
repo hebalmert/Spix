@@ -39,7 +39,7 @@ public partial class FormContractClient
     private string ValueText = string.Empty;
     private string BaseView = "/contractclients";
     private string BaseClient = "/api/v1/clients";
-    private string BaseComboStatus = "/api/v1/contractclients/loadStatus";
+    private string BaseComboStatus = "/api/v1/contractclients/loadContractClientStatus";
     private string BaseComboContractor = "/api/v1/combosData/ComboContractor";
     private string BaseComboClients = "/api/v1/combosData/ComboClients";
     private string BaseComboState = "/api/v1/combosData/ComboState";
@@ -82,6 +82,7 @@ public partial class FormContractClient
                 if (value == 5) { ContractClient.ContractState = ContractState.Suspended; }
                 if (value == 6) { ContractClient.ContractState = ContractState.Cancelled; }
                 if (value == 7) { ContractClient.ContractState = ContractState.Terminated; }
+                if (value == 8) { ContractClient.ContractState = ContractState.InProgress; }
             }
         }
     }

@@ -18,4 +18,6 @@ public class ContractControlServiceX : IContractControlServiceX
     public async Task<ActionResponse<IEnumerable<ContractClient>>> GetControlContratos(PaginationDTO pagination, string username) => await _contractControlService.GetControlContratos(pagination, username);
 
     public async Task<ActionResponse<ContractClient>> GetAsync(Guid id) => await _contractControlService.GetAsync(id);
+
+    public async Task<ActionResponse<ContractClient>> ActivateAsync(Guid id, string username) => await _contractControlService.ActivateAsync(id, username);
 }

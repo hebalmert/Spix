@@ -2,12 +2,8 @@
     <DataAnnotationsValidator />
 
     <!-- Estado -->
-    @if (States is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="State" Items="States">
+        <Body>
         <div class="row">
             <div class="col-md-12 mb-2">
                 <div class="input-group">
@@ -21,15 +17,12 @@
                 </div>
             </div>
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <!-- Ciudad -->
-    @if (Cities is null)
-    {
-        <Loading />
-    }
-    else
-    {
+    <GenericSelectWrapper Tmodel="City" Items="Cities">
+        <Body>
         <div class="row">
             <div class="col-md-12 mb-2">
                 <div class="input-group">
@@ -43,7 +36,8 @@
                 </div>
             </div>
         </div>
-    }
+        </Body>
+    </GenericSelectWrapper>
 
     <!-- Nombre de zona -->
     <div class="row">

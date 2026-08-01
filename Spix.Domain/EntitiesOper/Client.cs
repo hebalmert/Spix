@@ -76,5 +76,6 @@ public class Client
     public Corporation? Corporation { get; set; }
     public DocumentType? DocumentType { get; set; }
     public ICollection<ContractClient>? ContractClients { get; set; }
+    public ICollection<ContractSuspendedAudit>? ContractSuspendedAudits { get; set; }
 
 }

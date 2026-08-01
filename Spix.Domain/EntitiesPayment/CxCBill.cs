@@ -80,4 +80,6 @@ public class CxCBill
     public ICollection<PreExonerated>? PreExonerateds { get; set; }
 
     public ICollection<ContractorAccountPayable>? ContractorAccountPayables { get; set; }
+
+    public ICollection<RunSuspendedDetail>? RunSuspendedDetails { get; set; }
 }
