@@ -37,7 +37,7 @@ public partial class InputDocument
         SelectedFile = file;
 
         var buffer = new byte[file.Size];
-        await file.OpenReadStream(MaxAllowedSize).ReadAsync(buffer);
+        await file.OpenReadStream(MaxAllowedSize).ReadExactlyAsync(buffer);
         var base64 = Convert.ToBase64String(buffer);
         var dataUrl = $"data:{file.ContentType};base64,{base64}";
 

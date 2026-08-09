@@ -619,6 +619,7 @@ public class BillingService : IBillingService
                 .ThenInclude(x => x.DocumentType)
             .Include(x => x.Zone!)
                 .ThenInclude(x => x.City)
+            .Include(x => x.EstratoSocial)
             .Include(x => x.ContractPlans!)
                 .ThenInclude(x => x.Plan!)
                     .ThenInclude(x => x.Tax)
@@ -664,7 +665,8 @@ public class BillingService : IBillingService
         }
 
         var plan = contractPlan.Plan;
-        var planTaxRate = plan.Tax?.Rate ?? 0;
+        bool appliesTax = contract.EstratoSocial?.ApplyTax ?? true;
+        var planTaxRate = appliesTax ? plan.Tax?.Rate ?? 0 : 0;
         var planTaxAmount = CalculateTax(plan.Price, planTaxRate);
         var planPrice = plan.Price + planTaxAmount;
         var corporationId = contract.CorporationId;
@@ -725,10 +727,10 @@ public class BillingService : IBillingService
                     Concept = BuildServiceConcept(request, detail),
                     Quantity = 1,
                     TaxId = detail.TaxId,
-                    TaxRate = detail.TaxRate,
+                    TaxRate = appliesTax ? detail.TaxRate : 0,
                     UnitPrice = detail.Price,
-                    TaxAmount = detail.TaxAmount,
-                    Price = detail.Total,
+                    TaxAmount = appliesTax ? detail.TaxAmount : 0,
+                    Price = appliesTax ? detail.Total : detail.Price,
                     ServiceRequestId = request.ServiceRequestId,
                     CorporationId = corporationId
                 };

@@ -178,6 +178,42 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back to dashboard.
+        /// </summary>
+        public static string App_BackToDashboard {
+            get {
+                return ResourceManager.GetString("App_BackToDashboard", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The page you requested is not available or may have been moved..
+        /// </summary>
+        public static string App_NotFoundMessage {
+            get {
+                return ResourceManager.GetString("App_NotFoundMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Page not found.
+        /// </summary>
+        public static string App_NotFoundTitle {
+            get {
+                return ResourceManager.GetString("App_NotFoundTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Apply Tax.
+        /// </summary>
+        public static string ApplyTax {
+            get {
+                return ResourceManager.GetString("ApplyTax", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Assigned.
         /// </summary>
         public static string Assigned {
@@ -826,6 +862,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create Social Stratum.
+        /// </summary>
+        public static string Create_EstratoSocial {
+            get {
+                return ResourceManager.GetString("Create_EstratoSocial", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Create Frecuency.
         /// </summary>
         public static string Create_Frecuency {
@@ -1330,6 +1375,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Social Stratum.
+        /// </summary>
+        public static string Edit_EstratoSocial {
+            get {
+                return ResourceManager.GetString("Edit_EstratoSocial", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Edit Frecuency.
         /// </summary>
         public static string Edit_Frecuency {
@@ -1770,6 +1824,24 @@ namespace Spix.xLanguage.Resources {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Social Stratum.
+        /// </summary>
+        public static string EstratoSocial {
+            get {
+                return ResourceManager.GetString("EstratoSocial", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Social Strata.
+        /// </summary>
+        public static string EstratosSociales {
+            get {
+                return ResourceManager.GetString("EstratosSociales", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Excluded.
         /// </summary>
@@ -3714,6 +3786,15 @@ namespace Spix.xLanguage.Resources {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Select Social Stratum.
+        /// </summary>
+        public static string Select_EstratoSocial {
+            get {
+                return ResourceManager.GetString("Select_EstratoSocial", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Select Corporation.
         /// </summary>

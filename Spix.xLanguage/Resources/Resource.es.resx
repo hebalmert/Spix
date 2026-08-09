@@ -682,6 +682,18 @@
   <data name="Tax" xml:space="preserve">
     <value>Tax</value>
   </data>
+  <data name="EstratoSocial" xml:space="preserve">
+    <value>Estrato Social</value>
+  </data>
+  <data name="ApplyTax" xml:space="preserve">
+    <value>Aplica impuesto</value>
+  </data>
+  <data name="Select_EstratoSocial" xml:space="preserve">
+    <value>Seleccione Estrato Social</value>
+  </data>
+  <data name="EstratosSociales" xml:space="preserve">
+    <value>Estratos Sociales</value>
+  </data>
   <data name="Serials" xml:space="preserve">
     <value>Seriales</value>
   </data>
@@ -738,6 +750,12 @@
   </data>
   <data name="Create_Tax" xml:space="preserve">
     <value>Crear Impuesto</value>
+  </data>
+  <data name="Edit_EstratoSocial" xml:space="preserve">
+    <value>Editar Estrato Social</value>
+  </data>
+  <data name="Create_EstratoSocial" xml:space="preserve">
+    <value>Crear Estrato Social</value>
   </data>
   <data name="Edit_Zone" xml:space="preserve">
     <value>Editar Zona</value>
@@ -1474,5 +1492,8 @@
   <data name="PasswordRecovery_Button" xml:space="preserve"><value>Restablecer contraseña</value></data>
   <data name="PasswordRecovery_SecurityNotice" xml:space="preserve"><value>Si no solicitaste restablecer tu contraseña, ignora este correo. Tu contraseña actual no cambiará.</value></data>
   <data name="PasswordRecovery_Footer" xml:space="preserve"><value>Este es un correo automático de recuperación de contraseña. Por favor, no respondas.</value></data>
+  <data name="App_NotFoundTitle" xml:space="preserve"><value>Página no encontrada</value></data>
+  <data name="App_NotFoundMessage" xml:space="preserve"><value>La página solicitada no está disponible o pudo haber sido movida.</value></data>
+  <data name="App_BackToDashboard" xml:space="preserve"><value>Volver al dashboard</value></data>
 </root>
 

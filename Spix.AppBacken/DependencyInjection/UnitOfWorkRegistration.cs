@@ -118,6 +118,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IServiceCategoryService, ServiceCategoryService>();
             services.AddScoped<IServiceClientServiceX, ServiceClientServiceX>();
             services.AddScoped<IServiceClientService, ServiceClientService>();
+            services.AddScoped<IEstratoSocialServiceX, EstratoSocialServiceX>();
+            services.AddScoped<IEstratoSocialService, EstratoSocialService>();
             services.AddScoped<ITaxServiceX, TaxServiceX>();
             services.AddScoped<ITaxService, TaxService>();
             services.AddScoped<IZoneServiceX, ZoneServiceX>();

@@ -16,5 +16,9 @@ public class ContractClientConfig : IEntityTypeConfiguration<ContractClient>
         builder.HasOne(e => e.Contractor).WithMany(c => c.ContractClients).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Client).WithMany(c => c.ContractClients).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Zone).WithMany(c => c.ContractClients).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.EstratoSocial)
+            .WithMany(c => c.ContractClients)
+            .HasForeignKey(e => e.EstratoSocialId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

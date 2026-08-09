@@ -1,0 +1,60 @@
+@page "/estratossociales"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <h3 class="mb-4">@Localizer[nameof(Resource.EstratosSociales)]</h3>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-md-3 d-flex justify-content-start">
+                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
+                    <i class="fa fa-plus-circle"></i> Estrato
+                </button>
+            </div>
+            <div class="col-md-9 d-flex justify-content-end">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <hr />
+        <GenericList MyList="EstratosSociales">
+            <Body>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>@Localizer[nameof(Resource.Name)]</th>
+                                <th>@Localizer[nameof(Resource.ApplyTax)]</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (EstratoSocial item in EstratosSociales!)
+                            {
+                                <tr>
+                                    <td>@item.EstratoSocialName</td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" checked="@item.ApplyTax" disabled />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonEdit OnClick="() => ShowModalAsync(item.EstratoSocialId, true)" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        <ButtonDelete OnClick="() => DeleteAsync(item.EstratoSocialId)" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+        </GenericList>
+
+        <hr />
+        <Pagination CurrentPage="CurrentPage"
+                    SelectedPage="SelectedPage"
+                    TotalPages="TotalPages" />
+    </div>
+</div>

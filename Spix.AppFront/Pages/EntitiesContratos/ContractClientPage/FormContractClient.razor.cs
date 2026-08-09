@@ -36,6 +36,7 @@ public partial class FormContractClient
     private Client Client = new();
     private Guid Value = Guid.Empty;
     private List<IntItemModel>? WorkStatuses;
+    private List<GuidItemModel>? EstratosSociales;
     private string ValueText = string.Empty;
     private string BaseView = "/contractclients";
     private string BaseClient = "/api/v1/clients";
@@ -45,12 +46,14 @@ public partial class FormContractClient
     private string BaseComboState = "/api/v1/combosData/ComboState";
     private string BaseComboCity = "/api/v1/combosData/ComboCity";
     private string BaseComboZone = "/api/v1/zones/loadCombo";
+    private string BaseComboEstratoSocial = "/api/v1/estratossociales/loadCombo";
 
     protected override async Task OnInitializedAsync()
     {
         await LoadState();
         await LoadContractor();
         await LoadStatus();
+        await LoadEstratosSociales();
         if (IsEditControl)
         {
             Value = ContractClient.ClientId;
@@ -67,6 +70,30 @@ public partial class FormContractClient
             return;
         }
         WorkStatuses = responseHttp.Response;
+    }
+
+    private async Task LoadEstratosSociales()
+    {
+        var responseHttp = await _repository.GetAsync<List<GuidItemModel>>(BaseComboEstratoSocial);
+        bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+        {
+            _navigationManager.NavigateTo(BaseView);
+            return;
+        }
+
+        EstratosSociales = responseHttp.Response;
+    }
+
+    private void EstratoSocialChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out Guid estratoSocialId) && estratoSocialId != Guid.Empty)
+        {
+            ContractClient.EstratoSocialId = estratoSocialId;
+            return;
+        }
+
+        ContractClient.EstratoSocialId = null;
     }
 
     private async Task StatusChanged(ChangeEventArgs e)

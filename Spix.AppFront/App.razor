@@ -1,21 +1,24 @@
-﻿<CascadingAuthenticationState>
+@inject IStringLocalizer<Resource> Localizer
+
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(LoginLayout)">
-                <Authorizing>
-                    <p>Autorizando...</p>
-                </Authorizing>
-                <NotAuthorized>
-                    <p>No se encuentra autorizado...</p>
-                </NotAuthorized>
+                <Authorizing><p>Autorizando...</p></Authorizing>
+                <NotAuthorized><p>No se encuentra autorizado...</p></NotAuthorized>
             </AuthorizeRouteView>
-
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <PageTitle>Recurso no Encontrado</PageTitle>
+            <PageTitle>@Localizer["App_NotFoundTitle"]</PageTitle>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">No hay ningún recurso en esta ruta...</p>
+                <section class="route-not-found" role="alert">
+                    <div class="route-not-found__icon"><i class="fa fa-compass"></i></div>
+                    <span class="route-not-found__code">404</span>
+                    <h1>@Localizer["App_NotFoundTitle"]</h1>
+                    <p>@Localizer["App_NotFoundMessage"]</p>
+                    <a class="btn btn-gradient-primary" href="/dashboard"><i class="fa fa-house me-2"></i>@Localizer["App_BackToDashboard"]</a>
+                </section>
             </LayoutView>
         </NotFound>
     </Router>

@@ -1,9 +1,11 @@
-﻿.authFull {
+.authFull {
     margin: 0;
     width: 100vw;
     height: 100vh;
     background:
-        linear-gradient(135deg, rgba(75,85,99,0.72), rgba(55,65,81,0.72)),
+        radial-gradient(1000px 600px at 80% -10%, rgba(43,139,255,.5), transparent 60%),
+        radial-gradient(750px 520px at 0% 25%, rgba(34,193,232,.24), transparent 55%),
+        linear-gradient(160deg, rgba(8,26,63,0.92), rgba(16,54,120,0.88) 55%, rgba(11,35,80,0.9)),
         url("https://spiximage.blob.core.windows.net/imgwwwroot/bgCenterImg.jpg?v=20260708-3");
     background-size: cover;
     background-repeat: no-repeat;

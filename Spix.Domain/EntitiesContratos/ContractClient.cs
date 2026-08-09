@@ -60,6 +60,9 @@ public class ContractClient
     [Display(Name = nameof(Resource.Invoice_Client), ResourceType = typeof(Resource))]
     public bool EnvoiceClient { get; set; }
 
+    [Display(Name = nameof(Resource.EstratoSocial), ResourceType = typeof(Resource))]
+    public Guid? EstratoSocialId { get; set; }
+
     //Propiedades no Mapeadas para el Control de Contratos
     [Display(Name = nameof(Resource.UseHotSpotControl), ResourceType = typeof(Resource))]
     [NotMapped]
@@ -104,6 +107,7 @@ public class ContractClient
     public Contractor? Contractor { get; set; } 
     public Client? Client { get; set; }
     public Zone? Zone { get; set; } 
+    public EstratoSocial? EstratoSocial { get; set; }
 
 
     public ContractIDPic? ContractIDPic { get; set; }

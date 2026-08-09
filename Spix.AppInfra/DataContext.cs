@@ -64,6 +64,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Register> Registers => Set<Register>();
     public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
     public DbSet<ServiceClient> ServiceClients => Set<ServiceClient>();
+    public DbSet<EstratoSocial> EstratosSociales => Set<EstratoSocial>();
     public DbSet<Tax> Taxes => Set<Tax>();
     public DbSet<Zone> Zones => Set<Zone>();
 

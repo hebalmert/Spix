@@ -123,8 +123,8 @@
     </div>
 
     <div class="row">
-        <!-- Ciudad + Activo -->
-        <div class="col-12 col-md-4 mb-2">
+        <!-- Equipos, estrato, facturacion y estatus -->
+        <div class="col-12 col-md-3 mb-2">
             <div class="d-flex align-items-center">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Equipment_Compnay)]
@@ -136,7 +136,25 @@
             </div>
         </div>
 
-        <div class="col-12 col-md-4 mb-2">
+        <div class="col-12 col-md-3 mb-2">
+            <GenericSelectWrapper Tmodel="GuidItemModel" Items="EstratosSociales">
+                <Body>
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 110px">
+                            @Localizer[nameof(Resource.EstratoSocial)]
+                        </span>
+                        <select class="form-select" value="@ContractClient.EstratoSocialId" @onchange="EstratoSocialChanged">
+                            @foreach (var item in EstratosSociales!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                </Body>
+            </GenericSelectWrapper>
+        </div>
+
+        <div class="col-12 col-md-3 mb-2">
             <div class="d-flex align-items-center">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Invoice_Client)]
@@ -147,7 +165,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-4 mb-2">
+        <div class="col-12 col-md-3 mb-2">
             <GenericSelectWrapper Tmodel="IntItemModel" Items="WorkStatuses">
                 <Body>
                 <div class="input-group">

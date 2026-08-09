@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spix.AppInfra;
 
@@ -11,9 +12,11 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260809004516_AddTelephonySubaccountsRecordingAndTesting")]
+    partial class AddTelephonySubaccountsRecordingAndTesting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1010,9 +1013,6 @@ namespace Spix.AppBacken.Migrations
                     b.Property<bool>("EquipoEmpres")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("EstratoSocialId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(25)
@@ -1042,8 +1042,6 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ContractorId");
-
-                    b.HasIndex("EstratoSocialId");
 
                     b.HasIndex("ServiceCategoryId");
 
@@ -1823,32 +1821,6 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique();
 
                     b.ToTable("DocumentTypes");
-                });
-
-            modelBuilder.Entity("Spix.Domain.EntitiesGen.EstratoSocial", b =>
-                {
-                    b.Property<Guid>("EstratoSocialId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.Property<bool>("ApplyTax")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("CorporationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EstratoSocialName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("EstratoSocialId");
-
-                    b.HasIndex("CorporationId", "EstratoSocialName")
-                        .IsUnique();
-
-                    b.ToTable("EstratosSociales");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Mark", b =>
@@ -4370,11 +4342,6 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Spix.Domain.EntitiesGen.EstratoSocial", "EstratoSocial")
-                        .WithMany("ContractClients")
-                        .HasForeignKey("EstratoSocialId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Spix.Domain.EntitiesGen.ServiceCategory", null)
                         .WithMany("ContractClients")
                         .HasForeignKey("ServiceCategoryId");
@@ -4394,8 +4361,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Contractor");
 
                     b.Navigation("Corporation");
-
-                    b.Navigation("EstratoSocial");
 
                     b.Navigation("Zone");
                 });
@@ -4705,17 +4670,6 @@ namespace Spix.AppBacken.Migrations
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.DocumentType", b =>
-                {
-                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
-                        .WithMany()
-                        .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Corporation");
-                });
-
-            modelBuilder.Entity("Spix.Domain.EntitiesGen.EstratoSocial", b =>
                 {
                     b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
                         .WithMany()
@@ -5919,11 +5873,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Suppliers");
 
                     b.Navigation("Technicians");
-                });
-
-            modelBuilder.Entity("Spix.Domain.EntitiesGen.EstratoSocial", b =>
-                {
-                    b.Navigation("ContractClients");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Mark", b =>

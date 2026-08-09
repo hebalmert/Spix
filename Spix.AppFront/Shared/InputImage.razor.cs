@@ -36,7 +36,7 @@ public partial class InputImage
         {
             using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB
             var arrBytes = new byte[file.Size];
-            await stream.ReadAsync(arrBytes);
+            await stream.ReadExactlyAsync(arrBytes);
             ImageBase64 = Convert.ToBase64String(arrBytes);
             ImageUrl = null;
             await ImageSelected.InvokeAsync(ImageBase64);

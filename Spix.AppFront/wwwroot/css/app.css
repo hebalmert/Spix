@@ -366,7 +366,14 @@ a, .btn-link {
 
 /* Fondo gris muy suave para el área principal */
 .main-content {
-    background-color: #f4f4f4;
+    background:
+        radial-gradient(1000px 600px at 80% -10%, rgba(43, 139, 255, .5), transparent 60%),
+        radial-gradient(750px 520px at 0% 25%, rgba(34, 193, 232, .24), transparent 55%),
+        linear-gradient(160deg, rgba(8, 26, 63, .92), rgba(16, 54, 120, .88) 55%, rgba(11, 35, 80, .9)),
+        url('https://spiximage.blob.core.windows.net/imgwwwroot/bgCenterImg.jpg?v=20260708-3');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     padding: 2rem;
     border-radius: 8px;
     transition: background-color 0.3s ease;
@@ -581,6 +588,73 @@ a, .btn-link {
 
 code {
     color: #c02d76;
+}
+
+.table-dark {
+    --bs-table-color: #ffffff;
+    --bs-table-bg: #0e2a5e;
+    --bs-table-border-color: #173f82;
+    --bs-table-striped-bg: #12346d;
+    --bs-table-hover-bg: #173f82;
+}
+
+/* Standard nested card used inside a parent surface. */
+.card-floating-section {
+    border: 1px solid rgba(45, 91, 160, .45);
+    border-radius: 12px;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    overflow: hidden;
+}
+
+.card-floating-section .card-body {
+    background: linear-gradient(135deg, #ffffff 0%, #f6f9ff 100%);
+}
+
+.route-not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 580px;
+    margin: 4rem auto;
+    padding: 3rem 2rem;
+    border: 1px solid rgba(255, 255, 255, .75);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .78);
+    box-shadow: 0 18px 38px rgba(14, 42, 94, .16), 0 4px 10px rgba(14, 42, 94, .1);
+    backdrop-filter: blur(8px);
+    text-align: center;
+}
+
+.route-not-found__icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    margin-bottom: .75rem;
+    border-radius: 20px;
+    background: #0e2a5e;
+    color: #ffffff;
+    font-size: 2rem;
+}
+
+.route-not-found__code {
+    color: #0e7c86;
+    font-size: .9rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+.route-not-found h1 {
+    margin: .35rem 0 .75rem;
+    color: #0e2a5e;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.route-not-found p {
+    max-width: 430px;
+    margin-bottom: 1.5rem;
+    color: #496174;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {

@@ -1,7 +1,7 @@
 .general-dashboard {
     min-height: calc(100vh - 2rem);
     padding: 2rem;
-    background: #f4f6f8;
+    background: transparent;
 }
 
 .general-dashboard__header {
@@ -14,7 +14,7 @@
 
 .general-dashboard__eyebrow {
     margin: 0 0 .25rem;
-    color: #52616f;
+    color: rgba(255, 255, 255, .78);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0;
@@ -22,7 +22,8 @@
 
 .general-dashboard__header h1 {
     margin: 0;
-    color: #1f2937;
+    color: rgba(255, 255, 255, .94);
+    text-shadow: 0 2px 10px rgba(5, 18, 47, .42);
     font-size: 2rem;
     font-weight: 800;
 }
@@ -33,8 +34,8 @@
     gap: .5rem;
     padding: .55rem .85rem;
     border-radius: 8px;
-    background: #e8f7ef;
-    color: #157347;
+    background: #e2f6fb;
+    color: #0b6d8e;
     font-weight: 700;
 }
 
@@ -48,14 +49,26 @@
 .insight-card {
     min-height: 210px;
     padding: 1.25rem;
-    border-radius: 8px;
-    background: #fff;
-    color: #1f2937;
-    box-shadow: 0 16px 34px rgba(15, 23, 42, .1);
+    border: 1px solid rgba(255, 255, 255, .72);
+    border-radius: 12px;
+    background: #eaf7fd;
+    color: #102a43;
+    box-shadow: 0 14px 24px rgba(5, 18, 47, .24), 4px 6px 10px rgba(14, 42, 94, .14), 6px 8px 11px rgba(173, 220, 255, .72);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.insight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 32px rgba(5, 18, 47, .3), 6px 8px 12px rgba(14, 42, 94, .18), 8px 10px 14px rgba(196, 231, 255, .84);
 }
 
 .insight-card--billing {
     background: linear-gradient(135deg, #172554, #0f766e);
+    color: #fff;
+}
+
+.insight-card--contracts {
+    background: linear-gradient(135deg, #123d69, #0e7490);
     color: #fff;
 }
 
@@ -73,12 +86,16 @@
 }
 
 .insight-card__header i {
-    color: #0f766e;
+    color: #168bb5;
     font-size: 2rem;
 }
 
 .insight-card--billing .insight-card__header i {
     color: rgba(255, 255, 255, .72);
+}
+
+.insight-card--contracts .insight-card__header i {
+    color: #bae6fd;
 }
 
 .insight-card__label {
@@ -90,6 +107,11 @@
 
 .insight-card--billing .insight-card__label {
     color: rgba(255, 255, 255, .72);
+}
+
+.insight-card--contracts .insight-card__label,
+.insight-card--contracts .insight-card__loading {
+    color: rgba(255, 255, 255, .78);
 }
 
 .insight-card__loading {
@@ -122,7 +144,7 @@
     justify-content: center;
     gap: 1rem;
     flex-wrap: wrap;
-    color: #334155;
+    color: rgba(255, 255, 255, .92);
     font-weight: 700;
 }
 
@@ -209,7 +231,7 @@
     display: flex;
     align-items: center;
     gap: .75rem;
-    color: #334155;
+    color: #ffffff;
     font-weight: 800;
 }
 
@@ -217,7 +239,7 @@
     content: "";
     flex: 1;
     height: 1px;
-    background: #d7dde4;
+    background: rgba(255, 255, 255, .36);
 }
 
 .general-dashboard__grid {
@@ -238,8 +260,17 @@
     position: relative;
     min-height: 190px;
     overflow: hidden;
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .72);
+    border-radius: 12px;
+    background: #0e7490;
     color: #fff;
+    box-shadow: 0 14px 24px rgba(5, 18, 47, .24), 4px 6px 10px rgba(14, 42, 94, .14), 6px 8px 11px rgba(173, 220, 255, .72);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.general-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 32px rgba(5, 18, 47, .3), 6px 8px 12px rgba(14, 42, 94, .18), 8px 10px 14px rgba(196, 231, 255, .84);
 }
 
 .general-card__link {
@@ -251,60 +282,12 @@
 }
 
 .general-card__link:hover {
-    color: inherit;
+    color: #fff;
 }
 
 .general-card__link:focus-visible {
     outline: 3px solid rgba(255, 255, 255, .75);
     outline-offset: -6px;
-}
-
-.general-card--clients {
-    background: #0f766e;
-}
-
-.general-card--contract-client {
-    background: #1d4ed8;
-}
-
-.general-card--network {
-    background: #115e59;
-}
-
-.general-card--nodes {
-    background: #334155;
-}
-
-.general-card--inventory {
-    background: #2563eb;
-}
-
-.general-card--schedule {
-    background: #7c3aed;
-}
-
-.general-card--contracts {
-    background: #0e7490;
-}
-
-.general-card--requests {
-    background: #be123c;
-}
-
-.general-card--technicians {
-    background: #475569;
-}
-
-.general-card--billing {
-    background: #6d28d9;
-}
-
-.general-card--finance {
-    background: #9a5b00;
-}
-
-.general-card--prepay {
-    background: #15803d;
 }
 
 .general-card__content {
@@ -317,19 +300,19 @@
     display: block;
     margin-bottom: .75rem;
     font-weight: 700;
-    opacity: .9;
+    color: rgba(255, 255, 255, .78);
 }
 
-.general-card h2,
-.general-dashboard__panel h2 {
+.general-card h2 {
     margin: 0 0 .5rem;
+    color: #fff;
     font-size: 1.25rem;
     font-weight: 800;
 }
 
-.general-card p,
-.general-dashboard__panel p {
+.general-card p {
     margin: 0;
+    color: rgba(255, 255, 255, .84);
     line-height: 1.5;
 }
 
@@ -338,25 +321,35 @@
     right: 1.25rem;
     bottom: 1rem;
     font-size: 4.5rem;
-    opacity: .28;
+    opacity: .38;
 }
 
-.general-dashboard__panel {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 1.5rem;
-    border-radius: 8px;
-    background: #fff;
-    color: #334155;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
-}
+.general-card--clients { background: linear-gradient(135deg, #0f766e, #0e9f96); }
+.general-card--contract-client { background: linear-gradient(135deg, #1e40af, #2563eb); }
+.general-card--network { background: linear-gradient(135deg, #115e59, #0f8a7a); }
+.general-card--nodes { background: linear-gradient(135deg, #334155, #526477); }
+.general-card--inventory { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+.general-card--schedule { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
+.general-card--contracts { background: linear-gradient(135deg, #0e7490, #1291b0); }
+.general-card--requests { background: linear-gradient(135deg, #b91c3b, #e23b5c); }
+.general-card--technicians { background: linear-gradient(135deg, #475569, #64748b); }
+.general-card--billing { background: linear-gradient(135deg, #5b21b6, #7c3aed); }
+.general-card--finance { background: linear-gradient(135deg, #a16207, #d68a14); }
+.general-card--prepay { background: linear-gradient(135deg, #15803d, #22a35a); }
 
-.general-dashboard__panel i {
-    color: #0f766e;
-    font-size: 2.25rem;
+.general-card--clients .general-card__icon,
+.general-card--contract-client .general-card__icon,
+.general-card--network .general-card__icon,
+.general-card--nodes .general-card__icon,
+.general-card--inventory .general-card__icon,
+.general-card--schedule .general-card__icon,
+.general-card--contracts .general-card__icon,
+.general-card--requests .general-card__icon,
+.general-card--technicians .general-card__icon,
+.general-card--billing .general-card__icon,
+.general-card--finance .general-card__icon,
+.general-card--prepay .general-card__icon {
+    color: rgba(255, 255, 255, .58);
 }
 
 @media (max-width: 992px) {
@@ -373,8 +366,7 @@
         padding: 1rem;
     }
 
-    .general-dashboard__header,
-    .general-dashboard__panel {
+    .general-dashboard__header {
         align-items: flex-start;
         flex-direction: column;
     }

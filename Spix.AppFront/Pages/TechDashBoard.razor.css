@@ -1,7 +1,7 @@
 .tech-dashboard {
     min-height: calc(100vh - 2rem);
     padding: 2rem;
-    background: #f4f6f8;
+    background: transparent;
 }
 
 .tech-dashboard__header {
@@ -14,7 +14,7 @@
 
 .tech-dashboard__eyebrow {
     margin: 0 0 .25rem;
-    color: #52616f;
+    color: rgba(255, 255, 255, .78);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0;
@@ -22,7 +22,8 @@
 
 .tech-dashboard__header h1 {
     margin: 0;
-    color: #1f2937;
+    color: rgba(255, 255, 255, .94);
+    text-shadow: 0 2px 10px rgba(5, 18, 47, .42);
     font-size: 2rem;
     font-weight: 800;
 }
@@ -48,8 +49,17 @@
     position: relative;
     min-height: 190px;
     overflow: hidden;
-    border-radius: 8px;
-    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .72);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #102a43;
+    box-shadow: 0 14px 24px rgba(5, 18, 47, .24), 4px 6px 10px rgba(14, 42, 94, .14), 6px 8px 11px rgba(173, 220, 255, .72);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.tech-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 32px rgba(5, 18, 47, .3), 6px 8px 12px rgba(14, 42, 94, .18), 8px 10px 14px rgba(196, 231, 255, .84);
 }
 
 .tech-card__link {
@@ -61,28 +71,12 @@
 }
 
 .tech-card__link:hover {
-    color: inherit;
+    color: #102a43;
 }
 
 .tech-card__link:focus-visible {
     outline: 3px solid rgba(255, 255, 255, .75);
     outline-offset: -6px;
-}
-
-.tech-card--agenda {
-    background: #0f766e;
-}
-
-.tech-card--requests {
-    background: #334155;
-}
-
-.tech-card--network {
-    background: #2563eb;
-}
-
-.tech-card--payments {
-    background: #7c3aed;
 }
 
 .tech-card__content {
@@ -95,12 +89,13 @@
     display: block;
     margin-bottom: .75rem;
     font-weight: 700;
-    opacity: .9;
+    color: #496174;
 }
 
 .tech-card h2,
 .tech-dashboard__panel h2 {
     margin: 0 0 .5rem;
+    color: #0e2a5e;
     font-size: 1.25rem;
     font-weight: 800;
 }
@@ -108,6 +103,7 @@
 .tech-card p,
 .tech-dashboard__panel p {
     margin: 0;
+    color: #496174;
     line-height: 1.5;
 }
 
@@ -116,8 +112,18 @@
     right: 1.25rem;
     bottom: 1rem;
     font-size: 4.5rem;
-    opacity: .28;
+    opacity: .38;
 }
+
+.tech-card--agenda { background: #e5f6f5; }
+.tech-card--requests { background: #edf1f5; }
+.tech-card--network { background: #e8f0ff; }
+.tech-card--payments { background: #f0eaff; }
+
+.tech-card--agenda .tech-card__icon { color: #0e7c86; }
+.tech-card--requests .tech-card__icon { color: #334155; }
+.tech-card--network .tech-card__icon { color: #2563eb; }
+.tech-card--payments .tech-card__icon { color: #7c3aed; }
 
 .tech-dashboard__panel {
     display: flex;
@@ -133,7 +139,7 @@
 }
 
 .tech-dashboard__panel i {
-    color: #0f766e;
+    color: #168bb5;
     font-size: 2.25rem;
 }
 

@@ -56,6 +56,7 @@ public partial class EditContractClient
             ContractState = ContractClient.ContractState,
             EquipoEmpres = ContractClient.EquipoEmpres,
             EnvoiceClient = ContractClient.EnvoiceClient,
+            EstratoSocialId = ContractClient.EstratoSocialId,
             CorporationId = ContractClient.CorporationId
         };
 
