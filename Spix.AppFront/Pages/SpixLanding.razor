@@ -1,0 +1,448 @@
+@page "/"
+@layout PublicSpixLayout
+@using Spix.DomainLogic.EntitiesSaaSDTO
+@using Spix.AppFront.Helper
+@using Spix.HttpService
+@inject IRepository Repository
+@inject SweetAlertService SweetAlert
+@inject HttpResponseHandler ResponseHandler
+@inject NavigationManager NavigationManager
+
+<PageTitle>SPIX | Gestion para ISP</PageTitle>
+
+<main class="spix-showcase">
+    <div class="spix-grid-overlay"></div>
+
+    <nav class="spix-site-nav" aria-label="Navegacion principal">
+        <a class="spix-wordmark" href="/" aria-label="SPIX inicio">
+            <span class="spix-wordmark__mark">S</span>
+            <span>SPIX</span>
+        </a>
+
+        <div class="spix-site-nav__links">
+            <a href="https://nexxtplanet.net/">Home</a>
+            <a href="#capacidades">Capacidades</a>
+            <a href="#planes">Planes</a>
+            <a href="#tutorial">Tutorial</a>
+            <a href="/login"
+               class="spix-nav-login"
+               @onclick="NavigateToLogin"
+               @onclick:preventDefault="true">
+                Ingresar
+            </a>
+        </div>
+    </nav>
+
+    <section class="spix-hero-section">
+        <div class="spix-hero-copy">
+            <span class="spix-product-label">Todo bajo control</span>
+            <div class="spix-product-identity">
+                <span class="spix-product-identity__icon">S</span>
+                <div>
+                    <strong>SPIX</strong>
+                    <small>PROVEEDORES DE INTERNET (ISP)</small>
+                </div>
+            </div>
+            <h1>TU ISP, BAJO CONTROL TOTAL</h1>
+            <p>
+                Administra tu red y tus clientes con control directo sobre servidores MikroTik:
+                contratos, planes, pagos y estados de servicio desde un solo lugar.
+            </p>
+            <div class="spix-hero-actions">
+                <button type="button" class="spix-button spix-button--primary" @onclick="() => OpenTrial()">
+                    Solicitar demo
+                </button>
+                <a class="spix-button spix-button--ghost" href="#planes">Ver planes</a>
+            </div>
+            <div class="spix-platform-chips">
+                <span><i class="fa fa-globe"></i> Web</span>
+                <span><i class="fa fa-cloud"></i> Nube</span>
+                <span><i class="fa fa-shield-alt"></i> 14 dias gratis</span>
+            </div>
+        </div>
+
+        <div class="spix-dashboard-wrap" aria-label="Vista previa del dashboard de Spix">
+            <span class="spix-floating-chip spix-floating-chip--left"><i class="fa fa-network-wired"></i></span>
+            <span class="spix-floating-chip spix-floating-chip--right"><i class="fa fa-cloud"></i></span>
+            <div class="spix-dashboard-mock">
+                <div class="spix-dashboard-mock__topbar">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="spix-dashboard-mock__content">
+                    <aside class="spix-dashboard-mock__menu">
+                        <b></b><span></span><span></span><span></span><span></span>
+                    </aside>
+                    <div class="spix-dashboard-mock__workarea">
+                        <div class="spix-mock-kpis">
+                            <article><span></span><b></b></article>
+                            <article><span></span><b></b></article>
+                            <article><span></span><b></b></article>
+                        </div>
+                        <div class="spix-mock-analytics">
+                            <div class="spix-mock-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                            <div class="spix-mock-ring"></div>
+                        </div>
+                        <div class="spix-mock-line"><i></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="spix-feature-grid" aria-label="Funciones principales">
+        <article>
+            <span>1</span>
+            <div>
+                <h2>Control MikroTik e IP Control</h2>
+                <p>Administra IPs y equipos MikroTik desde el sistema.</p>
+            </div>
+        </article>
+        <article>
+            <span>2</span>
+            <div>
+                <h2>Contratos y planes</h2>
+                <p>Crea planes con tasa de reuso y gestiona contratos.</p>
+            </div>
+        </article>
+        <article>
+            <span>3</span>
+            <div>
+                <h2>Pagos y exoneraciones</h2>
+                <p>Pagos por adelantado, control de cobros y exoneraciones.</p>
+            </div>
+        </article>
+        <article>
+            <span>4</span>
+            <div>
+                <h2>Suspensiones y activaciones</h2>
+                <p>Corta o reactiva el servicio segun el estado de pago.</p>
+            </div>
+        </article>
+    </section>
+
+    <section id="capacidades" class="spix-capabilities-section">
+        <div class="spix-capabilities-copy">
+            <span class="spix-section-kicker">CAPACIDADES</span>
+            <h2>Todo lo que necesitas, en un solo lugar</h2>
+            <ul>
+                <li><i class="fa fa-check"></i> Integracion y control de servidores MikroTik</li>
+                <li><i class="fa fa-check"></i> IP Control de clientes y equipos</li>
+                <li><i class="fa fa-check"></i> Gestion de suscriptores y contratos</li>
+                <li><i class="fa fa-check"></i> Planes con tasa de reuso</li>
+                <li><i class="fa fa-check"></i> Pagos por adelantado y control de cobros</li>
+                <li><i class="fa fa-check"></i> Exoneraciones</li>
+                <li><i class="fa fa-check"></i> Suspension y activacion del servicio</li>
+            </ul>
+            <p class="spix-capabilities-note">
+                <i class="fa fa-info-circle"></i>
+                Modulos disponibles hoy: IP Control y Planes con tasa de reuso. En evolucion continua.
+            </p>
+        </div>
+        <div class="spix-capabilities-preview">
+            <div class="spix-dashboard-wrap">
+                <div class="spix-dashboard-mock spix-dashboard-mock--compact">
+                    <div class="spix-dashboard-mock__topbar">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="spix-dashboard-mock__content">
+                        <aside class="spix-dashboard-mock__menu">
+                            <b></b><span></span><span></span><span></span><span></span>
+                        </aside>
+                        <div class="spix-dashboard-mock__workarea">
+                            <div class="spix-mock-kpis">
+                                <article><span></span><b></b></article>
+                                <article><span></span><b></b></article>
+                                <article><span></span><b></b></article>
+                            </div>
+                            <div class="spix-mock-analytics">
+                                <div class="spix-mock-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                                <div class="spix-mock-ring"></div>
+                            </div>
+                            <div class="spix-mock-line"><i></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="planes" class="spix-pricing-section">
+        <div class="spix-pricing-heading">
+            <span class="spix-section-kicker">PLANES SPIX</span>
+            <h2>Crece sin cambiar de sistema</h2>
+            <p>Elige el plan segun tus contratos activos. Todos incluyen el flujo operativo completo de Spix.</p>
+        </div>
+
+        <div class="spix-cycle-toggle" role="group" aria-label="Periodo de facturacion">
+            <button type="button" class="@(SelectedCycle == "monthly" ? "is-selected" : string.Empty)" @onclick="SelectMonthly">
+                Mensual
+            </button>
+            <button type="button" class="@(SelectedCycle == "annual" ? "is-selected" : string.Empty)" @onclick="SelectAnnual">
+                Anual <span>2 meses gratis</span>
+            </button>
+        </div>
+
+        @if (IsLoadingPlans)
+        {
+            <div class="spix-plans-loading">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+                <span>Cargando planes...</span>
+            </div>
+        }
+        else
+        {
+            <div class="spix-pricing-grid">
+                @foreach (PublicSoftPlanDTO plan in Plans)
+                {
+                    <article class="spix-pricing-card @(plan.IsRecommended ? "is-recommended" : string.Empty)">
+                        @if (plan.IsRecommended)
+                        {
+                            <span class="spix-pricing-card__badge">Mas elegido</span>
+                        }
+                        <h3>@plan.Name</h3>
+                        <p>@(string.IsNullOrWhiteSpace(plan.PublicDescription) ? "Operacion ISP completa para tu equipo." : plan.PublicDescription)</p>
+                        <div class="spix-price">
+                            <strong>@FormatPrice(SelectedCycle == "annual" ? plan.AnnualPrice : plan.MonthlyPrice)</strong>
+                            <span>COP / @(SelectedCycle == "annual" ? "ano" : "mes")</span>
+                        </div>
+                        <span class="spix-contract-limit">Hasta @plan.ContractLimit contratos activos</span>
+                        <ul>
+                            <li><i class="fa fa-check"></i> Contratos y control tecnico</li>
+                            <li><i class="fa fa-check"></i> Facturacion y cuentas por cobrar</li>
+                            <li><i class="fa fa-check"></i> Gestion de red MikroTik</li>
+                        </ul>
+                        <button type="button" class="spix-button spix-button--pricing" @onclick="() => OpenTrial(plan.SoftPlanId)">
+                            Iniciar prueba gratis
+                        </button>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
+    <section id="tutorial" class="spix-tutorial-section">
+        <span class="spix-section-kicker">APRENDE A USARLO</span>
+        <h2>Tutorial de SPIX</h2>
+        <div class="spix-video-placeholder">
+            <span><i class="fa fa-play"></i></span>
+            <strong>Video tutorial proximamente</strong>
+            <p>Estamos preparando la instalacion y operacion inicial.</p>
+        </div>
+    </section>
+
+    <section class="spix-closing-section">
+        <span class="spix-section-kicker">DESARROLLADO POR NEXXTPLANET</span>
+        <h2>Soluciones que evolucionan <em>contigo.</em></h2>
+        <div class="spix-closing-card">
+            <i class="fa fa-atom"></i>
+            <h3>Innovamos hoy, construimos tu mejor manana.</h3>
+            <p>Cuéntanos tu reto y descubre una solucion hecha para crecer.</p>
+            <a href="mailto:soporte@nexxtplanet.net" class="spix-button spix-button--primary">Hablemos de tu proyecto</a>
+        </div>
+    </section>
+
+    <footer class="spix-site-footer">
+        <div class="spix-footer-brand">
+            <img src="https://spiximage.blob.core.windows.net/imgwwwroot/LogoNexxtplanet.png" alt="NexxtPlanet" />
+            <p>Empresa de desarrollo de software y soluciones a la medida, automatizamos con IA y productos listos para usar.</p>
+        </div>
+        <div>
+            <strong>Navegacion</strong>
+            <a href="#capacidades">Capacidades</a>
+            <a href="#planes">Planes</a>
+            <a href="#tutorial">Tutorial</a>
+        </div>
+        <div>
+            <strong>Contacto</strong>
+            <a href="mailto:soporte@nexxtplanet.net">soporte@nexxtplanet.net</a>
+            <a href="/login">Ingresar a Spix</a>
+        </div>
+    </footer>
+
+    @if (ShowTrial)
+    {
+        <section class="spix-trial-panel" aria-label="Registro de prueba">
+            <div class="spix-trial-panel__backdrop" @onclick="CloseTrial"></div>
+            <div class="spix-trial-dialog" role="dialog" aria-modal="true" aria-labelledby="trial-title">
+                <button type="button" class="spix-dialog-close" aria-label="Cerrar" @onclick="CloseTrial">
+                    <i class="fa fa-times"></i>
+                </button>
+                <span class="spix-section-kicker">PRUEBA GRATUITA</span>
+                <h2 id="trial-title">Crea tu corporacion en Spix</h2>
+                <p>Tu administrador recibira un correo para activar la cuenta.</p>
+
+                <EditForm Model="TrialRequest" OnValidSubmit="StartTrialAsync">
+                    <DataAnnotationsValidator />
+                    <div class="row g-3">
+                        <div class="col-12 col-md-8">
+                            <label for="corporation-name">Corporacion</label>
+                            <InputText id="corporation-name" class="form-control" @bind-Value="TrialRequest.CorporationName" />
+                            <ValidationMessage For="@(() => TrialRequest.CorporationName)" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="corporation-document">NIT / documento</label>
+                            <InputText id="corporation-document" class="form-control" @bind-Value="TrialRequest.CorporationDocument" />
+                            <ValidationMessage For="@(() => TrialRequest.CorporationDocument)" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="corporation-phone">Telefono corporativo</label>
+                            <InputText id="corporation-phone" class="form-control" @bind-Value="TrialRequest.CorporationPhone" />
+                            <ValidationMessage For="@(() => TrialRequest.CorporationPhone)" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="trial-plan">Plan inicial</label>
+                            <select id="trial-plan" class="form-select" value="@TrialRequest.SoftPlanId" @onchange="PlanChanged">
+                                <option value="0">[Seleccione plan]</option>
+                                @foreach (PublicSoftPlanDTO plan in Plans)
+                                {
+                                    <option value="@plan.SoftPlanId">@plan.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="corporation-address">Direccion</label>
+                            <InputText id="corporation-address" class="form-control" @bind-Value="TrialRequest.CorporationAddress" />
+                            <ValidationMessage For="@(() => TrialRequest.CorporationAddress)" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="first-name">Nombre administrador</label>
+                            <InputText id="first-name" class="form-control" @bind-Value="TrialRequest.FirstName" />
+                            <ValidationMessage For="@(() => TrialRequest.FirstName)" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="last-name">Apellido administrador</label>
+                            <InputText id="last-name" class="form-control" @bind-Value="TrialRequest.LastName" />
+                            <ValidationMessage For="@(() => TrialRequest.LastName)" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="administrator-document">Documento</label>
+                            <InputText id="administrator-document" class="form-control" @bind-Value="TrialRequest.Document" />
+                            <ValidationMessage For="@(() => TrialRequest.Document)" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="administrator-phone">Telefono</label>
+                            <InputText id="administrator-phone" class="form-control" @bind-Value="TrialRequest.Phone" />
+                            <ValidationMessage For="@(() => TrialRequest.Phone)" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="administrator-user">Usuario</label>
+                            <InputText id="administrator-user" class="form-control" @bind-Value="TrialRequest.UserName" />
+                            <ValidationMessage For="@(() => TrialRequest.UserName)" />
+                        </div>
+                        <div class="col-12">
+                            <label for="administrator-email">Correo administrador</label>
+                            <InputText id="administrator-email" type="email" class="form-control" @bind-Value="TrialRequest.Email" />
+                            <ValidationMessage For="@(() => TrialRequest.Email)" />
+                        </div>
+                    </div>
+
+                    <div class="spix-dialog-actions">
+                        <button type="submit" class="spix-button spix-button--primary" disabled="@IsSubmittingTrial">
+                            @if (IsSubmittingTrial)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <span>Creando prueba...</span>
+                            }
+                            else
+                            {
+                                <span>Crear prueba de 14 dias</span>
+                            }
+                        </button>
+                        <button type="button" class="spix-button spix-button--ghost" @onclick="CloseTrial">Cancelar</button>
+                    </div>
+                </EditForm>
+            </div>
+        </section>
+    }
+</main>
+
+@code {
+    private List<PublicSoftPlanDTO> Plans { get; set; } = new();
+    private StartTrialRequestDTO TrialRequest { get; set; } = new();
+    private string SelectedCycle { get; set; } = "monthly";
+    private bool IsLoadingPlans { get; set; } = true;
+    private bool ShowTrial { get; set; }
+    private bool IsSubmittingTrial { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPlansAsync();
+    }
+
+    private async Task LoadPlansAsync()
+    {
+        var responseHttp = await Repository.GetAsync<List<PublicSoftPlanDTO>>("api/v1/public-spix/plans");
+        IsLoadingPlans = false;
+        if (await ResponseHandler.HandleErrorAsync(responseHttp))
+        {
+            return;
+        }
+
+        Plans = responseHttp.Response ?? new List<PublicSoftPlanDTO>();
+    }
+
+    private void SelectMonthly()
+    {
+        SelectedCycle = "monthly";
+    }
+
+    private void SelectAnnual()
+    {
+        SelectedCycle = "annual";
+    }
+
+    private void OpenTrial(int? softPlanId = null)
+    {
+        TrialRequest.SoftPlanId = softPlanId
+            ?? Plans.FirstOrDefault(x => x.IsRecommended)?.SoftPlanId
+            ?? Plans.FirstOrDefault()?.SoftPlanId
+            ?? 0;
+        ShowTrial = true;
+    }
+
+    private void CloseTrial()
+    {
+        ShowTrial = false;
+    }
+
+    private void PlanChanged(ChangeEventArgs args)
+    {
+        TrialRequest.SoftPlanId = int.TryParse(args.Value?.ToString(), out int planId) ? planId : 0;
+    }
+
+    private async Task StartTrialAsync()
+    {
+        if (TrialRequest.SoftPlanId == 0)
+        {
+            await SweetAlert.FireAsync("Plan requerido", "Selecciona el plan con el que deseas iniciar la prueba.", SweetAlertIcon.Warning);
+            return;
+        }
+
+        IsSubmittingTrial = true;
+        var responseHttp = await Repository.PostAsync<StartTrialRequestDTO, SubscriptionAccessDTO>(
+            "api/v1/public-spix/trial", TrialRequest);
+        IsSubmittingTrial = false;
+        if (await ResponseHandler.HandleErrorAsync(responseHttp))
+        {
+            return;
+        }
+
+        await SweetAlert.FireAsync(
+            "Prueba creada",
+            responseHttp.Response?.Message ?? "Revisa tu correo para activar la cuenta.",
+            SweetAlertIcon.Success);
+        ShowTrial = false;
+        TrialRequest = new StartTrialRequestDTO();
+        NavigateToLogin();
+    }
+
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+    }
+
+    private static string FormatPrice(decimal value)
+    {
+        return "$" + value.ToString("N0", new System.Globalization.CultureInfo("es-CO"));
+    }
+}

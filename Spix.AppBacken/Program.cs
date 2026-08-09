@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Spix.AppBack.Data;
 using Spix.AppBack.DependencyInjection;
 using Spix.AppBack.LoadCountries;
+using Spix.AppBack.Helper;
 using Spix.AppInfra;
 using Spix.DomainLogic.SettingModels;
 using Spix.xLanguage.Resources;
@@ -45,7 +46,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 // Controllers
-builder.Services.AddControllers()
+builder.Services.AddScoped<CorporationSubscriptionFilter>();
+builder.Services.AddControllers(options => options.Filters.AddService<CorporationSubscriptionFilter>())
     .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // API Versioning

@@ -1,0 +1,157 @@
+@page "/subscription"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+@using Spix.AppFront.Helper
+@using Spix.HttpService
+@using Spix.DomainLogic.EntitiesSaaSDTO
+@using Spix.DomainLogic.EnumTypes
+@inject IRepository Repository
+@inject SweetAlertService SweetAlert
+@inject HttpResponseHandler ResponseHandler
+@inject NavigationManager NavigationManager
+
+<div class="container pt-4 subscription-page">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 8px;">
+        <h3>Mi suscripcion Spix</h3>
+
+        @if (IsLoading)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="subscription-page__status @(Access?.HasAccess == true ? "is-active" : "is-expired")">
+                <div>
+                    <small>ESTADO DE LA CORPORACION</small>
+                    <strong>@StatusText</strong>
+                    <p>@Access?.Message</p>
+                </div>
+                <div>
+                    <small>VIGENCIA</small>
+                    <strong>@(Access?.ValidUntilUtc?.ToLocalTime().ToString("dd/MM/yyyy") ?? "Pendiente")</strong>
+                    <p>@(Access?.DaysRemaining > 0 ? $"{Access.DaysRemaining} dias restantes" : "Renueva para continuar")</p>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center my-4">
+                <div class="btn-group" role="group" aria-label="Periodo">
+                    <button type="button" class="btn @(Cycle == SubscriptionCycle.Monthly ? "btn-primary" : "btn-outline-primary")" @onclick="SelectMonthly">Mensual</button>
+                    <button type="button" class="btn @(Cycle == SubscriptionCycle.Annual ? "btn-primary" : "btn-outline-primary")" @onclick="SelectAnnual">Anual - 2 meses gratis</button>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                @foreach (PublicSoftPlanDTO plan in Plans)
+                {
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <article class="subscription-plan @(plan.SoftPlanId == SelectedPlanId ? "is-selected" : string.Empty)">
+                            <h4>@plan.Name</h4>
+                            <p>@(plan.PublicDescription ?? "Operacion ISP completa.")</p>
+                            <strong>@FormatPrice(Cycle == SubscriptionCycle.Annual ? plan.AnnualPrice : plan.MonthlyPrice)</strong>
+                            <span>COP / @(Cycle == SubscriptionCycle.Annual ? "ano" : "mes")</span>
+                            <small>Hasta @plan.ContractLimit contratos operativos</small>
+                            <button type="button" class="btn btn-gradient-primary mt-3" @onclick="() => SelectPlan(plan.SoftPlanId)">
+                                Seleccionar
+                            </button>
+                        </article>
+                    </div>
+                }
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <button type="button" class="btn btn-gradient-primary px-4" disabled="@(SelectedPlanId == 0 || IsStartingCheckout)" @onclick="StartCheckoutAsync">
+                    @if (IsStartingCheckout)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <span>Abriendo pago...</span>
+                    }
+                    else
+                    {
+                        <span>Continuar con Mercado Pago</span>
+                    }
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private SubscriptionAccessDTO? Access { get; set; }
+    private List<PublicSoftPlanDTO> Plans { get; set; } = new();
+    private SubscriptionCycle Cycle { get; set; } = SubscriptionCycle.Monthly;
+    private int SelectedPlanId { get; set; }
+    private bool IsLoading { get; set; } = true;
+    private bool IsStartingCheckout { get; set; }
+
+    private string StatusText => Access?.HasAccess == true
+        ? Access.IsTrial ? "Prueba activa" : "Suscripcion activa"
+        : "Renovacion requerida";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var accessResponse = await Repository.GetAsync<SubscriptionAccessDTO>("api/v1/saas-subscriptions/status");
+        if (await ResponseHandler.HandleErrorAsync(accessResponse))
+        {
+            IsLoading = false;
+            return;
+        }
+        Access = accessResponse.Response;
+
+        var plansResponse = await Repository.GetAsync<List<PublicSoftPlanDTO>>("api/v1/public-spix/plans");
+        IsLoading = false;
+        if (await ResponseHandler.HandleErrorAsync(plansResponse))
+        {
+            return;
+        }
+        Plans = plansResponse.Response ?? new List<PublicSoftPlanDTO>();
+        SelectedPlanId = Access?.SoftPlanId ?? Plans.FirstOrDefault(x => x.IsRecommended)?.SoftPlanId ?? 0;
+    }
+
+    private void SelectMonthly()
+    {
+        Cycle = SubscriptionCycle.Monthly;
+    }
+
+    private void SelectAnnual()
+    {
+        Cycle = SubscriptionCycle.Annual;
+    }
+
+    private void SelectPlan(int planId)
+    {
+        SelectedPlanId = planId;
+    }
+
+    private async Task StartCheckoutAsync()
+    {
+        IsStartingCheckout = true;
+        SubscriptionCheckoutRequestDTO request = new()
+        {
+            SoftPlanId = SelectedPlanId,
+            Cycle = Cycle
+        };
+        var responseHttp = await Repository.PostAsync<SubscriptionCheckoutRequestDTO, SubscriptionCheckoutDTO>(
+            "api/v1/saas-subscriptions/checkout", request);
+        IsStartingCheckout = false;
+        if (await ResponseHandler.HandleErrorAsync(responseHttp))
+        {
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(responseHttp.Response?.CheckoutUrl))
+        {
+            await SweetAlert.FireAsync("Pago no disponible", "Mercado Pago no devolvio una URL de pago.", SweetAlertIcon.Warning);
+            return;
+        }
+        NavigationManager.NavigateTo(responseHttp.Response.CheckoutUrl, true);
+    }
+
+    private static string FormatPrice(decimal value)
+    {
+        return value.ToString("C0", new System.Globalization.CultureInfo("es-CO"));
+    }
+}

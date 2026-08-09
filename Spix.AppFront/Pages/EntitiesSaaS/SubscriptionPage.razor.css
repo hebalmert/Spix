@@ -1,0 +1,81 @@
+.subscription-page__status {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    padding: 18px;
+    border-left: 5px solid #138a5a;
+    background: #eaf8f1;
+}
+
+.subscription-page__status.is-expired {
+    border-left-color: #ce5b42;
+    background: #fff1ed;
+}
+
+.subscription-page__status small,
+.subscription-page__status strong,
+.subscription-page__status p,
+.subscription-plan strong,
+.subscription-plan span,
+.subscription-plan small {
+    display: block;
+}
+
+.subscription-page__status small {
+    color: #57708d;
+    font-weight: 800;
+}
+
+.subscription-page__status strong {
+    margin: 3px 0;
+    color: #14345d;
+    font-size: 1.2rem;
+}
+
+.subscription-page__status p {
+    margin: 0;
+    color: #53677e;
+}
+
+.subscription-plan {
+    display: flex;
+    flex-direction: column;
+    min-height: 265px;
+    padding: 20px;
+    border: 1px solid #d6e0ec;
+    border-radius: 7px;
+    background: #ffffff;
+}
+
+.subscription-plan.is-selected {
+    border: 2px solid #236ed4;
+    box-shadow: 0 8px 18px rgba(35, 110, 212, .17);
+}
+
+.subscription-plan h4 {
+    color: #15365e;
+    font-weight: 800;
+}
+
+.subscription-plan p {
+    flex: 1;
+    color: #61758b;
+    font-size: .9rem;
+}
+
+.subscription-plan strong {
+    color: #15365e;
+    font-size: 1.35rem;
+}
+
+.subscription-plan span,
+.subscription-plan small {
+    color: #6e849b;
+    font-size: .8rem;
+}
+
+@media (max-width: 600px) {
+    .subscription-page__status {
+        grid-template-columns: 1fr;
+    }
+}

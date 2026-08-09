@@ -1,0 +1,119 @@
+@page "/mercadopagosettings"
+@layout MainLayout
+@attribute [Authorize(Roles = "Admin")]
+@using Spix.DomainLogic.EntitiesSaaSDTO
+@using Spix.AppFront.Helper
+@using Spix.HttpService
+@inject IRepository Repository
+@inject SweetAlertService SweetAlert
+@inject HttpResponseHandler ResponseHandler
+
+<div class="container pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 8px;">
+        <h3 class="mb-4">Mercado Pago Colombia</h3>
+
+        @if (IsLoading)
+        {
+            <Loading />
+        }
+        else
+        {
+            <EditForm Model="Setting" OnValidSubmit="SaveAsync">
+                <DataAnnotationsValidator />
+
+                <div class="row">
+                    <div class="col-12 col-md-8 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 160px">Nombre</span>
+                            <InputText class="form-control" @bind-Value="Setting.Name" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 120px">Activo</span>
+                            <div class="d-flex align-items-center ps-3">
+                                <InputCheckbox @bind-Value="Setting.Active" class="form-check-input" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 160px">Public Key</span>
+                            <InputText type="password"
+                                       class="form-control"
+                                       placeholder="@(Setting.HasPublicKey ? "Configurada. Escribe una nueva para reemplazarla." : "Ingresa la llave publica")"
+                                       @bind-Value="Setting.PublicKey" />
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 160px">Access Token</span>
+                            <InputText type="password"
+                                       class="form-control"
+                                       placeholder="@(Setting.HasAccessToken ? "Configurado. Escribe uno nuevo para rotarlo." : "Ingresa el access token")"
+                                       @bind-Value="Setting.AccessToken" />
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 160px">Webhook Secret</span>
+                            <InputText type="password"
+                                       class="form-control"
+                                       placeholder="@(Setting.HasWebhookSecret ? "Configurado. Escribe uno nuevo para rotarlo." : "Ingresa el secreto de webhook")"
+                                       @bind-Value="Setting.WebhookSecret" />
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 160px">Webhook URL</span>
+                            <InputText class="form-control" @bind-Value="Setting.WebhookUrl" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4">
+                    <ButtonFormSave IsSaving="IsSaving" />
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    private MercadoPagoPlatformSettingDTO Setting { get; set; } = new();
+    private bool IsLoading { get; set; } = true;
+    private bool IsSaving { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        IsLoading = true;
+        var responseHttp = await Repository.GetAsync<MercadoPagoPlatformSettingDTO>("api/v1/mercadopagosettings");
+        IsLoading = false;
+        if (await ResponseHandler.HandleErrorAsync(responseHttp))
+        {
+            return;
+        }
+        Setting = responseHttp.Response ?? new MercadoPagoPlatformSettingDTO();
+    }
+
+    private async Task SaveAsync()
+    {
+        IsSaving = true;
+        var responseHttp = await Repository.PutAsync("api/v1/mercadopagosettings", Setting);
+        IsSaving = false;
+        if (await ResponseHandler.HandleErrorAsync(responseHttp))
+        {
+            return;
+        }
+        await SweetAlert.FireAsync("Configuracion guardada", "Las llaves se cifraron correctamente. Los secretos no se exponen en el navegador.", SweetAlertIcon.Success);
+        await LoadAsync();
+    }
+}

@@ -17,6 +17,8 @@ public class SoftPlan
     [Display(Name = nameof(Resource.Price), ResourceType = typeof(Resource))]
     public decimal Price { get; set; }
 
+    public decimal? AnnualPrice { get; set; }
+
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Months), ResourceType = typeof(Resource))]
     public int Meses { get; set; }
@@ -24,6 +26,13 @@ public class SoftPlan
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Max_Clients), ResourceType = typeof(Resource))]
     public int ClientsCount { get; set; }
+
+    public int DisplayOrder { get; set; }
+
+    public bool IsRecommended { get; set; }
+
+    [MaxLength(300)]
+    public string? PublicDescription { get; set; }
 
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]
     public bool Active { get; set; }

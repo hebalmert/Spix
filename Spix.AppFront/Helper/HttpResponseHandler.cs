@@ -64,6 +64,13 @@ public class HttpResponseHandler
                 icon = SweetAlertIcon.Warning;
                 break;
 
+            case HttpStatusCode.PaymentRequired:
+                title = "Suscripcion requerida";
+                message = errorMessage ?? "La prueba o suscripcion vencio. Selecciona un plan para continuar.";
+                icon = SweetAlertIcon.Warning;
+                _navigationManager.NavigateTo("/subscription");
+                break;
+
             case HttpStatusCode.NotFound:
                 title = Localizer[nameof(Resource.HttpCode_NotFoundTitle)];
                 message = title = Localizer[nameof(Resource.HttpCode_NotFoundMsg)];

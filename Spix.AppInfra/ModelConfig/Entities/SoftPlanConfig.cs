@@ -12,5 +12,6 @@ public class SoftPlanConfig : IEntityTypeConfiguration<SoftPlan>
         builder.HasIndex(x => x.Name).IsUnique();
         builder.Property(e => e.Name).UseCollation("Latin1_General_CI_AS");
         builder.Property(e => e.Price).HasPrecision(18, 2);
+        builder.Property(e => e.AnnualPrice).HasPrecision(18, 2);
     }
 }

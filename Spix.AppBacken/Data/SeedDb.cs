@@ -66,35 +66,109 @@ public class SeedDb
 
     private async Task CheckSoftPlan()
     {
-        if (!_context.SoftPlans.Any())
+        List<SoftPlan> softPlans = await _context.SoftPlans
+            .OrderBy(x => x.SoftPlanId)
+            .ToListAsync();
+
+        if (softPlans.Count == 0)
         {
-            //Alimentando Planes
-            _context.SoftPlans.Add(new SoftPlan
-            {
-                Name = "Plan 1 Mes",
-                Price = 50,
-                Meses = 1,
-                ClientsCount = 2,
-                Active = true
-            });
-            _context.SoftPlans.Add(new SoftPlan
-            {
-                Name = "Plan 6 Mes",
-                Price = 300,
-                Meses = 6,
-                ClientsCount = 10,
-                Active = true
-            });
-            _context.SoftPlans.Add(new SoftPlan
-            {
-                Name = "Plan 12 Mes",
-                Price = 600,
-                Meses = 12,
-                ClientsCount = 100,
-                Active = true
-            });
+            _context.SoftPlans.AddRange(CreateCommercialSoftPlans());
             await _context.SaveChangesAsync();
+            return;
         }
+
+        if (!HasLegacyDemoSoftPlans(softPlans))
+        {
+            return;
+        }
+
+        List<SoftPlan> commercialPlans = CreateCommercialSoftPlans();
+        for (int index = 0; index < softPlans.Count; index++)
+        {
+            ApplyCommercialPlan(softPlans[index], commercialPlans[index]);
+        }
+
+        _context.SoftPlans.Add(commercialPlans[3]);
+        await _context.SaveChangesAsync();
+    }
+
+    private static bool HasLegacyDemoSoftPlans(List<SoftPlan> softPlans)
+    {
+        return softPlans.Count == 3
+            && softPlans[0].Name == "Plan 1 Mes"
+            && softPlans[0].Price == 50
+            && softPlans[0].ClientsCount == 2
+            && softPlans[1].Name == "Plan 6 Mes"
+            && softPlans[1].Price == 300
+            && softPlans[1].ClientsCount == 10
+            && softPlans[2].Name == "Plan 12 Mes"
+            && softPlans[2].Price == 600
+            && softPlans[2].ClientsCount == 100;
+    }
+
+    private static List<SoftPlan> CreateCommercialSoftPlans()
+    {
+        return new List<SoftPlan>
+        {
+            new SoftPlan
+            {
+                Name = "Inicio",
+                Price = 79900,
+                AnnualPrice = 799000,
+                Meses = 1,
+                ClientsCount = 75,
+                DisplayOrder = 1,
+                PublicDescription = "Para ISP que inicia su operacion organizada.",
+                Active = true
+            },
+            new SoftPlan
+            {
+                Name = "Crecimiento",
+                Price = 149900,
+                AnnualPrice = 1499000,
+                Meses = 1,
+                ClientsCount = 250,
+                DisplayOrder = 2,
+                PublicDescription = "Para equipos que consolidan clientes y red.",
+                IsRecommended = true,
+                Active = true
+            },
+            new SoftPlan
+            {
+                Name = "Profesional",
+                Price = 249900,
+                AnnualPrice = 2499000,
+                Meses = 1,
+                ClientsCount = 600,
+                DisplayOrder = 3,
+                PublicDescription = "Para una operacion ISP en expansion.",
+                Active = true
+            },
+            new SoftPlan
+            {
+                Name = "Empresa",
+                Price = 399900,
+                AnnualPrice = 3999000,
+                Meses = 1,
+                ClientsCount = 1500,
+                DisplayOrder = 4,
+                PublicDescription = "Para ISP con operacion consolidada.",
+                Active = true
+            }
+        };
+    }
+
+    private static void ApplyCommercialPlan(SoftPlan target, SoftPlan source)
+    {
+        target.Name = source.Name;
+        target.Price = source.Price;
+        target.AnnualPrice = source.AnnualPrice;
+        target.Meses = source.Meses;
+        target.ClientsCount = source.ClientsCount;
+        target.DisplayOrder = source.DisplayOrder;
+        target.PublicDescription = source.PublicDescription;
+        target.IsRecommended = source.IsRecommended;
+        target.Active = source.Active;
     }
 
 

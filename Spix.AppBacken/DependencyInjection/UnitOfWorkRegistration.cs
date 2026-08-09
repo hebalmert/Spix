@@ -19,6 +19,7 @@ using Spix.AppService.InterfacesMk;
 using Spix.AppService.InterfacesOper;
 using Spix.AppService.InterfacesSecure;
 using Spix.AppService.InterfacesSignature;
+using Spix.AppService.InterfacesSaaS;
 using Spix.AppServiceX.ImplementContratos;
 using Spix.AppServiceX.ImplementContratos.ImplementContractControl;
 using Spix.AppServiceX.ImplementEmails;
@@ -41,6 +42,9 @@ using Spix.AppServiceX.InterfacesMk;
 using Spix.AppServiceX.InterfacesOper;
 using Spix.AppServiceX.InterfacesSecure;
 using Spix.AppServiceX.InterfacesSignature;
+using Spix.AppServiceX.InterfacesSaaS;
+using Spix.AppService.ImplementSaaS;
+using Spix.AppServiceX.ImplementSaaS;
 using Spix.Services.ImplementContratos;
 using Spix.Services.ImplementEntties;
 using Spix.Services.ImplementInven;
@@ -79,6 +83,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IManagerService, ManagerService>();
             services.AddScoped<ISoftPlanServiceX, SoftPlanServiceX>();
             services.AddScoped<ISoftPlanService, SoftPlanService>();
+            services.AddScoped<ISaasSubscriptionServiceX, SaasSubscriptionServiceX>();
+            services.AddScoped<ISaasSubscriptionService, SaasSubscriptionService>();
 
             //EntitiesData
             services.AddScoped<IChainTypesServiceX, ChainTypesServiceX>();

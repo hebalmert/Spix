@@ -13,6 +13,7 @@ using Spix.Domain.EntitiesNet;
 using Spix.Domain.EntitiesOper;
 using Spix.Domain.EntitiesPayment;
 using Spix.Domain.EntitiesSchedule;
+using Spix.Domain.EntitiesSaaS;
 using System.Reflection;
 
 namespace Spix.AppInfra;
@@ -41,6 +42,8 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Manager> Managers => Set<Manager>();
     public DbSet<SoftPlan> SoftPlans => Set<SoftPlan>();
     public DbSet<Corporation> Corporations => Set<Corporation>();
+    public DbSet<CorporationSubscription> CorporationSubscriptions => Set<CorporationSubscription>();
+    public DbSet<MercadoPagoPlatformSetting> MercadoPagoPlatformSettings => Set<MercadoPagoPlatformSetting>();
 
 
     //EntitiesData
