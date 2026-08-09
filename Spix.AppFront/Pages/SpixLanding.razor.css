@@ -1,19 +1,19 @@
 .spix-showcase {
-    --spix-ink: #f5f9ff;
-    --spix-muted: #9caec6;
-    --spix-panel: #0d1730;
+    --spix-ink: #eaf0ff;
+    --spix-muted: #9aa8c7;
+    --spix-panel: #0d1430;
     --spix-panel-soft: #111e3d;
-    --spix-blue: #347cff;
-    --spix-blue-bright: #64a1ff;
-    --spix-border: rgba(100, 154, 255, .36);
+    --spix-blue: #2f7bff;
+    --spix-blue-bright: #4f9dff;
+    --spix-border: rgba(79, 157, 255, .36);
     position: relative;
     overflow: hidden;
     min-height: 100vh;
     color: var(--spix-ink);
     background:
-        radial-gradient(760px 440px at 94% 9%, rgba(34, 84, 192, .20), transparent 70%),
-        radial-gradient(680px 420px at 7% 20%, rgba(95, 52, 205, .13), transparent 70%),
-        #030713;
+        radial-gradient(1100px 600px at 80% -10%, rgba(47, 123, 255, .16), transparent 60%),
+        radial-gradient(900px 520px at 5% 6%, rgba(139, 92, 255, .10), transparent 55%),
+        #050711;
 }
 
 .spix-grid-overlay {
@@ -72,10 +72,15 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    color: #ffffff;
     font-weight: 900;
-    background: linear-gradient(135deg, #2878ff, #5ba4ff);
-    box-shadow: 0 8px 22px rgba(52, 124, 255, .36);
+    /* Badge estilo web: borde de color, sin relleno, letra en gradiente */
+    border: 2px solid var(--spix-blue);
+    background: linear-gradient(140deg, var(--spix-blue-bright), var(--spix-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    box-shadow: 0 0 20px -8px var(--spix-blue), inset 0 0 14px -9px var(--spix-blue);
 }
 
 .spix-wordmark__mark {
@@ -106,7 +111,7 @@
     padding: 8px 15px;
     border-radius: 999px;
     color: #ffffff;
-    background: linear-gradient(135deg, #3177ff, #5d9fff);
+    background: linear-gradient(135deg, var(--spix-blue), var(--spix-blue-bright));
 }
 
 .spix-hero-section {
@@ -222,8 +227,8 @@
 .spix-button--primary,
 .spix-button--pricing {
     border: 0;
-    background: linear-gradient(135deg, #347cff, #63a3ff);
-    box-shadow: 0 10px 25px rgba(26, 100, 237, .28);
+    background: linear-gradient(135deg, var(--spix-blue), var(--spix-blue-bright));
+    box-shadow: 0 10px 25px rgba(47, 123, 255, .30);
 }
 
 .spix-button--ghost {
@@ -470,7 +475,7 @@
     place-items: center;
     border-radius: 50%;
     color: #ffffff;
-    background: #347cff;
+    background: linear-gradient(135deg, var(--spix-blue), var(--spix-blue-bright));
     font-size: .7rem;
     font-weight: 900;
 }
@@ -587,7 +592,7 @@
 
 .spix-cycle-toggle button.is-selected {
     color: #ffffff;
-    background: #285ec0;
+    background: linear-gradient(135deg, var(--spix-blue), var(--spix-blue-bright));
 }
 
 .spix-cycle-toggle button span {
@@ -635,7 +640,7 @@
     padding: 5px 9px;
     border-radius: 999px;
     color: #ffffff;
-    background: #347cff;
+    background: linear-gradient(135deg, var(--spix-blue), var(--spix-blue-bright));
     font-size: .66rem;
     font-weight: 800;
 }
