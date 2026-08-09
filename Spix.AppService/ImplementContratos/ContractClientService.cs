@@ -124,6 +124,7 @@ namespace Spix.AppService.ImplementContratos
                     .Include(x => x.Client)
                     .Include(x => x.Contractor)
                     .Include(x => x.Zone)
+                    .Include(x => x.EstratoSocial)
                     .Include(c => c.ContractIDPic)
                     .Where(x => x.CorporationId == user.CorporationId)
                     .AsQueryable();

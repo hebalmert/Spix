@@ -29,6 +29,7 @@
                                 <th>@Localizer[nameof(Resource.Contracts)]</th>
                                 <th>@Localizer[nameof(Resource.Client)]</th>
                                 <th>@Localizer[nameof(Resource.Contractor)]</th>
+                                <th>@Localizer[nameof(Resource.EstratoSocial)]</th>
                                 <th>@Localizer[nameof(Resource.Equipment)]</th>
                                 <th>@Localizer[nameof(Resource.Invoice)]</th>
                                 <th>@Localizer[nameof(Resource.Status)]</th>
@@ -47,6 +48,7 @@
                                     <td>@item.ControlContrato</td>
                                     <td>@item.Client!.FirstName @item.Client.LastName</td>
                                     <td>@item.Contractor!.FirstName @item.Contractor.LastName</td>
+                                    <td>@GetEstratoNumber(item.EstratoSocial?.EstratoSocialName)</td>
                                     <td>
                                         <input type="checkbox" class="form-check-input" checked="@item.EquipoEmpres" disabled />
                                     </td>

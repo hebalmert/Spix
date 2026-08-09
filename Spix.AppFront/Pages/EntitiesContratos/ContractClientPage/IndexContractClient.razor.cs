@@ -73,6 +73,17 @@ public partial class IndexContractClient
         await InvokeAsync(StateHasChanged);
     }
 
+    private static string GetEstratoNumber(string? estratoSocialName)
+    {
+        if (string.IsNullOrWhiteSpace(estratoSocialName))
+        {
+            return "-";
+        }
+
+        string[] values = estratoSocialName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return values.FirstOrDefault(value => int.TryParse(value, out _)) ?? "-";
+    }
+
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
         Type component;

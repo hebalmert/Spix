@@ -59,6 +59,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.Client).ThenInclude(x => x!.DocumentType)
                     .Include(x => x.Contractor)
                     .Include(x => x.Zone).ThenInclude(x => x!.City)
+                    .Include(x => x.EstratoSocial)
                     .Where(x => x.CorporationId == user.CorporationId &&
                                 (x.ContractState == ContractState.InProgress ||
                                  x.ContractState == ContractState.Active ||
