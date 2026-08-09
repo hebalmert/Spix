@@ -21,4 +21,6 @@ public interface ISaasSubscriptionServiceX
 
     Task<ActionResponse<bool>> SyncMercadoPagoSubscriptionAsync(string? notificationType,
         string? preapprovalId, string? signature, string? requestId);
+
+    Task<ActionResponse<bool>> SyncWompiSubscriptionAsync(WompiEventDTO eventDto);
 }

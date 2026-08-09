@@ -85,6 +85,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<ISoftPlanService, SoftPlanService>();
             services.AddScoped<ISaasSubscriptionServiceX, SaasSubscriptionServiceX>();
             services.AddScoped<ISaasSubscriptionService, SaasSubscriptionService>();
+            services.AddScoped<ISystemSettingServiceX, SystemSettingServiceX>();
+            services.AddScoped<ISystemSettingService, SystemSettingService>();
 
             //EntitiesData
             services.AddScoped<IChainTypesServiceX, ChainTypesServiceX>();

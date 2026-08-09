@@ -36,6 +36,13 @@ public class SaasSubscriptionServiceX : ISaasSubscriptionServiceX
 
     public async Task<ActionResponse<bool>> SyncMercadoPagoSubscriptionAsync(string? notificationType,
         string? preapprovalId, string? signature, string? requestId)
-        => await _saasSubscriptionService.SyncMercadoPagoSubscriptionAsync(notificationType, preapprovalId,
+    {
+        return await _saasSubscriptionService.SyncMercadoPagoSubscriptionAsync(notificationType, preapprovalId,
             signature, requestId);
+    }
+
+    public async Task<ActionResponse<bool>> SyncWompiSubscriptionAsync(WompiEventDTO eventDto)
+    {
+        return await _saasSubscriptionService.SyncWompiSubscriptionAsync(eventDto);
+    }
 }

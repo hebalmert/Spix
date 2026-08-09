@@ -44,6 +44,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Corporation> Corporations => Set<Corporation>();
     public DbSet<CorporationSubscription> CorporationSubscriptions => Set<CorporationSubscription>();
     public DbSet<MercadoPagoPlatformSetting> MercadoPagoPlatformSettings => Set<MercadoPagoPlatformSetting>();
+    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
 
 
     //EntitiesData

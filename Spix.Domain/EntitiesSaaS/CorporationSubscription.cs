@@ -30,8 +30,19 @@ public class CorporationSubscription
     [MaxLength(180)]
     public string ExternalReference { get; set; } = null!;
 
+    [MaxLength(20)]
+    public string Gateway { get; set; } = "MercadoPago";
+
+    public decimal Amount { get; set; }
+
+    [MaxLength(10)]
+    public string Currency { get; set; } = "COP";
+
     [MaxLength(120)]
     public string? MercadoPagoPreapprovalId { get; set; }
+
+    [MaxLength(120)]
+    public string? WompiTransactionId { get; set; }
 
     [MaxLength(1024)]
     public string? CheckoutUrl { get; set; }

@@ -12,9 +12,11 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesSaaS;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesSaaS;
+using Spix.DomainLogic.Configuration;
 using Spix.DomainLogic.EntitiesSaaSDTO;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
+using Spix.DomainLogic.SettingModels;
 using Spix.xNotification.Interfaces;
 using System.Net.Http.Headers;
 using System.Text;
@@ -31,12 +33,14 @@ public class SaasSubscriptionService : ISaasSubscriptionService
     private readonly IUserHelper _userHelper;
     private readonly IEmailHelper _emailHelper;
     private readonly ISecretProtector _secretProtector;
+    private readonly ISecretStore _secretStore;
     private readonly IConfiguration _configuration;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
 
     public SaasSubscriptionService(DataContext context, ITransactionManager transactionManager,
         IUserHelper userHelper, IEmailHelper emailHelper, ISecretProtector secretProtector,
+        ISecretStore secretStore,
         IConfiguration configuration, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
     {
         _context = context;
@@ -44,6 +48,7 @@ public class SaasSubscriptionService : ISaasSubscriptionService
         _userHelper = userHelper;
         _emailHelper = emailHelper;
         _secretProtector = secretProtector;
+        _secretStore = secretStore;
         _configuration = configuration;
         _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
@@ -280,6 +285,20 @@ public class SaasSubscriptionService : ISaasSubscriptionService
     public async Task<ActionResponse<SubscriptionCheckoutDTO>> CreateCheckoutAsync(int corporationId,
         string username, SubscriptionCheckoutRequestDTO request)
     {
+        string activeGateway = _secretStore.Get("PaymentGateway:Active", "MercadoPago")
+            ?? "MercadoPago";
+
+        if (!string.Equals(activeGateway, "MercadoPago", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(activeGateway, "Wompi", StringComparison.OrdinalIgnoreCase))
+        {
+            return FailureCheckout("No hay una pasarela de pago activa válida.");
+        }
+
+        if (string.Equals(activeGateway, "Wompi", StringComparison.OrdinalIgnoreCase))
+        {
+            return await CreateWompiCheckoutAsync(corporationId, username, request);
+        }
+
         SoftPlan? plan = await _context.SoftPlans.FirstOrDefaultAsync(x => x.SoftPlanId == request.SoftPlanId && x.Active);
         if (plan == null)
         {
@@ -298,15 +317,17 @@ public class SaasSubscriptionService : ISaasSubscriptionService
             return FailureCheckout("No fue posible identificar el usuario de la suscripcion.");
         }
 
+        MercadoPagoSettings mercadoPago = _secretStore.Bind<MercadoPagoSettings>("MercadoPago");
         MercadoPagoPlatformSetting? setting = await _context.MercadoPagoPlatformSettings
             .OrderByDescending(x => x.DateModifiedUtc)
             .FirstOrDefaultAsync(x => x.Active);
-        if (setting == null)
+        if (setting == null && string.IsNullOrWhiteSpace(mercadoPago.AccessToken))
         {
             return FailureCheckout("Mercado Pago no esta configurado o activo en SaaS.");
         }
 
-        string accessToken = _secretProtector.Unprotect(setting.AccessTokenEncrypted);
+        string accessToken = mercadoPago.AccessToken
+            ?? _secretProtector.Unprotect(setting!.AccessTokenEncrypted);
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             return FailureCheckout("La llave privada de Mercado Pago no esta disponible.");
@@ -323,6 +344,9 @@ public class SaasSubscriptionService : ISaasSubscriptionService
             Cycle = request.Cycle,
             Status = CorporationSubscriptionStatus.PendingPayment,
             DateCreatedUtc = nowUtc,
+            Gateway = "MercadoPago",
+            Amount = amount,
+            Currency = "COP",
             ExternalReference = $"spix-sub-{corporation.CorporationId}-{Guid.NewGuid():N}",
             UserModifiedByName = username
         };
@@ -344,14 +368,14 @@ public class SaasSubscriptionService : ISaasSubscriptionService
                 reason = $"Spix - {plan.Name}",
                 external_reference = subscription.ExternalReference,
                 payer_email = user.Email,
-                back_url = _configuration["UrlFrontend"],
-                notification_url = setting.WebhookUrl,
+                back_url = mercadoPago.BackUrl ?? _configuration["UrlFrontend"],
+                notification_url = mercadoPago.NotificationUrl ?? setting?.WebhookUrl,
                 auto_recurring = new
                 {
                     frequency = request.Cycle == SubscriptionCycle.Annual ? 12 : 1,
                     frequency_type = "months",
                     transaction_amount = amount,
-                    currency_id = "COP"
+                    currency_id = mercadoPago.CurrencyId ?? "COP"
                 }
             };
             string json = JsonSerializer.Serialize(payload);
@@ -479,11 +503,12 @@ public class SaasSubscriptionService : ISaasSubscriptionService
     {
         try
         {
+            MercadoPagoSettings mercadoPago = _secretStore.Bind<MercadoPagoSettings>("MercadoPago");
             MercadoPagoPlatformSetting? setting = await _context.MercadoPagoPlatformSettings
                 .AsNoTracking()
                 .OrderByDescending(x => x.DateModifiedUtc)
                 .FirstOrDefaultAsync(x => x.Active);
-            if (setting == null)
+            if (setting == null && string.IsNullOrWhiteSpace(mercadoPago.WebhookSecret))
             {
                 return new ActionResponse<bool>
                 {
@@ -492,9 +517,14 @@ public class SaasSubscriptionService : ISaasSubscriptionService
                 };
             }
 
-            string? webhookSecret = string.IsNullOrWhiteSpace(setting.WebhookSecretEncrypted)
-                ? null
-                : _secretProtector.Unprotect(setting.WebhookSecretEncrypted);
+            string? webhookSecret = mercadoPago.WebhookSecret;
+
+            if (string.IsNullOrWhiteSpace(webhookSecret) &&
+                setting != null &&
+                !string.IsNullOrWhiteSpace(setting.WebhookSecretEncrypted))
+            {
+                webhookSecret = _secretProtector.Unprotect(setting.WebhookSecretEncrypted);
+            }
             if (string.IsNullOrWhiteSpace(webhookSecret))
             {
                 return new ActionResponse<bool>
@@ -546,7 +576,24 @@ public class SaasSubscriptionService : ISaasSubscriptionService
                 };
             }
 
-            string accessToken = _secretProtector.Unprotect(setting.AccessTokenEncrypted);
+            string? accessToken = mercadoPago.AccessToken;
+
+            if (string.IsNullOrWhiteSpace(accessToken) &&
+                setting != null &&
+                !string.IsNullOrWhiteSpace(setting.AccessTokenEncrypted))
+            {
+                accessToken = _secretProtector.Unprotect(setting.AccessTokenEncrypted);
+            }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "El access token de Mercado Pago no está configurado."
+                };
+            }
+
             using HttpClient client = new()
             {
                 BaseAddress = new Uri("https://api.mercadopago.com")
@@ -611,6 +658,214 @@ public class SaasSubscriptionService : ISaasSubscriptionService
         {
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
         }
+    }
+
+    public async Task<ActionResponse<bool>> SyncWompiSubscriptionAsync(WompiEventDTO eventDto)
+    {
+        try
+        {
+            WompiSettings wompi = _secretStore.Bind<WompiSettings>("Wompi");
+
+            if (string.IsNullOrWhiteSpace(wompi.EventsSecret) ||
+                !WompiSignature.VerifyEventSignature(eventDto, wompi.EventsSecret))
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "La firma del evento Wompi no es válida."
+                };
+            }
+
+            WompiTransaction? transaction = eventDto.Data?.Transaction;
+
+            if (transaction == null || string.IsNullOrWhiteSpace(transaction.Reference))
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = true
+                };
+            }
+
+            CorporationSubscription? subscription = await _context.CorporationSubscriptions
+                .Include(x => x.Corporation)
+                .FirstOrDefaultAsync(x =>
+                    x.Gateway == "Wompi" &&
+                    x.ExternalReference == transaction.Reference);
+
+            if (subscription == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = true
+                };
+            }
+
+            if (subscription.Status == CorporationSubscriptionStatus.Active)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = true
+                };
+            }
+
+            subscription.WompiTransactionId = transaction.Id;
+            string status = transaction.Status?.Trim().ToUpperInvariant() ?? string.Empty;
+
+            if (status != "APPROVED")
+            {
+                subscription.Status = status == "DECLINED" || status == "VOIDED"
+                    ? CorporationSubscriptionStatus.Cancelled
+                    : CorporationSubscriptionStatus.PendingPayment;
+
+                await _context.SaveChangesAsync();
+
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = true
+                };
+            }
+
+            long expectedAmount = (long)Math.Round(
+                subscription.Amount * 100m,
+                MidpointRounding.AwayFromZero);
+
+            if (transaction.AmountInCents != expectedAmount)
+            {
+                subscription.Status = CorporationSubscriptionStatus.Cancelled;
+                await _context.SaveChangesAsync();
+
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = false
+                };
+            }
+
+            DateTime nowUtc = DateTime.UtcNow;
+            DateTime baseDate = subscription.Corporation!.DateEnd > nowUtc
+                ? subscription.Corporation.DateEnd
+                : nowUtc;
+            DateTime periodEnd = subscription.Cycle == SubscriptionCycle.Annual
+                ? baseDate.AddYears(1)
+                : baseDate.AddMonths(1);
+
+            subscription.Status = CorporationSubscriptionStatus.Active;
+            subscription.CurrentPeriodStartsUtc = baseDate;
+            subscription.CurrentPeriodEndsUtc = periodEnd;
+            subscription.Corporation.Active = true;
+            subscription.Corporation.SoftPlanId = subscription.SoftPlanId;
+            subscription.Corporation.DateEnd = periodEnd;
+
+            await _context.SaveChangesAsync();
+
+            return new ActionResponse<bool>
+            {
+                WasSuccess = true,
+                Result = true
+            };
+        }
+        catch (Exception exception)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<bool>(exception);
+        }
+    }
+
+    private async Task<ActionResponse<SubscriptionCheckoutDTO>> CreateWompiCheckoutAsync(
+        int corporationId,
+        string username,
+        SubscriptionCheckoutRequestDTO request)
+    {
+        WompiSettings wompi = _secretStore.Bind<WompiSettings>("Wompi");
+
+        if (string.IsNullOrWhiteSpace(wompi.PublicKey) ||
+            string.IsNullOrWhiteSpace(wompi.IntegritySecret) ||
+            string.IsNullOrWhiteSpace(wompi.CheckoutUrl) ||
+            string.IsNullOrWhiteSpace(wompi.RedirectUrl))
+        {
+            return FailureCheckout("Wompi no está configurado en SaaS.");
+        }
+
+        SoftPlan? plan = await _context.SoftPlans
+            .FirstOrDefaultAsync(x => x.SoftPlanId == request.SoftPlanId && x.Active);
+
+        Corporation? corporation = await _context.Corporations
+            .FirstOrDefaultAsync(x => x.CorporationId == corporationId);
+
+        if (plan == null || corporation == null)
+        {
+            return FailureCheckout("El plan o la corporación no fueron encontrados.");
+        }
+
+        decimal amount = request.Cycle == SubscriptionCycle.Annual
+            ? plan.AnnualPrice ?? (plan.Price * 10)
+            : plan.Price;
+        string reference = $"spix-wompi-{corporationId}-{Guid.NewGuid():N}";
+        long amountInCents = (long)Math.Round(amount * 100m, MidpointRounding.AwayFromZero);
+        string currency = "COP";
+        string integrity = WompiSignature.BuildIntegritySignature(
+            reference,
+            amountInCents,
+            currency,
+            wompi.IntegritySecret);
+        string checkoutUrl = BuildWompiCheckoutUrl(
+            wompi,
+            reference,
+            amountInCents,
+            currency,
+            integrity);
+
+        var subscription = new CorporationSubscription
+        {
+            CorporationId = corporationId,
+            SoftPlanId = plan.SoftPlanId,
+            Cycle = request.Cycle,
+            Status = CorporationSubscriptionStatus.PendingPayment,
+            DateCreatedUtc = DateTime.UtcNow,
+            ExternalReference = reference,
+            Gateway = "Wompi",
+            Amount = amount,
+            Currency = currency,
+            CheckoutUrl = checkoutUrl,
+            UserModifiedByName = username
+        };
+
+        _context.CorporationSubscriptions.Add(subscription);
+        corporation.SoftPlanId = plan.SoftPlanId;
+        await _context.SaveChangesAsync();
+
+        return new ActionResponse<SubscriptionCheckoutDTO>
+        {
+            WasSuccess = true,
+            Result = new SubscriptionCheckoutDTO
+            {
+                CheckoutUrl = checkoutUrl,
+                CorporationSubscriptionId = subscription.CorporationSubscriptionId
+            }
+        };
+    }
+
+    private static string BuildWompiCheckoutUrl(
+        WompiSettings wompi,
+        string reference,
+        long amountInCents,
+        string currency,
+        string integrity)
+    {
+        string baseUrl = wompi.CheckoutUrl!.TrimEnd('?', '&');
+        string separator = baseUrl.Contains('?') ? "&" : "?";
+
+        return baseUrl
+            + separator
+            + $"public-key={Uri.EscapeDataString(wompi.PublicKey!)}"
+            + $"&currency={Uri.EscapeDataString(currency)}"
+            + $"&amount-in-cents={amountInCents}"
+            + $"&reference={Uri.EscapeDataString(reference)}"
+            + $"&signature:integrity={integrity}"
+            + $"&redirect-url={Uri.EscapeDataString(wompi.RedirectUrl!)}";
     }
 
     private async Task<Response> SendActivationEmailAsync(User user, string frontUrl)

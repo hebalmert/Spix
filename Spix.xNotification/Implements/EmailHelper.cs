@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using SendGrid;
+﻿using SendGrid;
 using SendGrid.Helpers.Mail;
 using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.Configuration;
 using Spix.DomainLogic.SettingModels;
 using Spix.xNotification.Interfaces;
 using Response = Spix.DomainLogic.ModelUtility.Response;
@@ -10,20 +10,20 @@ namespace Spix.xNotification.Implements;
 
 public class EmailHelper : IEmailHelper
 {
-    private readonly SendGridSettings _sendGridOption;
+    private readonly ISecretStore _secrets;
 
-    public EmailHelper(IOptions<SendGridSettings> sendGridOption)
+    public EmailHelper(ISecretStore secrets)
     {
-        _sendGridOption = sendGridOption.Value;
+        _secrets = secrets;
     }
 
     public async Task<Response> ConfirmarCuenta(string to, string NameCliente, string subject, string body)
     {
-        //En este punto tomamos los calore de los AppSetting.Json
-        //y lo igualamos a variables para poderlos manipular
-        var apiKey = _sendGridOption.SendGridApiKey;
-        var email = _sendGridOption.SendGridFrom;
-        var nombre = _sendGridOption.SendGridNombre;
+        SendGridSettings settings = _secrets.Bind<SendGridSettings>("SendGrid");
+
+        var apiKey = settings.SendGridApiKey;
+        var email = settings.SendGridFrom;
+        var nombre = settings.SendGridNombre;
 
         //Cargamos la Utilidad de SendGrid, que es el sistema de envio de datos.
         var cliente = new SendGridClient(apiKey);
@@ -46,11 +46,11 @@ public class EmailHelper : IEmailHelper
 
     public async Task<bool> EnviarAsync(ContactViewDTO contacto)
     {
-        //En este punto tomamos los calore de los AppSetting.Json
-        //y lo igualamos a variables para poderlos manipular
-        var apiKey = _sendGridOption.SendGridApiKey;
-        var email = _sendGridOption.SendGridFrom;
-        var nombre = _sendGridOption.SendGridNombre;
+        SendGridSettings settings = _secrets.Bind<SendGridSettings>("SendGrid");
+
+        var apiKey = settings.SendGridApiKey;
+        var email = settings.SendGridFrom;
+        var nombre = settings.SendGridNombre;
 
         //Cargamos la Utilidad de SendGrid, que es el sistema de envio de datos.
         var cliente = new SendGridClient(apiKey);

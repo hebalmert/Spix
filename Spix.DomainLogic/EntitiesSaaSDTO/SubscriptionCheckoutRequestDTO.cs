@@ -6,4 +6,5 @@ public class SubscriptionCheckoutRequestDTO
 {
     public int SoftPlanId { get; set; }
     public SubscriptionCycle Cycle { get; set; }
+    public string Gateway { get; set; } = "MercadoPago";
 }

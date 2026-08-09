@@ -1,7 +1,7 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand sidebar-brand" href="/dashboard">
-            <img src="https://spiximage.blob.core.windows.net/imgwwwroot/LogoNexxtplanet.png?v=20260708-2" alt="NexxtPlanet" />
+            <img src="https://storagespix.blob.core.windows.net/imgwwwroot/LogoNexxtplanet.png?v=20260708-2" alt="NexxtPlanet" />
         </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
@@ -92,6 +92,15 @@
 
                     @if (expandSubMenu1)
                     {
+                        <NavLink class="nav-link text-white nav-subitem" href="/payment-settings">
+                            <span class="fa fa-dot nav-subicon me-2"></span> Payment settings
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/systemsettings">
+                            <span class="fa fa-dot nav-subicon me-2"></span> System settings
+                        </NavLink>
+
+                        <hr class="border-top border-light opacity-50 my-2" />
+
                         <NavLink class="nav-link text-white nav-subitem" href="/softplans">
                             <span class="fa fa-dot nav-subicon me-2"></span> Sofplans
                         </NavLink>
@@ -100,9 +109,6 @@
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/managers">
                             <span class="fa fa-dot nav-subicon me-2"></span> Manager
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/mercadopagosettings">
-                            <span class="fa fa-dot nav-subicon me-2"></span> Mercado Pago
                         </NavLink>
                     }
                 </div>

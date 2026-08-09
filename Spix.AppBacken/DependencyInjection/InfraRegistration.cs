@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Spix.AppInfra.Configuration;
 using MapsterMapper;
 using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.ErrorHandling;
@@ -7,6 +8,7 @@ using Spix.AppInfra.SecretProtection;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppInfra.UtilityTools;
+using Spix.DomainLogic.Configuration;
 using Spix.xFiles.ExcelHelper;
 using Spix.xFiles.FileHelper;
 using Spix.xFiles.QRgenerate;
@@ -59,6 +61,7 @@ namespace Spix.AppBack.DependencyInjection
 
             // Servicio de envío de correos
             services.AddScoped<ISecretProtector, AesSecretProtector>();
+            services.AddScoped<ISecretStore, SecretStore>();
             services.AddTransient<IEmailDeliveryService, EmailDeliveryService>();
             services.AddTransient<IEmailHelper, EmailHelper>();
 
