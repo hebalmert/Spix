@@ -1,0 +1,81 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="SharedLoginCard" TargetType="Border">
+        <Setter Property="Width" Value="560" />
+        <Setter Property="Padding" Value="44" />
+        <Setter Property="Background" Value="#FFFFFF" />
+        <Setter Property="BorderBrush" Value="#54B948" />
+        <Setter Property="BorderThickness" Value="6,0,0,0" />
+        <Setter Property="CornerRadius" Value="12,0,0,12" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect BlurRadius="22"
+                                  ShadowDepth="8"
+                                  Opacity="0.28"
+                                  Color="#06132B" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SharedLoginLabel" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="#17325B" />
+    </Style>
+
+    <Style x:Key="SharedLoginField" TargetType="Border">
+        <Setter Property="Height" Value="56" />
+        <Setter Property="Margin" Value="0,0,0,24" />
+        <Setter Property="Background" Value="#FFFFFF" />
+        <Setter Property="BorderBrush" Value="#D7DEE8" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+
+    <Style x:Key="SharedLoginFieldLabel" TargetType="Border">
+        <Setter Property="Width" Value="160" />
+        <Setter Property="Background" Value="#F4F5F7" />
+        <Setter Property="BorderBrush" Value="#D7DEE8" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="CornerRadius" Value="6,0,0,6" />
+    </Style>
+
+    <Style x:Key="SharedLoginTextInput" TargetType="TextBox">
+        <Setter Property="Margin" Value="14,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Foreground" Value="#102A4C" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SharedLoginPasswordToggle" TargetType="Button">
+        <Setter Property="Width" Value="66" />
+        <Setter Property="Height" Value="54" />
+        <Setter Property="Background" Value="#FFFFFFFF" />
+        <Setter Property="BorderBrush" Value="#6C757D" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="ToolTip" Value="Mostrar contraseña" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="0,6,6,0">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

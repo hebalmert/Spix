@@ -49,8 +49,8 @@
                                         <td>@item.TotalSeriales</td>
                                         <td>@item.Status.ToString()</td>
                                         <td style="width:1px;">
-                                            <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.CargueId)" TooTip="@Localizer[nameof(Resource.Cargue)]"
-                                                           Icon="fa fa-upload" />
+                                            <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.CargueId)" TooTip="Detalle"
+                                                           Icon="fa fa-list" />
                                         </td>
                                         <td style="width:1px;">
                                             @if (item.Status == CargueType.Pendiente)

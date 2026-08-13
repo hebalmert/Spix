@@ -1,0 +1,164 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Node.NodePingDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             Width="680"
+             MinWidth="680"
+             Height="550">
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Padding="14" Background="#344B65" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Foreground="#C9DBF4" Text="Nodo" />
+                            <TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="SemiBold" Foreground="White" Text="{Binding NodeName}" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Padding="14" Background="#2F6C66" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Foreground="#D2F4E7" Text="IP" />
+                            <TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="SemiBold" Foreground="White" Text="{Binding Host}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Margin="0,12,0,0" Padding="14" Background="#293847" BorderBrush="#506077" BorderThickness="1" CornerRadius="6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <fa:FontAwesomeImage Width="24" Height="24" VerticalAlignment="Center" Foreground="#45D489" Icon="{x:Static icons:FontAwesomeIcon.CircleCheck}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}">
+                            <fa:FontAwesomeImage.Style>
+                                <Style TargetType="fa:FontAwesomeImage">
+                                    <Setter Property="Foreground" Value="#45D489" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Result.Success}" Value="False">
+                                            <Setter Property="Foreground" Value="#FF4B55" />
+                                            <Setter Property="Icon" Value="{x:Static icons:FontAwesomeIcon.CircleXmark}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </fa:FontAwesomeImage.Style>
+                        </fa:FontAwesomeImage>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock FontWeight="SemiBold" Foreground="White" Text="{Binding Result.Message}" />
+                            <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="#F8B4B4" Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Padding="14" Background="#344B65" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Foreground="#C9DBF4" Text="Promedio" />
+                            <TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.AverageTime, StringFormat={}{0} ms}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Padding="14" Background="#2F6C66" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Foreground="#D2F4E7" Text="Minimo" />
+                            <TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.MinTime, StringFormat={}{0} ms}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="4" Padding="14" Background="#7A3C44" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Foreground="#FFE0E2" Text="Maximo" />
+                            <TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.MaxTime, StringFormat={}{0} ms}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Padding="14" Background="#6D5330" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Foreground="#FFE8C3" Text="Perdidos" />
+                            <TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.Lost, StringFormat={}{0}}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Padding="14" Background="#4F467D" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Foreground="#E5DFFF" Text="Jitter" />
+                            <TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.Jitter, StringFormat={}{0} ms}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <TextBlock Margin="0,16,0,8" FontWeight="SemiBold" Foreground="White" Text="Intentos" />
+                <ItemsControl ItemsSource="{Binding Attempts}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="90" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="90" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock VerticalAlignment="Center" Foreground="#C9DBF4" Text="{Binding Number, StringFormat=Intento {0}}" />
+                                <Border Grid.Column="1" Height="12" VerticalAlignment="Center" Background="#27323E" CornerRadius="6">
+                                    <Border Height="12" HorizontalAlignment="Stretch" Background="#31A4F1" CornerRadius="6">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#31A4F1" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WasSuccessful}" Value="False">
+                                                        <Setter Property="Background" Value="#FF4B55" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </Border>
+                                <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="White" Text="{Binding Text}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding CloseCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" />
+            <Button Grid.Column="2" Command="{Binding RunPingCommand}" Style="{StaticResource SharedButtonFormPrimary}">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.RotateRight}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    <TextBlock Margin="10,0,0,0" Text="Reintentar" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

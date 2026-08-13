@@ -1,0 +1,34 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Product.CreateProductCategoryDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:local="clr-namespace:Spix.AppWpf.Views.EntitiesInven.Product">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <local:ProductCategoryFormView />
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding CancelCommand}" Style="{StaticResource SharedButtonFormSecondary}">
+                <StackPanel Orientation="Horizontal">
+                    <fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    <TextBlock Margin="10,0,0,0" Text="Volver" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource SharedButtonFormSuccess}">
+                <StackPanel Orientation="Horizontal">
+                    <fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.FloppyDisk}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    <TextBlock Margin="10,0,0,0" Text="Guardar" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

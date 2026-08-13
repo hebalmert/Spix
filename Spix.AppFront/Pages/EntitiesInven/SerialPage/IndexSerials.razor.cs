@@ -28,20 +28,12 @@ public partial class IndexSerials
     public List<CargueDetail>? CargueDetails { get; set; }
 
     [Parameter] public Guid Id { get; set; }  //Codigo del CargueId
-    private string Filter { get; set; } = string.Empty;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await Cargar();
         }
-    }
-
-    private async Task SetFilterValue(string value)
-    {
-        Filter = value;
-        await Cargar();
     }
 
     private async Task SelectedPage(int page)
@@ -53,11 +45,6 @@ public partial class IndexSerials
     private async Task Cargar(int page = 1)
     {
         var url = $"{baseUrl}?guidId={Id}&page={page}&recordsnumber={PageSize}";
-        if (!string.IsNullOrWhiteSpace(Filter))
-        {
-            url += $"&filter={Filter}";
-        }
-
         var responseHttp = await _repository.GetAsync<List<CargueDetail>>(url);
         // Centralizamos el manejo de errores
         bool errorHandled2 = await _responseHandler.HandleErrorAsync(responseHttp);

@@ -1,0 +1,17 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.IpNetwork.DeleteIpNetworkPoolDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ipNetwork="clr-namespace:Spix.AppWpf.Views.EntitiesNet.IpNetwork"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ipNetwork:IpNetworkPoolFormView />
+        <shared:SharedModalActions Grid.Row="2"
+                                   CancelCommand="{Binding CancelCommand}"
+                                   SaveCommand="{Binding SaveCommand}" />
+    </Grid>
+</UserControl>

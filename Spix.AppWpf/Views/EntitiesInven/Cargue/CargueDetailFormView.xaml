@@ -1,0 +1,29 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Cargue.CargueDetailFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="650">
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="MAC equipo" /></Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" Text="{Binding Entity.MacWlan, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Comentario" /></Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" Text="{Binding Entity.Comment, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Status" /></Border>
+            <ComboBox Grid.Column="1" MinHeight="42" ItemsSource="{Binding Statuses}" SelectedItem="{Binding Entity.Status, Mode=TwoWay}" />
+        </Grid>
+    </Grid>
+</UserControl>

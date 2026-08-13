@@ -46,16 +46,12 @@ public class CargueDetailsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CargueDetail>>> GetAll([FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
 
         var response = await _cargueDetailsUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
-        if (!response.WasSuccess)
-        {
-            return BadRequest(response.Message);
-        }
-        return Ok(response.Result);
+        return ResponseHelper.Format(response);
     }
 
     [HttpGet("GetSerials")]
@@ -64,12 +60,12 @@ public class CargueDetailsController : ControllerBase
         try
         {
             ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-            var response = await _cargueDetailsUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
+            var response = await _cargueDetailsUnitOfWork.GetSerialsAsync(pagination, userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)
         {
-            return BadRequest(ex.Message); // Ya est· localizado
+            return BadRequest(ex.Message); // Ya est√° localizado
         }
         catch (Exception ex)
         {

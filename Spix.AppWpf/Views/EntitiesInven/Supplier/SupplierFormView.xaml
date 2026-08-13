@@ -1,0 +1,37 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Supplier.SupplierFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="840">
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="12" /><RowDefinition Height="Auto" /><RowDefinition Height="12" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="14" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Proveedor" /></Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" Text="{Binding Entity.Name, UpdateSourceTrigger=PropertyChanged}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Contacto" /></Border>
+            <TextBox Grid.Column="4" MinHeight="42" Padding="12,8" Text="{Binding Entity.ContactName, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="14" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Tipo documento" /></Border>
+            <ComboBox Grid.Column="1" MinHeight="42" ItemsSource="{Binding DocumentTypes}" DisplayMemberPath="Name" SelectedValuePath="DocumentTypeId" SelectedValue="{Binding Entity.DocumentTypeId, Mode=TwoWay}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Documento" /></Border>
+            <TextBox Grid.Column="4" MinHeight="42" Padding="12,8" Text="{Binding Entity.Document, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="14" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <StackPanel>
+                <Border Height="42" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Estado" /></Border>
+                <ComboBox MinHeight="42" ItemsSource="{Binding States}" DisplayMemberPath="Name" SelectedValuePath="StateId" SelectedValue="{Binding Entity.StateId, Mode=TwoWay}" SelectionChanged="StateSelectionChanged" />
+                <Border Height="42" Margin="0,12,0,0" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Telefono" /></Border>
+                <TextBox MinHeight="42" Padding="12,8" Text="{Binding Entity.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Grid.Column="3" Grid.ColumnSpan="2">
+                <Border Height="42" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Ciudad" /></Border>
+                <ComboBox MinHeight="42" ItemsSource="{Binding Cities}" DisplayMemberPath="Name" SelectedValuePath="CityId" SelectedValue="{Binding Entity.CityId, Mode=TwoWay}" />
+                <Border Height="42" Margin="0,12,0,0" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Correo" /></Border>
+                <TextBox MinHeight="42" Padding="12,8" Text="{Binding Entity.Email, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -37,14 +37,14 @@
                         <i class="bi bi-arrow-left"></i> Volver
                     </a>
 
-                    @if (Cargue.Status == CargueType.Pendiente && Cargue.TotalSeriales != Cargue.CantToUp)
+                    @if (Cargue.Status == CargueType.Pendiente && Cargue.TotalSeriales < Cargue.CantToUp)
                     {
                         <button class="btn btn-dark" style="width:150px" @onclick="@(() => ShowModalAsync())">
                             <i class="bi bi-plus-square"></i> Nuevo
                         </button>
                     }
 
-                    @if (Cargue.Status == CargueType.Pendiente)
+                    @if (Cargue.Status == CargueType.Pendiente && Cargue.TotalSeriales == Cargue.CantToUp)
                     {
                         <button class="btn btn-success" style="width:150px" @onclick="() => CloseCargueAsync(Cargue.CargueId)">
                             <i class="bi bi-check-square"></i> Cerrar

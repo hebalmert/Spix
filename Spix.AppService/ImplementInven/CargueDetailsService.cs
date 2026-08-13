@@ -114,6 +114,14 @@ public class CargueDetailsService : ICargueDetailsService
                 .Where(x => x.CorporationId == user.CorporationId && x.CargueId == pagination.GuidId)
                 .Include(x => x.Cargue).AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                string filter = pagination.Filter.Trim().ToLower();
+                queryable = queryable.Where(x =>
+                    (x.MacWlan != null && x.MacWlan.ToLower().Contains(filter)) ||
+                    (x.Comment != null && x.Comment.ToLower().Contains(filter)));
+            }
+
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
             var modelo = await queryable.OrderBy(x => x.DateCargue).Paginate(pagination).ToListAsync();
 
@@ -200,6 +208,31 @@ public class CargueDetailsService : ICargueDetailsService
 
         try
         {
+            var currentDetail = await _context.CargueDetails
+                .Include(x => x.Cargue)
+                .FirstOrDefaultAsync(x => x.CargueDetailId == modelo.CargueDetailId);
+            if (currentDetail == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CargueDetail>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas para Encontrar el Registro Indicado"
+                };
+            }
+
+            if (currentDetail.Cargue?.Status != CargueType.Pendiente)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CargueDetail>
+                {
+                    WasSuccess = false,
+                    Message = "No se pueden modificar seriales de un cargue cerrado."
+                };
+            }
+
+            modelo.CargueId = currentDetail.CargueId;
+            modelo.CorporationId = currentDetail.CorporationId;
             CargueDetail NewModelo = _mapperService.Map<CargueDetail, CargueDetail>(modelo);
 
             _context.CargueDetails.Update(NewModelo);
@@ -228,6 +261,7 @@ public class CargueDetailsService : ICargueDetailsService
             var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<CargueDetail>
                 {
                     WasSuccess = false,
@@ -237,6 +271,40 @@ public class CargueDetailsService : ICargueDetailsService
 
             modelo.CorporationId = Convert.ToInt32(user.CorporationId);
             modelo.DateCargue = DateTime.Now;
+
+            var cargue = await _context.Cargues.FirstOrDefaultAsync(x =>
+                x.CargueId == modelo.CargueId &&
+                x.CorporationId == user.CorporationId);
+            if (cargue == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CargueDetail>
+                {
+                    WasSuccess = false,
+                    Message = "No fue posible encontrar el cargue indicado."
+                };
+            }
+
+            if (cargue.Status != CargueType.Pendiente)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CargueDetail>
+                {
+                    WasSuccess = false,
+                    Message = "No se pueden cargar seriales en un cargue cerrado."
+                };
+            }
+
+            int totalSeriales = await _context.CargueDetails.CountAsync(x => x.CargueId == cargue.CargueId);
+            if (totalSeriales >= cargue.CantToUp)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CargueDetail>
+                {
+                    WasSuccess = false,
+                    Message = "El cargue ya tiene todos los seriales requeridos."
+                };
+            }
 
             _context.CargueDetails.Add(modelo);
 
@@ -264,6 +332,7 @@ public class CargueDetailsService : ICargueDetailsService
             var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<Cargue>
                 {
                     WasSuccess = false,
@@ -275,10 +344,32 @@ public class CargueDetailsService : ICargueDetailsService
             var UpdateCargue = await _context.Cargues.FirstOrDefaultAsync(x => x.CargueId == id && x.CorporationId == user.CorporationId);
             if (UpdateCargue == null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<Cargue>
                 {
                     WasSuccess = false,
                     Message = "Error en la Actualizacion del Estado de Venta, no se pudo Guradar Nada"
+                };
+            }
+
+            if (UpdateCargue.Status != CargueType.Pendiente)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<Cargue>
+                {
+                    WasSuccess = false,
+                    Message = "El cargue ya fue cerrado."
+                };
+            }
+
+            int totalSeriales = await _context.CargueDetails.CountAsync(x => x.CargueId == UpdateCargue.CargueId);
+            if (totalSeriales != UpdateCargue.CantToUp)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<Cargue>
+                {
+                    WasSuccess = false,
+                    Message = "Debe cargar todos los seriales requeridos antes de cerrar el cargue."
                 };
             }
 
@@ -305,13 +396,26 @@ public class CargueDetailsService : ICargueDetailsService
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var DataRemove = await _context.CargueDetails.FindAsync(id);
+            var DataRemove = await _context.CargueDetails
+                .Include(x => x.Cargue)
+                .FirstOrDefaultAsync(x => x.CargueDetailId == id);
             if (DataRemove == null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
                     Message = "Problemas para Enconstrar el Registro Indicado"
+                };
+            }
+
+            if (DataRemove.Cargue?.Status != CargueType.Pendiente)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No se pueden eliminar seriales de un cargue cerrado."
                 };
             }
 

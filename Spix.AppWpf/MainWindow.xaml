@@ -1,0 +1,338 @@
+<Window x:Class="Spix.AppWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+        xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+        Title="Spix"
+        Height="820"
+        Width="1440"
+        MinHeight="640"
+        MinWidth="1024"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="{StaticResource BrushShellContent}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Style="{StaticResource SharedSidebar}">
+            <Grid Margin="14">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="42" Height="42" Background="#FFFFFF" CornerRadius="6">
+                        <Image Margin="7"
+                               Source="/Assets/Images/LogoNexxtplanetIcon.png"
+                               Stretch="Uniform" />
+                    </Border>
+                    <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock FontSize="19" FontWeight="Bold" Foreground="White" Text="SPIX" />
+                        <TextBlock Margin="0,2,0,0" FontSize="11" Foreground="#AFC8F4" Text="NexxtPlanet Desktop" />
+                    </StackPanel>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <Button Click="ShowDashboardClick" Style="{StaticResource ShellMenuItemActive}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.House}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Home" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource ShellMenuItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.CreditCard}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Mi suscripcion" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Click="ToggleConfigurationClick" Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Gears}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Configuracion" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+
+                        <StackPanel x:Name="ConfigurationMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button Click="ShowDocumentTypesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Tipo documento" />
+                            </Button>
+                            <Button Click="ShowEstratosSocialesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Estrato social" />
+                            </Button>
+                            <Button Click="ShowPlansClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Categoria/Planes" />
+                            </Button>
+                            <Button Click="ShowServicesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Categoria/Servicios" />
+                            </Button>
+                        </StackPanel>
+
+                        <Button Click="ToggleInventoryClick" Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.BoxesStacked}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Inventario" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+
+                        <StackPanel x:Name="InventoryMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button Click="ShowProductsClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Categoria/Productos" />
+                            </Button>
+                            <Button Click="ShowMarksClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Marca/Modelo" />
+                            </Button>
+                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
+                            <Button Click="ShowSuppliersClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Proveedores" />
+                            </Button>
+                            <Button Click="ShowStoragesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Bodegas" />
+                            </Button>
+                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
+                            <Button Click="ShowPurchasesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Compras" />
+                            </Button>
+                            <Button Click="ShowCarguesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Cargue Seriales" />
+                            </Button>
+                        </StackPanel>
+
+                        <Button Click="ToggleNetworkClick" Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.NetworkWired}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Network" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+
+                        <StackPanel x:Name="NetworkMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button Click="ShowIpNetsClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="IP Clientes" />
+                            </Button>
+                            <Button Click="ShowIpNetworksClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="IP Red" />
+                            </Button>
+                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
+                            <Button Click="ShowConnectionMikrotikControlsClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Control MikroTik" />
+                            </Button>
+                            <Button Click="ShowQueueTypesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Queue Types" />
+                            </Button>
+                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
+                            <Button Click="ShowNodesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Nodos" />
+                            </Button>
+                            <Button Style="{StaticResource ShellSubMenuItem}" IsEnabled="False">
+                                <TextBlock FontSize="14" Text="Servidores" />
+                            </Button>
+                        </StackPanel>
+
+                        <Button Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Briefcase}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Operaciones" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+
+                        <Button Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.FileInvoiceDollar}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Finanzas" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+
+                        <Button Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Sliders}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="System Setting" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Style="{StaticResource SharedTopBar}">
+                <Grid Margin="28,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="PageTitleText" FontSize="17" FontWeight="SemiBold" Foreground="White" Text="Home" />
+                        <TextBlock x:Name="PageSubtitleText" Margin="0,2,0,0" FontSize="11" Foreground="#AAB7C9" Text="Panel principal" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <StackPanel Margin="0,0,12,0" VerticalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Right" FontSize="13" FontWeight="SemiBold" Foreground="White" Text="{Binding FullName}" />
+                            <TextBlock HorizontalAlignment="Right" Margin="0,2,0,0" FontSize="11" Foreground="#AAB7C9" Text="{Binding Role}" />
+                        </StackPanel>
+                        <Button x:Name="AccountButton"
+                                Command="{Binding ToggleAccountMenuCommand}"
+                                Style="{StaticResource ShellIconButton}">
+                            <Border Width="34" Height="34" Background="#36A4E9" CornerRadius="17">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Foreground="White" Text="{Binding Initials}" />
+                            </Border>
+                        </Button>
+                        <Popup AllowsTransparency="True"
+                               IsOpen="{Binding IsAccountMenuOpen}"
+                               Placement="Bottom"
+                               PlacementTarget="{Binding ElementName=AccountButton}"
+                               StaysOpen="False">
+                            <Border Width="290" Margin="0,8,0,0" Padding="18" Background="#303640" BorderBrush="#4A5565" BorderThickness="1" CornerRadius="8">
+                                <StackPanel>
+                                    <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#9DB4D2" Text="SESION ACTIVA" />
+                                    <TextBlock Margin="0,8,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="{Binding FullName}" />
+                                    <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="#B9C8DD" Text="{Binding CorporationName}" TextTrimming="CharacterEllipsis" />
+                                    <Separator Margin="0,16,0,12" Background="#4A5565" />
+                                    <Button Command="{Binding ChangePasswordCommand}" Style="{StaticResource ShellMenuItem}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <fa:FontAwesomeImage Width="16" Height="16" Foreground="White"
+                                                                 Icon="{x:Static icons:FontAwesomeIcon.Key}"
+                                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                            <TextBlock Margin="12,0,0,0" FontSize="14" Text="Cambiar clave" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding LogoutCommand}" Style="{StaticResource ShellMenuItem}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <fa:FontAwesomeImage Width="16" Height="16" Foreground="#FF8FA3"
+                                                                 Icon="{x:Static icons:FontAwesomeIcon.RightFromBracket}"
+                                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                            <TextBlock Margin="12,0,0,0" FontSize="14" Foreground="#FFD2DA" Text="Cerrar sesion" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </Popup>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ContentControl x:Name="MainContent" Grid.Row="1">
+                <ScrollViewer x:Name="DashboardContent" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="32">
+                    <TextBlock FontSize="28" FontWeight="SemiBold" Foreground="White" Text="Dashboard" />
+                    <TextBlock Margin="0,8,0,28" FontSize="14" Foreground="#B9C8DD" Text="Accesos principales de la operacion SPIX." />
+
+                    <UniformGrid Columns="4" HorizontalAlignment="Left">
+                        <Border Width="220" Margin="0,0,14,0" Style="{StaticResource ShellQuickCard}">
+                            <StackPanel>
+                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#22C1E8"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Gears}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Configuracion" />
+                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Parametros del sistema." TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <Border Width="220" Margin="0,0,14,0" Style="{StaticResource ShellQuickCard}">
+                            <StackPanel>
+                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#6F9DFF"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.BoxesStacked}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Inventario" />
+                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Productos y existencias." TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <Border Width="220" Margin="0,0,14,0" Style="{StaticResource ShellQuickCard}">
+                            <StackPanel>
+                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#51D88A"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.NetworkWired}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Network" />
+                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Nodos, servidores y MikroTik." TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <Border Width="220" Style="{StaticResource ShellQuickCard}">
+                            <StackPanel>
+                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#F5B461"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Briefcase}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Operaciones" />
+                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Contratos y servicio al cliente." TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </StackPanel>
+                </ScrollViewer>
+            </ContentControl>
+        </Grid>
+    </Grid>
+</Window>

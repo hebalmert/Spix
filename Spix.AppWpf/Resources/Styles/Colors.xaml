@@ -1,0 +1,74 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="ColorWhite">#FFFFFF</Color>
+    <Color x:Key="ColorDisabled">#9CA3AF</Color>
+    <Color x:Key="ColorRowActionBorder">#D1D5DB</Color>
+    <Color x:Key="ColorRowActionForeground">#1F2937</Color>
+
+    <LinearGradientBrush x:Key="BrushButtonPrimary" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#6F42C1" Offset="0" />
+        <GradientStop Color="#0D6EFD" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushButtonPrimaryHover" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#4B2B89" Offset="0" />
+        <GradientStop Color="#0A53BE" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushButtonSecondary" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#212529" Offset="0" />
+        <GradientStop Color="#6C757D" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushButtonSecondaryHover" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#000000" Offset="0" />
+        <GradientStop Color="#495057" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushButtonSuccess" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#198754" Offset="0" />
+        <GradientStop Color="#51D88A" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushButtonSuccessHover" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#146C44" Offset="0" />
+        <GradientStop Color="#3FBA72" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushButtonDanger" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#E11D48" Offset="0" />
+        <GradientStop Color="#FB7185" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushButtonDangerHover" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#BE123C" Offset="0" />
+        <GradientStop Color="#E11D48" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushTableRowAction" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FFFFFF" Offset="0" />
+        <GradientStop Color="#E8F0FF" Offset="1" />
+    </LinearGradientBrush>
+
+    <ImageBrush x:Key="BrushAppBackgroundImage"
+                ImageSource="/Assets/Images/SpixBackground.jpg"
+                Stretch="UniformToFill" />
+
+    <SolidColorBrush x:Key="BrushAppBackgroundOverlay" Color="#A70B3270" />
+    <LinearGradientBrush x:Key="BrushSidebarBackground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#0A1A3F" Offset="0" />
+        <GradientStop Color="#0E2A5E" Offset="1" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="BrushSidebarHover" Color="#FFFFFF1F" />
+    <SolidColorBrush x:Key="BrushShellContent" Color="#252A33" />
+    <SolidColorBrush x:Key="BrushShellTopBar" Color="#20252E" />
+    <SolidColorBrush x:Key="BrushShellCard" Color="#303640" />
+
+    <SolidColorBrush x:Key="BrushDisabled" Color="{StaticResource ColorDisabled}" />
+    <SolidColorBrush x:Key="BrushWhite" Color="{StaticResource ColorWhite}" />
+    <SolidColorBrush x:Key="BrushRowActionBorder" Color="{StaticResource ColorRowActionBorder}" />
+    <SolidColorBrush x:Key="BrushRowActionForeground" Color="{StaticResource ColorRowActionForeground}" />
+    <SolidColorBrush x:Key="BrushTableRowDelete" Color="#EF4444" />
+    <SolidColorBrush x:Key="BrushTableRowDeleteHover" Color="#DC2626" />
+</ResourceDictionary>

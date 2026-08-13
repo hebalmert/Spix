@@ -1,0 +1,24 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.IpNetwork.IpNetworkPoolFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="620">
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Base IP" /></Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" MaxLength="15" Text="{Binding Entity.IpAddress, UpdateSourceTrigger=PropertyChanged}" ToolTip="Ejemplo: 192.168.0" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="14" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Desde" /></Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" Text="{Binding Entity.Desde, UpdateSourceTrigger=PropertyChanged}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6"><TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Hasta" /></Border>
+            <TextBox Grid.Column="4" MinHeight="42" Padding="12,8" Text="{Binding Entity.Hasta, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+    </Grid>
+</UserControl>

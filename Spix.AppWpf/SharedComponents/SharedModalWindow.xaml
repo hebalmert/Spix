@@ -1,0 +1,57 @@
+<Window x:Class="Spix.AppWpf.SharedComponents.SharedModalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+        xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+        Width="720"
+        SizeToContent="Height"
+        MaxHeight="760"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None">
+    <Border Margin="12"
+            Padding="28"
+            Background="{StaticResource BrushShellContent}"
+            BorderBrush="#526176"
+            BorderThickness="1"
+            CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="1" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="ModalTitleText"
+                           VerticalAlignment="Center"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           Foreground="White" />
+                <Button Grid.Column="1"
+                        Width="36"
+                        Height="36"
+                        Click="CloseClick"
+                        Style="{StaticResource ShellIconButton}"
+                        ToolTip="Cerrar">
+                    <fa:FontAwesomeImage Width="18"
+                                         Height="18"
+                                         Foreground="White"
+                                         Icon="{x:Static icons:FontAwesomeIcon.Xmark}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+            </Grid>
+
+            <Border Grid.Row="1" Margin="0,20,0,0" Background="#4A5565" />
+            <ContentControl x:Name="ModalContent" Grid.Row="3" />
+        </Grid>
+    </Border>
+</Window>

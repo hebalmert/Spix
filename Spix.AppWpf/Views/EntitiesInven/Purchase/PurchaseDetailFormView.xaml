@@ -1,0 +1,96 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Purchase.PurchaseDetailFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="720">
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Categoria" />
+            </Border>
+            <ComboBox Grid.Column="1"
+                      MinHeight="42"
+                      ItemsSource="{Binding Categories}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="ProductCategoryId"
+                      SelectedValue="{Binding ProductCategoryId, Mode=TwoWay}"
+                      SelectionChanged="CategorySelectionChanged" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Producto" />
+            </Border>
+            <ComboBox Grid.Column="4"
+                      MinHeight="42"
+                      ItemsSource="{Binding Products}"
+                      DisplayMemberPath="ProductName"
+                      SelectedValuePath="ProductId"
+                      SelectedValue="{Binding Entity.ProductId, Mode=TwoWay}"
+                      SelectionChanged="ProductSelectionChanged" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Impuesto %" />
+            </Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" IsReadOnly="True" Text="{Binding RateTax, StringFormat={}{0:N2}}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Costo unitario" />
+            </Border>
+            <TextBox Grid.Column="4" MinHeight="42" Padding="12,8" Text="{Binding UnitCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Cantidad" />
+            </Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" Text="{Binding Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Subtotal" />
+            </Border>
+            <TextBox Grid.Column="4" MinHeight="42" Padding="12,8" IsReadOnly="True" Text="{Binding Subtotal, StringFormat={}{0:N2}}" />
+        </Grid>
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Impuesto" />
+            </Border>
+            <TextBox Grid.Column="1" MinHeight="42" Padding="12,8" IsReadOnly="True" Text="{Binding TaxAmount, StringFormat={}{0:N2}}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Total" />
+            </Border>
+            <TextBox Grid.Column="4" MinHeight="42" Padding="12,8" IsReadOnly="True" Text="{Binding Total, StringFormat={}{0:N2}}" />
+        </Grid>
+    </Grid>
+</UserControl>

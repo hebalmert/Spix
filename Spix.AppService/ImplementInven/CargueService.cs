@@ -78,6 +78,16 @@ public class CargueService : ICargueService
                 .Include(x => x.CargueDetails)
                 .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                string filter = pagination.Filter.Trim().ToLower();
+                queryable = queryable.Where(x =>
+                    (x.ControlCargue != null && x.ControlCargue.ToLower().Contains(filter)) ||
+                    (x.PurchaseDetail != null &&
+                     x.PurchaseDetail.Purchase != null &&
+                     x.PurchaseDetail.Purchase.NroFactura.ToLower().Contains(filter)));
+            }
+
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
             var modelo = await queryable.OrderBy(x => x.DateCargue).Paginate(pagination).ToListAsync();
 
@@ -191,10 +201,21 @@ public class CargueService : ICargueService
             var DataRemove = await _context.Cargues.FindAsync(id);
             if (DataRemove == null)
             {
+                await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
                     Message = "Problemas para Enconstrar el Registro Indicado"
+                };
+            }
+
+            if (DataRemove.Status != CargueType.Pendiente)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = "No se puede eliminar un cargue cerrado."
                 };
             }
 

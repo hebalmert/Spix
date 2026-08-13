@@ -1,0 +1,42 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Supplier.SupplierIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="20" /><RowDefinition Height="Auto" /><RowDefinition Height="16" /><RowDefinition Height="*" /><RowDefinition Height="16" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="20" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <Button Grid.Column="0" VerticalAlignment="Bottom" Command="{Binding NewCommand}" Style="{StaticResource SharedButtonFormPrimary}" Content="Nuevo" />
+            <StackPanel Grid.Column="2"><TextBlock FontSize="25" FontWeight="SemiBold" Foreground="White" Text="Proveedores" /><TextBlock Margin="0,5,0,0" FontSize="13" Foreground="#B9C8DD" Text="Inventario / Proveedores" /></StackPanel>
+            <shared:SharedSearchFilter Grid.Column="3" VerticalAlignment="Bottom" SearchText="{Binding Filter}" SearchCommand="{Binding SearchCommand}" ClearCommand="{Binding ClearSearchCommand}" />
+        </Grid>
+        <TextBlock Grid.Row="2" Foreground="#FF9AAE" Text="{Binding Message}" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <DataGrid Grid.Row="4" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True" Background="#303640" Foreground="White" BorderBrush="#455160" HeadersVisibility="Column">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Proveedor" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Contacto" Binding="{Binding ContactName}" Width="*" />
+                <DataGridTextColumn Header="Documento" Binding="{Binding Document}" Width="150" />
+                <DataGridTextColumn Header="Telefono" Binding="{Binding PhoneNumber}" Width="150" />
+                <DataGridCheckBoxColumn Header="Activo" Binding="{Binding Active}" Width="90" />
+                <DataGridTemplateColumn Width="96">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowEdit}">
+                                    <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                </Button>
+                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowDelete}">
+                                    <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <shared:SharedLoading Grid.Row="4" IsLoading="{Binding IsLoading}" />
+        <shared:SharedPagination Grid.Row="6" CurrentPage="{Binding CurrentPage}" TotalPages="{Binding TotalPages}" PageCommand="{Binding GoToPageCommand}" />
+    </Grid>
+</UserControl>

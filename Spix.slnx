@@ -4,6 +4,7 @@
   <Project Path="Spix.AppInfra/Spix.AppInfra.csproj" Id="123bfbdc-8e58-40bc-925f-b12508d6c76c" />
   <Project Path="Spix.AppService/Spix.AppService.csproj" Id="4b1146c6-c061-4441-a1a0-055d8878a889" />
   <Project Path="Spix.AppServiceX/Spix.AppServiceX.csproj" Id="c98e711d-2641-4a97-97a6-9b3d2ed0057e" />
+  <Project Path="Spix.AppWpf/Spix.AppWpf.csproj" Id="28bc15b5-9d8b-40b5-93c4-6a1de04c7e77" />
   <Project Path="Spix.Domain/Spix.Domain.csproj" Id="30ab5239-884c-46b2-9064-6b6224bdcfae" />
   <Project Path="Spix.DomainLogic/Spix.DomainLogic.csproj" Id="7f31eefc-c0db-4fab-8e6f-667bfc4e3689" />
   <Project Path="Spix.xFiles/Spix.xFiles.csproj" Id="31507d8e-23ab-4a9d-aeaa-b68f6ff4c134" />

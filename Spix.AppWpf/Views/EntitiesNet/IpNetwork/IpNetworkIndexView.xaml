@@ -1,0 +1,34 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.IpNetwork.IpNetworkIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="20" /><RowDefinition Height="Auto" /><RowDefinition Height="16" /><RowDefinition Height="*" /><RowDefinition Height="16" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="12" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="12" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding NewCommand}" Style="{StaticResource SharedButtonFormPrimary}"><StackPanel Orientation="Horizontal"><fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" /><TextBlock Margin="10,0,0,0" Text="Nuevo" /></StackPanel></Button>
+            <Button Grid.Column="2" Command="{Binding CreatePoolCommand}" Style="{StaticResource SharedButtonFormSecondary}"><StackPanel Orientation="Horizontal"><fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.LayerGroup}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" /><TextBlock Margin="10,0,0,0" Text="Nuevo pool" /></StackPanel></Button>
+            <Button Grid.Column="4" Command="{Binding DeletePoolCommand}" Style="{StaticResource SharedButtonFormDanger}"><StackPanel Orientation="Horizontal"><fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" /><TextBlock Margin="10,0,0,0" Text="Borrar pool" /></StackPanel></Button>
+            <shared:SharedSearchFilter Grid.Column="6" VerticalAlignment="Bottom" SearchText="{Binding Filter}" SearchCommand="{Binding SearchCommand}" ClearCommand="{Binding ClearSearchCommand}" />
+        </Grid>
+        <TextBlock Grid.Row="2" FontSize="13" Foreground="#FF9AAE" Text="{Binding Message}" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Grid Grid.Row="4">
+            <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Background="#303640" Foreground="White" BorderBrush="#455160" BorderThickness="1" HeadersVisibility="Column" GridLinesVisibility="Horizontal" RowBackground="#303640" AlternatingRowBackground="#2B303A" AlternationCount="2" RowHeight="42" FontSize="14">
+                <DataGrid.ColumnHeaderStyle><Style TargetType="DataGridColumnHeader"><Setter Property="Background" Value="#102A4C" /><Setter Property="Foreground" Value="White" /><Setter Property="FontWeight" Value="SemiBold" /><Setter Property="Padding" Value="14,10" /></Style></DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="160" Header="IP" Binding="{Binding Ip}" CellStyle="{StaticResource SharedDataGridTextCell}" />
+                    <DataGridTextColumn Width="*" Header="Descripcion" Binding="{Binding Description}" CellStyle="{StaticResource SharedDataGridTextCell}" />
+                    <DataGridCheckBoxColumn Width="92" Header="Activa" Binding="{Binding Active}" />
+                    <DataGridCheckBoxColumn Width="102" Header="Asignada" Binding="{Binding Assigned}" />
+                    <DataGridCheckBoxColumn Width="102" Header="Excluida" Binding="{Binding Excluded}" />
+                    <DataGridTemplateColumn Width="48" Header=""><DataGridTemplateColumn.CellTemplate><DataTemplate><Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowEdit}" ToolTip="Editar"><fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" /></Button></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="48" Header=""><DataGridTemplateColumn.CellTemplate><DataTemplate><Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowDelete}" ToolTip="Eliminar"><fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" /></Button></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+        </Grid>
+        <shared:SharedPagination Grid.Row="6" HorizontalAlignment="Left" CurrentPage="{Binding CurrentPage}" TotalPages="{Binding TotalPages}" PageCommand="{Binding GoToPageCommand}" />
+    </Grid>
+</UserControl>

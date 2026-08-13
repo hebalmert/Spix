@@ -1,0 +1,14 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Mark.CreateMarkModelDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Spix.AppWpf.Views.EntitiesInven.Mark">
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="28" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <local:MarkModelFormView />
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding CancelCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" />
+            <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource SharedButtonFormSuccess}" Content="Guardar" />
+        </Grid>
+    </Grid>
+</UserControl>

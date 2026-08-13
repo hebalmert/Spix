@@ -1,0 +1,70 @@
+<Window x:Class="Spix.AppWpf.SharedComponents.SharedAlertWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+        xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+        Width="500"
+        SizeToContent="Height"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None">
+    <Border Margin="12"
+            Padding="30"
+            Background="{StaticResource BrushShellContent}"
+            BorderBrush="#526176"
+            BorderThickness="1"
+            CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <fa:FontAwesomeImage x:Name="AlertIcon"
+                                 Width="54"
+                                 Height="54"
+                                 HorizontalAlignment="Center"
+                                 Icon="{x:Static icons:FontAwesomeIcon.CircleCheck}"
+                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+            <TextBlock x:Name="AlertTitleText"
+                       Grid.Row="1"
+                       Margin="0,18,0,0"
+                       HorizontalAlignment="Center"
+                       FontSize="22"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap" />
+            <TextBlock x:Name="AlertMessageText"
+                       Grid.Row="2"
+                       Margin="0,12,0,0"
+                       HorizontalAlignment="Center"
+                       FontSize="14"
+                       Foreground="#D5DEEB"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap" />
+            <Grid Grid.Row="3" Margin="0,28,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="CancelButton"
+                        Grid.Column="0"
+                        Click="CancelClick"
+                        Content="Cancelar"
+                        Style="{StaticResource SharedButtonFormSecondary}" />
+                <Button x:Name="ConfirmButton"
+                        Grid.Column="2"
+                        Click="ConfirmClick"
+                        Content="OK"
+                        Style="{StaticResource SharedButtonFormPrimary}" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

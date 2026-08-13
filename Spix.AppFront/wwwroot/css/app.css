@@ -665,3 +665,14 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* Encabezado estándar para todas las tablas de índices y detalles. */
+.table-dark {
+    --bs-table-color: #ffffff;
+    --bs-table-bg: #0e2a5e;
+    --bs-table-border-color: #1b4a92;
+    --bs-table-striped-bg: #0e2a5e;
+    --bs-table-striped-color: #ffffff;
+    --bs-table-hover-bg: #12366f;
+    --bs-table-hover-color: #ffffff;
+}

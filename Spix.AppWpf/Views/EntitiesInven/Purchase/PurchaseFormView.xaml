@@ -1,0 +1,46 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Purchase.PurchaseFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="760">
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Proveedor" />
+            </Border>
+            <ComboBox Grid.Column="1" MinHeight="42" ItemsSource="{Binding Suppliers}" DisplayMemberPath="Name" SelectedValuePath="SupplierId" SelectedValue="{Binding Entity.SupplierId, Mode=TwoWay}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Bodega" />
+            </Border>
+            <ComboBox Grid.Column="4" MinHeight="42" ItemsSource="{Binding ProductStorages}" DisplayMemberPath="StorageName" SelectedValuePath="ProductStorageId" SelectedValue="{Binding Entity.ProductStorageId, Mode=TwoWay}" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Fecha factura" />
+            </Border>
+            <DatePicker Grid.Column="1" MinHeight="42" SelectedDate="{Binding Entity.FacuraDate, Mode=TwoWay}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Factura #" />
+            </Border>
+            <TextBox Grid.Column="4" MinHeight="42" Padding="12,8" Text="{Binding Entity.NroFactura, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+    </Grid>
+</UserControl>

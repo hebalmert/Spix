@@ -259,10 +259,22 @@ public class SeedDb
     private async Task CheckCountries()
     {
         Response responseCountries = await _apiService.GetListAsync<CountryResponse>("/v1", "/countries");
+
         if (responseCountries.IsSuccess)
         {
             List<CountryResponse> NlistCountry = (List<CountryResponse>)responseCountries.Result!;
-            List<CountryResponse> countries = NlistCountry.Where(x => x.Name == "United States").ToList();
+            List<CountryResponse> countries = NlistCountry
+                .Where(x =>
+                    x.Name == "Colombia" ||
+                    x.Name == "United States" ||
+                    x.Name == "Peru" ||
+                    x.Name == "Venezuela" ||
+                    x.Name == "Ecuador" ||
+                    x.Name == "Chile" ||
+                    x.Name == "Mexico" ||
+                    x.Name == "United Kingdom" ||
+                    x.Name == "Spain")
+                .ToList();
 
             foreach (CountryResponse item in countries)
             {
@@ -312,6 +324,44 @@ public class SeedDb
                 }
             }
         }
+
+        // La API externa amplía el catálogo con estados y ciudades, pero no debe
+        // impedir que el SaaS cree su Corporation ni el usuario administrador.
+        await EnsureRequiredCountriesAsync();
+    }
+
+    private async Task EnsureRequiredCountriesAsync()
+    {
+        string[] requiredCountries =
+        {
+            "Colombia",
+            "United States",
+            "Peru",
+            "Venezuela",
+            "Ecuador",
+            "Chile",
+            "Mexico",
+            "United Kingdom",
+            "Spain"
+        };
+
+        foreach (string countryName in requiredCountries)
+        {
+            bool exists = await _context.Countries
+                .AnyAsync(country => country.Name == countryName);
+
+            if (exists)
+            {
+                continue;
+            }
+
+            _context.Countries.Add(new Country
+            {
+                Name = countryName
+            });
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     private async Task CheckFrecuencies()

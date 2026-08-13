@@ -1,0 +1,60 @@
+<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedLoading"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators">
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLoading, RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+
+    <Grid Background="#D9252A33">
+        <Border Width="116"
+                Height="116"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="#EE303640"
+                BorderBrush="#54637A"
+                BorderThickness="1"
+                CornerRadius="8">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <fa:FontAwesomeImage Width="42"
+                                     Height="42"
+                                     HorizontalAlignment="Center"
+                                     Foreground="#22C1E8"
+                                     Icon="{x:Static icons:FontAwesomeIcon.Spinner}"
+                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}"
+                                     RenderTransformOrigin="0.5,0.5">
+                    <fa:FontAwesomeImage.RenderTransform>
+                        <RotateTransform x:Name="SpinnerRotation" />
+                    </fa:FontAwesomeImage.RenderTransform>
+                </fa:FontAwesomeImage>
+                <TextBlock Margin="0,10,0,0"
+                           HorizontalAlignment="Center"
+                           FontSize="12"
+                           Foreground="White"
+                           Text="Cargando..." />
+            </StackPanel>
+        </Border>
+    </Grid>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard RepeatBehavior="Forever">
+                    <DoubleAnimation Storyboard.TargetName="SpinnerRotation"
+                                     Storyboard.TargetProperty="Angle"
+                                     From="0"
+                                     To="360"
+                                     Duration="0:0:0.8" />
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+</UserControl>

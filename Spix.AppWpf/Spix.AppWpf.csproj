@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- Oculta conflictos internos emitidos por el generador de FontAwesome.Net.Wpf. -->
+    <NoWarn>$(NoWarn);CS0108;CS0436</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Empaqueta los logos y el fondo para que las vistas XAML puedan cargarlos. -->
+    <None Remove="Assets\Images\**\*.*" />
+    <Resource Include="Assets\Images\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Incluye las fuentes oficiales requeridas por FontAwesome.Net.Wpf. -->
+    <None Remove="Assets\Fonts\**\*.*" />
+    <Resource Include="Assets\Fonts\*.otf" />
+    <None Include="Assets\Fonts\FontAwesome-LICENSE.txt" />
+    <AdditionalFiles Include="Assets\Fonts\icons.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FontAwesome.Net.Generators" Version="1.0.0" />
+    <PackageReference Include="FontAwesome.Net.Wpf" Version="1.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3856.49" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Comparte las mismas entidades que las vistas Blazor ya reciben del Backend. -->
+    <ProjectReference Include="..\Spix.Domain\Spix.Domain.csproj" />
+    <ProjectReference Include="..\Spix.DomainLogic\Spix.DomainLogic.csproj" />
+    <ProjectReference Include="..\Spix.xHttpService\Spix.xHttpService.csproj" />
+    <!-- Usa localmente las utilidades de red ya probadas por la solucion. -->
+    <ProjectReference Include="..\Spix.xNetwork\Spix.xNetwork.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Copia la URL del Backend para poder alternar entre local y Azure sin recompilar. -->
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
