@@ -37,6 +37,11 @@ public class SoftPlan
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]
     public bool Active { get; set; }
 
+    // Limite de peticiones al API por minuto, POR corporation de este plan.
+    // 0 = sin limite. Editable desde el panel del plan (sin redesplegar).
+    [Display(Name = nameof(Resource.RateLimitPerMinute), ResourceType = typeof(Resource))]
+    public int RateLimitPerMinute { get; set; }
+
     //Releaciones
     public ICollection<Corporation>? Corporations { get; set; }
 }

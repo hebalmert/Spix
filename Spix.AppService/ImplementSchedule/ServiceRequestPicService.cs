@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -90,7 +90,7 @@ public class ServiceRequestPicService : IServiceRequestPicService
 
             var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
 
-            var modelo = await _context.ServiceRequestPics
+            var modelo = await _context.ServiceRequestPics.AsNoTracking()
                 .Include(x => x.ServiceRequest)
                 .FirstOrDefaultAsync(x => x.ServiceRequestPicId == id &&
                                           x.CorporationId == user.CorporationId &&

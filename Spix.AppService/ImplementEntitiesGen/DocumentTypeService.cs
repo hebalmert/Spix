@@ -49,7 +49,7 @@ public class DocumentTypeService : IDocumentTypeService
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
-            List<DocumentType> ListModel = await _context.DocumentTypes.Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
+            List<DocumentType> ListModel = await _context.DocumentTypes.AsNoTracking().Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
             var defaultItem = new DocumentType
             {
                 DocumentTypeId = Guid.Empty,

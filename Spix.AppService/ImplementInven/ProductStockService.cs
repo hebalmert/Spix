@@ -79,7 +79,7 @@ public class ProductStockService : IProductStockService
     {
         try
         {
-            var modelo = await _context.ProductStocks
+            var modelo = await _context.ProductStocks.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.ProductStockId == id);
             if (modelo == null)
             {

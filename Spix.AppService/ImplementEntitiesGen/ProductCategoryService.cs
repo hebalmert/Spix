@@ -50,7 +50,7 @@ public class ProductCategoryService : IProductCategoryService
                 };
             }
 
-            var ListModel = await _context.ProductCategories
+            var ListModel = await _context.ProductCategories.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
                 .ToListAsync();
             var defaultItem = new ProductCategory

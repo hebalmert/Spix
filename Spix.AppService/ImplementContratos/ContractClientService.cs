@@ -158,7 +158,7 @@ namespace Spix.AppService.ImplementContratos
         {
             try
             {
-                var modelo = await _context.ContractClients
+                var modelo = await _context.ContractClients.AsNoTracking()
                     .Include(x => x.Client)
                     .Include(x=> x.Contractor)
                     .Include(c => c.ContractIDPic)

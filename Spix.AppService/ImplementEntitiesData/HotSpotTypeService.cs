@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.Caching;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
@@ -18,15 +19,17 @@ namespace Spix.AppService.ImplementEntitiesData;
 public class HotSpotTypeService : IHotSpotTypeService
 {
     private readonly DataContext _context;
+    private readonly IComboCache _comboCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITransactionManager _transactionManager;
     private readonly IStringLocalizer _localizer;
     private readonly HttpErrorHandler _httpErrorHandler;
 
     public HotSpotTypeService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
+        ITransactionManager transactionManager, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer, IComboCache comboCache)
     {
         _context = context;
+        _comboCache = comboCache;
         _httpContextAccessor = httpContextAccessor;
         _transactionManager = transactionManager;
         _localizer = localizer;
@@ -37,11 +40,14 @@ public class HotSpotTypeService : IHotSpotTypeService
     {
         try
         {
-            List<IntItemModel> ListModel = await _context.HotSpotTypes.Where(x => x.Active).Select(c => new IntItemModel()
-            {
-                Name = c.TypeName,
-                Value = c.HotSpotTypeId
-            }).ToListAsync();
+            //Catalogo global: la consulta se cachea 10 min. Se COPIA la lista porque abajo se le
+            //inserta el item neutro, cuyo texto depende del idioma de quien pide.
+            List<IntItemModel> ListModel = new(await _comboCache.GetOrCreateAsync("combo_hotspottypes", async () =>
+                await _context.HotSpotTypes.AsNoTracking().Where(x => x.Active).Select(c => new IntItemModel()
+                {
+                    Name = c.TypeName,
+                    Value = c.HotSpotTypeId
+                }).ToListAsync()));
 
             ListModel.Insert(0, new IntItemModel
             {

@@ -54,7 +54,7 @@ public class ContractIpService : IContractIpService
 
         try
         {
-            var modelo = await _context.ContractIps
+            var modelo = await _context.ContractIps.AsNoTracking()
                 .Include(x => x.IpNet)
                 .FirstOrDefaultAsync(c => c.ContractClientId == id);
             //como la consulta da null, entonces igualamos el modelo a New(), para evitar fallos en el Front.

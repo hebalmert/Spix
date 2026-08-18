@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
@@ -91,7 +91,7 @@ public class QueueTypeService : IQueueTypeService
 
         try
         {
-            var modelo = await _context.QueueTypes
+            var modelo = await _context.QueueTypes.AsNoTracking()
                 .Include(x => x.Corporation)
                 .FirstOrDefaultAsync(x => x.QueueTypeId == id);
 

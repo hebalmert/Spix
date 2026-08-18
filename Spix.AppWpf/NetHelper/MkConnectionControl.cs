@@ -28,7 +28,7 @@ public class MkConnectionControl : IMkConnectionControl
             return new ActionResponse<MkConnectionResultDTO>
             {
                 WasSuccess = false,
-                Message = exception.Message
+                Message = GetFriendlyConnectionMessage(exception)
             };
         }
     }
@@ -72,7 +72,7 @@ public class MkConnectionControl : IMkConnectionControl
             return new ActionResponse<MkConnectionResultDTO>
             {
                 WasSuccess = false,
-                Message = exception.Message
+                Message = GetFriendlyConnectionMessage(exception)
             };
         }
         finally
@@ -129,5 +129,11 @@ public class MkConnectionControl : IMkConnectionControl
         }
 
         return null;
+    }
+
+    // Convierte fallas TCP tecnicas en una indicacion util para quien opera el sistema.
+    private static string GetFriendlyConnectionMessage(Exception exception)
+    {
+        return "El servidor no respondio. Verifique que este encendido, que la IP sea accesible desde este equipo y que el puerto API este habilitado.";
     }
 }

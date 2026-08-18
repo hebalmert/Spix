@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.Caching;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
@@ -16,6 +17,7 @@ namespace Spix.Services.ImplementEntties;
 public class CountryService : ICountryService
 {
     private readonly DataContext _context;
+    private readonly IComboCache _comboCache;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITransactionManager _transactionManager;
@@ -23,9 +25,10 @@ public class CountryService : ICountryService
 
     public CountryService(DataContext context, HttpErrorHandler httpErrorHandler,
         IHttpContextAccessor httpContextAccessor, ITransactionManager transactionManager,
-        IStringLocalizer localizer)
+        IStringLocalizer localizer, IComboCache comboCache)
     {
         _context = context;
+        _comboCache = comboCache;
         _httpErrorHandler = httpErrorHandler;
         _httpContextAccessor = httpContextAccessor;
         _transactionManager = transactionManager;
@@ -36,7 +39,10 @@ public class CountryService : ICountryService
     {
         try
         {
-            List<Country> ListModel = await _context.Countries.ToListAsync();
+            //Catalogo global: la consulta se cachea 10 min. Se COPIA la lista porque abajo se le
+            //inserta el item neutro, cuyo texto depende del idioma de quien pide.
+            List<Country> ListModel = new(await _comboCache.GetOrCreateAsync("combo_countries", async () =>
+                await _context.Countries.AsNoTracking().ToListAsync()));
             // Insertar el elemento neutro al inicio
             var defaultItem = new Country
             {

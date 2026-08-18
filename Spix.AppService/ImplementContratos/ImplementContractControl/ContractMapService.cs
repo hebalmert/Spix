@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -43,7 +43,7 @@ public class ContractMapService : IContractMapService
 
         try
         {
-            var modelo = await _context.ContractMaps
+            var modelo = await _context.ContractMaps.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.ContractClientId == id);
 
             return new ActionResponse<ContractMap>

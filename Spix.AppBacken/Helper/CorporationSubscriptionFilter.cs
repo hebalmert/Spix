@@ -1,17 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Caching.Memory;
 using Spix.AppServiceX.InterfacesSaaS;
+using Spix.DomainLogic.ModelUtility;
+using Spix.DomainLogic.EntitiesSaaSDTO;
 using System.Security.Claims;
 
 namespace Spix.AppBack.Helper;
 
 public class CorporationSubscriptionFilter : IAsyncActionFilter
 {
-    private readonly ISaasSubscriptionServiceX _saasSubscriptionService;
+    //El estado de la suscripcion cambia una vez al mes, pero este filtro corre en CADA request.
+    //Con 60s de cache quitamos 2 consultas a la BD por peticion y seguimos reaccionando rapido
+    //a una renovacion o a un vencimiento.
+    private const int CacheSeconds = 60;
 
-    public CorporationSubscriptionFilter(ISaasSubscriptionServiceX saasSubscriptionService)
+    private readonly ISaasSubscriptionServiceX _saasSubscriptionService;
+    private readonly IMemoryCache _cache;
+
+    public CorporationSubscriptionFilter(ISaasSubscriptionServiceX saasSubscriptionService, IMemoryCache cache)
     {
         _saasSubscriptionService = saasSubscriptionService;
+        _cache = cache;
     }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -32,7 +42,7 @@ public class CorporationSubscriptionFilter : IAsyncActionFilter
             return;
         }
 
-        var response = await _saasSubscriptionService.GetAccessAsync(corporationId);
+        ActionResponse<SubscriptionAccessDTO>? response = await GetAccessCachedAsync(corporationId);
         if (!response.WasSuccess || response.Result?.HasAccess != true)
         {
             context.Result = new ObjectResult(response.Message ?? response.Result?.Message ?? "La suscripcion requiere renovacion.")
@@ -43,5 +53,23 @@ public class CorporationSubscriptionFilter : IAsyncActionFilter
         }
 
         await next();
+    }
+
+    //Solo se cachean las respuestas exitosas: un error transitorio de la BD no debe dejar
+    //bloqueada a la corporacion durante todo el minuto siguiente.
+    private async Task<ActionResponse<SubscriptionAccessDTO>> GetAccessCachedAsync(int corporationId)
+    {
+        if (_cache.TryGetValue($"subaccess_{corporationId}", out ActionResponse<SubscriptionAccessDTO>? cached) && cached != null)
+        {
+            return cached;
+        }
+
+        ActionResponse<SubscriptionAccessDTO> response = await _saasSubscriptionService.GetAccessAsync(corporationId);
+        if (response.WasSuccess)
+        {
+            _cache.Set($"subaccess_{corporationId}", response, TimeSpan.FromSeconds(CacheSeconds));
+        }
+
+        return response;
     }
 }

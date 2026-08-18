@@ -50,7 +50,7 @@ public class ServiceCategoryService : IServiceCategoryService
                 };
             }
 
-            var ListModel = await _context.ServiceCategories
+            var ListModel = await _context.ServiceCategories.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
                 .ToListAsync();
 

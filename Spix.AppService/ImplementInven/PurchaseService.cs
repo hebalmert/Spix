@@ -138,7 +138,7 @@ public class PurchaseService : IPurchaseService
     {
         try
         {
-            var modelo = await _context.Purchases
+            var modelo = await _context.Purchases.AsNoTracking()
                 .Include(x => x.PurchaseDetails)
                 .Include(x => x.Supplier)
                 .Include(x => x.ProductStorage)

@@ -161,12 +161,12 @@
                             <Button Click="ShowNodesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Nodos" />
                             </Button>
-                            <Button Style="{StaticResource ShellSubMenuItem}" IsEnabled="False">
+                            <Button Click="ShowServersClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Servidores" />
                             </Button>
                         </StackPanel>
 
-                        <Button Style="{StaticResource ShellMenuItem}">
+                        <Button Click="ToggleOperationsClick" Style="{StaticResource ShellMenuItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -182,6 +182,16 @@
                                                      IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
                             </Grid>
                         </Button>
+
+                        <StackPanel x:Name="OperationsMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button Click="ShowScheduleClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Schedule" />
+                            </Button>
+                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
+                            <Button Click="ShowClientsClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Clientes" />
+                            </Button>
+                        </StackPanel>
 
                         <Button Style="{StaticResource ShellMenuItem}">
                             <Grid>

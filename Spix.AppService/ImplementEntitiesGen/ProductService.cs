@@ -53,7 +53,7 @@ public class ProductService : IProductService
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
-            var ListModel = await _context.Products
+            var ListModel = await _context.Products.AsNoTracking()
                 .Include(x => x.Mark)
                 .Include(x => x.MarkModel)
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.ProductCategoryId == id)
@@ -130,7 +130,7 @@ public class ProductService : IProductService
         }
         try
         {
-            var modelo = await _context.Products
+            var modelo = await _context.Products.AsNoTracking()
                 .Include(x => x.Tax)
                 .Include(x => x.ProductStocks)
                 .FirstOrDefaultAsync(x => x.ProductId == id);

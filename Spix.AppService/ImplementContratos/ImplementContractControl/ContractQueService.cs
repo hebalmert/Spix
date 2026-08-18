@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -47,7 +47,7 @@ public class ContractQueService : IContractQueService
 
         try
         {
-            var modelo = await _context.ContractQues
+            var modelo = await _context.ContractQues.AsNoTracking()
                 .Include(x => x.Server)
                 .Include(x => x.IpNet)
                 .Include(x => x.Plan)

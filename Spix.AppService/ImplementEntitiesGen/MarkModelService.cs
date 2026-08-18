@@ -49,7 +49,7 @@ public class MarkModelService : IMarkModelService
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
-            var ListModel = await _context.MarkModels
+            var ListModel = await _context.MarkModels.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.MarkId == id)
                 .ToListAsync();
 

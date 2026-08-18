@@ -90,7 +90,7 @@ public class UsuarioRoleService : IUsuarioRoleService
     {
         try
         {
-            var modelo = await _context.UsuarioRoles.FirstOrDefaultAsync(x => x.UsuarioRoleId == id);
+            var modelo = await _context.UsuarioRoles.AsNoTracking().FirstOrDefaultAsync(x => x.UsuarioRoleId == id);
             if (modelo == null)
             {
                 return new ActionResponse<UsuarioRole>

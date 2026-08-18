@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.Caching;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
@@ -18,15 +19,17 @@ namespace Spix.AppService.ImplementEntitiesData;
 public class SecurityService : ISecurityService
 {
     private readonly DataContext _context;
+    private readonly IComboCache _comboCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITransactionManager _transactionManager;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
 
     public SecurityService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
+        ITransactionManager transactionManager, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer, IComboCache comboCache)
     {
         _context = context;
+        _comboCache = comboCache;
         _httpContextAccessor = httpContextAccessor;
         _transactionManager = transactionManager;
         _httpErrorHandler = httpErrorHandler;
@@ -37,11 +40,14 @@ public class SecurityService : ISecurityService
     {
         try
         {
-            List<IntItemModel> ListModel = await _context.Securities.Where(x => x.Active).Select(c => new IntItemModel()
-            {
-                Name = c.SecurityName,
-                Value = c.SecurityId
-            }).ToListAsync();
+            //Catalogo global: la consulta se cachea 10 min. Se COPIA la lista porque abajo se le
+            //inserta el item neutro, cuyo texto depende del idioma de quien pide.
+            List<IntItemModel> ListModel = new(await _comboCache.GetOrCreateAsync("combo_securities", async () =>
+                await _context.Securities.AsNoTracking().Where(x => x.Active).Select(c => new IntItemModel()
+                {
+                    Name = c.SecurityName,
+                    Value = c.SecurityId
+                }).ToListAsync()));
 
             ListModel.Insert(0, new IntItemModel
             {

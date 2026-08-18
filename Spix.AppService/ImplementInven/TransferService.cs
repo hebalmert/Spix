@@ -94,7 +94,7 @@ public class TransferService : ITransferService
     {
         try
         {
-            var modelo = await _context.Transfers
+            var modelo = await _context.Transfers.AsNoTracking()
             .FirstOrDefaultAsync(x => x.TransferId == id);
             if (modelo == null)
             {
@@ -104,7 +104,7 @@ public class TransferService : ITransferService
                     Message = "Problemas para Enconstrar el Registro Indicado"
                 };
             }
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == modelo!.UserId);
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == modelo!.UserId);
             modelo!.NombreUsuario = $"{modelo.User!.FirstName} {modelo.User!.LastName}" ;
             return new ActionResponse<Transfer>
             {

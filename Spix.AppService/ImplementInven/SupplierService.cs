@@ -55,7 +55,7 @@ public class SupplierService : ISupplierService
                     Message = "Problemas de Validacion de Usuario"
                 };
             }
-            var ListModel = await _context.Suppliers.Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
+            var ListModel = await _context.Suppliers.AsNoTracking().Where(x => x.Active && x.CorporationId == user.CorporationId).ToListAsync();
 
             return new ActionResponse<IEnumerable<Supplier>>
             {
@@ -118,7 +118,7 @@ public class SupplierService : ISupplierService
     {
         try
         {
-            var modelo = await _context.Suppliers
+            var modelo = await _context.Suppliers.AsNoTracking()
                 .Include(x => x.State).ThenInclude(x => x.Cities)
                 .Include(x => x.DocumentType)
                 .FirstOrDefaultAsync(x => x.SupplierId == id);

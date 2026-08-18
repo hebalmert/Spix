@@ -50,7 +50,7 @@ public class TaxService : ITaxService
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
-            var ListModel = await _context.Taxes.Where(x => x.Active && x.CorporationId == user.CorporationId)
+            var ListModel = await _context.Taxes.AsNoTracking().Where(x => x.Active && x.CorporationId == user.CorporationId)
                                  .Select(u => new GuidItemModel
                                  {
                                      Value = u.TaxId,

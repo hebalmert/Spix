@@ -97,7 +97,7 @@ public class PurchaseDetailsService : IPurchaseDetailsService
     {
         try
         {
-            var modelo = await _context.PurchaseDetails
+            var modelo = await _context.PurchaseDetails.AsNoTracking()
                 .Include(x=> x.Product)
                 .ThenInclude(x => x!.ProductCategory)
                 .FirstOrDefaultAsync(x => x.PurchaseDetailId == id);

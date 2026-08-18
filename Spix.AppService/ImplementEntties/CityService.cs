@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.Caching;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
@@ -16,6 +17,7 @@ namespace Spix.Services.ImplementEntties;
 public class CityService : ICityService
 {
     private readonly DataContext _context;
+    private readonly IComboCache _comboCache;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITransactionManager _transactionManager;
@@ -23,9 +25,10 @@ public class CityService : ICityService
 
     public CityService(DataContext context, HttpErrorHandler httpErrorHandler,
         IHttpContextAccessor httpContextAccessor, ITransactionManager transactionManager,
-        IStringLocalizer localizer)
+        IStringLocalizer localizer, IComboCache comboCache)
     {
         _context = context;
+        _comboCache = comboCache;
         _httpErrorHandler = httpErrorHandler;
         _httpContextAccessor = httpContextAccessor;
         _transactionManager = transactionManager;
@@ -36,7 +39,9 @@ public class CityService : ICityService
     {
         try
         {
-            IEnumerable<City> ListModel = await _context.Cities.Where(x => x.StateId == id).ToListAsync();
+            //Catalogo global: la consulta se cachea 10 min.
+            IEnumerable<City> ListModel = await _comboCache.GetOrCreateAsync($"combo_cities_{id}", async () =>
+                await _context.Cities.AsNoTracking().Where(x => x.StateId == id).ToListAsync());
             return new ActionResponse<IEnumerable<City>>
             {
                 WasSuccess = true,

@@ -1,0 +1,35 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSchedule.EditScheduleDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:local="clr-namespace:Spix.AppWpf.Views.EntitiesSchedule"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="760">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <local:ScheduleFormView />
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding CancelCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" />
+            <Button Grid.Column="2" Command="{Binding DeleteCommand}" Style="{StaticResource SharedButtonFormDanger}">
+                <StackPanel Orientation="Horizontal">
+                    <fa:FontAwesomeImage Width="15" Height="15" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    <TextBlock Margin="8,0,0,0" Text="Eliminar" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="4" Command="{Binding SaveCommand}" Style="{StaticResource SharedButtonFormSuccess}" Content="Guardar" />
+        </Grid>
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

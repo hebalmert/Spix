@@ -54,7 +54,7 @@ public class IpNetService : IIpNetService
             List<IpNet> IpList = new();
             if (id == null)
             {
-                IpList = await _context.IpNets
+                IpList = await _context.IpNets.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId && x.Assigned == false && x.Excluded == false)
                     .ToListAsync();
                 IpList.Insert(0, new IpNet
@@ -65,7 +65,7 @@ public class IpNetService : IIpNetService
             }
             else
             {
-                IpList = await _context.IpNets
+                IpList = await _context.IpNets.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId && x.Assigned == false && x.Excluded == false || x.IpNetId == id)
                     .ToListAsync();
             }

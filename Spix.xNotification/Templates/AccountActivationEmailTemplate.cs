@@ -11,6 +11,7 @@ public sealed class AccountActivationEmailTemplateModel
     public required string Title { get; init; }
     public required string Hello { get; init; }
     public required string Welcome { get; init; }
+    public required string UserNameLabel { get; init; }
     public required string TemporaryPasswordLabel { get; init; }
     public required string Instruction { get; init; }
     public required string ButtonText { get; init; }
@@ -18,6 +19,7 @@ public sealed class AccountActivationEmailTemplateModel
     public required string Footer { get; init; }
     public string? FirstName { get; init; }
     public string? LastName { get; init; }
+    public string? UserName { get; init; }
     public string? TemporaryPassword { get; init; }
     public required string ConfirmationLink { get; init; }
 }
@@ -30,6 +32,7 @@ public static class AccountActivationEmailTemplate
     public static string Build(AccountActivationEmailTemplateModel model)
     {
         string recipientName = WebUtility.HtmlEncode($"{model.FirstName} {model.LastName}".Trim());
+        string userName = WebUtility.HtmlEncode(model.UserName ?? string.Empty);
         string password = WebUtility.HtmlEncode(model.TemporaryPassword ?? string.Empty);
         string link = WebUtility.HtmlEncode(model.ConfirmationLink);
 
@@ -48,7 +51,9 @@ public static class AccountActivationEmailTemplate
                             <p style="margin:0 0 14px;font-size:18px;font-weight:700;color:#172033;">{model.Hello} {recipientName},</p>
                             <p style="margin:0 0 24px;color:#64748b;font-size:15px;line-height:1.7;">{model.Welcome}</p>
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f8fafc;border:1px solid #e5eaf1;border-radius:12px;">
-                                <tr><td style="padding:18px 20px 8px;color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:.7px;">{model.TemporaryPasswordLabel}</td></tr>
+                                <tr><td style="padding:18px 20px 8px;color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:.7px;">{model.UserNameLabel}</td></tr>
+                                <tr><td style="padding:0 20px 16px;font-size:22px;font-weight:700;color:#1e293b;letter-spacing:1px;">{userName}</td></tr>
+                                <tr><td style="padding:0 20px 8px;color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:.7px;border-top:1px solid #e5eaf1;padding-top:14px;">{model.TemporaryPasswordLabel}</td></tr>
                                 <tr><td style="padding:0 20px 20px;font-size:22px;font-weight:700;color:#1e293b;letter-spacing:1px;">{password}</td></tr>
                             </table>
                             <p style="margin:24px 0 18px;color:#475569;font-size:15px;line-height:1.7;text-align:center;">{model.Instruction}</p>

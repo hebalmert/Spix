@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -148,7 +148,7 @@ public class ServiceRequestService : IServiceRequestService
 
             var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
 
-            var entity = await _context.ServiceRequests
+            var entity = await _context.ServiceRequests.AsNoTracking()
                 .Include(x => x.Technician)
                 .Include(x => x.ServiceRequestPic)
                 .Include(x => x.ServiceRequestDetails)!.ThenInclude(x => x.ServiceCategory)

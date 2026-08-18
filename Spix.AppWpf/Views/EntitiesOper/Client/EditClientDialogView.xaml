@@ -1,0 +1,15 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesOper.Client.EditClientDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:local="clr-namespace:Spix.AppWpf.Views.EntitiesOper.Client"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="850">
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="28" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <local:ClientFormView />
+        <Grid Grid.Row="2"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Button Grid.Column="0" Command="{Binding CancelCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" /><Button Grid.Column="2" Command="{Binding ResendActivationEmailCommand}" Style="{StaticResource SharedButtonFormPrimary}" IsEnabled="{Binding Entity.CreateAccount}"><StackPanel Orientation="Horizontal"><fa:FontAwesomeImage Width="15" Height="15" Icon="{x:Static icons:FontAwesomeIcon.Envelope}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" /><TextBlock Margin="8,0,0,0" Text="Reenviar correo" /></StackPanel></Button><Button Grid.Column="4" Command="{Binding SaveCommand}" Style="{StaticResource SharedButtonFormSuccess}" Content="Guardar" /></Grid>
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

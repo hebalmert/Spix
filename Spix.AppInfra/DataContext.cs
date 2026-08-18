@@ -20,7 +20,8 @@ namespace Spix.AppInfra;
 
 public class DataContext : IdentityDbContext<User>
 {
-    public DataContext(DbContextOptions options) : base(options)
+    //DbContextOptions<DataContext> (generico) es obligatorio para poder usar AddDbContextPool
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
     }
 

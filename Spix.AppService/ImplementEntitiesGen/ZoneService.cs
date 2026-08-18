@@ -49,7 +49,7 @@ public class ZoneService : IZoneService
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
-            var ListModel = await _context.Zones
+            var ListModel = await _context.Zones.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.CityId == id)
                 .ToListAsync();
             ListModel.Insert(0, new Zone 

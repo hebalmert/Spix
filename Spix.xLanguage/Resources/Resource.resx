@@ -1479,6 +1479,7 @@
   <data name="AccountActivation_Hello" xml:space="preserve"><value>Hello</value></data>
   <data name="AccountActivation_Welcome" xml:space="preserve"><value>Your account has been created successfully. Complete the activation to access the system.</value></data>
   <data name="AccountActivation_TemporaryPassword" xml:space="preserve"><value>Temporary password</value></data>
+  <data name="AccountActivation_UserName" xml:space="preserve"><value>User</value></data>
   <data name="AccountActivation_Instruction" xml:space="preserve"><value>Use the button below to confirm your email and activate your account.</value></data>
   <data name="AccountActivation_Button" xml:space="preserve"><value>Confirm email</value></data>
   <data name="AccountActivation_SecurityNotice" xml:space="preserve"><value>For your security, change the temporary password after signing in. If you did not expect this account, ignore this email.</value></data>
@@ -1495,5 +1496,8 @@
   <data name="App_NotFoundTitle" xml:space="preserve"><value>Page not found</value></data>
   <data name="App_NotFoundMessage" xml:space="preserve"><value>The page you requested is not available or may have been moved.</value></data>
   <data name="App_BackToDashboard" xml:space="preserve"><value>Back to dashboard</value></data>
+  <data name="RateLimitPerMinute" xml:space="preserve">
+    <value>Requests / minute</value>
+  </data>
 </root>
 

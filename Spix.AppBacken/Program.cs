@@ -1,7 +1,11 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Asp.Versioning.Conventions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
+using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -12,6 +16,7 @@ using Spix.AppBack.DependencyInjection;
 using Spix.AppBack.LoadCountries;
 using Spix.AppBack.Helper;
 using Spix.AppInfra;
+using Spix.AppInfra.RateLimiting;
 using Spix.DomainLogic.SettingModels;
 using Spix.xLanguage.Resources;
 using System.Globalization;
@@ -143,8 +148,16 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' no está definida.");
 
 //Inyectamos el Contexto desde AppInfra y establecemos AppBack como el proyecto de migraciones y Update-Database
-builder.Services.AddDbContext<DataContext>(x =>
-    x.UseSqlServer(connectionString, option => option.MigrationsAssembly("Spix.AppBacken")));
+//AddDbContextPool reutiliza instancias del DataContext en vez de crear una por request: con muchos
+//clientes concurrentes (Blazor + WPF + Android) baja el trabajo del recolector de basura.
+//NO se activa EnableRetryOnFailure: la estrategia de reintentos de EF NO admite transacciones
+//iniciadas a mano, y todas las escrituras del sistema usan el TransactionManager (Begin/Commit).
+builder.Services.AddDbContextPool<DataContext>(x =>
+    x.UseSqlServer(connectionString, option =>
+    {
+        option.MigrationsAssembly("Spix.AppBacken");
+        option.CommandTimeout(30);
+    }));
 
 //Identity Como vamos a menajar los usuarios y roles dentro del sistema, las validaciones de los mismos
 builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
@@ -195,12 +208,83 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
         builder.WithOrigins("https://localhost:7137",
-            "https://spixappfront-hkcygbatbpgudfby.canadacentral-01.azurewebsites.net",
+            "https://spix.nexxtplanet.net",
             "http://localhost:3034")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders(new[] { "Totalpages", "Counting" });
     });
+});
+
+//Compresion de las respuestas del API: menos bytes por peticion, clave para el WPF y sobre todo
+//para el Android en redes moviles. Los estaticos del WASM ya vienen pre-comprimidos (.br/.gz)
+//desde el publish, por eso aqui solo se comprime el JSON del API.
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = new[] { "application/json", "application/problem+json" };
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(x => x.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(x => x.Level = CompressionLevel.Fastest);
+
+//Resuelve el rate de cada corporation desde su SoftPlan (cache de 60s). Singleton porque el
+//limitador se consulta en cada peticion y no puede depender de un scope.
+builder.Services.AddSingleton<ICorporationRateResolver, CorporationRateResolver>();
+
+// ===== Rate limiting por corporation (segun el SoftPlan de cada empresa) =====
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Cuando se rechaza: 429 + Retry-After para que el cliente (Blazor, WPF o Android) espere y reintente
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.Headers.RetryAfter = "60";
+        await context.HttpContext.Response.WriteAsync(
+            "Limite de peticiones alcanzado para esta corporacion. Reintenta en un momento.", cancellationToken);
+    };
+
+    // Politica por corporation: cada empresa tiene su propio cubo segun el rate de su plan.
+    // Un tenant que se desboca se frena SOLO a si mismo; los demas no se enteran.
+    options.AddPolicy<string>("per-corp", httpContext =>
+    {
+        var corpClaim = httpContext.User?.FindFirst("CorporateId")?.Value;
+        int corporationId = int.TryParse(corpClaim, out var c) ? c : 0;
+
+        // Sin corporation (Admin del SaaS, login, webhooks de pago) -> no se limita aqui
+        if (corporationId == 0)
+        {
+            return RateLimitPartition.GetNoLimiter<string>("no-corp");
+        }
+
+        var resolver = httpContext.RequestServices.GetRequiredService<ICorporationRateResolver>();
+        int rate = resolver.GetRatePerMinute(corporationId);
+
+        // 0 = sin limite configurado en el plan
+        if (rate <= 0)
+        {
+            return RateLimitPartition.GetNoLimiter<string>($"unlimited-{corporationId}");
+        }
+
+        // La clave incluye el rate: si cambias el plan, se crea un cubo nuevo (aplica sin reiniciar)
+        return RateLimitPartition.GetFixedWindowLimiter<string>($"corp-{corporationId}-{rate}", _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = rate,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        });
+    });
+
+    // Backstop global: tope de concurrencia para proteger el proceso ante un pico colectivo.
+    // Las peticiones por encima del tope ESPERAN en cola en vez de tumbar el sitio.
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(_ =>
+        RateLimitPartition.GetConcurrencyLimiter("global", _ => new ConcurrencyLimiterOptions
+        {
+            PermitLimit = 300,
+            QueueLimit = 200,
+        }));
 });
 
 var app = builder.Build();
@@ -234,10 +318,26 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+//Va temprano para que alcance a todas las respuestas del API
+app.UseResponseCompression();
+
 app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
+
+// Sirve el Blazor WASM (modelo hosted → un solo sitio para el front + el API)
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
+//Despues de la autenticacion, para poder leer la corporation del JWT
+app.UseRateLimiter();
+
+//Una sola linea aplica la politica a los 86 controllers
+app.MapControllers().RequireRateLimiting("per-corp");
+
+// Cualquier ruta que no sea /api ni un archivo → el front Blazor
+app.MapFallbackToFile("index.html");
 
 app.Run();

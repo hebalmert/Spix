@@ -58,7 +58,7 @@ public class CargueDetailsService : ICargueDetailsService
             List<GuidItemModel> ListMac = new();
             if (id == null)
             {
-                ListMac = await _context.CargueDetails
+                ListMac = await _context.CargueDetails.AsNoTracking()
                     .Where(x => x.CorporationId == user.CorporationId && x.Status == SerialStateType.Disponible)
                     .Select(x => new GuidItemModel
                     {
@@ -74,7 +74,7 @@ public class CargueDetailsService : ICargueDetailsService
             }
             else
             {
-                ListMac = await _context.CargueDetails
+                ListMac = await _context.CargueDetails.AsNoTracking()
                     .Where(x => x.CorporationId == user.CorporationId && x.Status == SerialStateType.Disponible || x.CargueDetailId == id)
                                         .Select(x => new GuidItemModel
                                         {
@@ -178,7 +178,7 @@ public class CargueDetailsService : ICargueDetailsService
     {
         try
         {
-            var modelo = await _context.CargueDetails
+            var modelo = await _context.CargueDetails.AsNoTracking()
                 .Include(x => x.Cargue).ThenInclude(x => x!.Product)
                 .FirstOrDefaultAsync(x => x.CargueDetailId == id);
             if (modelo == null)

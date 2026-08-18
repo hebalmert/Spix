@@ -43,7 +43,7 @@ public class ContractIDPicService : IContractIDPicService
     {
         try
         {
-            var modelo = await _context.ContractIDPics
+            var modelo = await _context.ContractIDPics.AsNoTracking()
                 .Include(x => x.ContractClient)
                 .FirstOrDefaultAsync(x => x.ContractIDPicId == id);
 

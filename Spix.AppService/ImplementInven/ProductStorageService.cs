@@ -48,7 +48,7 @@ public class ProductStorageService : IProductStorageService
                     Message = "Problemas de Validacion de Usuario"
                 };
             }
-            var ListModel = await _context.ProductStorages
+            var ListModel = await _context.ProductStorages.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
                 .ToListAsync();
 
@@ -106,7 +106,7 @@ public class ProductStorageService : IProductStorageService
     {
         try
         {
-            var modelo = await _context.ProductStorages
+            var modelo = await _context.ProductStorages.AsNoTracking()
                 .Include(x => x.State).ThenInclude(x => x!.Cities)
                 .FirstOrDefaultAsync(x => x.ProductStorageId == id);
             if (modelo == null)

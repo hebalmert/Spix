@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
@@ -55,7 +55,7 @@ public class EstratoSocialService : IEstratoSocialService
             int corporationId = Convert.ToInt32(user.CorporationId);
             await EnsureDefaultEstratosSocialesAsync(corporationId);
 
-            List<GuidItemModel> list = await _context.EstratosSociales
+            List<GuidItemModel> list = await _context.EstratosSociales.AsNoTracking()
                 .Where(x => x.CorporationId == corporationId)
                 .OrderBy(x => x.EstratoSocialName)
                 .Select(x => new GuidItemModel

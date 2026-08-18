@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -44,7 +44,7 @@ public class ContractBindService : IContractBindService
 
         try
         {
-            var modelo = await _context.ContractBinds
+            var modelo = await _context.ContractBinds.AsNoTracking()
                 .Include(x => x.Server)
                 .Include(x => x.IpNet)
                 .Include(x => x.CargueDetail)

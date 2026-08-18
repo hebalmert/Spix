@@ -550,7 +550,7 @@ namespace Spix.Services.ImplementOper
             string tokenLink = frontUrl.CombineFrontendUrl($"api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}");
 
             string subject = _localizer["AccountActivation_Subject"];
-            string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.Pass, tokenLink);
+            string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.UserName, user.Pass, tokenLink);
 
             Response response = await SendCorporateEmailAsync(user, subject, body);
             if (response.IsSuccess == false)

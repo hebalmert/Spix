@@ -53,7 +53,7 @@ public class ServiceClientService : IServiceClientService
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
                 };
             }
-            var ListModel = await _context.ServiceClients
+            var ListModel = await _context.ServiceClients.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId && x.ServiceCategoryId == id)
                 .ToListAsync();
 
@@ -117,7 +117,7 @@ public class ServiceClientService : IServiceClientService
         }
         try
         {
-            var modelo = await _context.ServiceClients
+            var modelo = await _context.ServiceClients.AsNoTracking()
                 .Include(x => x.Tax)
                 .FirstOrDefaultAsync(x => x.ServiceClientId == id);
             if (modelo == null)

@@ -160,6 +160,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requests / minute.
+        /// </summary>
+        public static string RateLimitPerMinute {
+            get {
+                return ResourceManager.GetString("RateLimitPerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Address.
         /// </summary>
         public static string Address {

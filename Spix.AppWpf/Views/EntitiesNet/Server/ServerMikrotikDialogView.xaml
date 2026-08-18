@@ -1,0 +1,62 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Server.ServerMikrotikDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             Width="680"
+             MinWidth="680"
+             Height="390">
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="16" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                <Border Padding="14" Background="#344B65" CornerRadius="6"><StackPanel><TextBlock Foreground="#C9DBF4" Text="Servidor" /><TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="SemiBold" Foreground="White" Text="{Binding Server.ServerName}" TextTrimming="CharacterEllipsis" /></StackPanel></Border>
+                <Border Grid.Column="2" Padding="14" Background="#2F6C66" CornerRadius="6"><StackPanel><TextBlock Foreground="#D2F4E7" Text="IP" /><TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="SemiBold" Foreground="White" Text="{Binding Server.IpNetwork.Ip}" /></StackPanel></Border>
+            </Grid>
+            <Border Margin="0,12,0,0" Padding="16" BorderThickness="1" CornerRadius="6">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="#293847" />
+                        <Setter Property="BorderBrush" Value="#506077" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasError}" Value="True">
+                                <Setter Property="Background" Value="#432C35" />
+                                <Setter Property="BorderBrush" Value="#CE6575" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="14" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <fa:FontAwesomeImage Width="26" Height="26" VerticalAlignment="Center" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}">
+                        <fa:FontAwesomeImage.Style>
+                            <Style TargetType="fa:FontAwesomeImage">
+                                <Setter Property="Foreground" Value="#45D489" />
+                                <Setter Property="Icon" Value="{x:Static icons:FontAwesomeIcon.CircleCheck}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasError}" Value="True">
+                                        <Setter Property="Foreground" Value="#FF7585" />
+                                        <Setter Property="Icon" Value="{x:Static icons:FontAwesomeIcon.CircleExclamation}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </fa:FontAwesomeImage.Style>
+                    </fa:FontAwesomeImage>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="White" Text="{Binding ConnectionTitle}" />
+                        <TextBlock Margin="0,6,0,0" Foreground="#FFD4DA" Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Margin="0,12,0,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                <Border Padding="14" Background="#2F6C66" CornerRadius="6"><StackPanel><TextBlock Foreground="#D2F4E7" Text="MikroTik" /><TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="Bold" Foreground="White" Text="{Binding Result.MikrotikName}" TextTrimming="CharacterEllipsis" /></StackPanel></Border>
+                <Border Grid.Column="2" Padding="14" Background="#4F467D" CornerRadius="6"><StackPanel><TextBlock Foreground="#E5DFFF" Text="IP Bindings" /><TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.Value}" /></StackPanel></Border>
+            </Grid>
+        </StackPanel>
+        <Grid Grid.Row="2"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Button Grid.Column="0" Command="{Binding CloseCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" /><Button Grid.Column="2" Command="{Binding RetryCommand}" Style="{StaticResource SharedButtonFormPrimary}" Content="Reintentar" /></Grid>
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

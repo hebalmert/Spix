@@ -44,7 +44,7 @@ public class CorporationService : ICorporationService
     {
         try
         {
-            var ListModel = await _context.Corporations.Where(x => x.Active).OrderBy(x => x.Name).ToListAsync();
+            var ListModel = await _context.Corporations.AsNoTracking().Where(x => x.Active).OrderBy(x => x.Name).ToListAsync();
             // Insertar el elemento neutro al inicio
             var defaultItem = new Corporation
             {

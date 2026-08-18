@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -43,7 +43,7 @@ public class ContractPlanService : IContractPlanService
 
         try
         {
-            var modelo = await _context.ContractPlans
+            var modelo = await _context.ContractPlans.AsNoTracking()
                 .Include(x => x.Plan)
                     .ThenInclude(x => x!.Tax)
                 .FirstOrDefaultAsync(c => c.ContractClientId == id);

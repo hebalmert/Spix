@@ -1,0 +1,34 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Server.ServerPingDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             Width="680"
+             MinWidth="680"
+             Height="410">
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="16" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                <Border Padding="14" Background="#344B65" CornerRadius="6"><StackPanel><TextBlock Foreground="#C9DBF4" Text="Servidor" /><TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="SemiBold" Foreground="White" Text="{Binding ServerName}" TextTrimming="CharacterEllipsis" /></StackPanel></Border>
+                <Border Grid.Column="2" Padding="14" Background="#2F6C66" CornerRadius="6"><StackPanel><TextBlock Foreground="#D2F4E7" Text="IP" /><TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="SemiBold" Foreground="White" Text="{Binding Host}" /></StackPanel></Border>
+            </Grid>
+            <Border Margin="0,12,0,0" Padding="14" Background="#293847" BorderBrush="#506077" BorderThickness="1" CornerRadius="6">
+                <StackPanel>
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="White" Text="{Binding Result.Message}" />
+                    <TextBlock Margin="0,6,0,0" Foreground="#F8B4B4" Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Grid Margin="0,12,0,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                <Border Padding="14" Background="#344B65" CornerRadius="6"><StackPanel><TextBlock Foreground="#C9DBF4" Text="Promedio" /><TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.AverageTime, StringFormat={}{0} ms}" /></StackPanel></Border>
+                <Border Grid.Column="2" Padding="14" Background="#2F6C66" CornerRadius="6"><StackPanel><TextBlock Foreground="#D2F4E7" Text="Minimo" /><TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.MinTime, StringFormat={}{0} ms}" /></StackPanel></Border>
+                <Border Grid.Column="4" Padding="14" Background="#7A3C44" CornerRadius="6"><StackPanel><TextBlock Foreground="#FFE0E2" Text="Maximo" /><TextBlock Margin="0,6,0,0" FontSize="20" FontWeight="Bold" Foreground="White" Text="{Binding Result.MaxTime, StringFormat={}{0} ms}" /></StackPanel></Border>
+            </Grid>
+        </StackPanel>
+        <Grid Grid.Row="2"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Button Grid.Column="0" Command="{Binding CloseCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" /><Button Grid.Column="2" Command="{Binding RunPingCommand}" Style="{StaticResource SharedButtonFormPrimary}" Content="Reintentar" /></Grid>
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

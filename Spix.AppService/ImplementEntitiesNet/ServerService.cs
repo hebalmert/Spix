@@ -59,7 +59,7 @@ public class ServerService : IServerService
             List<Server> servers;
             if (id == null)
             {
-                servers = await _context.Servers
+                servers = await _context.Servers.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId)
                     .OrderBy(x => x.ServerName)
                     .ToListAsync();
@@ -71,7 +71,7 @@ public class ServerService : IServerService
             }
             else
             {
-                servers = await _context.Servers
+                servers = await _context.Servers.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId || x.ServerId == id)
                     .OrderBy(x => x.ServerName)
                     .ToListAsync();
@@ -144,7 +144,7 @@ public class ServerService : IServerService
         try
         {
             var modelo = await _context.Servers.FindAsync(id);
-            var ZoneDetail = await _context.Zones.FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
+            var ZoneDetail = await _context.Zones.AsNoTracking().FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
             modelo!.StateId = ZoneDetail!.StateId;
             modelo.CityId = ZoneDetail.CityId;
             if (modelo == null)

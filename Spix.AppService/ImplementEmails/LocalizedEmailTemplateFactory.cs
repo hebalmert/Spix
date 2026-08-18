@@ -9,13 +9,14 @@ namespace Spix.AppService.ImplementEmails;
 /// </summary>
 internal static class LocalizedEmailTemplateFactory
 {
-    public static string BuildAccountActivation(IStringLocalizer localizer, string? firstName, string? lastName, string? temporaryPassword, string confirmationLink)
+    public static string BuildAccountActivation(IStringLocalizer localizer, string? firstName, string? lastName, string? userName, string? temporaryPassword, string confirmationLink)
         => AccountActivationEmailTemplate.Build(new AccountActivationEmailTemplateModel
         {
             Subject = localizer["AccountActivation_Subject"],
             Title = localizer["AccountActivation_Title"],
             Hello = localizer["AccountActivation_Hello"],
             Welcome = localizer["AccountActivation_Welcome"],
+            UserNameLabel = localizer["AccountActivation_UserName"],
             TemporaryPasswordLabel = localizer["AccountActivation_TemporaryPassword"],
             Instruction = localizer["AccountActivation_Instruction"],
             ButtonText = localizer["AccountActivation_Button"],
@@ -23,6 +24,7 @@ internal static class LocalizedEmailTemplateFactory
             Footer = localizer["AccountActivation_Footer"],
             FirstName = firstName,
             LastName = lastName,
+            UserName = userName,
             TemporaryPassword = temporaryPassword,
             ConfirmationLink = confirmationLink
         });

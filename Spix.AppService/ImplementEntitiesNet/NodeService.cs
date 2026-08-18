@@ -59,7 +59,7 @@ public class NodeService : INodeService
             List<Node> nodes;
             if (id == null)
             {
-                nodes = await _context.Nodes
+                nodes = await _context.Nodes.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId)
                     .OrderBy(x => x.NodesName)
                     .ToListAsync();
@@ -71,7 +71,7 @@ public class NodeService : INodeService
             }
             else
             {
-                nodes = await _context.Nodes
+                nodes = await _context.Nodes.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId || x.NodeId == id)
                     .OrderBy(x => x.NodesName)
                     .ToListAsync();
@@ -138,8 +138,8 @@ public class NodeService : INodeService
         }
         try
         {
-            var modelo = await _context.Nodes.FirstOrDefaultAsync(x => x.NodeId == id);
-            var ZoneDetail = await _context.Zones.FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
+            var modelo = await _context.Nodes.AsNoTracking().FirstOrDefaultAsync(x => x.NodeId == id);
+            var ZoneDetail = await _context.Zones.AsNoTracking().FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
             modelo!.StateId = ZoneDetail!.StateId;
             modelo.CityId = ZoneDetail.CityId;
             if (modelo == null)

@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Spix.AppInfra.Caching;
 using Spix.AppInfra.Configuration;
 using MapsterMapper;
 using Spix.AppInfra.EnumMultilLanguage;
@@ -27,6 +28,9 @@ namespace Spix.AppBack.DependencyInjection
         {
             // Manejo de Errores
             services.AddScoped<HttpErrorHandler>();
+
+            // Cache de los combos de catalogos globales (paises, ciudades, tipos...)
+            services.AddSingleton<IComboCache, ComboCache>();
 
             //Para generacion del QR para hacer visitas rapidas de Pacientes.
             services.AddSingleton<IQRService, QRService>();

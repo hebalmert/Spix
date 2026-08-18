@@ -72,6 +72,16 @@
         </div>
     </div>
 
+    <div class="mb-0">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                @Localizer[nameof(Resource.RateLimitPerMinute)]
+            </span>
+            <InputNumber class="form-control" placeholder="0" @bind-Value="SoftPlan.RateLimitPerMinute" />
+        </div>
+        <small class="text-muted">Peticiones por minuto que puede hacer cada empresa de este plan. 0 = sin limite.</small>
+    </div>
+
     <div class="mb-3">
         <div class="input-group">
             <span class="input-group-text" style="width: 150px">

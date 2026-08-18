@@ -53,7 +53,7 @@ public class ContractMacService : IContractMacService
 
         try
         {
-            var modelo = await _context.ContractMacs
+            var modelo = await _context.ContractMacs.AsNoTracking()
                 .Include(x => x.CargueDetail)
                 .FirstOrDefaultAsync(c => c.ContractClientId == id);
             //como la consulta da null, entonces igualamos el modelo a New(), para evitar fallos en el Front.

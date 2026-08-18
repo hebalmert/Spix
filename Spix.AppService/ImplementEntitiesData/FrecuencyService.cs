@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.Caching;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
@@ -19,15 +20,17 @@ namespace Spix.AppService.ImplementEntitiesData;
 public class FrecuencyService : IFrecuencyService
 {
     private readonly DataContext _context;
+    private readonly IComboCache _comboCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITransactionManager _transactionManager;
     private readonly IStringLocalizer _localizer;
     private readonly HttpErrorHandler _httpErrorHandler;
 
     public FrecuencyService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, IMemoryCache cache, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer)
+        ITransactionManager transactionManager, IMemoryCache cache, HttpErrorHandler httpErrorHandler, IStringLocalizer localizer, IComboCache comboCache)
     {
         _context = context;
+        _comboCache = comboCache;
         _httpContextAccessor = httpContextAccessor;
         _transactionManager = transactionManager;
         _localizer = localizer;
@@ -38,11 +41,14 @@ public class FrecuencyService : IFrecuencyService
     {
         try
         {
-            List<IntItemModel> ListModel = await _context.Frecuencies.Where(x => x.Active && x.FrecuencyTypeId == id).Select(c => new IntItemModel()
-            {
-                Name = c.FrecuencyName.ToString(),
-                Value = c.FrecuencyId
-            }).ToListAsync(); ;
+            //Catalogo global: la consulta se cachea 10 min. Se COPIA la lista porque abajo se le
+            //inserta el item neutro, cuyo texto depende del idioma de quien pide.
+            List<IntItemModel> ListModel = new(await _comboCache.GetOrCreateAsync($"combo_frecuencies_{id}", async () =>
+                await _context.Frecuencies.AsNoTracking().Where(x => x.Active && x.FrecuencyTypeId == id).Select(c => new IntItemModel()
+                {
+                    Name = c.FrecuencyName.ToString(),
+                    Value = c.FrecuencyId
+                }).ToListAsync())); ;
 
             ListModel.Insert(0, new IntItemModel
             {

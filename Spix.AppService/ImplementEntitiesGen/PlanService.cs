@@ -55,7 +55,7 @@ public class PlanService : IPlanService
             List<Plan> plans;
             if (id == null)
             {
-                plans = await _context.Plans
+                plans = await _context.Plans.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId)
                     .OrderBy(x => x.PlanName)
                     .ToListAsync();
@@ -67,7 +67,7 @@ public class PlanService : IPlanService
             }
             else
             {
-                plans = await _context.Plans
+                plans = await _context.Plans.AsNoTracking()
                     .Where(x => x.Active && x.CorporationId == user.CorporationId || x.PlanId == id)
                     .OrderBy(x => x.PlanName)
                     .ToListAsync();

@@ -107,7 +107,7 @@ public class CargueService : ICargueService
     {
         try
         {
-            var modelo = await _context.Cargues
+            var modelo = await _context.Cargues.AsNoTracking()
                 .Include(x => x.Product)
                 .Include(x => x.PurchaseDetail).ThenInclude(x => x!.Purchase)
                 .Include(x => x.CargueDetails)

@@ -50,7 +50,7 @@ public class PlanCategoryService : IPlanCategoryService
                 };
             }
 
-            var planCategories = await _context.PlanCategories
+            var planCategories = await _context.PlanCategories.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
                 .OrderBy(x => x.PlanCategoryName)
                 .ToListAsync();

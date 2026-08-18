@@ -423,3 +423,7 @@ FodyWeavers.xsd
 
 # Local backend configuration with secrets
 Spix.AppBacken/appsettings.json
+
+# Carpeta de publicacion para subir por FTP (hosted). Nunca va al repo.
+publish-hosted/
+temp-build/

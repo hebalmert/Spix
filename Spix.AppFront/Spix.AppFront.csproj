@@ -5,6 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <!-- Modelo hosted (.NET 10): el fingerprinting de assets (import maps + placeholders
+         #[.{fingerprint}]) NO se resuelve al publicar desde el host, y el bootstrapper
+         termina pidiendo dotnet.js / assemblies SIN hash que en disco SÍ tienen hash → 404
+         en cadena → pantalla "Loading" infinita. Desactivarlo deja nombres estables
+         (dotnet.js, dotnet.native.wasm, blazor.webassembly.js, *.wasm) que el runtime
+         encuentra directo. Imprescindible para publicar hosted. -->
+    <WasmFingerprintAssets>false</WasmFingerprintAssets>
     <UserSecretsId>2222c29f-80d4-4571-8824-430e337aef4a</UserSecretsId>
   </PropertyGroup>
 

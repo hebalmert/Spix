@@ -96,7 +96,7 @@ namespace Spix.Services.ImplementContratos
         {
             try
             {
-                var modelo = await _context.ContractClients
+                var modelo = await _context.ContractClients.AsNoTracking()
                     .Include(x => x.Client).ThenInclude(x => x!.DocumentType)
                     .Include(x => x.Contractor)
                     .Include(x => x.Zone).ThenInclude(x => x!.City)
@@ -107,7 +107,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.ContractNodes)
                     .Include(x => x.ContractMaps)
                     .FirstOrDefaultAsync(x => x.ContractClientId == id);
-                var ZoneDetail = await _context.Zones.FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
+                var ZoneDetail = await _context.Zones.AsNoTracking().FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
                 modelo!.StateId = ZoneDetail!.StateId;
                 modelo.CityId = ZoneDetail.CityId;
                 if (modelo == null)

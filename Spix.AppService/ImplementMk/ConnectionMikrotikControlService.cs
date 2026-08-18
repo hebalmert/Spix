@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
@@ -86,7 +86,7 @@ public class ConnectionMikrotikControlService : IConnectionMikrotikControlServic
 
         try
         {
-            var modelo = await _context.ConnectionMikrotikControls
+            var modelo = await _context.ConnectionMikrotikControls.AsNoTracking()
                 .Include(x => x.Corporation)
                 .FirstOrDefaultAsync(x => x.ConnectionMikrotikControlId == id);
 

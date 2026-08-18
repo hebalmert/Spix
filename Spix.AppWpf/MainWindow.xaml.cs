@@ -15,6 +15,9 @@ using Spix.AppWpf.Views.EntitiesInven.Cargue;
 using Spix.AppWpf.Views.EntitiesNet.IpNet;
 using Spix.AppWpf.Views.EntitiesNet.IpNetwork;
 using Spix.AppWpf.Views.EntitiesNet.Node;
+using Spix.AppWpf.Views.EntitiesNet.Server;
+using Spix.AppWpf.Views.EntitiesSchedule;
+using Spix.AppWpf.Views.EntitiesOper.Client;
 using Spix.AppWpf.Views.EntitiesMK.ConnectionMikrotikControl;
 using Spix.AppWpf.Views.EntitiesMK.QueueType;
 using System.Windows;
@@ -69,6 +72,7 @@ public partial class MainWindow : Window
         {
             InventoryMenu.Visibility = Visibility.Collapsed;
             NetworkMenu.Visibility = Visibility.Collapsed;
+            OperationsMenu.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -84,6 +88,7 @@ public partial class MainWindow : Window
         {
             ConfigurationMenu.Visibility = Visibility.Collapsed;
             NetworkMenu.Visibility = Visibility.Collapsed;
+            OperationsMenu.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -99,6 +104,23 @@ public partial class MainWindow : Window
         {
             ConfigurationMenu.Visibility = Visibility.Collapsed;
             InventoryMenu.Visibility = Visibility.Collapsed;
+            OperationsMenu.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    // Abre Operaciones y mantiene los demas grupos contraidos como en el menu de Blazor.
+    private void ToggleOperationsClick(object sender, RoutedEventArgs e)
+    {
+        bool shouldOpen = OperationsMenu.Visibility != Visibility.Visible;
+        OperationsMenu.Visibility = shouldOpen
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+        if (shouldOpen)
+        {
+            ConfigurationMenu.Visibility = Visibility.Collapsed;
+            InventoryMenu.Visibility = Visibility.Collapsed;
+            NetworkMenu.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -240,6 +262,24 @@ public partial class MainWindow : Window
     private void ShowNodesClick(object sender, RoutedEventArgs e)
     {
         ShowView<NodeIndexView>("Nodos", "Network / Nodos");
+    }
+
+    // Abre los servidores y permite ejecutar los diagnosticos locales desde WPF.
+    private void ShowServersClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ServerIndexView>("Servidores", "Network / Servidores");
+    }
+
+    // Abre el calendario de agendas con los mismos eventos que consulta Blazor.
+    private void ShowScheduleClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ScheduleIndexView>("Schedule", "Operaciones / Schedule");
+    }
+
+    // Abre el indice paginado de clientes junto al resto de operaciones.
+    private void ShowClientsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ClientIndexView>("Clientes", "Operaciones / Clientes");
     }
 
     // Resuelve cada vista con su ViewModel inyectado para mantener la navegacion centralizada.

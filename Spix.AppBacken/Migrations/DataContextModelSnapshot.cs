@@ -521,6 +521,9 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
+                    b.Property<int>("RateLimitPerMinute")
+                        .HasColumnType("int");
+
                     b.HasKey("SoftPlanId");
 
                     b.HasIndex("Name")

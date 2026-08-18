@@ -19,8 +19,8 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7285") });
-//builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://spixappbacken-dpfwefhghfd9fvdh.canadacentral-01.azurewebsites.net") });
+// Modelo hosted: el front se sirve desde el mismo sitio que el API → mismo origen (dev y prod).
+builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 // Almacenamiento Local para persistir data
 builder.Services.AddBlazoredLocalStorage();

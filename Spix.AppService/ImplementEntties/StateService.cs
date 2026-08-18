@@ -38,12 +38,12 @@ public class StateService : IStateService
     {
         try
         {
-            int IdCountry = await _context.Corporations
+            int IdCountry = await _context.Corporations.AsNoTracking()
                     .Where(c => c.CorporationId == claimsDTOs!.CorporationId)
                     .Select(c => c.CountryId)
                     .FirstOrDefaultAsync();
 
-            IEnumerable<State> ListModel = await _context.States.Where(x => x.CountryId == IdCountry).ToListAsync();
+            IEnumerable<State> ListModel = await _context.States.AsNoTracking().Where(x => x.CountryId == IdCountry).ToListAsync();
             return new ActionResponse<IEnumerable<State>>
             {
                 WasSuccess = true,

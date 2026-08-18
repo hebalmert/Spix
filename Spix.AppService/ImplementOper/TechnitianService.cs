@@ -76,7 +76,7 @@ public class TechnitianService : ITechnitianService
                     Message = "Problemas de Validacion de Usuario"
                 };
             }
-            var ListModel = await _context.Technicians
+            var ListModel = await _context.Technicians.AsNoTracking()
                 .Where(x => x.Active && x.CorporationId == user.CorporationId)
                 .Select(x => new GuidItemModel { Value = x.TechnicianId, Name = x.FirstName + " " + x.LastName })
                 .ToListAsync();
@@ -520,7 +520,7 @@ public class TechnitianService : ITechnitianService
         string tokenLink = frontUrl.CombineFrontendUrl($"api/accounts/ConfirmEmail?userid={user.Id}&token={myToken}");
 
         string subject = _localizer["AccountActivation_Subject"];
-        string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.Pass, tokenLink);
+        string body = Spix.AppService.ImplementEmails.LocalizedEmailTemplateFactory.BuildAccountActivation(_localizer, user.FirstName, user.LastName, user.UserName, user.Pass, tokenLink);
 
         Response response = await SendCorporateEmailAsync(user, subject, body);
         if (response.IsSuccess == false)

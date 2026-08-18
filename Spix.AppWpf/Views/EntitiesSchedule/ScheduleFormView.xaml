@@ -1,0 +1,150 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSchedule.ScheduleFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="760"
+             MinWidth="760">
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7"
+                    BorderBrush="#566273"
+                    BorderThickness="1,1,0,1"
+                    CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0"
+                           VerticalAlignment="Center"
+                           Foreground="#1E2B3C"
+                           Text="Titulo" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     MaxLength="150"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     Text="{Binding Entity.Title, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7"
+                    BorderBrush="#566273"
+                    BorderThickness="1,1,0,1"
+                    CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0"
+                           VerticalAlignment="Center"
+                           Foreground="#1E2B3C"
+                           Text="Descripcion" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="76"
+                     MaxLength="500"
+                     Padding="12,8"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     Background="White"
+                     BorderBrush="#566273"
+                     Text="{Binding Entity.Description, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Inicio" />
+            </Border>
+            <DatePicker Grid.Column="1"
+                        MinHeight="42"
+                        SelectedDate="{Binding StartDate, Mode=TwoWay}"
+                        SelectedDateFormat="Short" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Hora inicio" />
+            </Border>
+            <TextBox Grid.Column="4"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     Text="{Binding StartTime, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Fin" />
+            </Border>
+            <DatePicker Grid.Column="1"
+                        MinHeight="42"
+                        SelectedDate="{Binding EndDate, Mode=TwoWay}"
+                        SelectedDateFormat="Short" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Hora fin" />
+            </Border>
+            <TextBox Grid.Column="4"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     Text="{Binding EndTime, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Tecnico" />
+            </Border>
+            <ComboBox Grid.Column="1"
+                      MinHeight="42"
+                      Padding="10,6"
+                      ItemsSource="{Binding Technicians}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding Entity.TechnicianId, Mode=TwoWay}" />
+            <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Estado" />
+            </Border>
+            <ComboBox Grid.Column="4"
+                      MinHeight="42"
+                      Padding="10,6"
+                      ItemsSource="{Binding Statuses}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding SelectedStatusValue, Mode=TwoWay}" />
+        </Grid>
+    </Grid>
+</UserControl>
