@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using Spix.AppBack.LoadCountries;
 using Spix.AppInfra;
 using Spix.AppInfra.UserHelper;
@@ -258,76 +259,89 @@ public class SeedDb
 
     private async Task CheckCountries()
     {
-        Response responseCountries = await _apiService.GetListAsync<CountryResponse>("/v1", "/countries");
+        //El catalogo geografico se siembra desde un archivo del propio proyecto y NO desde el API
+        //externo: la cuenta de countrystatecity.in permite 100 peticiones al dia y este catalogo
+        //necesita cerca de 500 (una por cada estado de cada pais), asi que quedaba siempre a medias.
+        //El archivo viaja con el publish, se siembra igual en cualquier maquina y no depende de la red.
+        string rutaSemilla = Path.Combine(AppContext.BaseDirectory, "Data", "SeedData", "countries-seed.json");
 
-        if (responseCountries.IsSuccess)
+        if (!File.Exists(rutaSemilla))
         {
-            List<CountryResponse> NlistCountry = (List<CountryResponse>)responseCountries.Result!;
-            List<CountryResponse> countries = NlistCountry
-                .Where(x =>
-                    x.Name == "Colombia" ||
-                    x.Name == "United States" ||
-                    x.Name == "Peru" ||
-                    x.Name == "Venezuela" ||
-                    x.Name == "Ecuador" ||
-                    x.Name == "Chile" ||
-                    x.Name == "Mexico" ||
-                    x.Name == "United Kingdom" ||
-                    x.Name == "Spain")
-                .ToList();
-
-            foreach (CountryResponse item in countries)
-            {
-                Country? country = await _context.Countries.FirstOrDefaultAsync(c => c.Name == item.Name);
-                if (country == null)
-                {
-                    country = new() { Name = item.Name!, States = new List<State>() };
-                    Response responseStates = await _apiService.GetListAsync<StateResponse>("/v1", $"/countries/{item.Iso2}/states");
-                    if (responseStates.IsSuccess)
-                    {
-                        List<StateResponse> states = (List<StateResponse>)responseStates.Result!;
-                        foreach (StateResponse stateResponse in states!)
-                        {
-                            State state = country.States!.FirstOrDefault(s => s.Name == stateResponse.Name!)!;
-                            if (state == null)
-                            {
-                                state = new() { Name = stateResponse.Name!, Cities = new List<City>() };
-                                Response responseCities = await _apiService.GetListAsync<CityResponse>("/v1", $"/countries/{item.Iso2}/states/{stateResponse.Iso2}/cities");
-                                if (responseCities.IsSuccess)
-                                {
-                                    List<CityResponse> cities = (List<CityResponse>)responseCities.Result!;
-                                    foreach (CityResponse cityResponse in cities)
-                                    {
-                                        if (cityResponse.Name == "Mosfellsbær" || cityResponse.Name == "Șăulița")
-                                        {
-                                            continue;
-                                        }
-                                        City city = state.Cities!.FirstOrDefault(c => c.Name == cityResponse.Name!)!;
-                                        if (city == null)
-                                        {
-                                            state.Cities.Add(new City() { Name = cityResponse.Name! });
-                                        }
-                                    }
-                                }
-                                if (state.CitiesNumber > 0)
-                                {
-                                    country.States.Add(state);
-                                }
-                            }
-                        }
-                    }
-                    if (country.StatesNumber > 0)
-                    {
-                        _context.Countries.Add(country);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-            }
+            Console.WriteLine($"Seed Countries: no se encontro el archivo {rutaSemilla}");
+            await EnsureRequiredCountriesAsync();
+            return;
         }
 
-        // La API externa amplía el catálogo con estados y ciudades, pero no debe
-        // impedir que el SaaS cree su Corporation ni el usuario administrador.
+        string contenido = await File.ReadAllTextAsync(rutaSemilla);
+        List<CountrySeedDTO> paisesSemilla = JsonSerializer.Deserialize<List<CountrySeedDTO>>(
+            contenido, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<CountrySeedDTO>();
+
+        //Con miles de ciudades por pais, dejar el detector de cambios encendido hace la siembra
+        //lentisima. Se apaga y se usa Add/AddRange explicito, que sigue registrando el grafo.
+        bool detectarCambios = _context.ChangeTracker.AutoDetectChangesEnabled;
+        _context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        try
+        {
+            foreach (CountrySeedDTO paisSemilla in paisesSemilla)
+            {
+                Country? country = await _context.Countries
+                    .Include(c => c.States)
+                    .FirstOrDefaultAsync(c => c.Name == paisSemilla.Name);
+
+                //Ya tiene estados: esta completo y no se toca.
+                if (country != null && country.States != null && country.States.Count > 0)
+                {
+                    continue;
+                }
+
+                //Un pais que quedo creado VACIO (por EnsureRequiredCountriesAsync) se completa aqui,
+                //en vez de darlo por hecho y dejarlo para siempre sin estados ni ciudades.
+                List<State> estadosNuevos = paisSemilla.States
+                    .Select(estadoSemilla => new State
+                    {
+                        Name = estadoSemilla.Name,
+                        Cities = estadoSemilla.Cities.Select(nombreCiudad => new City { Name = nombreCiudad }).ToList()
+                    })
+                    .ToList();
+
+                if (country == null)
+                {
+                    _context.Countries.Add(new Country { Name = paisSemilla.Name, States = estadosNuevos });
+                }
+                else
+                {
+                    estadosNuevos.ForEach(estado => estado.CountryId = country.CountryId);
+                    _context.States.AddRange(estadosNuevos);
+                }
+
+                await _context.SaveChangesAsync();
+
+                int totalCiudades = estadosNuevos.Sum(estado => estado.Cities!.Count);
+                Console.WriteLine($"Seed Countries: {paisSemilla.Name} -> {estadosNuevos.Count} estados, {totalCiudades} ciudades");
+            }
+        }
+        finally
+        {
+            _context.ChangeTracker.AutoDetectChangesEnabled = detectarCambios;
+        }
+
         await EnsureRequiredCountriesAsync();
+    }
+
+    //Estructura del archivo countries-seed.json
+    private class CountrySeedDTO
+    {
+        public string Name { get; set; } = null!;
+
+        public List<StateSeedDTO> States { get; set; } = new();
+    }
+
+    private class StateSeedDTO
+    {
+        public string Name { get; set; } = null!;
+
+        public List<string> Cities { get; set; } = new();
     }
 
     private async Task EnsureRequiredCountriesAsync()

@@ -1,14 +1,17 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.DomainLogic.ModelUtility;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 using Spix.xNetwork.PingHelper;
 
 namespace Spix.AppFront.Pages.EntitiesNet.ServerPage;
 
 public partial class PingModal
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;

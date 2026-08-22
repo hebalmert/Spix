@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -29,6 +29,13 @@
     <ProjectReference Include="..\Spix.xLanguage\Spix.xLanguage.csproj" />
     <ProjectReference Include="..\Spix.xNetwork\Spix.xNetwork.csproj" />
     <ProjectReference Include="..\Spix.AppFront\Spix.AppFront.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Catalogo geografico que siembra el SeedDb. Debe viajar al publish. -->
+    <Content Update="Data\SeedData\countries-seed.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

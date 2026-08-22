@@ -15,6 +15,7 @@ namespace Spix.AppBack.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
+        private const string RefreshCookie = "spix.refreshToken";
         private readonly IAccountServiceX _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IStringLocalizer _localizer;
@@ -33,6 +34,7 @@ namespace Spix.AppBack.Controllers
             try
             {
                 var response = await _unitOfWork.LoginAsync(modelo);
+                if (response.WasSuccess) { var refresh = await _unitOfWork.CreateRefreshTokenAsync(modelo.UserName); if (!refresh.WasSuccess) return ResponseHelper.Format(refresh); Response.Cookies.Append(RefreshCookie, refresh.Result!, new CookieOptions { HttpOnly = true, SameSite = SameSiteMode.Strict, Secure = !HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment(), Path = "/api/v1/accounts" }); }
                 return ResponseHelper.Format(response);
             }
             catch (ApplicationException ex)
@@ -41,7 +43,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
             }
         }
 
@@ -59,7 +61,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
             }
         }
 
@@ -77,7 +79,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
             }
         }
 
@@ -102,7 +104,7 @@ namespace Spix.AppBack.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
             }
         }
 
@@ -121,8 +123,16 @@ namespace Spix.AppBack.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
             }
         }
+
+        [HttpPost("RefreshToken")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshTokenAsync() { var response = await _unitOfWork.RefreshTokenAsync(Request.Cookies[RefreshCookie] ?? string.Empty); if (!response.WasSuccess || response.Result is null) return ResponseHelper.Format(response); Response.Cookies.Append(RefreshCookie, response.Result.RefreshToken, new CookieOptions { HttpOnly = true, SameSite = SameSiteMode.Strict, Secure = !HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment(), Path = "/api/v1/accounts" }); return Ok(response.Result.AccessToken); }
+
+        [HttpPost("Logout")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LogoutAsync() { await _unitOfWork.RevokeRefreshTokenAsync(Request.Cookies[RefreshCookie] ?? string.Empty); Response.Cookies.Delete(RefreshCookie, new CookieOptions { Path = "/api/v1/accounts" }); return NoContent(); }
     }
 }

@@ -1166,7 +1166,7 @@
     <value>Product Category</value>
   </data>
   <data name="Cost" xml:space="preserve">
-    <value>Price</value>
+    <value>Cost</value>
   </data>
   <data name="ServerIp" xml:space="preserve">
     <value>Server Ip</value>
@@ -1499,5 +1499,19 @@
   <data name="RateLimitPerMinute" xml:space="preserve">
     <value>Requests / minute</value>
   </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Accordion_EmptyHint" xml:space="preserve">
+    <value>Add the first one to start managing it.</value>
+  </data>
+  <data name="Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
 </root>
-

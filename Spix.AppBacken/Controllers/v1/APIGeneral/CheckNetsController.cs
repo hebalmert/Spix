@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,8 +35,12 @@ public class CheckNetsController : ControllerBase
 
         var response = await _pingControl.PingAsync(host);
 
-        if (!response.WasSuccess)
-            return BadRequest(response);
+        //Que el host no conteste NO es un error del API: es el resultado del ping y el front
+        //debe poder mostrarlo (tiempos, perdidos, timeouts). Solo se responde con error cuando
+        //el ping ni siquiera se pudo ejecutar (Result viene en null), y ahi va solo el mensaje,
+        //nunca el objeto entero serializado.
+        if (response.Result == null)
+            return BadRequest(response.Message);
 
         return Ok(response);
     }

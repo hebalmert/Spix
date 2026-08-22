@@ -61,6 +61,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add the first one to start managing it..
+        /// </summary>
+        public static string Accordion_EmptyHint {
+            get {
+                return ResourceManager.GetString("Accordion_EmptyHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm email.
         /// </summary>
         public static string AccountActivation_Button {
@@ -133,6 +142,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User.
+        /// </summary>
+        public static string AccountActivation_UserName {
+            get {
+                return ResourceManager.GetString("AccountActivation_UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your account has been created successfully. Complete the activation to access the system..
         /// </summary>
         public static string AccountActivation_Welcome {
@@ -156,15 +174,6 @@ namespace Spix.xLanguage.Resources {
         public static string Active {
             get {
                 return ResourceManager.GetString("Active", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Requests / minute.
-        /// </summary>
-        public static string RateLimitPerMinute {
-            get {
-                return ResourceManager.GetString("RateLimitPerMinute", resourceCulture);
             }
         }
         
@@ -194,7 +203,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("App_BackToDashboard", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The page you requested is not available or may have been moved..
         /// </summary>
@@ -203,7 +212,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("App_NotFoundMessage", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Page not found.
         /// </summary>
@@ -212,7 +221,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("App_NotFoundTitle", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Apply Tax.
         /// </summary>
@@ -221,7 +230,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("ApplyTax", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Assigned.
         /// </summary>
@@ -671,7 +680,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("ContractState_InProgress", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Pending approval.
         /// </summary>
@@ -754,7 +763,7 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Price.
+        ///   Looks up a localized string similar to Cost.
         /// </summary>
         public static string Cost {
             get {
@@ -878,7 +887,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("Create_EstratoSocial", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Create Frecuency.
         /// </summary>
@@ -1391,7 +1400,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("Edit_EstratoSocial", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Edit Frecuency.
         /// </summary>
@@ -1841,7 +1850,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("EstratoSocial", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Social Strata.
         /// </summary>
@@ -1850,7 +1859,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("EstratosSociales", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Excluded.
         /// </summary>
@@ -2536,6 +2545,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inactive.
+        /// </summary>
+        public static string Inactive {
+            get {
+                return ResourceManager.GetString("Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invoice.
         /// </summary>
         public static string Invoice {
@@ -3112,6 +3130,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Nodes.
         /// </summary>
         public static string Node {
@@ -3535,6 +3562,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requests / minute.
+        /// </summary>
+        public static string RateLimitPerMinute {
+            get {
+                return ResourceManager.GetString("RateLimitPerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Role.
         /// </summary>
         public static string Role {
@@ -3803,7 +3839,7 @@ namespace Spix.xLanguage.Resources {
                 return ResourceManager.GetString("Select_EstratoSocial", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Select Corporation.
         /// </summary>
@@ -4008,6 +4044,15 @@ namespace Spix.xLanguage.Resources {
         public static string SoftPlan {
             get {
                 return ResourceManager.GetString("SoftPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed.
+        /// </summary>
+        public static string Speed {
+            get {
+                return ResourceManager.GetString("Speed", resourceCulture);
             }
         }
         
@@ -4413,6 +4458,15 @@ namespace Spix.xLanguage.Resources {
         public static string WithSerials {
             get {
                 return ResourceManager.GetString("WithSerials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
         

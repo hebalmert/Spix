@@ -19,6 +19,13 @@
             {
                 <PingResultView Result="Result" />
             }
+            else
+            {
+                <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+                    <i class="fa fa-triangle-exclamation fs-5"></i>
+                    <div>@Localizer["NoRecordsFound"]</div>
+                </div>
+            }
         </div>
     </div>
 </div>

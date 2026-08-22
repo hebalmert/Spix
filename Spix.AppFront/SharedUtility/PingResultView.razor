@@ -1,10 +1,20 @@
 ﻿<div class="p-3">
+
+    <!-- Estado del ping: lo primero que se debe leer -->
+    <div class="alert d-flex align-items-center gap-2 @(Result!.Success ? "alert-success" : "alert-danger")" role="alert">
+        <i class="fa @(Result.Success ? "fa-circle-check" : "fa-triangle-exclamation") fs-5"></i>
+        <div>
+            <strong>@Result.Host</strong>
+            <div class="small">@Result.Message</div>
+        </div>
+    </div>
+
     <div class="row text-center mb-3">
 
         <div class="col-12 col-md-4 mb-2">
             <div class="p-3 border rounded shadow-sm bg-light">
                 <h6 class="text-primary mb-1">Promedio</h6>
-                <span class="fw-bold fs-5">@Result!.AverageTime ms</span>
+                <span class="fw-bold fs-5">@Result.AverageTime ms</span>
             </div>
         </div>
 

@@ -43,7 +43,7 @@ public class TransferDetailsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
 

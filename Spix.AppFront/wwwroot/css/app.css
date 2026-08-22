@@ -1,4 +1,4 @@
-html, body {
+﻿html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -675,4 +675,371 @@ code {
     --bs-table-striped-color: #ffffff;
     --bs-table-hover-bg: #12366f;
     --bs-table-hover-color: #ffffff;
+}
+
+/* ================================================================
+   ACORDEON DE DOS NIVELES  (categoria -> hijos)  -- DISENO POR DEFECTO
+   ----------------------------------------------------------------
+   Estilo unico para todas las pantallas de acordeon. Hoy lo usan
+   ProductCategory, Mark/MarkModel, ServiceCategory y PlanCategory.
+   Para llevarlo a otro proyecto se copia este bloque completo.
+
+   No poner estilos de acordeon en el .razor.css de cada pagina: se
+   duplican y las pantallas terminan distintas entre si.
+
+   Markup canonico (copiar tal cual al crear una pantalla nueva):
+
+   <table class="table align-middle acc-table">
+     <thead class="table-dark"> ... </thead>
+     <tbody>
+       <tr class="acc-row @(abierta ? "is-open" : null)">
+         <td class="acc-toggle" @onclick="...">
+           <button class="acc-disc" type="button"><i class="fa fa-chevron-right"></i></button>
+         </td>
+         <td><span class="acc-name">Nombre</span></td>
+         <td><span class="acc-count @(n == 0 ? "is-zero" : null)">@n</span></td>
+         <td><span class="acc-pill @(activo ? "is-on" : "is-off")">Activo</span></td>
+         <td><div class="acc-actions"> ButtonEdit / ButtonDelete </div></td>
+       </tr>
+
+       <tr class="acc-expanded">
+         <td colspan="5">
+           <section class="acc-panel">
+             <div class="acc-card card-floating-section">   <-- las DOS clases
+               <div class="acc-card-bar"> boton "nuevo hijo" </div>
+               <table class="acc-list"> ... </table>
+               <!-- o, si no hay hijos: -->
+               <div class="acc-empty">
+                 <span class="acc-empty-glyph"><i class="fa fa-..."></i></span>
+                 <strong>@Localizer["NoRecordsFound"]</strong>
+                 <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+               </div>
+             </div>
+           </section>
+         </td>
+       </tr>
+     </tbody>
+   </table>
+
+   Reglas del patron:
+   - El estado NUNCA es un checkbox deshabilitado: va en .acc-pill.
+   - El contador de hijos va en .acc-count (gris con .is-zero).
+   - El boton de "nuevo hijo" vive dentro de .acc-card-bar, no flotando.
+   - Las acciones solo se alinean con .acc-actions: la forma la ponen
+     los componentes Shared (.btn-mini / .btn-mini-danger).
+   - Cifras que se comparan: .acc-num (+ .is-low / .is-none).
+   ================================================================ */
+
+/* --- Fila padre --- */
+.acc-table > tbody > tr.acc-row > td {
+    border-bottom: 1px solid #eef1f5;
+    padding: .85rem 1rem;
+    transition: background .15s ease;
+}
+
+.acc-table > tbody > tr.acc-row.is-open > td {
+    background: #f5f8ff;
+    border-bottom-color: transparent;
+}
+
+.acc-table > tbody > tr.acc-row.is-open > td:first-child {
+    box-shadow: inset 3px 0 0 #3b3fd8;
+}
+
+.acc-table > tbody > tr.acc-row:hover > td {
+    background: #fafbfe;
+}
+
+.acc-table > tbody > tr.acc-row.is-open:hover > td {
+    background: #f5f8ff;
+}
+
+/* --- Disco que abre y cierra --- */
+.acc-toggle {
+    cursor: pointer;
+    width: 3rem;
+}
+
+.acc-disc {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #d7dde7;
+    border-radius: 50%;
+    color: #41506b;
+    display: inline-flex;
+    font-size: .7rem;
+    height: 2rem;
+    justify-content: center;
+    padding: 0;
+    transition: transform .18s ease, background .18s ease, color .18s ease;
+    width: 2rem;
+}
+
+.acc-row.is-open .acc-disc {
+    background: #3b3fd8;
+    border-color: #3b3fd8;
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* --- Nombre de la categoria --- */
+.acc-name {
+    color: #152238;
+    font-weight: 600;
+}
+
+.acc-sub {
+    color: #7c8798;
+    display: block;
+    font-size: .78rem;
+    font-weight: 400;
+}
+
+/* --- Conteo de hijos --- */
+.acc-count {
+    align-items: center;
+    background: #eef1f8;
+    border-radius: 999px;
+    color: #33405a;
+    display: inline-flex;
+    font-size: .82rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    padding: .15rem .6rem;
+}
+
+.acc-count.is-zero {
+    background: #f4f5f7;
+    color: #8b95a5;
+}
+
+/* --- Estado (reemplaza al checkbox deshabilitado) --- */
+.acc-pill {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: .78rem;
+    font-weight: 600;
+    gap: .4rem;
+    padding: .15rem .65rem;
+}
+
+.acc-pill::before {
+    background: currentColor;
+    border-radius: 50%;
+    content: "";
+    height: .45rem;
+    width: .45rem;
+}
+
+.acc-pill.is-on {
+    background: #e7f5ee;
+    color: #116b45;
+}
+
+.acc-pill.is-off {
+    background: #f1f2f4;
+    color: #79828f;
+}
+
+/* --- Acciones ---
+   Solo se acomodan en fila. La forma la ponen los propios componentes Shared
+   (.btn-mini y .btn-mini-danger ya son redondos de 30px): pisarlos desde aqui
+   los dejaba distintos entre si. */
+.acc-actions {
+    align-items: center;
+    display: flex;
+    gap: .4rem;
+    justify-content: flex-end;
+}
+
+/* --- Panel desplegado --- */
+.acc-table > tbody > tr.acc-expanded > td {
+    background: #f5f8ff;
+    padding: 0;
+}
+
+.acc-panel {
+    padding: 0 1rem 1.15rem;
+}
+
+/* El borde, el radio y el sombreado azul los pone .card-floating-section,
+   el mismo estilo de "card dentro de card" que usa el resto del sistema. */
+.acc-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f6f9ff 100%);
+    overflow: hidden;
+}
+
+.acc-card-bar {
+    align-items: center;
+    border-bottom: 1px solid #dfe8f5;
+    display: flex;
+    gap: .875rem;
+    justify-content: flex-start;
+    padding: .7rem .95rem;
+}
+
+.acc-card-title {
+    color: #41506b;
+    font-size: .83rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* --- Tabla de hijos --- */
+.acc-list {
+    border-collapse: collapse;
+    font-size: .9rem;
+    margin: 0;
+    width: 100%;
+}
+
+.acc-list th {
+    background: #16305e;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    padding: .6rem .95rem;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.acc-list td {
+    border-bottom: 1px solid #f2f5f9;
+    padding: .6rem .95rem;
+    vertical-align: middle;
+}
+
+.acc-list tr:last-child td {
+    border-bottom: 0;
+}
+
+/* Zebra: fila blanca / fila gris azulada muy suave.
+   Va ANTES del hover para que el hover gane (misma especificidad, manda el orden). */
+.acc-list tbody tr:nth-child(odd) td {
+    background: #ffffff;
+}
+
+.acc-list tbody tr:nth-child(even) td {
+    background: #e9f0fb;
+}
+
+.acc-list tbody tr:hover td {
+    background: #dae5f7;
+}
+
+.acc-item-name {
+    color: #152238;
+    font-weight: 500;
+}
+
+.acc-item-meta {
+    color: #8b95a5;
+    font-size: .76rem;
+}
+
+/* --- Numeros: el inventario critico salta a la vista --- */
+.acc-num {
+    color: #152238;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+.acc-num.is-low {
+    color: #8a5a06;
+}
+
+.acc-num.is-none {
+    color: #a52218;
+}
+
+.acc-chip {
+    background: #eef1f8;
+    border-radius: .35rem;
+    color: #41506b;
+    display: inline-block;
+    font-size: .74rem;
+    font-weight: 600;
+    padding: .1rem .45rem;
+}
+
+.acc-chip.is-muted {
+    background: #f4f5f7;
+    color: #9aa3b0;
+}
+
+.acc-center {
+    text-align: center;
+}
+
+/* --- Estado vacio: dice que falta y ofrece la accion --- */
+.acc-empty {
+    align-items: center;
+    color: #8b95a5;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    padding: 1.9rem 1rem;
+    text-align: center;
+}
+
+.acc-empty-glyph {
+    align-items: center;
+    background: #f1f4fa;
+    border-radius: 50%;
+    color: #9aa8c2;
+    display: flex;
+    font-size: 1rem;
+    height: 2.6rem;
+    justify-content: center;
+    width: 2.6rem;
+}
+
+.acc-empty strong {
+    color: #41506b;
+    font-size: .92rem;
+    font-weight: 600;
+}
+
+.acc-empty span {
+    font-size: .83rem;
+}
+
+@media (max-width: 768px) {
+    .acc-panel {
+        padding: 0 .5rem 1rem;
+    }
+
+    .acc-card-bar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .acc-disc,
+    .acc-table > tbody > tr.acc-row > td {
+        transition: none;
+    }
+}
+
+/* ================================================================
+   ZEBRA ESTANDAR DE TODAS LAS TABLAS DE INDICE
+   Mismo gris azulado del acordeon, para que las listas del sistema
+   se vean iguales vengan de donde vengan. Bootstrap pinta la zebra
+   con variables, asi que basta redefinirlas una vez aqui.
+   No afecta al <thead class="table-dark">: ese trae sus propias
+   variables mas arriba en este archivo.
+   ================================================================ */
+.table-striped {
+    --bs-table-striped-bg: #e9f0fb;
+    --bs-table-striped-color: inherit;
+}
+
+.table-hover {
+    --bs-table-hover-bg: #dae5f7;
+    --bs-table-hover-color: inherit;
 }

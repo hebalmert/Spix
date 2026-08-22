@@ -84,7 +84,7 @@ public class HttpErrorHandler
         }
         else if (exception is HttpRequestException httpEx)
         {
-            errorMessage = $"{_localizer[nameof(Resource.Generic_Http_BadRequest)]}: {httpEx.Message}";
+            errorMessage = _localizer[nameof(Resource.Generic_Http_BadRequest)];
         }
         else if (exception is DbUpdateException dbEx)
         {
@@ -110,13 +110,13 @@ public class HttpErrorHandler
                 }
                 else
                 {
-                    errorMessage = $"{_localizer[nameof(Resource.Db_Error)]}: {dbEx.Message}";
+                    errorMessage = _localizer[nameof(Resource.Db_Error)];
                 }
             }
         }
         else
         {
-            errorMessage = $"{_localizer[nameof(Resource.Generic_Exception)]}: {exception.Message}";
+            errorMessage = _localizer[nameof(Resource.Generic_Exception)];
         }
 
         _logger.LogError(
@@ -161,7 +161,7 @@ public class HttpErrorHandler
             return true;
         }
 
-        errorMessage = $"{_localizer[nameof(Resource.Db_Error)]}: {exception.Message}";
+        errorMessage = _localizer[nameof(Resource.Db_Error)];
         return true;
     }
 

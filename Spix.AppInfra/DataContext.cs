@@ -29,6 +29,7 @@ public class DataContext : IdentityDbContext<User>
 
     public DbSet<Usuario> Usuarios => Set<Usuario>();
     public DbSet<UsuarioRole> UsuarioRoles => Set<UsuarioRole>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     //Manejo de UserRoles por Usuario
 

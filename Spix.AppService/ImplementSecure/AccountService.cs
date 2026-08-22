@@ -16,6 +16,7 @@ using Spix.xLanguage.Resources;
 using Spix.xNotification.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
@@ -158,6 +159,39 @@ public class AccountService : IAccountService
             Message = _localizer[nameof(Resource.Generic_InvalidCredentials)]
         };
     }
+
+    public async Task<ActionResponse<string>> CreateRefreshTokenAsync(string userName)
+    {
+        var user = await _userHelper.GetUserByUserNameAsync(userName);
+        if (user is null || !user.Active) return Denied<string>();
+        string value = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        _context.RefreshTokens.Add(new Spix.Domain.EntitesSoftSec.RefreshToken { UserId = user.Id, Token = Hash(value), Expiration = DateTime.UtcNow.AddDays(_jwtOption.RefreshTokenExpirationDays) });
+        await _context.SaveChangesAsync();
+        return new ActionResponse<string> { WasSuccess = true, Result = value };
+    }
+
+    public async Task<ActionResponse<RefreshSessionDTO>> RefreshTokenAsync(string refreshToken)
+    {
+        var saved = await _context.RefreshTokens.Include(item => item.User).FirstOrDefaultAsync(item => item.Token == Hash(refreshToken));
+        if (saved is null || saved.IsRevoked || saved.Expiration <= DateTime.UtcNow || !saved.User.Active) return Denied<RefreshSessionDTO>();
+        var roles = await _context.UserRoleDetails.Where(item => item.UserId == saved.UserId).ToListAsync();
+        if (roles.Count == 0) return Denied<RefreshSessionDTO>();
+        if (!roles.Any(item => item.UserType == UserType.Admin)) { var corporation = await _context.Corporations.FirstOrDefaultAsync(item => item.CorporationId == saved.User.CorporationId); if (corporation is null || !corporation.Active || corporation.DateEnd <= DateTime.Today) return Denied<RefreshSessionDTO>(); }
+        saved.IsRevoked = true;
+        string next = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        _context.RefreshTokens.Add(new Spix.Domain.EntitesSoftSec.RefreshToken { UserId = saved.UserId, Token = Hash(next), Expiration = DateTime.UtcNow.AddDays(_jwtOption.RefreshTokenExpirationDays) });
+        await _context.SaveChangesAsync();
+        return new ActionResponse<RefreshSessionDTO> { WasSuccess = true, Result = new RefreshSessionDTO { AccessToken = await BuildToken(saved.User, null), RefreshToken = next } };
+    }
+
+    public async Task RevokeRefreshTokenAsync(string refreshToken)
+    {
+        var saved = await _context.RefreshTokens.FirstOrDefaultAsync(item => item.Token == Hash(refreshToken) && !item.IsRevoked);
+        if (saved is null) return; saved.IsRevoked = true; await _context.SaveChangesAsync();
+    }
+
+    private ActionResponse<T> Denied<T>() => new() { WasSuccess = false, Message = _localizer[nameof(Resource.Generic_AccessDenied)] };
+    private static string Hash(string value) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value ?? string.Empty)));
 
     public async Task<ActionResponse<bool>> RecoverPasswordAsync(RecoveryPassDTO modelo, string frontUrl)
     {

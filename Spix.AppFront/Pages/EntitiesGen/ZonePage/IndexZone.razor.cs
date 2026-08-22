@@ -124,8 +124,8 @@ public partial class IndexZone
         var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandler)
             return;
-
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar(CurrentPage);
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+
     }
 }

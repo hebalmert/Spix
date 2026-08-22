@@ -21,89 +21,118 @@
         <GenericList MyList="Marks">
             <Body>
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mark-table">
+                    <table class="table align-middle acc-table">
                         <thead class="table-dark">
                             <tr>
-                                <th style="width: 40px;"></th>
+                                <th style="width: 3rem;"></th>
                                 <th>@Localizer[nameof(Resource.MarkEquipment)]</th>
-                                <th>@Localizer[nameof(Resource.Active)]</th>
-                                <th></th>
-                                <th></th>
+                                <th style="width: 9rem;">@Localizer[nameof(Resource.Models)]</th>
+                                <th style="width: 9rem;">@Localizer[nameof(Resource.Active)]</th>
+                                <th style="width: 7rem;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Marks!)
                             {
-                                <tr class="mark-row @(ExpandedMarkId == item.MarkId ? "is-expanded" : null)">
-                                    <td style="cursor: pointer;" @onclick="() => ToggleExpandedMark(item.MarkId)">
-                                        <button class="btn btn-sm btn-light expand-button" type="button">
-                                            <i class="fa @(ExpandedMarkId == item.MarkId ? "fa-chevron-down" : "fa-chevron-right")"></i>
+                                <tr class="acc-row @(ExpandedMarkId == item.MarkId ? "is-open" : null)">
+                                    <td class="acc-toggle" @onclick="() => ToggleExpandedMark(item.MarkId)">
+                                        <button class="acc-disc" type="button" title="@Localizer[nameof(Resource.Models)]">
+                                            <i class="fa fa-chevron-right"></i>
                                         </button>
                                     </td>
-                                    <td class="mark-name">@item.MarkName</td>
                                     <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                        <span class="acc-name">@item.MarkName</span>
                                     </td>
-                                    <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowModalEditMarkAsync(item)" />
+                                    <td>
+                                        @if (MarkModelsByMarkId.ContainsKey(item.MarkId))
+                                        {
+                                            <span class="acc-count @(MarkModelsByMarkId[item.MarkId].Count == 0 ? "is-zero" : null)">@MarkModelsByMarkId[item.MarkId].Count</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="acc-count is-zero">&ndash;</span>
+                                        }
                                     </td>
-                                    <td style="width:1px;">
-                                        <ButtonDelete OnClick="() => DeleteMarkAsync(item.MarkId)" />
+                                    <td>
+                                        <span class="acc-pill @(item.Active ? "is-on" : "is-off")">
+                                            @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="acc-actions">
+                                            <ButtonEdit OnClick="() => ShowModalEditMarkAsync(item)" />
+                                            <ButtonDelete OnClick="() => DeleteMarkAsync(item.MarkId)" />
+                                        </div>
                                     </td>
                                 </tr>
 
                                 @if (ExpandedMarkId == item.MarkId)
                                 {
-                                    <tr class="models-expanded-row">
+                                    <tr class="acc-expanded">
                                         <td colspan="5">
-                                            <section class="models-panel">
-                                                <button class="btn btn-sm btn-gradient-primary models-new-button" @onclick="() => ShowModalCreateMarkModelAsync(item.MarkId)">
-                                                        <i class="fa fa-plus"></i> @Localizer[nameof(Resource.New)] @Localizer[nameof(Resource.Model)]
-                                                    </button>
-
-                                                @if (LoadingMarkIds.Contains(item.MarkId))
-                                                {
-                                                    <div class="models-empty-state">
-                                                        <div class="spinner-border text-primary" role="status">
-                                                            <span class="visually-hidden">Loading...</span>
-                                                        </div>
-                                                        <p>@Localizer["Loading"] @Localizer[nameof(Resource.Models)]...</p>
+                                            <section class="acc-panel">
+                                                <div class="acc-card card-floating-section">
+                                                    <div class="acc-card-bar">
+                                                        <button class="btn btn-sm btn-gradient-primary d-flex align-items-center gap-2" @onclick="() => ShowModalCreateMarkModelAsync(item.MarkId)">
+                                                            <i class="fa fa-plus"></i> @Localizer[nameof(Resource.New)] @Localizer[nameof(Resource.Model)]
+                                                        </button>
                                                     </div>
-                                                }
 
-                                                @if (!LoadingMarkIds.Contains(item.MarkId) && MarkModelsByMarkId.ContainsKey(item.MarkId))
-                                                {
-                                                    @if (MarkModelsByMarkId[item.MarkId].Any())
+                                                    @if (LoadingMarkIds.Contains(item.MarkId))
                                                     {
-                                                        <div class="models-list" role="list">
-                                                            <div class="models-list-header">
-                                                                <span>@Localizer[nameof(Resource.Models)]</span>
-                                                                <span>@Localizer[nameof(Resource.Active)]</span>
-                                                                <span>@Localizer[nameof(Resource.Action)]</span>
+                                                        <div class="acc-empty">
+                                                            <div class="spinner-border text-primary" role="status">
+                                                                <span class="visually-hidden">@Localizer["Loading"]</span>
                                                             </div>
+                                                            <span>@Localizer["Loading"] @Localizer[nameof(Resource.Models)]...</span>
+                                                        </div>
+                                                    }
 
-                                                            @foreach (var model in MarkModelsByMarkId[item.MarkId])
-                                                            {
-                                                                <div class="models-list-row" role="listitem">
-                                                                    <div class="model-name">@model.MarkModelName</div>
-                                                                    <div class="model-active">
-                                                                        <input type="checkbox" class="form-check-input" checked="@model.Active" disabled />
-                                                                    </div>
-                                                                    <div class="model-actions">
-                                                                        <ButtonEdit OnClick="() => ShowModalEditMarkModelAsync(model)" />
-                                                                        <ButtonDelete OnClick="() => DeleteMarkModelAsync(model.MarkModelId)" />
-                                                                    </div>
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                    }
-                                                    else
+                                                    @if (!LoadingMarkIds.Contains(item.MarkId) && MarkModelsByMarkId.ContainsKey(item.MarkId))
                                                     {
-                                                        <div class="models-empty-state" role="alert">
-                                                            <i class="fa fa-info-circle"></i> @Localizer["NoRecordsFound"]
-                                                        </div>
+                                                        @if (MarkModelsByMarkId[item.MarkId].Any())
+                                                        {
+                                                            <table class="acc-list">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>@Localizer[nameof(Resource.Models)]</th>
+                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.Active)]</th>
+                                                                        <th style="width: 7rem;"></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var model in MarkModelsByMarkId[item.MarkId])
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                <div class="acc-item-name">@model.MarkModelName</div>
+                                                                            </td>
+                                                                            <td class="acc-center">
+                                                                                <span class="acc-pill @(model.Active ? "is-on" : "is-off")">
+                                                                                    @(model.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                                                                </span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="acc-actions">
+                                                                                    <ButtonEdit OnClick="() => ShowModalEditMarkModelAsync(model)" />
+                                                                                    <ButtonDelete OnClick="() => DeleteMarkModelAsync(model.MarkModelId)" />
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="acc-empty" role="alert">
+                                                                <span class="acc-empty-glyph"><i class="fa fa-tags"></i></span>
+                                                                <strong>@Localizer["NoRecordsFound"]</strong>
+                                                                <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+                                                            </div>
+                                                        }
                                                     }
-                                                }
+                                                </div>
                                             </section>
                                         </td>
                                     </tr>
@@ -121,8 +150,3 @@
                     TotalPages="TotalPages" />
     </div>
 </div>
-
-
-
-
-

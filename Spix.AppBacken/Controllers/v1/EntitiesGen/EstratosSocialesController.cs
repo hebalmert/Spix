@@ -45,7 +45,7 @@ public class EstratosSocialesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)] + ": " + ex.Message);
+            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)].Value);
         }
     }
 
@@ -63,7 +63,7 @@ public class EstratosSocialesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)] + ": " + ex.Message);
+            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)].Value);
         }
     }
 
@@ -82,7 +82,7 @@ public class EstratosSocialesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)] + ": " + ex.Message);
+            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)].Value);
         }
     }
 
@@ -100,7 +100,7 @@ public class EstratosSocialesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)] + ": " + ex.Message);
+            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)].Value);
         }
     }
 
@@ -119,7 +119,7 @@ public class EstratosSocialesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)] + ": " + ex.Message);
+            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)].Value);
         }
     }
 
@@ -137,7 +137,7 @@ public class EstratosSocialesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)] + ": " + ex.Message);
+            return StatusCode(500, _localizer[nameof(Resource.Generic_UnexpectedError)].Value);
         }
     }
 }

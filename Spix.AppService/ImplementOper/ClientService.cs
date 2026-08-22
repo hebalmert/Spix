@@ -258,8 +258,11 @@ namespace Spix.Services.ImplementOper
                         Response response = await AcivateUser(modelo, frontUrl);
                         if (!response.IsSuccess)
                         {
-                            var guid = modelo.Imagen;
-                            _fileStorage.DeleteImage(_imgOption.ImgClient!, guid!);
+                            if (!string.IsNullOrWhiteSpace(modelo.Imagen))
+                            {
+                                _fileStorage.DeleteImage(_imgOption.ImgClient!, modelo.Imagen);
+                            }
+
                             await _transactionManager.RollbackTransactionAsync();
                             return new ActionResponse<Client>
                             {
@@ -340,13 +343,16 @@ namespace Spix.Services.ImplementOper
                     Response response = await AcivateUser(modelo, frontUrl);
                     if (!response.IsSuccess)
                     {
-                        var guid = modelo.Imagen;
-                        _fileStorage.DeleteImage(_imgOption.ImgClient!, guid!);
+                        if (!string.IsNullOrWhiteSpace(modelo.Imagen))
+                        {
+                            _fileStorage.DeleteImage(_imgOption.ImgClient!, modelo.Imagen);
+                        }
+
                         await _transactionManager.RollbackTransactionAsync();
                         return new ActionResponse<Client>
                         {
                             WasSuccess = false,
-                            Message = "No se ha podido crear el Usuario, Intentelo de nuevo"
+                            Message = response.Message ?? "No se ha podido crear el usuario. Intentalo de nuevo."
                         };
                     }
                 }

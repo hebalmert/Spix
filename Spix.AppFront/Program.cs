@@ -43,15 +43,14 @@ builder.Services.AddScoped<ICryptoService>(sp =>
 // Reemplazar la configuraciÃ³n del IRepository
 builder.Services.AddScoped(sp =>
 {
-    var localStorage = sp.GetRequiredService<ILocalStorageService>();
     var httpClient = sp.GetRequiredService<HttpClient>();
+    var authenticationProvider = sp.GetRequiredService<AuthenticationProviderJWT>();
 
     return new Repository(
         httpClient,
         async () =>
         {
-            var token = await localStorage.GetItemAsync<string>("TOKEN_KEY");
-            return string.IsNullOrWhiteSpace(token) ? null : token;
+            return await authenticationProvider.GetAccessTokenAsync();
         }
     );
 });

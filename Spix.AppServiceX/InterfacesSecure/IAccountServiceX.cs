@@ -6,6 +6,9 @@ namespace Spix.AppServiceX.InterfacesSecure;
 public interface IAccountServiceX
 {
     Task<ActionResponse<TokenDTO>> LoginAsync(LoginDTO modelo);
+    Task<ActionResponse<string>> CreateRefreshTokenAsync(string userName);
+    Task<ActionResponse<RefreshSessionDTO>> RefreshTokenAsync(string refreshToken);
+    Task RevokeRefreshTokenAsync(string refreshToken);
 
     Task<ActionResponse<bool>> RecoverPasswordAsync(RecoveryPassDTO modelo, string frontUrl);
 

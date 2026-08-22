@@ -2,8 +2,7 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
-
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
         <h3 class="mb-4">@Localizer[nameof(Resource.PlanCategory)]</h3>
 
@@ -23,54 +22,133 @@
         <GenericList MyList="PlanCategories">
             <Body>
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
+                    <table class="table align-middle acc-table">
                         <thead class="table-dark">
                             <tr>
+                                <th style="width: 3rem;"></th>
                                 <th>@Localizer[nameof(Resource.Category)]</th>
-                                <th>@Localizer[nameof(Resource.Plans)]</th>
-                                <th>@Localizer[nameof(Resource.Active)]</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <th style="width: 9rem;">@Localizer[nameof(Resource.Plans)]</th>
+                                <th style="width: 9rem;">@Localizer[nameof(Resource.Active)]</th>
+                                <th style="width: 7rem;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in PlanCategories!)
                             {
-                                <tr>
-                                    <td>@item.PlanCategoryName</td>
-                                    <td>@item.PlanesNumer</td>
+                                <tr class="acc-row @(ExpandedPlanCategoryId == item.PlanCategoryId ? "is-open" : null)">
+                                    <td class="acc-toggle" @onclick="() => ToggleExpandedPlanCategory(item.PlanCategoryId)">
+                                        <button class="acc-disc" type="button" title="@Localizer[nameof(Resource.Plans)]">
+                                            <i class="fa fa-chevron-right"></i>
+                                        </button>
+                                    </td>
                                     <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
+                                        <span class="acc-name">@item.PlanCategoryName</span>
                                     </td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.PlanCategoryId)" TooTip="@Localizer[nameof(Resource.Plan)]"
-                                                       Icon="fa fa-warehouse" />
+                                    <td>
+                                        <span class="acc-count @(item.PlanesNumer == 0 ? "is-zero" : null)">@item.PlanesNumer</span>
                                     </td>
-                                    <td style="width:1px;">
-                                        |
+                                    <td>
+                                        <span class="acc-pill @(item.Active ? "is-on" : "is-off")">
+                                            @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                        </span>
                                     </td>
-                                    <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.PlanCategoryId, true)" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.PlanCategoryId)" />
+                                    <td>
+                                        <div class="acc-actions">
+                                            <ButtonEdit OnClick="() => ShowModalAsync(item.PlanCategoryId, true)" />
+                                            <ButtonDelete OnClick="() => DeleteAsync(item.PlanCategoryId)" />
+                                        </div>
                                     </td>
                                 </tr>
+
+                                @if (ExpandedPlanCategoryId == item.PlanCategoryId)
+                                {
+                                    <tr class="acc-expanded">
+                                        <td colspan="5">
+                                            <section class="acc-panel">
+                                                <div class="acc-card card-floating-section">
+                                                    <div class="acc-card-bar">
+                                                        <button class="btn btn-sm btn-gradient-primary d-flex align-items-center gap-2" @onclick="() => ShowModalPlanAsync(item.PlanCategoryId)">
+                                                            <i class="fa fa-plus"></i> @Localizer[nameof(Resource.New)] @Localizer[nameof(Resource.Plan)]
+                                                        </button>
+                                                    </div>
+
+                                                    @if (LoadingPlanCategoryIds.Contains(item.PlanCategoryId))
+                                                    {
+                                                        <div class="acc-empty">
+                                                            <div class="spinner-border text-primary" role="status">
+                                                                <span class="visually-hidden">@Localizer["Loading"]</span>
+                                                            </div>
+                                                            <span>@Localizer["Loading"] @Localizer[nameof(Resource.Plans)]...</span>
+                                                        </div>
+                                                    }
+
+                                                    @if (!LoadingPlanCategoryIds.Contains(item.PlanCategoryId) && PlansByCategoryId.ContainsKey(item.PlanCategoryId))
+                                                    {
+                                                        @if (PlansByCategoryId[item.PlanCategoryId].Any())
+                                                        {
+                                                            <table class="acc-list">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>@Localizer[nameof(Resource.Plan)]</th>
+                                                                        <th class="acc-center" style="width: 10rem;">@Localizer[nameof(Resource.Speed)]</th>
+                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.Price)]</th>
+                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.Active)]</th>
+                                                                        <th style="width: 7rem;"></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var plan in PlansByCategoryId[item.PlanCategoryId])
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                <div class="acc-item-name">@plan.PlanName</div>
+                                                                            </td>
+                                                                            <td class="acc-center">
+                                                                                <span class="acc-chip">@plan.SpeedDown @plan.SpeedDownType / @plan.SpeedUp @plan.SpeedUpType</span>
+                                                                            </td>
+                                                                            <td class="acc-center">
+                                                                                <span class="acc-num">@plan.Price.ToString("N2")</span>
+                                                                            </td>
+                                                                            <td class="acc-center">
+                                                                                <span class="acc-pill @(plan.Active ? "is-on" : "is-off")">
+                                                                                    @(plan.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                                                                </span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="acc-actions">
+                                                                                    <ButtonEdit OnClick="() => ShowModalPlanAsync(item.PlanCategoryId, plan.PlanId, true)" />
+                                                                                    <ButtonDelete OnClick="() => DeletePlanAsync(item.PlanCategoryId, plan.PlanId)" />
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="acc-empty" role="alert">
+                                                                <span class="acc-empty-glyph"><i class="fa fa-wifi"></i></span>
+                                                                <strong>@Localizer["NoRecordsFound"]</strong>
+                                                                <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </section>
+                                        </td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>
                 </div>
             </Body>
         </GenericList>
-        <!-- Tabla -->
+
         <hr />
-        <!-- Paginación -->
         <Pagination CurrentPage="CurrentPage"
                     SelectedPage="SelectedPage"
                     TotalPages="TotalPages" />
     </div>
 </div>
-
-

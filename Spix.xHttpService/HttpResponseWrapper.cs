@@ -31,13 +31,20 @@ public class HttpResponseWrapper<T>
         return statusCode switch
         {
             HttpStatusCode.NotFound => "The requested resource was not found.",
-            HttpStatusCode.BadRequest => await HttpResponseMessage.Content.ReadAsStringAsync(),
+            HttpStatusCode.BadRequest => await ReadBodyAsync(),
             HttpStatusCode.Unauthorized => "You are not authorized to access this resource.",
             HttpStatusCode.Forbidden => "Access to this resource is forbidden.",
-            HttpStatusCode.InternalServerError => "An internal server error occurred.",
+            // El ExceptionHandlingMiddleware devuelve el mensaje ya traducido en el cuerpo del 500.
+            HttpStatusCode.InternalServerError => await ReadBodyAsync("An internal server error occurred."),
             HttpStatusCode.RequestTimeout => "The request timed out.",
             HttpStatusCode.ServiceUnavailable => "The service is currently unavailable.",
             _ => "An unexpected error occurred."
         };
+    }
+
+    private async Task<string?> ReadBodyAsync(string? fallback = null)
+    {
+        var body = await HttpResponseMessage.Content.ReadAsStringAsync();
+        return string.IsNullOrWhiteSpace(body) ? (fallback ?? body) : body;
     }
 }

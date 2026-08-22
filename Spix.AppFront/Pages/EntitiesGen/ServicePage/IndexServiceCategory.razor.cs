@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -132,6 +132,120 @@ public partial class IndexServiceCategory
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await Cargar(CurrentPage);
+    }
+
+    // ===================== Acordeon: servicios de cada categoria =====================
+    // Mismo patron que ProductCategory: se cargan bajo demanda y se cachean por categoria,
+    // asi abrir y cerrar una fila no vuelve a pegarle al API.
+    private const string baseUrlServiceClients = "api/v1/serviceclients";
+
+    public Guid? ExpandedServiceCategoryId { get; set; }
+
+    public HashSet<Guid> LoadingServiceCategoryIds { get; set; } = new();
+
+    public Dictionary<Guid, List<ServiceClient>> ServiceClientsByCategoryId { get; set; } = new();
+
+    private async Task ToggleExpandedServiceCategory(Guid serviceCategoryId)
+    {
+        if (ExpandedServiceCategoryId == serviceCategoryId)
+        {
+            ExpandedServiceCategoryId = null;
+            return;
+        }
+
+        ExpandedServiceCategoryId = serviceCategoryId;
+
+        if (!ServiceClientsByCategoryId.ContainsKey(serviceCategoryId))
+        {
+            await LoadServiceClientsAsync(serviceCategoryId);
+        }
+    }
+
+    private async Task LoadServiceClientsAsync(Guid serviceCategoryId)
+    {
+        LoadingServiceCategoryIds.Add(serviceCategoryId);
+        await InvokeAsync(StateHasChanged);
+
+        var responseHttp = await _repository.GetAsync<List<ServiceClient>>($"{baseUrlServiceClients}?guidId={serviceCategoryId}&page=1&recordsnumber=100");
+
+        LoadingServiceCategoryIds.Remove(serviceCategoryId);
+
+        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandled)
+        {
+            return;
+        }
+
+        ServiceClientsByCategoryId[serviceCategoryId] = responseHttp.Response ?? new List<ServiceClient>();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ShowModalServiceClientAsync(Guid serviceCategoryId, Guid? serviceClientId = null, bool isEdit = false)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        if (isEdit)
+        {
+            component = typeof(EditServiceClient);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", serviceClientId! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Service)]}" }
+            };
+        }
+        else
+        {
+            component = typeof(CreateServiceClient);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", serviceCategoryId },
+                { "Title", $"{Localizer[nameof(Resource.Create_Service)]}" }
+            };
+        }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                // Se recarga el hijo y tambien el padre, porque cambia el contador de servicios
+                await LoadServiceClientsAsync(serviceCategoryId);
+                await Cargar(CurrentPage);
+
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
+        });
+    }
+
+    private async Task DeleteServiceClientAsync(Guid serviceCategoryId, Guid serviceClientId)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{baseUrlServiceClients}/{serviceClientId}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+
+        await LoadServiceClientsAsync(serviceCategoryId);
         await Cargar(CurrentPage);
     }
 }

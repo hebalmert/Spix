@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -126,5 +126,118 @@ public partial class IndexPlanCategory
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
+    }
+
+    // ===================== Acordeon: planes de cada categoria =====================
+    // Mismo patron que ProductCategory: se cargan bajo demanda y se cachean por categoria.
+    private const string baseUrlPlans = "api/v1/plans";
+
+    public Guid? ExpandedPlanCategoryId { get; set; }
+
+    public HashSet<Guid> LoadingPlanCategoryIds { get; set; } = new();
+
+    public Dictionary<Guid, List<Plan>> PlansByCategoryId { get; set; } = new();
+
+    private async Task ToggleExpandedPlanCategory(Guid planCategoryId)
+    {
+        if (ExpandedPlanCategoryId == planCategoryId)
+        {
+            ExpandedPlanCategoryId = null;
+            return;
+        }
+
+        ExpandedPlanCategoryId = planCategoryId;
+
+        if (!PlansByCategoryId.ContainsKey(planCategoryId))
+        {
+            await LoadPlansAsync(planCategoryId);
+        }
+    }
+
+    private async Task LoadPlansAsync(Guid planCategoryId)
+    {
+        LoadingPlanCategoryIds.Add(planCategoryId);
+        await InvokeAsync(StateHasChanged);
+
+        var responseHttp = await _repository.GetAsync<List<Plan>>($"{baseUrlPlans}?guidId={planCategoryId}&page=1&recordsnumber=100");
+
+        LoadingPlanCategoryIds.Remove(planCategoryId);
+
+        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandled)
+        {
+            return;
+        }
+
+        PlansByCategoryId[planCategoryId] = responseHttp.Response ?? new List<Plan>();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ShowModalPlanAsync(Guid planCategoryId, Guid? planId = null, bool isEdit = false)
+    {
+        Type component;
+        Dictionary<string, object> parameters;
+
+        if (isEdit)
+        {
+            component = typeof(EditPlan);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", planId! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Plan)]}" }
+            };
+        }
+        else
+        {
+            component = typeof(CreatePlan);
+            parameters = new Dictionary<string, object>
+            {
+                { "Id", planCategoryId },
+                { "Title", $"{Localizer[nameof(Resource.Create_Plan)]}" }
+            };
+        }
+
+        await _modalService.ShowAsync(component, parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                // Se recarga el hijo y tambien el padre, porque cambia el contador de planes
+                await LoadPlansAsync(planCategoryId);
+                await Cargar(CurrentPage);
+
+                await _sweetAlert.FireAsync(
+                    Localizer[nameof(Resource.msg_SuccessTitle)],
+                    Localizer[nameof(Resource.msg_SuccessMessage)],
+                    SweetAlertIcon.Success
+                );
+            }
+        });
+    }
+
+    private async Task DeletePlanAsync(Guid planCategoryId, Guid planId)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.DeleteAsync($"{baseUrlPlans}/{planId}");
+        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandler)
+            return;
+
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+
+        await LoadPlansAsync(planCategoryId);
+        await Cargar(CurrentPage);
     }
 }

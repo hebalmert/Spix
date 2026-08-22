@@ -42,7 +42,7 @@ public class QueueTypesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
 
@@ -60,7 +60,7 @@ public class QueueTypesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
 
@@ -78,7 +78,7 @@ public class QueueTypesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
 
@@ -97,7 +97,7 @@ public class QueueTypesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
 
@@ -115,7 +115,7 @@ public class QueueTypesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, _localizer["Generic_UnexpectedError"] + ": " + ex.Message);
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
 }
