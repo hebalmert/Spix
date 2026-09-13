@@ -1,4 +1,13 @@
-@page "/login"
+﻿@page "/login"
 @layout LoginLayout
 
-<Login />
+@* Mientras se verifica la sesion no se muestra el formulario: si ya hay usuario logueado
+   se redirige a su dashboard sin que el login alcance a parpadear. *@
+@if (_checkingAuth)
+{
+    <AppBootScreen />
+}
+else
+{
+    <Login />
+}

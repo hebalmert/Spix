@@ -82,6 +82,33 @@ public class ContractDocumentsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    [HttpGet("templates/{id}/pdf")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+    public async Task<IActionResult> GetTemplatePdfAsync(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _signatureService.GetTemplatePdfAsync(id, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    [HttpPost("templates/{id}/preview")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+    public async Task<IActionResult> PreviewTemplateAsync(Guid id, List<ContractDocumentTemplateField> fields)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _signatureService.PreviewTemplateAsync(id, fields, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    [HttpPut("templates/{id}/fields")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+    public async Task<IActionResult> SaveTemplateFieldsAsync(Guid id, List<ContractDocumentTemplateField> fields)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _signatureService.SaveTemplateFieldsAsync(id, fields, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     [HttpDelete("templates/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> DeleteTemplateAsync(Guid id)

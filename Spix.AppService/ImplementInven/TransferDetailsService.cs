@@ -50,7 +50,7 @@ public class TransferDetailsService : ITransferDetailsService
                 };
             }
 
-            var queryable = _context.TransferDetails.Where(x => x.CorporationId == user.CorporationId && x.TransferId == pagination.GuidId)
+            var queryable = _context.TransferDetails.AsNoTracking().Where(x => x.CorporationId == user.CorporationId && x.TransferId == pagination.GuidId)
                 .Include(x => x.Product)
                 .Include(x => x.Product).ThenInclude(x => x!.ProductCategory).AsQueryable();
 

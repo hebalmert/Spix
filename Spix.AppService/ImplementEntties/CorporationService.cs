@@ -70,7 +70,7 @@ public class CorporationService : ICorporationService
     {
         try
         {
-            var queryable = _context.Corporations.Include(x => x.SoftPlan).AsQueryable();
+            var queryable = _context.Corporations.AsNoTracking().Include(x => x.SoftPlan).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

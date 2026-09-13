@@ -107,7 +107,7 @@ public class PurchaseService : IPurchaseService
                 };
             }
 
-            var queryable = _context.Purchases
+            var queryable = _context.Purchases.AsNoTracking()
                 .Include(x => x.ProductStorage)
                 .Include(x => x.Supplier)
                 .Include(x => x.ProductStorage)

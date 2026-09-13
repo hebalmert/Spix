@@ -73,7 +73,7 @@ public class PurchaseDetailsService : IPurchaseDetailsService
                 };
             }
 
-            var queryable = _context.PurchaseDetails
+            var queryable = _context.PurchaseDetails.AsNoTracking()
                 .Include(x => x.Product)
                 .Include(x => x.Product).ThenInclude(x => x!.ProductCategory)
                 .Where(x => x.CorporationId == user.CorporationId && x.PurchaseId == pagination.GuidId).AsQueryable();

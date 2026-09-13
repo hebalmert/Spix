@@ -1043,3 +1043,53 @@ code {
     --bs-table-hover-bg: #dae5f7;
     --bs-table-hover-color: inherit;
 }
+
+/* Pantalla "Autorizando": reutiliza el splash de index.html (sus estilos criticos viven
+   en el <head>) y la fija a pantalla completa para que no quede dentro del layout. */
+.spix-authorizing-screen {
+    position: fixed !important;
+    inset: 0;
+    z-index: 2000;
+    width: 100vw;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ================================================================
+   CAPA UNICA DE MODALES (ModalService) - replicada de Rentx
+   Todos los modales se montan en <ModalHost> al final de los layouts, FUERA de la pagina.
+   La capa cubre TODA la pantalla por encima del sidebar (3500), la barra superior (3000)
+   y el desplegable de Setting (5000): oscurece el fondo y bloquea cualquier clic detras.
+   ================================================================ */
+.spix-modal-host {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: block;
+    background-color: rgba(3, 14, 39, .68);
+    backdrop-filter: blur(4px) saturate(.72);
+    -webkit-backdrop-filter: blur(4px) saturate(.72);
+}
+
+/* Cada modal trae su propio fondo y z-index en linea: dentro de la capa se anulan para no
+   oscurecer dos veces, y el modal se centra sobre toda la pantalla. */
+.spix-modal-host .modal {
+    inset: 0 !important;
+    width: 100% !important;
+    z-index: 1 !important;
+    background-color: transparent !important;
+}
+
+.spix-modal-host .modal-backdrop {
+    display: none;
+}
+
+/* SweetAlert se abre DESPUES del modal (confirmar, exito, error): debe quedar por encima de la capa. */
+.swal2-container {
+    z-index: 11000 !important;
+}
+
+/* La barra de error de Blazor ("Reload") debe verse aunque haya un modal abierto. */
+#blazor-error-ui {
+    z-index: 12000;
+}

@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Components;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
-using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 
 namespace Spix.AppFront.Pages.EntitiesContratos.ContractDocumentTemplatePage;
 
+//Solo datos de la plantilla (nombre, tipo, activo, PDF). Los campos se editan en FieldsContractDocumentTemplate.
 public partial class EditContractDocumentTemplate
 {
     [Inject] private IRepository _repository { get; set; } = null!;
@@ -19,8 +19,6 @@ public partial class EditContractDocumentTemplate
     [Parameter] public string? Title { get; set; }
 
     private ContractDocumentTemplate? Model;
-    private List<ContractDocumentTemplateField> Fields = new();
-    private ContractDocumentTemplateField NewField = new();
     private bool isLoading;
     private bool IsSaving;
     private const string BaseUrl = "api/v1/contractdocuments";
@@ -43,8 +41,9 @@ public partial class EditContractDocumentTemplate
         }
 
         Model = responseHttp.Response!;
-        Fields = Model.ContractDocumentTemplateFields?.OrderBy(x => x.PageNumber).ThenBy(x => x.FieldType).ToList() ?? new();
-        ResetNewField();
+
+        //Los campos no viajan en el PUT de la plantilla
+        Model.ContractDocumentTemplateFields = null;
     }
 
     private async Task Update()
@@ -61,59 +60,6 @@ public partial class EditContractDocumentTemplate
 
         await _sweetAlert.FireAsync("Guardado", "Plantilla actualizada correctamente.", SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());
-    }
-
-    private async Task AddField(ContractDocumentTemplateField field)
-    {
-        if (Model is null)
-            return;
-
-        if (field.PageNumber < 1 || field.PageNumber > Model.PageCount)
-        {
-            await _sweetAlert.FireAsync("Validacion", "La pagina esta fuera del rango del PDF.", SweetAlertIcon.Warning);
-            return;
-        }
-
-        field.ContractDocumentTemplateId = Model.ContractDocumentTemplateId;
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}/fields", field);
-        if (await _responseHandler.HandleErrorAsync(responseHttp))
-            return;
-
-        await LoadAsync();
-    }
-
-    private async Task DeleteField(ContractDocumentTemplateField field)
-    {
-        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
-        {
-            Title = "Eliminar",
-            Text = "Desea eliminar esta coordenada?",
-            Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true,
-            ConfirmButtonText = "Eliminar",
-            CancelButtonText = "Cancelar"
-        });
-
-        if (result.IsDismissed || result.Value != "true")
-            return;
-
-        var responseHttp = await _repository.DeleteAsync($"{BaseUrl}/fields/{field.ContractDocumentTemplateFieldId}");
-        if (await _responseHandler.HandleErrorAsync(responseHttp))
-            return;
-
-        await LoadAsync();
-    }
-
-    private void ResetNewField()
-    {
-        NewField = new ContractDocumentTemplateField
-        {
-            FieldType = ContractDocumentFieldType.FullName,
-            PageNumber = 1,
-            FontSize = 12,
-            Width = 200,
-            Height = 60
-        };
     }
 
     private async Task Return()

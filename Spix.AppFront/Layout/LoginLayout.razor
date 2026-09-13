@@ -1,11 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
 
-<article class="authFull">
+<article class="authFull spix-atmosphere">
     @Body
-
-    @if (modalType is not null)
-    {
-        <DynamicComponent Type="@modalType" Parameters="@modalParameters" />
-    }
 </article>
+
+@* Los modales van FUERA de la pagina, en una capa que cubre toda la pantalla (ver .spix-modal-host) *@
+@if (modalType is not null)
+{
+    <ModalHost ComponentType="@modalType" Parameters="@modalParameters" />
+}

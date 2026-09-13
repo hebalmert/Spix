@@ -104,7 +104,7 @@ public class ContractorPaymentService : IContractorPaymentService
                 return AuthFail<IEnumerable<ContractorAccountPayable>>();
             }
 
-            var queryable = _context.ContractorAccountPayables
+            var queryable = _context.ContractorAccountPayables.AsNoTracking()
                 .Include(x => x.Contractor)
                 .Include(x => x.ContractClient)
                 .Include(x => x.CxCBill)

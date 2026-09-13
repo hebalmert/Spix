@@ -80,7 +80,7 @@ public class ServiceCategoryService : IServiceCategoryService
                 };
             }
 
-            var queryable = _context.ServiceCategories.Include(x => x.ServiceClients).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.ServiceCategories.AsNoTracking().Include(x => x.ServiceClients).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

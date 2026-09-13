@@ -1,10 +1,12 @@
-@inject IStringLocalizer<Resource> Localizer
+﻿@inject IStringLocalizer<Resource> Localizer
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(LoginLayout)">
-                <Authorizing><p>Autorizando...</p></Authorizing>
+                <Authorizing>
+                    <AppBootScreen />
+                </Authorizing>
                 <NotAuthorized>
                     <UnauthorizedRedirect />
                 </NotAuthorized>

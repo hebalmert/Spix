@@ -171,6 +171,15 @@ namespace Spix.xLanguage.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
+        /// <summary>
+        ///   Looks up a localized string similar to Verifying your session....
+        /// </summary>
+        public static string App_Authorizing {
+            get {
+                return ResourceManager.GetString("App_Authorizing", resourceCulture);
+            }
+        }
+        
         public static string Active {
             get {
                 return ResourceManager.GetString("Active", resourceCulture);

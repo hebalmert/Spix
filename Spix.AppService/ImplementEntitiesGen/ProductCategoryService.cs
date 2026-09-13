@@ -86,7 +86,7 @@ public class ProductCategoryService : IProductCategoryService
                 };
             }
 
-            var queryable = _context.ProductCategories.Include(x => x.Products).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.ProductCategories.AsNoTracking().Include(x => x.Products).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

@@ -1514,4 +1514,7 @@
   <data name="Speed" xml:space="preserve">
     <value>Velocidad</value>
   </data>
+  <data name="App_Authorizing" xml:space="preserve">
+    <value>Verificando tu sesión...</value>
+  </data>
 </root>

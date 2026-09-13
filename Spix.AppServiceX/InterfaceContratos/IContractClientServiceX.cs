@@ -18,6 +18,8 @@ public interface IContractClientServiceX
 
     Task<ActionResponse<ContractClient>> UpdateAsync(ContractClient modelo);
 
+    Task<ActionResponse<bool>> ApproveAsync(Guid id, string username);
+
     Task<ActionResponse<ContractClient>> AddAsync(ContractClient modelo, string username);
 
     Task<ActionResponse<bool>> DeleteAsync(Guid id);

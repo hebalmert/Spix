@@ -27,6 +27,8 @@ public class ContractClientServiceX : IContractClientServiceX
 
     public async Task<ActionResponse<ContractClient>> UpdateAsync(ContractClient modelo) => await _contractClientService.UpdateAsync(modelo);
 
+    public async Task<ActionResponse<bool>> ApproveAsync(Guid id, string username) => await _contractClientService.ApproveAsync(id, username);
+
     public async Task<ActionResponse<ContractClient>> AddAsync(ContractClient modelo, string username) => await _contractClientService.AddAsync(modelo, username);
 
     public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _contractClientService.DeleteAsync(id);

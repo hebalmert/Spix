@@ -59,7 +59,7 @@ public class ManagerService : IManagerService
     {
         try
         {
-            var queryable = _context.Managers.Include(x => x.Corporation).AsQueryable();
+            var queryable = _context.Managers.AsNoTracking().Include(x => x.Corporation).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

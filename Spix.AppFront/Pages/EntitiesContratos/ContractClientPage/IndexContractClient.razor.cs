@@ -22,6 +22,7 @@ public partial class IndexContractClient
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
     private string Filter { get; set; } = string.Empty;
+    private int StatusFilter;  //0 = todos; si no, el valor de ContractState
 
     private int CurrentPage = 1;  //Pagina seleccionada
     private int TotalPages;      //Cantidad total de paginas
@@ -58,6 +59,10 @@ public partial class IndexContractClient
         {
             url += $"&filter={Filter}";
         }
+        if (StatusFilter > 0)
+        {
+            url += $"&id={StatusFilter}";
+        }
         var responseHttp = await _repository.GetAsync<List<ContractClient>>(url);
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
@@ -71,6 +76,13 @@ public partial class IndexContractClient
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task StatusFilterChanged(ChangeEventArgs e)
+    {
+        StatusFilter = int.TryParse(e.Value?.ToString(), out var value) ? value : 0;
+        CurrentPage = 1;
+        await Cargar();
     }
 
     private static string GetEstratoNumber(string? estratoSocialName)
@@ -158,6 +170,29 @@ public partial class IndexContractClient
             if (result.Succeeded)
                 await Cargar(CurrentPage);
         });
+    }
+
+    private async Task ApproveAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Aprobar contrato",
+            Text = "Ya tiene fotos del documento, Consentimiento y Contrato firmados. Desea pasarlo a In Progress?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Aprobar",
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.PutAsync($"{baseUrl}/approve/{id}", new { });
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync("Aprobado", "El contrato paso a In Progress.", SweetAlertIcon.Success);
+        await Cargar(CurrentPage);
     }
 
     private async Task DeleteAsync(Guid id)

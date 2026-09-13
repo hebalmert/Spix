@@ -32,6 +32,15 @@ public class SignatureServiceX : ISignatureServiceX
     public async Task<ActionResponse<ContractDocumentTestDTO>> TestTemplateAsync(Guid templateId, string username) =>
         await _signatureService.TestTemplateAsync(templateId, username);
 
+    public async Task<ActionResponse<ContractDocumentPdfDTO>> GetTemplatePdfAsync(Guid id, string username) =>
+        await _signatureService.GetTemplatePdfAsync(id, username);
+
+    public async Task<ActionResponse<ContractDocumentPdfDTO>> PreviewTemplateAsync(Guid id, List<ContractDocumentTemplateField> fields, string username) =>
+        await _signatureService.PreviewTemplateAsync(id, fields, username);
+
+    public async Task<ActionResponse<IEnumerable<ContractDocumentTemplateField>>> SaveTemplateFieldsAsync(Guid id, List<ContractDocumentTemplateField> fields, string username) =>
+        await _signatureService.SaveTemplateFieldsAsync(id, fields, username);
+
     public async Task<ActionResponse<bool>> DeleteTemplateAsync(Guid id, string username) =>
         await _signatureService.DeleteTemplateAsync(id, username);
 

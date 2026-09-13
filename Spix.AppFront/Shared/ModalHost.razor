@@ -1,0 +1,8 @@
+@* Capa unica de modales: cubre toda la pantalla, oscurece el fondo y bloquea los clics detras.
+   Se monta al final de los layouts, FUERA de la pagina (estilos en .spix-modal-host de app.css). *@
+@if (ComponentType is not null)
+{
+    <div class="spix-modal-host" role="presentation">
+        <DynamicComponent Type="@ComponentType" Parameters="@Parameters" />
+    </div>
+}

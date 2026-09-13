@@ -103,7 +103,7 @@ public class NodeService : INodeService
                 };
             }
 
-            var queryable = _context.Nodes.Include(x => x.Operation).Include(x => x.IpNetwork).Include(x => x.Zone)
+            var queryable = _context.Nodes.AsNoTracking().Include(x => x.Operation).Include(x => x.IpNetwork).Include(x => x.Zone)
                 .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))

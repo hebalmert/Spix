@@ -87,7 +87,7 @@ public class PlanCategoryService : IPlanCategoryService
                 };
             }
 
-            var queryable = _context.PlanCategories.Include(x => x.Plans).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.PlanCategories.AsNoTracking().Include(x => x.Plans).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

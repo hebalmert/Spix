@@ -55,7 +55,7 @@ namespace Spix.Services.ImplementContratos
                     };
                 }
 
-                var queryable = _context.ContractClients
+                var queryable = _context.ContractClients.AsNoTracking()
                     .Include(x => x.Client).ThenInclude(x => x!.DocumentType)
                     .Include(x => x.Contractor)
                     .Include(x => x.Zone).ThenInclude(x => x!.City)

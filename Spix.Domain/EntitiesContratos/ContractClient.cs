@@ -82,6 +82,10 @@ public class ContractClient
 
     [NotMapped]
     public virtual bool TieneIDPic => ContractIDPic != null;
+
+    //Tiene fotos del documento, Consentimiento y Contrato firmados (lo llena el listado)
+    [NotMapped]
+    public virtual bool RequirementsComplete { get; set; }
     //Fin Propiedades no Mapeadas para el Control de Contratos
 
     public int CorporationId { get; set; }

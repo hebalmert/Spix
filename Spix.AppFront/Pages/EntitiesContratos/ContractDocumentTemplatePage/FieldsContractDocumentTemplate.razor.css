@@ -1,0 +1,57 @@
+/* Panel del editor de campos (lo que pinta Blazor). Las paginas y recuadros del PDF los pinta
+   jslib/pdfFieldEditor.js con sus propios estilos. */
+.spix-field-editor-dialog {
+    max-width: min(1400px, 96vw);
+}
+
+.spix-field-step {
+    margin-bottom: .5rem;
+    color: #0a1a3f;
+    font-weight: 600;
+}
+
+.spix-field-type {
+    text-align: left;
+    color: #0a1a3f;
+    border: 1px solid #cfd8ea;
+    background: #ffffff;
+}
+
+    .spix-field-type:hover {
+        background: #eef4ff;
+    }
+
+    .spix-field-type.is-active {
+        color: #ffffff;
+        border-color: transparent;
+        background: linear-gradient(135deg, #0d6efd, #5d46ff);
+    }
+
+.spix-field-list {
+    max-height: 28vh;
+    overflow-y: auto;
+}
+
+    .spix-field-list .list-group-item {
+        cursor: pointer;
+    }
+
+        .spix-field-list .list-group-item.is-selected {
+            background: #eef4ff;
+            border-left: 4px solid #0d6efd;
+        }
+
+.spix-field-detail {
+    padding: .75rem;
+    border: 1px solid #cfd8ea;
+    border-radius: 10px;
+    background: #f7f9fd;
+}
+
+.spix-pdf-host {
+    height: 72vh;
+    padding: 16px;
+    overflow: auto;
+    border-radius: 10px;
+    background: #e9eef6;
+}

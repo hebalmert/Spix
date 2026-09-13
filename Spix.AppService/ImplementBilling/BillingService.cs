@@ -110,7 +110,7 @@ public class BillingService : IBillingService
             if (user == null)
                 return AuthFail<IEnumerable<BillingNoteOne>>();
 
-            var queryable = _context.BillingNoteOnes
+            var queryable = _context.BillingNoteOnes.AsNoTracking()
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient)
                 .Where(x => x.CorporationId == user.CorporationId)
@@ -904,7 +904,7 @@ public class BillingService : IBillingService
             if (user == null)
                 return AuthFail<IEnumerable<Sell>>();
 
-            var queryable = _context.Sells
+            var queryable = _context.Sells.AsNoTracking()
                 .Include(x => x.SellDetails)
                 .Where(x => x.CorporationId == user.CorporationId)
                 .AsQueryable();

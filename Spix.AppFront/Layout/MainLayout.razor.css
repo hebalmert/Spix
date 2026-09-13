@@ -29,26 +29,6 @@
     flex-direction: column;
 }
 
-/*
- * Los modales son componentes hijos del layout y Bootstrap los posiciona
- * respecto al viewport completo. Estas reglas limitan su capa al espacio de
- * trabajo disponible para evitar que el sidebar cubra formularios anchos.
- */
-.page.sidebar-layout-expanded ::deep .modal,
-.page.sidebar-layout-collapsed ::deep .modal {
-    right: 0;
-    width: auto !important;
-    transition: left 0.18s ease, width 0.18s ease;
-}
-
-.page.sidebar-layout-expanded ::deep .modal {
-    left: 280px;
-}
-
-.page.sidebar-layout-collapsed ::deep .modal {
-    left: 58px;
-}
-
 main {
     flex: 1;
 }

@@ -51,7 +51,7 @@ public class ProductStockService : IProductStockService
                 };
             }
 
-            var queryable = _context.ProductStocks
+            var queryable = _context.ProductStocks.AsNoTracking()
                 .Include(x => x.ProductStorage).Include(x => x.Product)
                 .Where(x => x.CorporationId == user.CorporationId && x.ProductId == pagination.GuidId).AsQueryable();
 

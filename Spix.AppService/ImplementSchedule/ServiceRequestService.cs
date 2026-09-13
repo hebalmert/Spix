@@ -55,7 +55,7 @@ public class ServiceRequestService : IServiceRequestService
                 return AuthFail<IEnumerable<ServiceRequestDto>>();
             }
 
-            var queryable = _context.ServiceRequests
+            var queryable = _context.ServiceRequests.AsNoTracking()
                 .Include(x => x.Technician)
                 .Include(x => x.ServiceRequestPic)
                 .Where(x => x.CorporationId == user.CorporationId && x.Active)

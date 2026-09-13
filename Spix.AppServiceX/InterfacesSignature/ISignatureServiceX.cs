@@ -18,6 +18,12 @@ public interface ISignatureServiceX
 
     Task<ActionResponse<ContractDocumentTestDTO>> TestTemplateAsync(Guid templateId, string username);
 
+    Task<ActionResponse<ContractDocumentPdfDTO>> GetTemplatePdfAsync(Guid id, string username);
+
+    Task<ActionResponse<ContractDocumentPdfDTO>> PreviewTemplateAsync(Guid id, List<ContractDocumentTemplateField> fields, string username);
+
+    Task<ActionResponse<IEnumerable<ContractDocumentTemplateField>>> SaveTemplateFieldsAsync(Guid id, List<ContractDocumentTemplateField> fields, string username);
+
     Task<ActionResponse<bool>> DeleteTemplateAsync(Guid id, string username);
 
     Task<ActionResponse<ContractDocumentTemplateField>> AddTemplateFieldAsync(ContractDocumentTemplateField model, string username);

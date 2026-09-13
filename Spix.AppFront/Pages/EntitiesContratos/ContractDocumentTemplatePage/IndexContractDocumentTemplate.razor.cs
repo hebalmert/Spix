@@ -90,6 +90,24 @@ public partial class IndexContractDocumentTemplate
         });
     }
 
+    private async Task ShowFieldsAsync(Guid id)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Id", id },
+            { "Title", "Colocar campos" }
+        };
+
+        await _modalService.ShowAsync(typeof(FieldsContractDocumentTemplate), parameters, async result =>
+        {
+            if (!result.Succeeded)
+                return;
+
+            await LoadAsync(CurrentPage);
+            await _sweetAlert.FireAsync("Guardado", "Campos guardados correctamente.", SweetAlertIcon.Success);
+        });
+    }
+
     private async Task ShowPdfAsync(string pdfUrl)
     {
         var parameters = new Dictionary<string, object>

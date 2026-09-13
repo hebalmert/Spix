@@ -50,7 +50,7 @@ public class ConnectionMikrotikControlService : IConnectionMikrotikControlServic
                 };
             }
 
-            var queryable = _context.ConnectionMikrotikControls
+            var queryable = _context.ConnectionMikrotikControls.AsNoTracking()
                 .Include(x => x.Corporation)
                 .Where(x => x.CorporationId == user.CorporationId)
                 .AsQueryable();

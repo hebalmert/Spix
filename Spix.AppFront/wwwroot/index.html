@@ -8,7 +8,7 @@
     <base href="/" />
     <link rel="preload" id="webassembly" />
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/app.css?v=20260819g" />
+    <link rel="stylesheet" href="css/app.css?v=20260912b" />
     <link rel="icon" type="image/png" href="https://storagespix.blob.core.windows.net/imgwwwroot/NexxtplanetLLC.png" />
     <link href="Spix.AppFront.styles.css" rel="stylesheet" />
     <script type="importmap"></script>
@@ -16,15 +16,182 @@
     <link href="lib/font-awesome/css/all.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
     <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
+    <style>
+        /* Estilos criticos: se aplican antes de descargar la hoja de estilos de la aplicacion (splash de arranque de Spix). */
+        html,
+        body {
+            min-height: 100%;
+            margin: 0;
+            background-color: #071838;
+        }
+
+        /* FONDO UNICO de las pantallas de acceso: splash, Autorizando, Login, Reset password y
+           Confirmar email. Vive aqui (y no en app.css ni en los layouts) para que exista desde el
+           primer pintado y todas usen exactamente el mismo tono: asi las transiciones no se ven
+           como cortes. Para cambiar el fondo de acceso se toca SOLO esta clase. */
+        .spix-atmosphere {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            background:
+                radial-gradient(circle at 75% 8%, rgba(51, 138, 255, .48), transparent 29%),
+                radial-gradient(circle at 19% 86%, rgba(93, 70, 255, .38), transparent 34%),
+                linear-gradient(135deg, rgba(4, 18, 51, .92), rgba(9, 40, 101, .88) 56%, rgba(5, 27, 73, .93)),
+                url('https://storagespix.blob.core.windows.net/imgwwwroot/bgCenterImg.jpg') center / cover no-repeat;
+            background-color: #071838;
+        }
+
+        .spix-atmosphere::before,
+        .spix-atmosphere::after {
+            position: absolute;
+            z-index: -1;
+            width: 18rem;
+            height: 18rem;
+            content: '';
+            opacity: .45;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #72a8ff 1.6px, transparent 1.8px);
+            background-size: 22px 22px;
+        }
+
+        .spix-atmosphere::before {
+            top: -3rem;
+            left: -2rem;
+        }
+
+        .spix-atmosphere::after {
+            right: -2rem;
+            bottom: -4rem;
+        }
+
+        /* Acomodo de la tarjeta del splash (el fondo lo pone .spix-atmosphere). */
+        .spix-boot-screen {
+            display: grid;
+            min-height: 100vh;
+            padding: 1.5rem;
+            place-items: center;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .spix-boot-card {
+            width: min(100%, 37rem);
+            padding: clamp(2.25rem, 6vw, 4rem) clamp(1.5rem, 7vw, 4.5rem);
+            text-align: center;
+            border: 1px solid rgba(123, 177, 255, .68);
+            border-radius: 1.8rem;
+            background: linear-gradient(145deg, rgba(17, 61, 138, .86), rgba(7, 28, 76, .86));
+            box-shadow: 0 2rem 4.5rem rgba(0, 6, 25, .5), inset 0 1px 0 rgba(255, 255, 255, .16);
+            backdrop-filter: blur(12px);
+        }
+
+        .spix-boot-brand {
+            margin: 0;
+            color: #ffffff;
+            font-size: clamp(3rem, 11vw, 5.5rem);
+            font-weight: 800;
+            line-height: .9;
+            letter-spacing: -.08em;
+        }
+
+        .spix-boot-brand span {
+            color: #22a6ff;
+        }
+
+        .spix-boot-company {
+            margin: .7rem 0 2.35rem;
+            color: #afc9ff;
+            font-size: .78rem;
+            font-weight: 600;
+            letter-spacing: .4em;
+            text-transform: uppercase;
+        }
+
+        .spix-boot-message {
+            margin: 0;
+            color: #e9f2ff;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+        }
+
+        .spix-boot-dots {
+            display: flex;
+            justify-content: center;
+            gap: .75rem;
+            margin: 2rem 0;
+        }
+
+        .spix-boot-dots span {
+            width: .8rem;
+            height: .8rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #18c4ff, #5d64ff);
+            box-shadow: 0 0 .9rem rgba(41, 158, 255, .85);
+            animation: spix-boot-bounce 1.25s ease-in-out infinite;
+        }
+
+        .spix-boot-dots span:nth-child(2) {
+            animation-delay: .16s;
+        }
+
+        .spix-boot-dots span:nth-child(3) {
+            background: linear-gradient(135deg, #5275ff, #8f5cff);
+            animation-delay: .32s;
+        }
+
+        .spix-boot-track {
+            height: .55rem;
+            overflow: hidden;
+            border: 1px solid rgba(103, 163, 255, .65);
+            border-radius: 999px;
+            background: rgba(8, 35, 91, .74);
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, .32);
+        }
+
+        .spix-boot-track::after {
+            display: block;
+            width: 38%;
+            height: 100%;
+            content: '';
+            border-radius: inherit;
+            background: linear-gradient(90deg, transparent, #31d2ff 46%, #7a71ff 62%, transparent);
+            box-shadow: 0 0 1rem #229dff;
+            animation: spix-boot-shimmer 1.8s ease-in-out infinite;
+        }
+
+        @keyframes spix-boot-bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: .55; }
+            40% { transform: translateY(-.45rem); opacity: 1; }
+        }
+
+        @keyframes spix-boot-shimmer {
+            0% { transform: translateX(-115%); }
+            100% { transform: translateX(365%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .spix-boot-dots span,
+            .spix-boot-track::after {
+                animation: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <main class="spix-atmosphere spix-boot-screen" role="status" aria-live="polite" aria-label="Preparando Spix">
+            <section class="spix-boot-card">
+                <h1 class="spix-boot-brand">Spi<span>x</span></h1>
+                <p class="spix-boot-company">Nexxtplanet</p>
+                <p class="spix-boot-message">Preparando tu espacio de trabajo&hellip;</p>
+                <div class="spix-boot-dots" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="spix-boot-track" aria-hidden="true"></div>
+            </section>
+        </main>
     </div>
 
     <div id="blazor-error-ui">
@@ -41,7 +208,7 @@
     <script src="lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="jslib/cameraInterop.js?v=20250922"></script>
     <script src="jslib/helpers.js?v=20250922"></script>
-    <script src="jslib/idle-tracker.js?v=20250922"></script>
+    <script src="jslib/idle-tracker.js?v=20260912"></script>
     <script src="jslib/download.js?v=20260220"></script>
     <script src="jslib/camaraInterop2.js?v=20260221"></script>
     <script src="jslib/camaraIdPicBack.js?v=20260221"></script>

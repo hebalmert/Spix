@@ -110,7 +110,7 @@ public class CargueDetailsService : ICargueDetailsService
                 };
             }
 
-            var queryable = _context.CargueDetails
+            var queryable = _context.CargueDetails.AsNoTracking()
                 .Where(x => x.CorporationId == user.CorporationId && x.CargueId == pagination.GuidId)
                 .Include(x => x.Cargue).AsQueryable();
 
@@ -151,7 +151,7 @@ public class CargueDetailsService : ICargueDetailsService
                 };
             }
 
-            var queryable = _context.CargueDetails.Where(x => x.CorporationId == user.CorporationId)
+            var queryable = _context.CargueDetails.AsNoTracking().Where(x => x.CorporationId == user.CorporationId)
                 .Include(x => x.Cargue).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))

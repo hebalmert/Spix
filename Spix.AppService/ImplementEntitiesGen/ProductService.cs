@@ -91,7 +91,7 @@ public class ProductService : IProductService
                 };
             }
 
-            var queryable = _context.Products
+            var queryable = _context.Products.AsNoTracking()
                 .Include(x => x.ProductStocks)
                 .Include(x => x.Tax)
                 .Include(x => x.Mark)

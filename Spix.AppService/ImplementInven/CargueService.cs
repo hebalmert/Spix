@@ -73,7 +73,7 @@ public class CargueService : ICargueService
                 };
             }
 
-            var queryable = _context.Cargues
+            var queryable = _context.Cargues.AsNoTracking()
                 .Include(x => x.PurchaseDetail).ThenInclude(x => x!.Purchase)
                 .Include(x => x.CargueDetails)
                 .Where(x => x.CorporationId == user.CorporationId).AsQueryable();

@@ -92,6 +92,23 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             return BadRequest(response.Message);
         }
 
+        [HttpPut("approve/{id}")]
+        public async Task<ActionResult<bool>> ApproveAsync(Guid id)
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            if (userClaimsInfo == null)
+            {
+                return BadRequest("Erro en el sistema de Usuarios");
+            }
+
+            var response = await _contractClientUnitOfWork.ApproveAsync(id, userClaimsInfo.UserName);
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+            return BadRequest(response.Message);
+        }
+
         [HttpPost]
         public async Task<ActionResult<ContractClient>> PostAsync(ContractClient modelo)
         {

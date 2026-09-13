@@ -53,7 +53,7 @@ public class PaymentService : IPaymentService
             if (user == null)
                 return AuthFail<IEnumerable<CxCBill>>();
 
-            var queryable = _context.CxCBills
+            var queryable = _context.CxCBills.AsNoTracking()
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient)
                 .Include(x => x.CxCBillDetails)
@@ -331,7 +331,7 @@ public class PaymentService : IPaymentService
             if (user == null)
                 return AuthFail<IEnumerable<PrePayment>>();
 
-            var queryable = _context.PrePayments
+            var queryable = _context.PrePayments.AsNoTracking()
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient)
                 .Include(x => x.Plan)
@@ -661,7 +661,7 @@ public class PaymentService : IPaymentService
             if (user == null)
                 return AuthFail<IEnumerable<PreExonerated>>();
 
-            var queryable = _context.PreExonerateds
+            var queryable = _context.PreExonerateds.AsNoTracking()
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient)
                 .Include(x => x.Plan)

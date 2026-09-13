@@ -1,20 +1,15 @@
-.empty-auth-full {
+﻿.empty-auth-full {
     margin: 0;
     width: 100vw;
     min-height: 100vh;
-    background:
-        linear-gradient(135deg, rgba(75,85,99,0.72), rgba(55,65,81,0.72)),
-        url("https://spiximage.blob.core.windows.net/imgwwwroot/bgCenterImg.jpg?v=20260708-3");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    position: relative;
     padding: 1rem;
 }
+
+/* El fondo NO va aqui: lo pone .spix-atmosphere (index.html), el mismo del splash
+   y del login. Antes era gris y se veia como otra aplicacion. */
 
     .empty-auth-full > * {
         position: relative;

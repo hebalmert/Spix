@@ -71,7 +71,7 @@ public class FrecuencyTypeService : IFrecuencyTypeService
     {
         try
         {
-            var queryable = _context.FrecuencyTypes.Include(x => x.Frecuencies).AsQueryable();
+            var queryable = _context.FrecuencyTypes.AsNoTracking().Include(x => x.Frecuencies).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

@@ -112,6 +112,10 @@ public class ContractIDPicService : IContractIDPicService
             _context.ContractIDPics.Update(NuevoModelo);
 
             await _transactionManager.SaveChangesAsync();
+
+            //Si con las fotos ya tiene todo (fotos + Consentimiento + Contrato), pasa solo de Draft a Pending Approval
+            await ContractRequirementRules.PromoteWhenCompleteAsync(_context, NuevoModelo.ContractClientId);
+            await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
             return new ActionResponse<ContractIDPic>
@@ -163,6 +167,10 @@ public class ContractIDPicService : IContractIDPicService
             }
 
             _context.ContractIDPics.Add(modelo);
+            await _transactionManager.SaveChangesAsync();
+
+            //Si con las fotos ya tiene todo (fotos + Consentimiento + Contrato), pasa solo de Draft a Pending Approval
+            await ContractRequirementRules.PromoteWhenCompleteAsync(_context, modelo.ContractClientId);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 

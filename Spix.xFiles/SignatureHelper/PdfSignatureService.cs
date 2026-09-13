@@ -12,19 +12,27 @@ public class PdfSignatureService : IPdfSignatureService
         using var templateStream = new MemoryStream(templateBytes);
         var document = PdfReader.Open(templateStream, PdfDocumentOpenMode.Modify);
 
-        foreach (var field in fields.Where(x => !IsSignatureField(x)))
+        // PdfSharp solo admite un XGraphics vivo por pagina, asi que los campos se agrupan
+        // y cada pagina se dibuja de una sola pasada.
+        var pages = fields
+            .Where(x => !IsSignatureField(x))
+            .Where(x => x.PageNumber >= 1 && x.PageNumber <= document.PageCount)
+            .GroupBy(x => x.PageNumber);
+
+        foreach (var pageFields in pages)
         {
-            if (!values.TryGetValue(field.FieldName, out var value) || string.IsNullOrWhiteSpace(value))
-                continue;
+            var page = document.Pages[pageFields.Key - 1];
+            using var gfx = XGraphics.FromPdfPage(page);
 
-            if (field.PageNumber < 1 || field.PageNumber > document.PageCount)
-                continue;
+            foreach (var field in pageFields)
+            {
+                if (!values.TryGetValue(field.FieldName, out var value) || string.IsNullOrWhiteSpace(value))
+                    continue;
 
-            var page = document.Pages[field.PageNumber - 1];
-            var gfx = XGraphics.FromPdfPage(page);
-            var font = new XFont("Arial", field.FontSize, XFontStyle.Regular);
+                var font = new XFont("Arial", field.FontSize, XFontStyle.Regular);
 
-            gfx.DrawString(value, font, XBrushes.Black, new XPoint(field.PositionX, field.PositionY));
+                gfx.DrawString(value, font, XBrushes.Black, new XPoint(field.PositionX, field.PositionY));
+            }
         }
 
         using var outputStream = new MemoryStream();
@@ -48,7 +56,10 @@ public class PdfSignatureService : IPdfSignatureService
             .Trim();
 
         var page = document.Pages[signatureField.PageNumber - 1];
-        var gfx = XGraphics.FromPdfPage(page);
+
+        // Append deja la firma como lo ULTIMO que se dibuja en la pagina: queda encima del
+        // texto y de las lineas de la plantilla, que es como se ve una firma de verdad.
+        using var gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
 
         using var signatureStream = new MemoryStream(Convert.FromBase64String(cleanBase64));
         var signatureImage = XImage.FromStream(() => signatureStream);
@@ -69,9 +80,28 @@ public class PdfSignatureService : IPdfSignatureService
     {
         var fieldList = fields.ToList();
         var pdfBytes = FillPdf(templateBytes, fieldList, values);
-        var signatureField = fieldList.FirstOrDefault(IsSignatureField);
 
-        return signatureField == null ? pdfBytes : AddSignature(pdfBytes, signatureField, signatureBase64);
+        // Se estampa la firma en cada campo de firma que tenga la plantilla
+        foreach (var signatureField in fieldList.Where(IsSignatureField))
+        {
+            pdfBytes = AddSignature(pdfBytes, signatureField, signatureBase64);
+        }
+
+        return pdfBytes;
+    }
+
+    public int GetPageCount(byte[] pdfBytes)
+    {
+        try
+        {
+            using var stream = new MemoryStream(pdfBytes);
+            using var document = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+            return document.PageCount;
+        }
+        catch
+        {
+            return 0;
+        }
     }
 
     private static bool IsSignatureField(PdfSignatureField field) =>

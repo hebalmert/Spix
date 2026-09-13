@@ -1,4 +1,2 @@
-﻿
-
-<BlazorTimer Interval="2000000" Ellapsed="CheckIdle" IsRunning="true" />
-
+﻿@* Revisa la inactividad cada minuto (60000 ms). El limite esta en IdleLogout.razor.cs *@
+<BlazorTimer Interval="60000" Ellapsed="CheckIdle" IsRunning="true" />

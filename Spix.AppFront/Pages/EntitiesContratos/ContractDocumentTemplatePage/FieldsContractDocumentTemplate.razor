@@ -1,0 +1,154 @@
+@inherits ComponentBase
+@using Spix.DomainLogic.EnumTypes
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-xl modal-dialog-centered spix-field-editor-dialog">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">
+                    @Title
+                    @if (Template is not null)
+                    {
+                        <small class="text-muted ms-2">@Template.Name</small>
+                    }
+                </h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (isLoading)
+            {
+                <Loading />
+            }
+            else
+            {
+                <div class="row g-3">
+                    @* Panel izquierdo: tipos de campo, lista y detalle del campo seleccionado *@
+                    <div class="col-12 col-lg-3">
+                        <p class="spix-field-step">1. Elija el campo</p>
+                        <div class="d-grid gap-2">
+                            @foreach (var type in FieldTypes)
+                            {
+                                <button type="button"
+                                        class="btn spix-field-type @(placingType == type ? "is-active" : "")"
+                                        disabled="@isPreview"
+                                        @onclick="() => StartPlacingAsync(type)">
+                                    <i class="@GetFieldIcon(type) me-2"></i>@GetFieldName(type)
+                                </button>
+                            }
+                        </div>
+
+                        <p class="spix-field-step mt-3 mb-1">2. Haga clic en el PDF donde va</p>
+                        <p class="small text-muted">Arrastre los recuadros para moverlos. La firma se estira desde la esquina.</p>
+
+                        <hr />
+
+                        <p class="spix-field-step">Campos colocados (@Fields.Count)</p>
+                        @if (!HasSignature)
+                        {
+                            <div class="alert alert-warning py-1 px-2 small">Falta la firma: sin ella el cliente no podra firmar.</div>
+                        }
+
+                        <ul class="list-group spix-field-list">
+                            @foreach (var field in Fields.OrderBy(x => x.PageNumber).ThenBy(x => x.PositionY))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center @(field.ContractDocumentTemplateFieldId == selectedKey ? "is-selected" : "")"
+                                    @onclick="() => SelectFromListAsync(field)">
+                                    <span>
+                                        <i class="@GetFieldIcon(field.FieldType) me-2"></i>@GetFieldName(field.FieldType)
+                                        <small class="text-muted ms-1">Pag @field.PageNumber</small>
+                                    </span>
+                                    @if (!isPreview)
+                                    {
+                                        <ButtonDelete OnClick="() => RemoveFieldAsync(field)" />
+                                    }
+                                </li>
+                            }
+                        </ul>
+
+                        @if (SelectedField is not null && !isPreview)
+                        {
+                            <div class="spix-field-detail mt-3">
+                                <p class="spix-field-step">@GetFieldName(SelectedField.FieldType)</p>
+
+                                <div class="input-group input-group-sm mb-2">
+                                    <span class="input-group-text" style="width:90px">Pagina</span>
+                                    <select class="form-select" value="@SelectedField.PageNumber" @onchange="PageChangedAsync">
+                                        @for (var pageNumber = 1; pageNumber <= pageCount; pageNumber++)
+                                        {
+                                            <option value="@pageNumber">@pageNumber</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                @if (SelectedField.FieldType == ContractDocumentFieldType.Signature)
+                                {
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text" style="width:90px">Ancho</span>
+                                        <input class="form-control" type="number" min="40" step="1" @bind="SelectedField.Width" @bind:after="FieldEditedAsync" />
+                                    </div>
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text" style="width:90px">Alto</span>
+                                        <input class="form-control" type="number" min="20" step="1" @bind="SelectedField.Height" @bind:after="FieldEditedAsync" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text" style="width:90px">Letra</span>
+                                        <input class="form-control" type="number" min="6" max="40" step="1" @bind="SelectedField.FontSize" @bind:after="FieldEditedAsync" />
+                                    </div>
+                                }
+
+                                <div class="input-group input-group-sm mb-2">
+                                    <span class="input-group-text" style="width:90px">X</span>
+                                    <input class="form-control" type="number" min="0" step="1" @bind="SelectedField.PositionX" @bind:after="FieldEditedAsync" />
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text" style="width:90px">Y</span>
+                                    <input class="form-control" type="number" min="0" step="1" @bind="SelectedField.PositionY" @bind:after="FieldEditedAsync" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @* Panel derecho: el PDF (lo dibuja jslib/pdfFieldEditor.js dentro del host) *@
+                    <div class="col-12 col-lg-9">
+                        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
+                            <div class="btn-group">
+                                <button type="button" class="btn @(isPreview ? "btn-outline-primary" : "btn-primary")" @onclick="ShowEditor">
+                                    <i class="fa fa-crosshairs me-2"></i>Colocar campos
+                                </button>
+                                <button type="button" class="btn @(isPreview ? "btn-primary" : "btn-outline-primary")" disabled="@isBusyPreview" @onclick="ShowPreviewAsync">
+                                    @if (isBusyPreview)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa fa-eye me-2"></i>
+                                    }
+                                    Ver con datos de prueba
+                                </button>
+                            </div>
+                            <span class="small text-muted">
+                                @if (placingType is not null)
+                                {
+                                    <span class="badge bg-primary me-2">Haga clic en el PDF para colocar: @GetFieldName(placingType.Value)</span>
+                                }
+                                @pageCount pagina(s)
+                            </span>
+                        </div>
+                        <div id="@HostId" class="spix-pdf-host"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <ButtonFormSaveOnClick OnClick="SaveAsync" IsSaving="IsSaving" />
+                    <ButtonFormBack OnClick="Return" />
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -6,5 +6,8 @@ public enum ContractDocumentFieldType
     Document = 2,
     Phone = 3,
     Date = 4,
-    Signature = 5
+    Signature = 5,
+    Address = 6,
+    Email = 7,
+    PrintName = 8
 }

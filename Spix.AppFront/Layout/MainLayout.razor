@@ -43,10 +43,12 @@
 
         <article class="main-content px-4">
             @Body
-            @if (modalType != null)
-            {
-                <DynamicComponent Type="@modalType" Parameters="@modalParameters" />
-            }
         </article>
     </main>
 </div>
+
+@* Los modales van FUERA de la pagina, en una capa que cubre toda la pantalla (ver .spix-modal-host) *@
+@if (modalType != null)
+{
+    <ModalHost ComponentType="@modalType" Parameters="@modalParameters" />
+}

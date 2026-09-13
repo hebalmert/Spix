@@ -14,8 +14,22 @@
                     <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
                 </button>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
-                <FilterComponent ApplyFilter="SetFilterValue" />
+            <div class="col-md-9 d-flex justify-content-end align-items-center gap-2">
+                @* Filtro por estado: muestra solo los contratos del estado elegido (del mas nuevo al mas viejo) *@
+                <div class="input-group" style="width:240px; min-width:200px;">
+                    <span class="input-group-text bg-light">
+                        <i class="fa fa-filter text-dark"></i>
+                    </span>
+                    <select class="form-select" value="@StatusFilter" @onchange="StatusFilterChanged">
+                        <option value="0">Todos los estados</option>
+                        <option value="@((int)ContractState.Draft)">@Localizer[nameof(Resource.ContractState_Draft)]</option>
+                        <option value="@((int)ContractState.PendingApproval)">@Localizer[nameof(Resource.ContractState_PendingApproval)]</option>
+                        <option value="@((int)ContractState.InProgress)">@Localizer[nameof(Resource.ContractState_InProgress)]</option>
+                    </select>
+                </div>
+                <div class="flex-grow-1">
+                    <FilterComponent ApplyFilter="SetFilterValue" />
+                </div>
             </div>
         </div>
 
@@ -33,6 +47,7 @@
                                 <th>@Localizer[nameof(Resource.Equipment)]</th>
                                 <th>@Localizer[nameof(Resource.Invoice)]</th>
                                 <th>@Localizer[nameof(Resource.Status)]</th>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -57,6 +72,16 @@
                                     </td>
                                     <td>
                                         <StatusBadge Value="@item.ContractState" />
+                                    </td>
+                                    <td style="width:1px;">
+                                        @* Aprobar: solo en Pending Approval y con fotos + Consentimiento + Contrato firmados *@
+                                        @if (item.ContractState == ContractState.PendingApproval && item.RequirementsComplete)
+                                        {
+                                            <ButtonGeneric OnClick="() => ApproveAsync(item.ContractClientId)"
+                                                           TooTip="Aprobar: pasar a In Progress"
+                                                           Icon="fa fa-circle-check"
+                                                           Style="font-size:17px;color:#0DCAF0;" />
+                                        }
                                     </td>
 
                                   

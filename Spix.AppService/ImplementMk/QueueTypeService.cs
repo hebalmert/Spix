@@ -50,7 +50,7 @@ public class QueueTypeService : IQueueTypeService
                 };
             }
 
-            var queryable = _context.QueueTypes
+            var queryable = _context.QueueTypes.AsNoTracking()
                 .Include(x => x.Corporation)
                 .Where(x => x.CorporationId == user.CorporationId)
                 .AsQueryable();

@@ -108,7 +108,7 @@ public class UsuarioService : IUsuarioService
                     Message = "Problemas para Conseguir el Usuario"
                 };
             }
-            var queryable = _context.Usuarios.Include(x => x.UsuarioRoles).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.Usuarios.AsNoTracking().Include(x => x.UsuarioRoles).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

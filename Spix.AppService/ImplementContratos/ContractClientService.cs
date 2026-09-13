@@ -120,7 +120,11 @@ namespace Spix.AppService.ImplementContratos
                     };
                 }
 
-                var queryable = _context.ContractClients
+                //AsNoTracking es obligatorio aqui: sin el, EF rellena las colecciones inversas
+                //(Client/Contractor/Zone/EstratoSocial.ContractClients) con las demas filas y el JSON
+                //crece de forma explosiva (IgnoreCycles no corta entre filas hermanas). Con pocos
+                //contratos el navegador llegaba a congelarse deserializando la respuesta.
+                var queryable = _context.ContractClients.AsNoTracking()
                     .Include(x => x.Client)
                     .Include(x => x.Contractor)
                     .Include(x => x.Zone)
@@ -139,8 +143,26 @@ namespace Spix.AppService.ImplementContratos
                         EF.Functions.Like(u.Client.Document, $"%{filter}%"));
                 }
 
+                //Filtro por estado desde el dropdown del listado (pagination.Id = ContractState; 0 = todos)
+                if (pagination.Id > 0 && Enum.IsDefined(typeof(ContractState), pagination.Id))
+                {
+                    var state = (ContractState)pagination.Id;
+                    queryable = queryable.Where(x => x.ContractState == state);
+                }
+
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-                var modelo = await queryable.OrderByDescending(x=> x.ControlContrato).Paginate(pagination).ToListAsync();
+
+                //Del mas nuevo al mas viejo
+                var modelo = await queryable
+                    .OrderByDescending(x => x.DateCreado)
+                    .ThenByDescending(x => x.ControlContrato)
+                    .Paginate(pagination)
+                    .ToListAsync();
+
+                //Marca los que ya tienen fotos y firmas (el listado muestra el boton Aprobar)
+                var completeIds = await ContractRequirementRules.GetCompleteIdsAsync(_context, modelo.Select(x => x.ContractClientId).ToList());
+                foreach (var item in modelo)
+                    item.RequirementsComplete = completeIds.Contains(item.ContractClientId);
 
                 return new ActionResponse<IEnumerable<ContractClient>>
                 {
@@ -218,6 +240,23 @@ namespace Spix.AppService.ImplementContratos
                     };
                 }
 
+                //In Progress solo con fotos del documento, Consentimiento y Contrato firmados
+                if (isChangingContractState &&
+                    modelo.ContractState == ContractState.InProgress)
+                {
+                    var missing = await ContractRequirementRules.GetMissingAsync(_context, modelo.ContractClientId);
+                    if (missing.Count > 0)
+                    {
+                        await _transactionManager.RollbackTransactionAsync();
+                        return new ActionResponse<ContractClient>
+                        {
+                            WasSuccess = false,
+                            Result = modelo,
+                            Message = $"Para pasar a In Progress falta: {string.Join(", ", missing)}."
+                        };
+                    }
+                }
+
                 bool requiresMikrotikValidation = modelo.ContractState == ContractState.Suspended;
 
                 if (isChangingContractState &&
@@ -255,6 +294,75 @@ namespace Spix.AppService.ImplementContratos
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return await _httpErrorHandler.HandleErrorAsync<ContractClient>(ex);
+            }
+        }
+
+        public async Task<ActionResponse<bool>> ApproveAsync(Guid id, string username)
+        {
+            await _transactionManager.BeginTransactionAsync();
+            try
+            {
+                var user = await _userHelper.GetUserByUserNameAsync(username);
+                if (user == null)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "Problemas de Validacion de Usuario"
+                    };
+                }
+
+                var contract = await _context.ContractClients
+                    .FirstOrDefaultAsync(x => x.ContractClientId == id && x.CorporationId == user.CorporationId);
+
+                if (contract == null)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "Problemas para Enconstrar el Registro Indicado"
+                    };
+                }
+
+                //Solo se aprueba lo que esta en Pending Approval y tiene todo completo
+                if (contract.ContractState != ContractState.PendingApproval)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = "Solo se pueden aprobar contratos en Pending Approval."
+                    };
+                }
+
+                var missing = await ContractRequirementRules.GetMissingAsync(_context, id);
+                if (missing.Count > 0)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<bool>
+                    {
+                        WasSuccess = false,
+                        Message = $"Para pasar a In Progress falta: {string.Join(", ", missing)}."
+                    };
+                }
+
+                contract.ContractState = ContractState.InProgress;
+
+                await _transactionManager.SaveChangesAsync();
+                await _transactionManager.CommitTransactionAsync();
+
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = true
+                };
+            }
+            catch (Exception ex)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
             }
         }
 

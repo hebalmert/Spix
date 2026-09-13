@@ -78,8 +78,12 @@ public class ProductStorageService : IProductStorageService
                 };
             }
 
-            var queryable = _context.ProductStorages
-                .Include(x => x.State).ThenInclude(x => x!.Cities)
+            //Se incluye directamente lo que muestra la tabla (departamento y ciudad). Antes se cargaba
+            //State con TODAS sus ciudades y la ciudad de la bodega aparecia solo por el enlace automatico
+            //de EF; con AsNoTracking ese enlace no existe y City llegaba en null.
+            var queryable = _context.ProductStorages.AsNoTracking()
+                .Include(x => x.State)
+                .Include(x => x.City)
                 .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))

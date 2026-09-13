@@ -103,7 +103,7 @@ public class ServerService : IServerService
                 };
             }
 
-            var queryable = _context.Servers
+            var queryable = _context.Servers.AsNoTracking()
                 .Include(x => x.IpNetwork)
                 .Include(x => x.Zone)
                 .Where(x => x.CorporationId == user.CorporationId)

@@ -85,7 +85,7 @@ public class MarkService : IMarkService
                 };
             }
 
-            var queryable = _context.Marks.Include(x => x.MarkModels).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.Marks.AsNoTracking().Include(x => x.MarkModels).Where(x => x.CorporationId == user.CorporationId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
