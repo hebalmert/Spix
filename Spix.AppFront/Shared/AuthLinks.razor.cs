@@ -17,12 +17,17 @@ public partial class AuthLinks
     private string? photoUser;
     private string? LogoCorp;
     private string? NameCorp;
+    private string? FullName;
     private SessionModelDTO? SessionModelDTO = new();
 
     protected override async Task OnParametersSetAsync()
     {
         var authenticationState = await AuthenticationStateTask;
         var claims = authenticationState.User.Claims.ToList();
+
+        //El token trae el nombre de la corporacion y el nombre de la persona
+        NameCorp = claims.FirstOrDefault(x => x.Type == "CorpName")?.Value;
+        FullName = $"{claims.FirstOrDefault(x => x.Type == "FirstName")?.Value} {claims.FirstOrDefault(x => x.Type == "LastName")?.Value}".Trim();
 
         SessionModelDTO = await _sessionModel.LoadSessionAsync("SessionDTO");
         photoUser = SessionModelDTO!.PhotoBase64;

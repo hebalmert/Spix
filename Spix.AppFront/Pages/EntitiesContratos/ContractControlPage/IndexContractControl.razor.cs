@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -21,9 +21,11 @@ public partial class IndexContractControl
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
     private string Filter { get; set; } = string.Empty;
+    private int StatusFilter;  //0 = todos; si no, el valor de ContractState
 
     private int CurrentPage = 1;  //Pagina seleccionada
     private int TotalPages;      //Cantidad total de paginas
+    private int TotalRecords;   //Total de registros (header Counting)
     private int PageSize = 20;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/contractcontrols";
@@ -50,12 +52,23 @@ public partial class IndexContractControl
         await Cargar();
     }
 
+    private async Task StatusFilterChanged(ChangeEventArgs e)
+    {
+        StatusFilter = int.TryParse(e.Value?.ToString(), out var value) ? value : 0;
+        CurrentPage = 1;
+        await Cargar();
+    }
+
     private async Task Cargar(int page = 1)
     {
         var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}";
         if (!string.IsNullOrWhiteSpace(Filter))
         {
             url += $"&filter={Filter}";
+        }
+        if (StatusFilter > 0)
+        {
+            url += $"&id={StatusFilter}";
         }
         var responseHttp = await _repository.GetAsync<List<ContractClient>>(url);
         // Centralizamos el manejo de errores
@@ -68,6 +81,14 @@ public partial class IndexContractControl
 
         ContractClients = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        //El conteo total lo manda el backend en el header Counting. Es informativo:
+        //si no viene, la pantalla funciona igual.
+        if (responseHttp.HttpResponseMessage.Headers.TryGetValues("Counting", out var counting) &&
+            double.TryParse(counting.FirstOrDefault(), out var total))
+        {
+            TotalRecords = (int)total;
+        }
 
         await InvokeAsync(StateHasChanged);
     }

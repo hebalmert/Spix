@@ -1,0 +1,32 @@
+/* Panel de Setting: corporacion arriba, usuario debajo */
+.auth-links__corp {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e9eef7;
+}
+
+.auth-links__corp-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #0a1a3f;
+    line-height: 1.25;
+}
+
+.auth-links__user {
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.auth-links__user-name {
+    margin-top: 8px;
+    font-weight: 700;
+    color: #0a1a3f;
+}
+
+.auth-links__user-account {
+    font-size: 12px;
+    color: #6c7a94;
+}

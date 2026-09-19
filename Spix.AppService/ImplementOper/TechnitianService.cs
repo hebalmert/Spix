@@ -191,6 +191,18 @@ public class TechnitianService : ITechnitianService
 
     public async Task<ActionResponse<Technician>> UpdateAsync(Technician modelo, string frontUrl)
     {
+        //El usuario de login NO se cambia al editar: Identity lo busca por ese nombre y,
+        //si cambia, quedaria una cuenta huerfana y el cliente no podria entrar.
+        var registroActual = await _context.Technicians.AsNoTracking().FirstOrDefaultAsync(x => x.TechnicianId == modelo.TechnicianId);
+        if (registroActual is not null && registroActual.UserName != modelo.UserName)
+        {
+            return new ActionResponse<Technician>
+            {
+                WasSuccess = false,
+                Message = _localizer["Generic_UserNameCanNotChangeIt"]
+            };
+        }
+
         await _transactionManager.BeginTransactionAsync();
 
         try

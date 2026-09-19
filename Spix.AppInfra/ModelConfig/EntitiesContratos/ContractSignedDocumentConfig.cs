@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Spix.Domain.EntitiesContratos;
 
@@ -12,7 +12,13 @@ public class ContractSignedDocumentConfig : IEntityTypeConfiguration<ContractSig
         builder.Property(e => e.ContractSignedDocumentId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.ContractClientId, e.ContractDocumentTemplateId }).IsUnique();
         builder.Property(e => e.DateCreated).HasColumnType("date");
-        builder.Property(e => e.DateSigned).HasColumnType("date");
+
+        //La hora exacta de la firma es evidencia: DateSigned guarda fecha y hora completas
+
+        //Identificador publico de la firma: unico cuando existe
+        builder.HasIndex(e => e.VerificationCode)
+            .IsUnique()
+            .HasFilter("[VerificationCode] IS NOT NULL");
 
         builder.HasOne(e => e.Corporation)
             .WithMany()

@@ -1,0 +1,144 @@
+﻿/* Certificado de una firma: datos, comprobacion del archivo y bitacora */
+.cert__hint {
+    font-size: 13px;
+    color: #6c7a94;
+    margin: 0;
+}
+
+.cert__result {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+    .cert__result i {
+        font-size: 30px;
+    }
+
+    .cert__result h2 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .cert__result p {
+        margin: 2px 0 0;
+        font-size: 13px;
+    }
+
+    .cert__result.is-ok {
+        background: #e6f5ec;
+        color: #146c43;
+    }
+
+    .cert__result.is-bad {
+        background: #fdecea;
+        color: #b02a37;
+    }
+
+.cert__data {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px 24px;
+    margin: 0 0 22px;
+}
+
+    .cert__data .is-wide {
+        grid-column: 1 / -1;
+    }
+
+    .cert__data dt {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6c7a94;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .cert__data dd {
+        margin: 2px 0 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #0a1a3f;
+    }
+
+.cert__hash {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+    font-weight: 400;
+    word-break: break-all;
+    color: #334155;
+}
+
+.cert__file,
+.cert__events {
+    border-top: 1px solid #eef1f7;
+    padding-top: 18px;
+    margin-top: 8px;
+}
+
+    .cert__file h3,
+    .cert__events h3 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0a1a3f;
+    }
+
+    .cert__file p {
+        font-size: 13px;
+        color: #6c7a94;
+    }
+
+.cert__file-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+    .cert__file-result.is-ok {
+        background: #e6f5ec;
+        color: #146c43;
+    }
+
+    .cert__file-result.is-bad {
+        background: #fff6e0;
+        color: #9a6700;
+    }
+
+.cert__events ol {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+}
+
+    .cert__events li {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        padding: 9px 0;
+        border-bottom: 1px dashed #e9eef7;
+        font-size: 13px;
+    }
+
+.cert__event-date {
+    font-family: Consolas, "Courier New", monospace;
+    color: #6c7a94;
+    min-width: 190px;
+}
+
+.cert__event-name {
+    font-weight: 600;
+    color: #0a1a3f;
+}
+
+.cert__event-ip {
+    color: #6c7a94;
+}

@@ -170,7 +170,7 @@ public class ContractorService : IContractorService
                 return new ActionResponse<Contractor>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_RegisterNotFound)]
                 };
             }
             if (!string.IsNullOrWhiteSpace(modelo.Imagen))
@@ -196,6 +196,18 @@ public class ContractorService : IContractorService
 
     public async Task<ActionResponse<Contractor>> UpdateAsync(Contractor modelo, string frontUrl)
     {
+        //El usuario de login NO se cambia al editar: Identity lo busca por ese nombre y,
+        //si cambia, quedaria una cuenta huerfana y el cliente no podria entrar.
+        var registroActual = await _context.Contractors.AsNoTracking().FirstOrDefaultAsync(x => x.ContractorId == modelo.ContractorId);
+        if (registroActual is not null && registroActual.UserName != modelo.UserName)
+        {
+            return new ActionResponse<Contractor>
+            {
+                WasSuccess = false,
+                Message = _localizer["Generic_UserNameCanNotChangeIt"]
+            };
+        }
+
         await _transactionManager.BeginTransactionAsync();
 
         try
@@ -459,7 +471,7 @@ public class ContractorService : IContractorService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
+                    Message = _localizer[nameof(Resource.Generic_RegisterNotFound)]
                 };
             }
             var user = await _userHelper.GetUserByUserNameAsync(DataRemove.UserName);
@@ -483,7 +495,7 @@ public class ContractorService : IContractorService
                     return new ActionResponse<bool>
                     {
                         WasSuccess = false,
-                        Message = "Se Elimino el Registro pero Sin la Imagen"
+                        Message = _localizer[nameof(Resource.Generic_DeletedWithoutImage)]
                     };
                 }
             }

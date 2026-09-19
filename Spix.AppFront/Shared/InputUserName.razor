@@ -1,0 +1,81 @@
+﻿@* Campo del usuario de login. Lo propone solo con el nombre y el apellido, y lo revisa contra
+   Identity mientras se escribe: chulito verde si esta libre, aviso rojo con alternativas si ya existe.
+   El usuario es UNICO en toda la aplicacion, por eso lo usan Usuarios, Tecnicos, Contratistas,
+   Clientes y Managers. *@
+<div class="input-group">
+    <span class="input-group-text" style="width: @LabelWidth">
+        @(Label ?? Localizer[nameof(Resource.UserName)].Value)
+    </span>
+
+    <input class="form-control @StatusCss"
+           placeholder="@Placeholder"
+           readonly="@ReadOnly"
+           value="@Value"
+           @oninput="OnInputAsync" />
+
+    @if (!ReadOnly)
+    {
+        <span class="input-group-text username-status">
+            @switch (Status)
+            {
+                case UserNameStatus.Checking:
+                    <span class="spinner-border spinner-border-sm text-primary"></span>
+                    break;
+                case UserNameStatus.Available:
+                    <i class="fa fa-circle-check text-success"></i>
+                    break;
+                case UserNameStatus.Taken:
+                    <i class="fa fa-circle-xmark text-danger"></i>
+                    break;
+                default:
+                    <i class="fa fa-user text-muted"></i>
+                    break;
+            }
+        </span>
+
+        <button type="button" class="btn btn-outline-secondary username-suggest"
+                title="@SuggestTitle" @onclick="SuggestAsync">
+            <i class="fa fa-wand-magic-sparkles"></i>
+        </button>
+    }
+</div>
+
+@if (!ReadOnly && Status != UserNameStatus.Idle)
+{
+    <div class="username-feedback">
+        @if (Status == UserNameStatus.Available)
+        {
+            <span class="text-success"><i class="fa fa-check"></i> @AvailableText</span>
+
+            @if (Suggestions.Count > 0)
+            {
+                <span class="username-suggestions">
+                    @OtherOptionsText
+                    @foreach (var option in Suggestions)
+                    {
+                        <button type="button" class="username-chip" @onclick="() => UseSuggestionAsync(option)">@option</button>
+                    }
+                </span>
+            }
+        }
+        else if (Status == UserNameStatus.Taken)
+        {
+            <span class="text-danger"><i class="fa fa-circle-exclamation"></i> @TakenText</span>
+
+            @if (Suggestions.Count > 0)
+            {
+                <span class="username-suggestions">
+                    @SuggestionsText
+                    @foreach (var option in Suggestions)
+                    {
+                        <button type="button" class="username-chip" @onclick="() => UseSuggestionAsync(option)">@option</button>
+                    }
+                </span>
+            }
+        }
+        else if (Status == UserNameStatus.TooShort)
+        {
+            <span class="text-muted"><i class="fa fa-circle-info"></i> @TooShortText</span>
+        }
+    </div>
+}

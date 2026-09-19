@@ -1,4 +1,4 @@
-using Spix.xNotification.Templates;
+﻿using Spix.xNotification.Templates;
 using Microsoft.Extensions.Localization;
 
 namespace Spix.AppService.ImplementEmails;
@@ -50,5 +50,42 @@ internal static class LocalizedEmailTemplateFactory
             Introduction = localizer["PasswordRecovery_Introduction"], Instruction = localizer["PasswordRecovery_Instruction"],
             ButtonText = localizer["PasswordRecovery_Button"], SecurityNotice = localizer["PasswordRecovery_SecurityNotice"],
             Footer = localizer["PasswordRecovery_Footer"], FirstName = firstName, LastName = lastName, RecoveryLink = recoveryLink
+        });
+
+    public static string BuildSignatureRequest(IStringLocalizer localizer, string? firstName, string? lastName,
+        string contractNumber, string documentsList, string signatureLink)
+        => SignatureRequestEmailTemplate.Build(new SignatureRequestEmailTemplateModel
+        {
+            Subject = localizer["SignatureRequest_Subject"],
+            Eyebrow = localizer["SignatureRequest_Eyebrow"],
+            Title = localizer["SignatureRequest_Title"],
+            Hello = localizer["SignatureRequest_Hello"],
+            Introduction = localizer["SignatureRequest_Introduction"],
+            Instruction = localizer["SignatureRequest_Instruction"],
+            ButtonText = localizer["SignatureRequest_Button"],
+            SecurityNotice = localizer["SignatureRequest_SecurityNotice"],
+            Footer = localizer["SignatureRequest_Footer"],
+            FirstName = firstName,
+            LastName = lastName,
+            ContractNumber = contractNumber,
+            DocumentsList = documentsList,
+            SignatureLink = signatureLink
+        });
+
+    public static string BuildSignatureCode(IStringLocalizer localizer, string? firstName, string? lastName,
+        string code, int minutes)
+        => SignatureCodeEmailTemplate.Build(new SignatureCodeEmailTemplateModel
+        {
+            Subject = localizer["SignatureCode_Subject"],
+            Eyebrow = localizer["SignatureCode_Eyebrow"],
+            Title = localizer["SignatureCode_Title"],
+            Hello = localizer["SignatureCode_Hello"],
+            Introduction = localizer["SignatureCode_Introduction"],
+            Expiration = string.Format(localizer["SignatureCode_Expiration"], minutes),
+            SecurityNotice = localizer["SignatureCode_SecurityNotice"],
+            Footer = localizer["SignatureCode_Footer"],
+            FirstName = firstName,
+            LastName = lastName,
+            Code = code
         });
 }

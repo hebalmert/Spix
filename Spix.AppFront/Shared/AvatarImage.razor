@@ -1,0 +1,35 @@
+﻿@* Foto de un registro (proveedor, cliente, usuario...). Si no hay foto, o si la URL falla,
+   muestra un icono de Font Awesome en vez de la imagen rota.
+   Uso: <AvatarImage Url="@item.ImageFullPath" Icon="fa fa-truck" Size="90" /> *@
+<span class="avatar-image @(HasPhoto ? null : "is-empty")"
+      style="width:@(Size)px; height:@(Size)px;"
+      title="@Alt">
+
+    @if (HasPhoto)
+    {
+        <img src="@Url"
+             alt="@Alt"
+             onerror="this.style.display='none'; this.parentElement.classList.add('is-empty');" />
+    }
+
+    <span class="avatar-fallback" style="font-size:@(Size / 2)px;">
+        <i class="@Icon"></i>
+    </span>
+</span>
+
+@code {
+    [Parameter] public string? Url { get; set; }
+
+    //Icono cuando no hay foto: cambia segun la entidad (fa fa-truck, fa fa-user, fa fa-building...)
+    [Parameter] public string Icon { get; set; } = "fa fa-image";
+
+    [Parameter] public int Size { get; set; } = 90;
+
+    [Parameter] public string? Alt { get; set; }
+
+    //El backend manda la URL de "NoImage" cuando el registro no tiene foto: eso cuenta como sin foto,
+    //asi se ve el icono y no el dibujo de la camara tachada.
+    private bool HasPhoto =>
+        !string.IsNullOrWhiteSpace(Url) &&
+        Url!.IndexOf("NoImage", StringComparison.OrdinalIgnoreCase) < 0;
+}

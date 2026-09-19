@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -20,6 +20,7 @@ public partial class IndexConnectionMikrotikControl
 
     private int CurrentPage = 1;
     private int TotalPages;
+    private int TotalRecords;   //Total de registros (header Counting)
     private int PageSize = 15;
 
     private const string baseUrl = "api/v1/connectionmikrotikcontrols";
@@ -51,6 +52,14 @@ public partial class IndexConnectionMikrotikControl
 
         ConnectionMikrotikControls = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        //El conteo total lo manda el backend en el header Counting. Es informativo:
+        //si no viene, la pantalla funciona igual.
+        if (responseHttp.HttpResponseMessage.Headers.TryGetValues("Counting", out var counting) &&
+            double.TryParse(counting.FirstOrDefault(), out var total))
+        {
+            TotalRecords = (int)total;
+        }
 
         await InvokeAsync(StateHasChanged);
     }

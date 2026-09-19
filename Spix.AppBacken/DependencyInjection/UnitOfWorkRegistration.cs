@@ -65,6 +65,8 @@ namespace Spix.AppBack.DependencyInjection
             //EntitiesSecurities Software
             services.AddScoped<IAccountServiceX, AccountServiceX>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserNameServiceX, UserNameServiceX>();
+            services.AddScoped<IUserNameService, UserNameService>();
             services.AddScoped<IUsuarioServiceX, UsuarioServiceX>();
             services.AddScoped<IUsuarioService, UsuarioService>();
             services.AddScoped<IUsuarioRoleServiceX, UsuarioRoleServiceX>();

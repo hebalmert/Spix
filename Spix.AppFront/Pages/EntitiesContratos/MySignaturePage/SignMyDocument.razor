@@ -1,0 +1,97 @@
+﻿@inherits ComponentBase
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title"><i class="fa fa-file-signature me-2"></i>@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @* Paso 1: leer el documento *@
+            @if (isLoadingFile)
+            {
+                <Loading />
+            }
+            else if (!string.IsNullOrWhiteSpace(fileUrl))
+            {
+                <iframe src="@fileUrl" style="border:1px solid #ddd; width:100%; height:520px; border-radius:8px;"></iframe>
+            }
+
+            @* Paso 2: aviso de firma electronica y aceptacion *@
+            <div class="sign-terms mt-3">
+                <div class="sign-terms__head">
+                    <i class="fa fa-file-shield me-2"></i>Aviso de firma electronica
+                    @if (!string.IsNullOrWhiteSpace(termsVersion))
+                    {
+                        <span class="sign-terms__version">Version @termsVersion</span>
+                    }
+                </div>
+                <div class="sign-terms__text">@termsText</div>
+            </div>
+
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="termsAccepted" checked="@termsAccepted"
+                       @onchange="OnTermsChanged" disabled="@(codeSent)" />
+                <label class="form-check-label" for="termsAccepted">
+                    He leido el documento y el aviso, y estoy conforme.
+                </label>
+            </div>
+
+            @* Paso 3: codigo al correo *@
+            <hr />
+            @if (!codeSent)
+            {
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-primary" @onclick="RequestCodeAsync" disabled="@(!termsAccepted || isSending)">
+                        @if (isSending)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        <i class="fa fa-envelope me-1"></i> Enviar codigo a mi correo
+                    </button>
+                </div>
+            }
+            else
+            {
+                <p class="text-center text-muted mb-3">
+                    Enviamos un codigo de 6 digitos a <strong>@maskedEmail</strong>. Vence a las
+                    <strong>@expiresAt?.ToLocalTime().ToString("HH:mm")</strong>.
+                </p>
+
+                <div class="row justify-content-center mb-3">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">Codigo de verificacion</label>
+                        <input class="form-control text-center sign-code" maxlength="6" inputmode="numeric"
+                               @bind="code" @bind:event="oninput" placeholder="000000" />
+                    </div>
+                </div>
+
+                @* Paso 4: firma *@
+                <p class="text-center text-muted mb-2">Dibuje su firma en el recuadro:</p>
+                <div class="d-flex justify-content-center">
+                    <canvas id="@CanvasId" width="420" height="130" style="width:420px; max-width:100%; height:130px; border:1px solid #222; border-radius:6px;"></canvas>
+                </div>
+                <div class="d-flex justify-content-center gap-3 mt-2">
+                    <button class="btn btn-outline-secondary btn-sm" @onclick="ClearSignature">
+                        <i class="fa fa-rotate-right me-1"></i> Limpiar
+                    </button>
+                    <button class="btn btn-link btn-sm" @onclick="RequestCodeAsync" disabled="@isSending">
+                        Reenviar codigo
+                    </button>
+                </div>
+            }
+
+            <hr />
+            <div class="d-flex justify-content-center gap-3">
+                @if (codeSent)
+                {
+                    <ButtonFormSaveOnClick OnClick="SignAsync" IsSaving="isSaving" />
+                }
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

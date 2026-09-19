@@ -1,0 +1,36 @@
+/* Estilo unico del boton de fila con texto. Centralizado aqui: las paginas solo eligen la variante. */
+.btn-row-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    color: #0a1a3f;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid #cfd8ea;
+    border-radius: 7px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+    .btn-row-text:hover {
+        background: #f2f6fc;
+    }
+
+    .btn-row-text.is-primary {
+        color: #0d6efd;
+        border-color: #b9d3ff;
+    }
+
+    .btn-row-text.is-danger {
+        color: #dc3545;
+        border-color: #f1c2c7;
+    }
+
+    .btn-row-text:disabled {
+        color: #8a93a8;
+        border-color: #e1e6ef;
+        background: #eef1f6;
+        cursor: not-allowed;
+    }

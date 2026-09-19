@@ -86,7 +86,15 @@ public class ContractClient
     //Tiene fotos del documento, Consentimiento y Contrato firmados (lo llena el listado)
     [NotMapped]
     public virtual bool RequirementsComplete { get; set; }
+
+    //Ya firmo los DOS documentos: Consentimiento y Contrato (lo llena el listado)
+    [NotMapped]
+    public virtual bool SignaturesComplete { get; set; }
     //Fin Propiedades no Mapeadas para el Control de Contratos
+
+    //Cuando se le envio al cliente la solicitud de firma. Mientras sea nulo el contrato
+    //no aparece en el portal del cliente. Reenviar el correo solo actualiza esta fecha.
+    public DateTime? SignatureRequestedAt { get; set; }
 
     public int CorporationId { get; set; }
 

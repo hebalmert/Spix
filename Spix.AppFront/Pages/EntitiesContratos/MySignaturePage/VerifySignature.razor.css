@@ -1,0 +1,63 @@
+﻿/* Va dentro del layout de la aplicacion: el fondo azul ya lo pone .main-content */
+.verify {
+    display: flex;
+    justify-content: center;
+}
+
+.verify__card {
+    width: 100%;
+    max-width: 820px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px 30px 34px;
+    box-shadow: 0 10px 30px rgba(6, 18, 44, .18);
+}
+
+.verify__head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #eef1f7;
+}
+
+    .verify__head i {
+        font-size: 34px;
+        color: #1478ff;
+    }
+
+    .verify__head h1 {
+        margin: 0;
+        font-size: 23px;
+        font-weight: 700;
+        color: #0a1a3f;
+    }
+
+    .verify__head p {
+        margin: 2px 0 0;
+        font-size: 14px;
+        color: #6c7a94;
+    }
+
+.verify__search {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0 14px;
+}
+
+    .verify__search input {
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 700;
+    }
+
+    .verify__search .btn {
+        white-space: nowrap;
+    }
+
+.verify__hint {
+    font-size: 13px;
+    color: #6c7a94;
+    margin: 0;
+}
+

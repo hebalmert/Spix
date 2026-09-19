@@ -164,7 +164,7 @@
     <value>No se pudo conectar con la base de datos</value>
   </data>
   <data name="Db_Reference" xml:space="preserve">
-    <value>Error de referencia, clave foránea inválida</value>
+    <value>No se puede eliminar el registro porque tiene datos relacionados</value>
   </data>
   <data name="EditUser" xml:space="preserve">
     <value>Editar Usuario</value>
@@ -1516,5 +1516,65 @@
   </data>
   <data name="App_Authorizing" xml:space="preserve">
     <value>Verificando tu sesión...</value>
+  </data>
+  <data name="Generic_DeletedWithoutImage" xml:space="preserve">
+    <value>Se elimino el registro, pero no se pudo borrar su imagen</value>
+  </data>
+  <data name="SignatureRequest_Subject" xml:space="preserve">
+    <value>Tiene documentos para firmar</value>
+  </data>
+  <data name="SignatureRequest_Eyebrow" xml:space="preserve">
+    <value>Firma electronica</value>
+  </data>
+  <data name="SignatureRequest_Title" xml:space="preserve">
+    <value>Sus documentos estan listos para firmar</value>
+  </data>
+  <data name="SignatureRequest_Hello" xml:space="preserve">
+    <value>Hola</value>
+  </data>
+  <data name="SignatureRequest_Introduction" xml:space="preserve">
+    <value>Su contrato de servicio esta listo. Para activarlo necesitamos su firma en los siguientes documentos:</value>
+  </data>
+  <data name="SignatureRequest_Instruction" xml:space="preserve">
+    <value>Entre a su cuenta, revise cada documento y confirme que esta de acuerdo. Al firmar le enviaremos un codigo a este mismo correo para verificar su identidad.</value>
+  </data>
+  <data name="SignatureRequest_Button" xml:space="preserve">
+    <value>Entrar y firmar</value>
+  </data>
+  <data name="SignatureRequest_SecurityNotice" xml:space="preserve">
+    <value>Por seguridad, este enlace solo lo lleva a la pagina de acceso: nadie puede firmar por usted sin su usuario, su clave y el codigo que le enviaremos.</value>
+  </data>
+  <data name="SignatureRequest_Footer" xml:space="preserve">
+    <value>Si usted no esperaba este correo, no haga nada y avisenos.</value>
+  </data>
+  <data name="SignatureCode_Subject" xml:space="preserve">
+    <value>Su codigo de firma</value>
+  </data>
+  <data name="SignatureCode_Eyebrow" xml:space="preserve">
+    <value>Firma electronica</value>
+  </data>
+  <data name="SignatureCode_Title" xml:space="preserve">
+    <value>Codigo de verificacion</value>
+  </data>
+  <data name="SignatureCode_Hello" xml:space="preserve">
+    <value>Hola</value>
+  </data>
+  <data name="SignatureCode_Introduction" xml:space="preserve">
+    <value>Use este codigo para firmar su documento. Escribalo en la pantalla de firma.</value>
+  </data>
+  <data name="SignatureCode_Expiration" xml:space="preserve">
+    <value>El codigo es valido por {0} minutos y solo se puede usar una vez.</value>
+  </data>
+  <data name="SignatureCode_SecurityNotice" xml:space="preserve">
+    <value>Si usted no pidio este codigo, ignore este mensaje y comuniquese con nosotros. Nunca lo comparta con nadie.</value>
+  </data>
+  <data name="SignatureCode_Footer" xml:space="preserve">
+    <value>Este mensaje se envio de forma automatica, por favor no responda.</value>
+  </data>
+  <data name="Table_Contract" xml:space="preserve">
+    <value>Contrato</value>
+  </data>
+  <data name="Table_Stratum" xml:space="preserve">
+    <value>Estrato</value>
   </data>
 </root>

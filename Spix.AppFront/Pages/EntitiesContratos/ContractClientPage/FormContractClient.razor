@@ -1,25 +1,28 @@
-﻿<EditForm Model="ContractClient">
+﻿@* Contrato del cliente. Mismos campos y mismos eventos de siempre; solo se agrupan por bloques
+   para que no queden encimados el estrato, los interruptores y el estatus. *@
+<EditForm Model="ContractClient">
     <DataAnnotationsValidator />
 
-    <div class="row">
-        <!--Contractors -->
-        <div class="col-12 col-md-6 mb-2">
+    @* ---------- 1. Contrato ---------- *@
+    <p class="cc-section">@Localizer[nameof(Resource.Contract)]</p>
+    <div class="row g-2">
+        <div class="col-12 col-md-6">
             <GenericSelectWrapper Tmodel="GuidItemModel" Items="Contractors">
                 <Body>
-                <div class="input-group">
-                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Contractor)]</span>
-                    <select class="form-select" value="@ContractClient.ContractorId" @onchange="ContractorChanged">
-                        @foreach (var item in Contractors!)
-                        {
-                            <option value="@item.Value">@item.Name</option>
-                        }
-                    </select>
-                </div>
+                    <div class="input-group">
+                        <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Contractor)]</span>
+                        <select class="form-select" value="@ContractClient.ContractorId" @onchange="ContractorChanged">
+                            @foreach (var item in Contractors!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </div>
                 </Body>
             </GenericSelectWrapper>
         </div>
 
-        <div class="col-12 col-md-6 mb-2">
+        <div class="col-12 col-md-6">
             <AutoCompleteGuidSelect Label="Cliente"
                                     ApiUrl="/api/v1/combosData/ComboClients"
                                     MinLength="3"
@@ -29,9 +32,10 @@
         </div>
     </div>
 
-    <div class="row">
-        <!-- Usuario + Clave -->
-        <div class="col-12 col-md-6 mb-2">
+    @* ---------- 2. Contacto ---------- *@
+    <p class="cc-section">@Localizer[nameof(Resource.Phone)]</p>
+    <div class="row g-2">
+        <div class="col-12 col-md-6">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Phone)]
@@ -41,7 +45,7 @@
             <ValidationMessage For="@(() => ContractClient.PhoneNumber)" />
         </div>
 
-        <div class="col-12 col-md-6 mb-2">
+        <div class="col-12 col-md-6">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Phone2)]
@@ -50,97 +54,88 @@
             </div>
             <ValidationMessage For="@(() => ContractClient.PhoneNumber2)" />
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-md-12 mb-2">
+
+        <div class="col-12 col-md-6">
+            <div class="input-group">
+                <span class="input-group-text" style="width: 150px">
+                    @Localizer[nameof(Resource.Email)]
+                </span>
+                <input class="form-control" value="@ClientEmail" readonly />
+            </div>
+            <div class="cc-hint">@Localizer[nameof(Resource.Email)] del cliente: es a donde llega la solicitud de firma</div>
+        </div>
+
+        <div class="col-12">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Address)]
                 </span>
-                <InputTextArea class="form-control" placeholder="" @bind-Value="ContractClient!.Address" />
+                <InputTextArea class="form-control cc-address" placeholder="" @bind-Value="ContractClient!.Address" />
             </div>
             <ValidationMessage For="@(() => ContractClient.Address)" />
         </div>
     </div>
 
-    <div class="row">
-        <!-- Estado + Zona -->
-        <div class="col-12 col-md-4 mb-2">
+    @* ---------- 3. Ubicacion ---------- *@
+    <p class="cc-section">@Localizer[nameof(Resource.Zone)]</p>
+    <div class="row g-2">
+        <div class="col-12 col-md-4">
             <GenericSelectWrapper Tmodel="State" Items="States">
                 <Body>
-                <div class="input-group">
-                    <span class="input-group-text" style="width:150px">Estado</span>
-                    <select class="form-select" value="@ContractClient.StateId" @onchange="StateChanged">
-                        @foreach (var item in States!)
-                        {
-                            <option value="@item.StateId">@item.Name</option>
-                        }
-                    </select>
-                </div>
+                    <div class="input-group">
+                        <span class="input-group-text cc-label-sm">@Localizer[nameof(Resource.State)]</span>
+                        <select class="form-select" value="@ContractClient.StateId" @onchange="StateChanged">
+                            @foreach (var item in States!)
+                            {
+                                <option value="@item.StateId">@item.Name</option>
+                            }
+                        </select>
+                    </div>
                 </Body>
             </GenericSelectWrapper>
         </div>
 
-        <div class="col-12 col-md-4 mb-2">
+        <div class="col-12 col-md-4">
             <GenericSelectWrapper Tmodel="City" Items="Cities">
                 <Body>
-                <div class="input-group">
-                    <span class="input-group-text" style="width:150px">Ciudad</span>
-                    <select class="form-select" value="@ContractClient?.CityId" @onchange="CityChanged">
-                        @foreach (var item in Cities!)
-                        {
-                            <option value="@item.CityId">@item.Name</option>
-                        }
-                    </select>
-                </div>
+                    <div class="input-group">
+                        <span class="input-group-text cc-label-sm">@Localizer[nameof(Resource.City)]</span>
+                        <select class="form-select" value="@ContractClient?.CityId" @onchange="CityChanged">
+                            @foreach (var item in Cities!)
+                            {
+                                <option value="@item.CityId">@item.Name</option>
+                            }
+                        </select>
+                    </div>
                 </Body>
             </GenericSelectWrapper>
-
         </div>
 
-        <div class="col-12 col-md-4 mb-2">
+        <div class="col-12 col-md-4">
             <GenericSelectWrapper Tmodel="Zone" Items="Zones">
                 <Body>
-                <div class="input-group">
-                    <span class="input-group-text" style="width:150px">Zona</span>
-                    <select class="form-select" value="@ContractClient!.ZoneId" @onchange="ZoneChanged">
-                        @foreach (var item in Zones!)
-                        {
-                            <option value="@item.ZoneId">@item.ZoneName</option>
-                        }
-                    </select>
-                </div>
+                    <div class="input-group">
+                        <span class="input-group-text cc-label-sm">@Localizer[nameof(Resource.Zone)]</span>
+                        <select class="form-select" value="@ContractClient!.ZoneId" @onchange="ZoneChanged">
+                            @foreach (var item in Zones!)
+                            {
+                                <option value="@item.ZoneId">@item.ZoneName</option>
+                            }
+                        </select>
+                    </div>
                 </Body>
             </GenericSelectWrapper>
         </div>
     </div>
 
-    <!-- SEPARADOR -->
-    <div class="row">
-        <div class="col-12">
-            <hr />
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Equipos, estrato, facturacion y estatus -->
-        <div class="col-12 col-md-3 mb-2">
-            <div class="d-flex align-items-center">
-                <span class="input-group-text" style="width: 150px">
-                    @Localizer[nameof(Resource.Equipment_Compnay)]
-                </span>
-
-                <div class="form-check form-switch ms-3">
-                    <InputCheckbox @bind-Value="ContractClient!.EquipoEmpres" class="form-check-input" />
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-3 mb-2">
+    @* ---------- 4. Condiciones del servicio ---------- *@
+    <p class="cc-section">@Localizer[nameof(Resource.Status)]</p>
+    <div class="row g-2">
+        <div class="col-12 col-md-6">
             <GenericSelectWrapper Tmodel="GuidItemModel" Items="EstratosSociales">
                 <Body>
                     <div class="input-group">
-                        <span class="input-group-text" style="width: 110px">
+                        <span class="input-group-text cc-label-sm">
                             @Localizer[nameof(Resource.EstratoSocial)]
                         </span>
                         <select class="form-select" value="@ContractClient.EstratoSocialId" @onchange="EstratoSocialChanged">
@@ -154,41 +149,45 @@
             </GenericSelectWrapper>
         </div>
 
-        <div class="col-12 col-md-3 mb-2">
-            <div class="d-flex align-items-center">
-                <span class="input-group-text" style="width: 150px">
-                    @Localizer[nameof(Resource.Invoice_Client)]
-                </span>
-
-                <div class="form-check form-switch ms-3">
-                    <InputCheckbox @bind-Value="ContractClient!.EnvoiceClient" class="form-check-input" />
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-3 mb-2">
+        <div class="col-12 col-md-6">
             <GenericSelectWrapper Tmodel="IntItemModel" Items="WorkStatuses">
                 <Body>
-                <div class="input-group">
-                    <span class="input-group-text" style="width:110px">Estatus</span>
-                    <select class="form-select" value="@(IsEditControl ? ((int)ContractClient.ContractState).ToString() : "1")" @onchange="StatusChanged">
-                        @foreach (var item in WorkStatuses!)
-                        {
-                            <option value="@item.Value">@item.Name</option>
-                        }
-                    </select>
-                </div>
+                    <div class="input-group">
+                        <span class="input-group-text cc-label-sm">@Localizer[nameof(Resource.Status)]</span>
+                        <select class="form-select" value="@(IsEditControl ? ((int)ContractClient.ContractState).ToString() : "1")" @onchange="StatusChanged">
+                            @foreach (var item in WorkStatuses!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </div>
                 </Body>
             </GenericSelectWrapper>
         </div>
-    </div>
-    <!-- SEPARADOR -->
-    <div class="row">
-        <div class="col-12">
-            <hr />
+
+        @* Los dos interruptores, cada uno en su tarjeta, para que no queden pegados a los combos *@
+        <div class="col-12 col-md-6">
+            <label class="cc-switch">
+                <span>@Localizer[nameof(Resource.Equipment_Compnay)]</span>
+                <span class="form-check form-switch m-0">
+                    <InputCheckbox @bind-Value="ContractClient!.EquipoEmpres" class="form-check-input" />
+                </span>
+            </label>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="cc-switch">
+                <span>@Localizer[nameof(Resource.Invoice_Client)]</span>
+                <span class="form-check form-switch m-0">
+                    <InputCheckbox @bind-Value="ContractClient!.EnvoiceClient" class="form-check-input" />
+                </span>
+            </label>
         </div>
     </div>
-    <!-- BOTONES -->
-    <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
+
+    <hr class="cc-divider" />
+
+    <div class="mb-2 d-flex justify-content-center gap-2">
         <ButtonFormSaveOnClick IsSaving="IsSaving" OnClick="OnSubmit" />
         <ButtonFormBack OnClick="ReturnAction" />
     </div>

@@ -77,6 +77,14 @@ namespace Spix.Services.ImplementContratos
                         EF.Functions.Like(u.Client.Document, $"%{filter}%"));
                 }
 
+                //Filtro por estado desde el dropdown del listado (pagination.Id = ContractState; 0 = todos).
+                //Solo puede acotar dentro de los estados que ya muestra esta pantalla.
+                if (pagination.Id > 0 && Enum.IsDefined(typeof(ContractState), pagination.Id))
+                {
+                    var state = (ContractState)pagination.Id;
+                    queryable = queryable.Where(x => x.ContractState == state);
+                }
+
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
                 var modelo = await queryable.Paginate(pagination).ToListAsync();
 

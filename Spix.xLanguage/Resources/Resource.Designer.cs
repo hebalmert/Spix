@@ -171,15 +171,6 @@ namespace Spix.xLanguage.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
-        /// <summary>
-        ///   Looks up a localized string similar to Verifying your session....
-        /// </summary>
-        public static string App_Authorizing {
-            get {
-                return ResourceManager.GetString("App_Authorizing", resourceCulture);
-            }
-        }
-        
         public static string Active {
             get {
                 return ResourceManager.GetString("Active", resourceCulture);
@@ -201,6 +192,15 @@ namespace Spix.xLanguage.Resources {
         public static string ApiPort {
             get {
                 return ResourceManager.GetString("ApiPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verifying your session....
+        /// </summary>
+        public static string App_Authorizing {
+            get {
+                return ResourceManager.GetString("App_Authorizing", resourceCulture);
             }
         }
         
@@ -727,7 +727,7 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Control Contractos.
+        ///   Looks up a localized string similar to Contractor Control.
         /// </summary>
         public static string Control_Contractor {
             get {
@@ -1258,7 +1258,7 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reference error, invalid foreign key.
+        ///   Looks up a localized string similar to This record cannot be deleted because it has related data.
         /// </summary>
         public static string Db_Reference {
             get {
@@ -2073,6 +2073,15 @@ namespace Spix.xLanguage.Resources {
         public static string Generic_CorporationInactive {
             get {
                 return ResourceManager.GetString("Generic_CorporationInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The record was deleted, but its image could not be removed.
+        /// </summary>
+        public static string Generic_DeletedWithoutImage {
+            get {
+                return ResourceManager.GetString("Generic_DeletedWithoutImage", resourceCulture);
             }
         }
         
@@ -4048,6 +4057,159 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The code is valid for {0} minutes and can be used only once..
+        /// </summary>
+        public static string SignatureCode_Expiration {
+            get {
+                return ResourceManager.GetString("SignatureCode_Expiration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Electronic signature.
+        /// </summary>
+        public static string SignatureCode_Eyebrow {
+            get {
+                return ResourceManager.GetString("SignatureCode_Eyebrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This message was sent automatically, please do not reply..
+        /// </summary>
+        public static string SignatureCode_Footer {
+            get {
+                return ResourceManager.GetString("SignatureCode_Footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello.
+        /// </summary>
+        public static string SignatureCode_Hello {
+            get {
+                return ResourceManager.GetString("SignatureCode_Hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this code to sign your document. Enter it on the signature screen..
+        /// </summary>
+        public static string SignatureCode_Introduction {
+            get {
+                return ResourceManager.GetString("SignatureCode_Introduction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you did not request this code, ignore this message and contact us. Never share it with anyone..
+        /// </summary>
+        public static string SignatureCode_SecurityNotice {
+            get {
+                return ResourceManager.GetString("SignatureCode_SecurityNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your signature code.
+        /// </summary>
+        public static string SignatureCode_Subject {
+            get {
+                return ResourceManager.GetString("SignatureCode_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verification code.
+        /// </summary>
+        public static string SignatureCode_Title {
+            get {
+                return ResourceManager.GetString("SignatureCode_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign in and sign.
+        /// </summary>
+        public static string SignatureRequest_Button {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Electronic signature.
+        /// </summary>
+        public static string SignatureRequest_Eyebrow {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Eyebrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you were not expecting this email, ignore it and let us know..
+        /// </summary>
+        public static string SignatureRequest_Footer {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello.
+        /// </summary>
+        public static string SignatureRequest_Hello {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign in to your account, review each document and confirm that you agree. When you sign, we will send a code to this same email address to verify your identity..
+        /// </summary>
+        public static string SignatureRequest_Instruction {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Instruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your service contract is ready. To activate it we need your signature on the following documents:.
+        /// </summary>
+        public static string SignatureRequest_Introduction {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Introduction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For your security, this link only takes you to the sign-in page: nobody can sign for you without your user, your password and the code we will send you..
+        /// </summary>
+        public static string SignatureRequest_SecurityNotice {
+            get {
+                return ResourceManager.GetString("SignatureRequest_SecurityNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have documents to sign.
+        /// </summary>
+        public static string SignatureRequest_Subject {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your documents are ready to sign.
+        /// </summary>
+        public static string SignatureRequest_Title {
+            get {
+                return ResourceManager.GetString("SignatureRequest_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Software Plan.
         /// </summary>
         public static string SoftPlan {
@@ -4152,6 +4314,24 @@ namespace Spix.xLanguage.Resources {
         public static string SupplierName {
             get {
                 return ResourceManager.GetString("SupplierName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract.
+        /// </summary>
+        public static string Table_Contract {
+            get {
+                return ResourceManager.GetString("Table_Contract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stratum.
+        /// </summary>
+        public static string Table_Stratum {
+            get {
+                return ResourceManager.GetString("Table_Stratum", resourceCulture);
             }
         }
         

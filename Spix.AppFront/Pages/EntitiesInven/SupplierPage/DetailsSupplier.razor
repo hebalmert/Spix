@@ -1,4 +1,4 @@
-@inherits ComponentBase
+﻿@inherits ComponentBase
 
 <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -19,12 +19,7 @@
             else if (Supplier is not null)
             {
                 <div class="text-center mb-4">
-                    <img src="@Supplier.ImageFullPath"
-                         alt="@Supplier.Name"
-                         width="90"
-                         height="90"
-                         class="img-thumbnail"
-                         onerror="this.src='https://spiximage.blob.core.windows.net/imgwwwroot/NoImage.png'" />
+                    <AvatarImage Url="@Supplier.ImageFullPath" Icon="fa fa-truck" Size="90" Alt="@Supplier.Name" />
                 </div>
 
                 <div class="row g-3">

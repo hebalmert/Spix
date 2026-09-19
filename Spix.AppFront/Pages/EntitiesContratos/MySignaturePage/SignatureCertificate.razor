@@ -1,0 +1,133 @@
+﻿@* Certificado de una firma: mismos datos que muestra el QR. Lo usan la pagina /verificar
+   y el modal de historial de cada documento. *@
+@using Spix.DomainLogic.EntitiesContractDTO
+@using Spix.DomainLogic.ModelUtility
+
+@if (isLoading)
+{
+    <Loading />
+}
+else if (result is null)
+{
+    <p class="cert__hint">Escriba el identificador impreso en la hoja de certificado del documento.</p>
+}
+else if (!result.Found)
+{
+    <div class="cert__result is-bad">
+        <i class="fa fa-circle-xmark"></i>
+        <div>
+            <h2>No encontramos ninguna firma con ese identificador</h2>
+            <p>Revise que lo haya escrito completo, incluidos los guiones.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="cert__result is-ok">
+        <i class="fa fa-circle-check"></i>
+        <div>
+            <h2>Documento firmado electronicamente</h2>
+            <p>@result.CorporationName registro esta firma en la plataforma SPIX.</p>
+        </div>
+    </div>
+
+    <dl class="cert__data">
+        <div>
+            <dt>Identificador</dt>
+            <dd>@result.VerificationCode</dd>
+        </div>
+        <div>
+            <dt>Documento</dt>
+            <dd>@result.DocumentName</dd>
+        </div>
+        <div>
+            <dt>Contrato</dt>
+            <dd>#@result.ContractNumber</dd>
+        </div>
+        <div>
+            <dt>Firmante</dt>
+            <dd>@result.SignerName</dd>
+        </div>
+        <div>
+            <dt>Correo verificado</dt>
+            <dd>@result.SignerEmail</dd>
+        </div>
+        <div>
+            <dt>Fecha de firma</dt>
+            <dd>@result.SignedAt?.ToString("dd/MM/yyyy HH:mm") UTC</dd>
+        </div>
+        <div class="is-wide">
+            <dt>Metodo de verificacion</dt>
+            <dd>@result.Method</dd>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(result.SignerIp))
+        {
+            <div>
+                <dt>Direccion IP de origen</dt>
+                <dd>@result.SignerIp</dd>
+            </div>
+        }
+        @if (!string.IsNullOrWhiteSpace(result.SignerUserAgent))
+        {
+            <div>
+                <dt>Dispositivo y navegador</dt>
+                <dd>@UserAgentReader.Describe(result.SignerUserAgent)</dd>
+            </div>
+            <div class="is-wide">
+                <dt>Identificacion completa del navegador</dt>
+                <dd class="cert__hash">@result.SignerUserAgent</dd>
+            </div>
+        }
+        <div class="is-wide">
+            <dt>Huella SHA-256 del documento firmado</dt>
+            <dd class="cert__hash">@result.DocumentHash</dd>
+        </div>
+    </dl>
+
+    @* Comprobacion del archivo: la huella se calcula en el navegador, nada se sube *@
+    <div class="cert__file">
+        <h3><i class="fa fa-file-shield me-2"></i>Comprobar el archivo PDF</h3>
+        <p>Seleccione el PDF que recibio. Se calcula su huella en su propio navegador: el archivo no se envia a ningun lado.</p>
+        <InputFile OnChange="CheckFileAsync" accept="application/pdf" class="form-control" />
+
+        @if (fileChecked)
+        {
+            <div class="cert__file-result @(fileMatches ? "is-ok" : "is-bad")">
+                <i class="@(fileMatches ? "fa fa-circle-check" : "fa fa-triangle-exclamation")"></i>
+                @if (fileMatches)
+                {
+                    <span>El archivo es identico al que quedo firmado y archivado.</span>
+                }
+                else
+                {
+                    <span>Este archivo NO coincide con el documento firmado: fue modificado o es otro archivo.</span>
+                }
+            </div>
+            <div class="cert__hash">@fileHash</div>
+        }
+    </div>
+
+    @if (result.Events.Count > 0)
+    {
+        <div class="cert__events">
+            <h3><i class="fa fa-list-check me-2"></i>Bitacora del proceso</h3>
+            <ol>
+                @foreach (var item in result.Events)
+                {
+                    <li>
+                        <span class="cert__event-date">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss") UTC</span>
+                        <span class="cert__event-name">@GetEventName(item.EventType)</span>
+                        @if (!string.IsNullOrWhiteSpace(item.SourceIp))
+                        {
+                            <span class="cert__event-ip">IP @item.SourceIp</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.UserAgent))
+                        {
+                            <span class="cert__event-ip">@UserAgentReader.Describe(item.UserAgent)</span>
+                        }
+                    </li>
+                }
+            </ol>
+        </div>
+    }
+}

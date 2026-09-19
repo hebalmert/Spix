@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -22,6 +22,7 @@ public partial class IndexIpNetwork
 
     private int CurrentPage = 1;  //Pagina seleccionada
     private int TotalPages;      //Cantidad total de paginas
+    private int TotalRecords;   //Total de registros (header Counting)
     private int PageSize = 15;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/ipnetworks";
@@ -65,6 +66,14 @@ public partial class IndexIpNetwork
 
         IpNetworks = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        //El conteo total lo manda el backend en el header Counting. Es informativo:
+        //si no viene, la pantalla funciona igual.
+        if (responseHttp.HttpResponseMessage.Headers.TryGetValues("Counting", out var counting) &&
+            double.TryParse(counting.FirstOrDefault(), out var total))
+        {
+            TotalRecords = (int)total;
+        }
 
         await InvokeAsync(StateHasChanged);
     }

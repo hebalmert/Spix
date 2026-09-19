@@ -2,88 +2,83 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
-
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Servidores</h3>
-
-        <!-- Botón + Filtro -->
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-server"></i></span>
+            <div class="idx-head-text">
+                <h3>Servidores</h3>
+                <p>Servidores de la red, su zona y su IP. Desde aqui puede consultarlos y hacerles ping.</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@TotalRecords.ToString("N0") servidores</span>
+                </div>
+            }
+        </div>
+
+        @* Acciones y buscador, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
-        <hr />
-        <GenericList MyList="Servers">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Name</th>
-                                <th>Zona</th>
-                                <th>IP</th>
-                                <th>Activo</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Servers!)
-                            {
-                                <tr>
-                                    <td>
-                                        @item.ServerName
-                                    </td>
-                                    <td>
-                                        @item.Zone!.ZoneName
-                                    </td>
-                                    <td>
-                                        @item.IpNetwork!.Ip
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModalServerAsync(item.ServerId)" TooTip="@Localizer[nameof(Resource.Ping_System)]"
-                                                       Icon="fa fa-server" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.IpNetwork.Ip!)" TooTip="@Localizer[nameof(Resource.Ping_System)]"
-                                                       Icon="fa fa-crosshairs" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        |
-                                    </td>
-                                    <td style="width:1px;">
 
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ServerId, true)" />
-                                        
-                                    </td>
-                                    <td style="width:1px;">
-                          
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.ServerId)" />
-                                        
-                                    </td>
+        <section class="idx-panel">
+
+            <GenericList MyList="Servers">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Zona</th>
+                                    <th>IP</th>
+                                    <th>Activo</th>
+                                    <th style="text-align:right">Acciones</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </Body>
-        </GenericList>
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Servers!)
+                                {
+                                    <tr>
+                                        <td><span class="idx-name">@item.ServerName</span></td>
+                                        <td>@item.Zone!.ZoneName</td>
+                                        <td>@item.IpNetwork!.Ip</td>
+                                        <td>
+                                            <span class="idx-pill @(item.Active ? "is-on" : "is-off")">
+                                                @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowModalServerAsync(item.ServerId)" TooTip="@Localizer[nameof(Resource.Ping_System)]"
+                                                               Icon="fa fa-server" />
+                                                <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.IpNetwork.Ip!)" TooTip="@Localizer[nameof(Resource.Ping_System)]"
+                                                               Icon="fa fa-crosshairs" />
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.ServerId, true)" />
+                                                <ButtonDelete OnClick="() => DeleteAsync(item.ServerId)" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+
+            <div class="idx-panel-foot">
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+            </div>
+        </section>
     </div>
 </div>
-

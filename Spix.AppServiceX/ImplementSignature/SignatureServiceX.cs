@@ -1,6 +1,7 @@
-using Spix.AppService.InterfacesSignature;
+﻿using Spix.AppService.InterfacesSignature;
 using Spix.AppServiceX.InterfacesSignature;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
@@ -49,6 +50,24 @@ public class SignatureServiceX : ISignatureServiceX
 
     public async Task<ActionResponse<bool>> DeleteTemplateFieldAsync(Guid id, string username) =>
         await _signatureService.DeleteTemplateFieldAsync(id, username);
+
+    public async Task<ActionResponse<IEnumerable<MySignatureDocumentDTO>>> GetMyDocumentsAsync(string username) =>
+        await _signatureService.GetMyDocumentsAsync(username);
+
+    public async Task<ActionResponse<SignatureCodeDTO>> RequestSignatureCodeAsync(Guid contractClientId, ContractDocumentType documentType, ClaimsDTOs context) =>
+        await _signatureService.RequestSignatureCodeAsync(contractClientId, documentType, context);
+
+    public async Task<ActionResponse<bool>> SignMyDocumentAsync(SignDocumentRequestDTO model, string urlFront, ClaimsDTOs context) =>
+        await _signatureService.SignMyDocumentAsync(model, urlFront, context);
+
+    public async Task<ActionResponse<SignatureLinkDTO>> GetMyDocumentLinkAsync(Guid contractClientId, ContractDocumentType documentType, ClaimsDTOs context) =>
+        await _signatureService.GetMyDocumentLinkAsync(contractClientId, documentType, context);
+
+    public async Task<ActionResponse<SignatureVerificationDTO>> VerifySignatureAsync(string verificationCode, ClaimsDTOs context) =>
+        await _signatureService.VerifySignatureAsync(verificationCode, context);
+
+    public async Task<ActionResponse<bool>> SendSignatureRequestAsync(Guid contractClientId, string urlFront, ClaimsDTOs context) =>
+        await _signatureService.SendSignatureRequestAsync(contractClientId, urlFront, context);
 
     public async Task<ActionResponse<IEnumerable<ContractSignedDocument>>> GetContractDocumentsAsync(Guid contractClientId, string username) =>
         await _signatureService.GetContractDocumentsAsync(contractClientId, username);

@@ -185,6 +185,18 @@ public class UsuarioService : IUsuarioService
 
     public async Task<ActionResponse<Usuario>> UpdateAsync(Usuario modelo, string urlFront)
     {
+        //El usuario de login NO se cambia al editar: Identity lo busca por ese nombre y,
+        //si cambia, quedaria una cuenta huerfana y el cliente no podria entrar.
+        var registroActual = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(x => x.UsuarioId == modelo.UsuarioId);
+        if (registroActual is not null && registroActual.UserName != modelo.UserName)
+        {
+            return new ActionResponse<Usuario>
+            {
+                WasSuccess = false,
+                Message = _localizer["Generic_UserNameCanNotChangeIt"]
+            };
+        }
+
         if (modelo == null || modelo.CorporationId <= 0)
         {
             return new ActionResponse<Usuario>

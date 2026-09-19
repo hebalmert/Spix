@@ -1,9 +1,8 @@
-﻿using CurrieTechnologies.Razor.SweetAlert2;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -26,7 +25,49 @@ public partial class IndexServiceCategory
     private int PageSize = 15;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/servicecategories";
+    private const string baseUrlServiceClients = "api/v1/serviceclients";
+
     public List<ServiceCategory>? ServiceCategories { get; set; }
+    public Dictionary<Guid, List<ServiceClient>> ServiceClientsByCategoryId { get; set; } = new();
+    public Guid? SelectedServiceCategoryId { get; set; }
+    public HashSet<Guid> LoadingServiceCategoryIds { get; set; } = new();
+
+    //Filtros del panel de servicios
+    private string ServiceChip { get; set; } = "all";
+    private string ServiceFilter { get; set; } = string.Empty;
+
+    private ServiceCategory? SelectedCategory =>
+        ServiceCategories?.FirstOrDefault(x => x.ServiceCategoryId == SelectedServiceCategoryId);
+
+    private List<ServiceClient> SelectedServices =>
+        SelectedServiceCategoryId is not null && ServiceClientsByCategoryId.TryGetValue(SelectedServiceCategoryId.Value, out var services)
+            ? services
+            : new List<ServiceClient>();
+
+    private int ActiveServicesCount => SelectedServices.Count(x => x.Active);
+
+    private int InactiveServicesCount => SelectedServices.Count(x => !x.Active);
+
+    private List<ServiceClient> FilteredServices =>
+        ServiceChip switch
+        {
+            "active" => SelectedServices.Where(x => x.Active).ToList(),
+            "inactive" => SelectedServices.Where(x => !x.Active).ToList(),
+            _ => SelectedServices
+        };
+
+    private void SetServiceChip(string chip) => ServiceChip = chip;
+
+    //El texto va al servidor: asi busca en TODOS los servicios de la categoria, no solo en los cargados
+    private async Task SetServiceFilter(string value)
+    {
+        ServiceFilter = value;
+
+        if (SelectedServiceCategoryId is not null)
+        {
+            await LoadServiceClientsAsync(SelectedServiceCategoryId.Value);
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -34,6 +75,44 @@ public partial class IndexServiceCategory
         {
             await Cargar();
         }
+    }
+
+    private async Task SelectCategoryAsync(Guid serviceCategoryId)
+    {
+        SelectedServiceCategoryId = serviceCategoryId;
+        ServiceChip = "all";
+        ServiceFilter = string.Empty;
+
+        if (!ServiceClientsByCategoryId.ContainsKey(serviceCategoryId))
+        {
+            await LoadServiceClientsAsync(serviceCategoryId);
+        }
+    }
+
+    private async Task LoadServiceClientsAsync(Guid serviceCategoryId)
+    {
+        LoadingServiceCategoryIds.Add(serviceCategoryId);
+        await InvokeAsync(StateHasChanged);
+
+        var url = $"{baseUrlServiceClients}?guidId={serviceCategoryId}&page=1&recordsnumber=100";
+        if (!string.IsNullOrWhiteSpace(ServiceFilter))
+        {
+            url += $"&filter={Uri.EscapeDataString(ServiceFilter)}";
+        }
+
+        var responseHttp = await _repository.GetAsync<List<ServiceClient>>(url);
+
+        LoadingServiceCategoryIds.Remove(serviceCategoryId);
+
+        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandled)
+        {
+            return;
+        }
+
+        ServiceClientsByCategoryId[serviceCategoryId] = responseHttp.Response ?? new List<ServiceClient>();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SelectedPage(int page)
@@ -45,6 +124,7 @@ public partial class IndexServiceCategory
     private async Task SetFilterValue(string value)
     {
         Filter = value;
+        CurrentPage = 1;
         await Cargar();
     }
 
@@ -56,31 +136,24 @@ public partial class IndexServiceCategory
         {
             component = typeof(EditServiceCategory);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Service)]}"  }
-        };
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Service)]}"  }
+            };
         }
         else
         {
             component = typeof(CreateServiceCategory);
             parameters = new Dictionary<string, object>
-        {
-            { "Title", $"{Localizer[nameof(Resource.Create_Service)]}"  }
-        };
+            {
+                { "Title", $"{Localizer[nameof(Resource.Create_Service)]}"  }
+            };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-            {
-                await Cargar(CurrentPage);   // refresca la tabla
-                await _sweetAlert.FireAsync(
-                    Localizer[nameof(Resource.msg_SuccessTitle)],
-                    Localizer[nameof(Resource.msg_SuccessMessage)],
-                    SweetAlertIcon.Success
-                );
-            }
+                await Cargar(CurrentPage);   //solo refresca si hubo cambios
         });
     }
 
@@ -108,7 +181,21 @@ public partial class IndexServiceCategory
         ServiceCategories = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
+        ServiceClientsByCategoryId.Clear();
+        LoadingServiceCategoryIds.Clear();
+
+        //Se conserva la categoria elegida si sigue en la lista; si no, se toma la primera
+        var previous = SelectedServiceCategoryId;
+        SelectedServiceCategoryId = ServiceCategories?.Any(x => x.ServiceCategoryId == previous) == true
+            ? previous
+            : ServiceCategories?.FirstOrDefault()?.ServiceCategoryId;
+
         await InvokeAsync(StateHasChanged);
+
+        if (SelectedServiceCategoryId is not null)
+        {
+            await LoadServiceClientsAsync(SelectedServiceCategoryId.Value);
+        }
     }
 
     private async Task DeleteAsync(Guid id)
@@ -132,54 +219,13 @@ public partial class IndexServiceCategory
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+
+        if (SelectedServiceCategoryId == id)
+        {
+            SelectedServiceCategoryId = null;
+        }
+
         await Cargar(CurrentPage);
-    }
-
-    // ===================== Acordeon: servicios de cada categoria =====================
-    // Mismo patron que ProductCategory: se cargan bajo demanda y se cachean por categoria,
-    // asi abrir y cerrar una fila no vuelve a pegarle al API.
-    private const string baseUrlServiceClients = "api/v1/serviceclients";
-
-    public Guid? ExpandedServiceCategoryId { get; set; }
-
-    public HashSet<Guid> LoadingServiceCategoryIds { get; set; } = new();
-
-    public Dictionary<Guid, List<ServiceClient>> ServiceClientsByCategoryId { get; set; } = new();
-
-    private async Task ToggleExpandedServiceCategory(Guid serviceCategoryId)
-    {
-        if (ExpandedServiceCategoryId == serviceCategoryId)
-        {
-            ExpandedServiceCategoryId = null;
-            return;
-        }
-
-        ExpandedServiceCategoryId = serviceCategoryId;
-
-        if (!ServiceClientsByCategoryId.ContainsKey(serviceCategoryId))
-        {
-            await LoadServiceClientsAsync(serviceCategoryId);
-        }
-    }
-
-    private async Task LoadServiceClientsAsync(Guid serviceCategoryId)
-    {
-        LoadingServiceCategoryIds.Add(serviceCategoryId);
-        await InvokeAsync(StateHasChanged);
-
-        var responseHttp = await _repository.GetAsync<List<ServiceClient>>($"{baseUrlServiceClients}?guidId={serviceCategoryId}&page=1&recordsnumber=100");
-
-        LoadingServiceCategoryIds.Remove(serviceCategoryId);
-
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
-        {
-            return;
-        }
-
-        ServiceClientsByCategoryId[serviceCategoryId] = responseHttp.Response ?? new List<ServiceClient>();
-
-        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowModalServiceClientAsync(Guid serviceCategoryId, Guid? serviceClientId = null, bool isEdit = false)
@@ -211,7 +257,7 @@ public partial class IndexServiceCategory
             if (result.Succeeded)
             {
                 // Se recarga el hijo y tambien el padre, porque cambia el contador de servicios
-                await LoadServiceClientsAsync(serviceCategoryId);
+                SelectedServiceCategoryId = serviceCategoryId;
                 await Cargar(CurrentPage);
 
                 await _sweetAlert.FireAsync(
@@ -245,7 +291,7 @@ public partial class IndexServiceCategory
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
 
-        await LoadServiceClientsAsync(serviceCategoryId);
+        SelectedServiceCategoryId = serviceCategoryId;
         await Cargar(CurrentPage);
     }
 }

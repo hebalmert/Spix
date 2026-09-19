@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +21,14 @@ public class ContractDocumentsController : ControllerBase
 {
     private readonly ISignatureServiceX _signatureService;
     private readonly IStringLocalizer _localizer;
+    private readonly IConfiguration _configuration;
 
-    public ContractDocumentsController(ISignatureServiceX signatureService, IStringLocalizer localizer)
+    public ContractDocumentsController(ISignatureServiceX signatureService, IStringLocalizer localizer,
+        IConfiguration configuration)
     {
         _signatureService = signatureService;
         _localizer = localizer;
+        _configuration = configuration;
     }
 
     [HttpGet("templates")]
@@ -133,6 +136,20 @@ public class ContractDocumentsController : ControllerBase
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _signatureService.DeleteTemplateFieldAsync(id, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Envia al cliente el correo con la solicitud de firma de sus documentos
+    [HttpPost("request-signature/{contractClientId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+    public async Task<IActionResult> RequestSignatureAsync(Guid contractClientId)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _signatureService.SendSignatureRequestAsync(
+            contractClientId,
+            _configuration["UrlFrontend"]!,
+            userClaimsInfo);
+
         return ResponseHelper.Format(response);
     }
 

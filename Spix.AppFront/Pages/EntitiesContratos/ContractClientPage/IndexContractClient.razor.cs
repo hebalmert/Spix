@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -26,9 +26,11 @@ public partial class IndexContractClient
 
     private int CurrentPage = 1;  //Pagina seleccionada
     private int TotalPages;      //Cantidad total de paginas
+    private int TotalRecords;   //Total de registros (header Counting)
     private int PageSize = 20;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/contractclients";
+    private const string baseUrlDocuments = "api/v1/contractdocuments";
     public List<ContractClient>? ContractClients { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -74,6 +76,14 @@ public partial class IndexContractClient
 
         ContractClients = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        //El conteo total lo manda el backend en el header Counting. Es informativo:
+        //si no viene, la pantalla funciona igual.
+        if (responseHttp.HttpResponseMessage.Headers.TryGetValues("Counting", out var counting) &&
+            double.TryParse(counting.FirstOrDefault(), out var total))
+        {
+            TotalRecords = (int)total;
+        }
 
         await InvokeAsync(StateHasChanged);
     }
@@ -193,6 +203,29 @@ public partial class IndexContractClient
 
         await _sweetAlert.FireAsync("Aprobado", "El contrato paso a In Progress.", SweetAlertIcon.Success);
         await Cargar(CurrentPage);
+    }
+
+    //Envia al cliente el correo con la solicitud de firma (ver docs/Firma-Electronica-Part11.md)
+    private async Task SendSignatureRequestAsync(Guid id)
+    {
+        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
+        {
+            Title = "Enviar solicitud de firma",
+            Text = "Se enviara al correo del cliente el enlace para entrar y firmar sus documentos. Desea enviarlo?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Enviar",
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (result.IsDismissed || result.Value != "true")
+            return;
+
+        var responseHttp = await _repository.PostAsync($"{baseUrlDocuments}/request-signature/{id}", new { });
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync("Enviado", "El cliente recibio la solicitud de firma en su correo.", SweetAlertIcon.Success);
     }
 
     private async Task DeleteAsync(Guid id)

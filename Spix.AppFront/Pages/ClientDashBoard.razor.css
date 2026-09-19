@@ -1,4 +1,4 @@
-.client-dashboard {
+﻿.client-dashboard {
     min-height: calc(100vh - 2rem);
     padding: 2rem;
     background: transparent;
@@ -41,7 +41,7 @@
 
 .client-dashboard__grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
 }
 
@@ -102,10 +102,28 @@
 .client-card--service { background: #e5f6f5; }
 .client-card--billing { background: #e8f0ff; }
 .client-card--support { background: #f0eaff; }
+.client-card--sign { background: #e7f1ff; cursor: pointer; }
 
 .client-card--service .client-card__icon { color: #0e7c86; }
 .client-card--billing .client-card__icon { color: #2563eb; }
 .client-card--support .client-card__icon { color: #7c3aed; }
+.client-card--sign .client-card__icon { color: #0d6efd; }
+
+.client-card__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    margin-left: .4rem;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #dc3545;
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 700;
+    vertical-align: middle;
+}
 
 .client-dashboard__panel {
     display: flex;

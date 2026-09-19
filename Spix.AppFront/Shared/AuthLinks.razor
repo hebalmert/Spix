@@ -1,20 +1,18 @@
 ﻿<AuthorizeView>
     <Authorized>
-        <div class="p-3">
-            @if (!string.IsNullOrEmpty(LogoCorp) || !string.IsNullOrEmpty(photoUser))
-            {
-                <div class="d-flex justify-content-center mb-3">
-                    @if (!string.IsNullOrEmpty(LogoCorp))
-                    {
-                        <img src="@LogoCorp" class="rounded-circle mx-2" style="width:64px;height:64px;" />
-                    }
-                    @if (!string.IsNullOrEmpty(photoUser))
-                    {
-                        <img src="@photoUser" class="rounded-circle mx-2" style="width:64px;height:64px;" />
-                    }
-                </div>
-            }
-            <div class="text-center mb-3 fw-bold">@context.User.Identity!.Name</div>
+        <div class="p-3 auth-links">
+            @* Corporacion a la que pertenece el usuario: logo + nombre *@
+            <div class="auth-links__corp">
+                <AvatarImage Url="@LogoCorp" Icon="fa fa-building" Size="46" Alt="@NameCorp" />
+                <span class="auth-links__corp-name">@NameCorp</span>
+            </div>
+
+            <div class="auth-links__user">
+                <AvatarImage Url="@photoUser" Icon="fa fa-user" Size="72" Alt="@FullName" />
+                <div class="auth-links__user-name">@FullName</div>
+                <div class="auth-links__user-account">@context.User.Identity!.Name</div>
+            </div>
+
             <div class="d-grid gap-2">
                 <button class="btn btn-outline-secondary" @onclick="ShowModalCambiarClave">
                     Change Password <i class="bi bi-shield-lock"></i>
@@ -40,5 +38,3 @@
         </div>
     </NotAuthorized>
 </AuthorizeView>
-
-

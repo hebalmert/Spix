@@ -1,55 +1,68 @@
-@page "/connectionmikrotikcontrols"
+﻿@page "/connectionmikrotikcontrols"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">Control Mikrotik</h3>
-
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:150px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> Nuevo
-                </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-network-wired"></i></span>
+            <div class="idx-head-text">
+                <h3>Control Mikrotik</h3>
+                <p>Define como se conecta el sistema a los equipos Mikrotik de la corporacion.</p>
             </div>
+
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@TotalRecords.ToString("N0") registros</span>
+                </div>
+            }
         </div>
 
-        <hr />
-        <GenericList MyList="ConnectionMikrotikControls">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Corporacion</th>
-                                <th>Tipo Control</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in ConnectionMikrotikControls!)
-                            {
-                                <tr>
-                                    <td>@item.Corporation?.Name</td>
-                                    <td>@item.MikrotikControlType</td>
-                                    <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ConnectionMikrotikControlId, true)" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.ConnectionMikrotikControlId)" />
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </Body>
-        </GenericList>
+        @* Acciones y buscador, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+        </div>
 
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+        <section class="idx-panel">
+
+            <GenericList MyList="ConnectionMikrotikControls">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
+                                <tr>
+                                    <th>Corporacion</th>
+                                    <th>Tipo Control</th>
+                                    <th style="text-align:right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ConnectionMikrotikControls!)
+                                {
+                                    <tr>
+                                        <td><span class="idx-name">@item.Corporation?.Name</span></td>
+                                        <td>@item.MikrotikControlType</td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.ConnectionMikrotikControlId, true)" />
+                                                <ButtonDelete OnClick="() => DeleteAsync(item.ConnectionMikrotikControlId)" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+
+            <div class="idx-panel-foot">
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+            </div>
+        </section>
     </div>
 </div>

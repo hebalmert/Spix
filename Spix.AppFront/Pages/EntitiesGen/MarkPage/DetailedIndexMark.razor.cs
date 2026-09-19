@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -28,8 +28,53 @@ public partial class DetailedIndexMark
 
     public List<Mark>? Marks { get; set; }
     public Dictionary<Guid, List<MarkModel>> MarkModelsByMarkId { get; set; } = new();
-    public Guid? ExpandedMarkId { get; set; } = null; // Acordeón: solo 1 Mark expandido
-    public HashSet<Guid> LoadingMarkIds { get; set; } = new(); // Track de cargas en progreso
+    public Guid? SelectedMarkId { get; set; }
+    public HashSet<Guid> LoadingMarkIds { get; set; } = new();
+
+    //Filtros del panel de modelos (se resuelven en pantalla, sin volver al servidor)
+    private string ModelChip { get; set; } = "all";
+    private string ModelFilter { get; set; } = string.Empty;
+
+    private Mark? SelectedMark => Marks?.FirstOrDefault(x => x.MarkId == SelectedMarkId);
+
+    private List<MarkModel> SelectedMarkModels =>
+        SelectedMarkId is not null && MarkModelsByMarkId.TryGetValue(SelectedMarkId.Value, out var models)
+            ? models
+            : new List<MarkModel>();
+
+    private int ActiveModelsCount => SelectedMarkModels.Count(x => x.Active);
+
+    private int InactiveModelsCount => SelectedMarkModels.Count(x => !x.Active);
+
+    private List<MarkModel> FilteredMarkModels
+    {
+        get
+        {
+            var list = SelectedMarkModels.AsEnumerable();
+
+            list = ModelChip switch
+            {
+                "active" => list.Where(x => x.Active),
+                "inactive" => list.Where(x => !x.Active),
+                _ => list
+            };
+
+            return list.ToList();
+        }
+    }
+
+    private void SetModelChip(string chip) => ModelChip = chip;
+
+    //El texto va al servidor: asi busca en TODOS los modelos de la marca, no solo en los cargados
+    private async Task SetModelFilter(string value)
+    {
+        ModelFilter = value;
+
+        if (SelectedMarkId is not null)
+        {
+            await LoadMarkModelsForMark(SelectedMarkId.Value);
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -40,26 +85,19 @@ public partial class DetailedIndexMark
     }
 
     /// <summary>
-    /// Alterna la expansión de un Mark para mostrar/ocultar sus modelos (Acordeón: solo 1 expandido)
+    /// Selecciona una marca y carga sus modelos si aun no estan en memoria
     /// </summary>
-    private async Task ToggleExpandedMark(Guid markId)
+    private async Task SelectMarkAsync(Guid markId)
     {
-        if (ExpandedMarkId == markId)
-        {
-            // Si ya está expandido, lo cerramos
-            ExpandedMarkId = null;
-        }
-        else
-        {
-            // Cerramos el anterior y abrimos el nuevo
-            ExpandedMarkId = markId;
+        SelectedMarkId = markId;
+        ModelChip = "all";
+        ModelFilter = string.Empty;
 
-            // Cargar modelos si no están cargados
-            if (!MarkModelsByMarkId.ContainsKey(markId))
-            {
-                await LoadMarkModelsForMark(markId);
-            }
+        if (!MarkModelsByMarkId.ContainsKey(markId))
+        {
+            await LoadMarkModelsForMark(markId);
         }
+
         await InvokeAsync(StateHasChanged);
     }
 
@@ -84,15 +122,26 @@ public partial class DetailedIndexMark
 
         Marks = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
-        ExpandedMarkId = null; // Cerrar acordeón al cambiar página
+
         MarkModelsByMarkId.Clear();
         LoadingMarkIds.Clear();
 
+        //Se conserva la marca elegida si sigue en la lista; si no, se toma la primera
+        var previous = SelectedMarkId;
+        SelectedMarkId = Marks?.Any(x => x.MarkId == previous) == true
+            ? previous
+            : Marks?.FirstOrDefault()?.MarkId;
+
         await InvokeAsync(StateHasChanged);
+
+        if (SelectedMarkId is not null)
+        {
+            await LoadMarkModelsForMark(SelectedMarkId.Value);
+        }
     }
 
     /// <summary>
-    /// Carga los MarkModels para un Mark específico
+    /// Carga los MarkModels para un Mark especifico
     /// </summary>
     private async Task LoadMarkModelsForMark(Guid markId)
     {
@@ -100,6 +149,10 @@ public partial class DetailedIndexMark
         await InvokeAsync(StateHasChanged);
 
         var url = $"{baseUrlMarkModels}?guidId={markId}";
+        if (!string.IsNullOrWhiteSpace(ModelFilter))
+        {
+            url += $"&filter={Uri.EscapeDataString(ModelFilter)}";
+        }
         var responseHttp = await _repository.GetAsync<List<MarkModel>>(url);
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
 
@@ -116,7 +169,7 @@ public partial class DetailedIndexMark
     }
 
     /// <summary>
-    /// Maneja cambio de página
+    /// Maneja cambio de pagina
     /// </summary>
     private async Task SelectedPage(int page)
     {
@@ -198,8 +251,9 @@ public partial class DetailedIndexMark
         {
             if (result.Succeeded)
             {
-                // Recarga modelos del Mark específico
+                // Recarga modelos del Mark especifico
                 MarkModelsByMarkId.Remove(markId);
+                SelectedMarkId = markId;
                 await LoadMarkModelsForMark(markId);
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
@@ -225,8 +279,9 @@ public partial class DetailedIndexMark
         {
             if (result.Succeeded)
             {
-                // Recarga modelos del Mark específico
+                // Recarga modelos del Mark especifico
                 MarkModelsByMarkId.Remove(model.MarkId);
+                SelectedMarkId = model.MarkId;
                 await LoadMarkModelsForMark(model.MarkId);
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
@@ -265,6 +320,12 @@ public partial class DetailedIndexMark
             Localizer[nameof(Resource.msg_DeleteConfirmationText)],
             SweetAlertIcon.Success
         );
+
+        if (SelectedMarkId == id)
+        {
+            SelectedMarkId = null;
+        }
+
         await LoadMarks(CurrentPage);
     }
 

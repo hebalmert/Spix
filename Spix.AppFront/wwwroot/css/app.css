@@ -1093,3 +1093,422 @@ code {
 #blazor-error-ui {
     z-index: 12000;
 }
+
+/* ================================================================
+   INDEX PRO  (clases .idx-*)
+   Aspecto comun de las pantallas de listado: panel con cabecera azul,
+   barra de herramientas, tabla con zebra y pie con la paginacion.
+   Vive aqui y no en cada .razor.css para que se corrija en un solo lugar.
+   Los mismos tonos del maestro-detalle (Marcas, Productos, Planes, Servicios).
+
+   Estructura:
+   <div class="card shadow-lg p-4" style="border-radius:12px">
+     <h3 class="idx-title">Titulo</h3>
+     <p class="idx-sub">Descripcion corta</p>
+     <section class="idx-panel">
+       <header class="idx-panel-head"> <b><i class="fa fa-x"></i>Titulo</b> <div class="idx-head-tools">botones</div> </header>
+       <div class="idx-toolbar"> <div class="idx-search">buscador</div> </div>
+       <div class="table-responsive">
+         <table class="idx-table"> ... </table>
+       </div>
+       <div class="idx-panel-foot"> <Pagination /> </div>
+     </section>
+   </div>
+   ================================================================ */
+
+.idx-title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+/* --- Encabezado de la pagina: glifo + nombre + descripcion. Es el UNICO titulo,
+       la tabla ya no repite el nombre del modulo. --- */
+.idx-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 40px;
+}
+
+.idx-glifo {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 19px;
+    background: linear-gradient(135deg, #0a1a3f 0%, #1478ff 100%);
+    box-shadow: 4px 5px 10px rgba(10, 26, 63, .35);
+}
+
+.idx-head-text h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.idx-head-text p {
+    margin: 4px 0 0;
+    color: #5b6784;
+    font-size: 14px;
+}
+
+.idx-head-tools {
+    margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Total de registros. El numero lo manda el backend en el header Counting. */
+.idx-count {
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #16305e;
+    background: #e9f0fb;
+    border: 1px solid #d7e1f3;
+    white-space: nowrap;
+}
+
+/* --- Barra de acciones, FUERA del panel de la tabla --- */
+.idx-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 38px;
+}
+
+.idx-sub {
+    margin: 6px 0 22px;
+    color: #5b6784;
+    font-size: 13px;
+}
+
+/* Sin borde claro alrededor (se veia una linea celeste encima de la cabecera azul).
+   A la izquierda va una linea del mismo azul del titulo, y a la derecha y abajo la
+   sombra: asi el panel queda cerrado por los cuatro lados. */
+.idx-panel {
+    overflow: hidden;
+    border: 0;
+    border-left: 2px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+}
+
+.idx-panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 16px 20px;
+    color: #ffffff;
+    background: #0a1a3f;
+}
+
+    .idx-panel-head b {
+        font-size: 15px;
+    }
+
+    .idx-panel-head b i {
+        margin-right: 7px;
+    }
+
+.idx-head-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Acciones a la izquierda, buscador a la derecha. La cabecera azul queda solo con el titulo. */
+.idx-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #edf1f7;
+    background: #fbfcff;
+}
+
+.idx-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Se va solo a la derecha, haya o no botones a la izquierda.
+   El ancho da cabida al FilterComponent completo (campo + Search + Clear). */
+.idx-search {
+    flex: 0 1 620px;
+    min-width: 300px;
+    margin-left: auto;
+}
+
+/* --- Tabla --- */
+.idx-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+    /* Barra de titulo de la tabla: azul con letras blancas, para que se lea como cabecera */
+    .idx-table thead th {
+        padding: 12px 20px;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: left;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        background: #16305e;
+        white-space: nowrap;
+    }
+
+    .idx-table td {
+        padding: 13px 20px;
+        font-size: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #edf1f7;
+    }
+
+    /* Zebra: va ANTES del hover para que el hover gane (misma especificidad, manda el orden) */
+    .idx-table tbody tr:nth-child(even) td {
+        background: #e9f0fb;
+    }
+
+    .idx-table tbody tr:hover td {
+        background: #dae5f7;
+    }
+
+    .idx-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+/* Nombre principal de la fila y su dato secundario */
+.idx-name {
+    font-weight: 700;
+    color: #152238;
+}
+
+/* Texto corto en la celda; el dato completo sale en un globo propio al pasar el mouse.
+   Sin JavaScript: el texto viaja en data-tip y lo pinta ::after. */
+.idx-tip {
+    position: relative;
+    white-space: nowrap;
+    cursor: default;
+    border-bottom: 1px dashed #c3cfe2;
+}
+
+    .idx-tip::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 9px);
+        transform: translateX(-50%) translateY(4px);
+        padding: 7px 12px;
+        border-radius: 8px;
+        background: #0a1a3f;
+        color: #ffffff;
+        font-size: 12.5px;
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 8px 18px rgba(6, 18, 44, .35);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity .15s ease, transform .15s ease;
+        z-index: 30;
+    }
+
+    /* Punta del globo */
+    .idx-tip::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 3px);
+        transform: translateX(-50%) translateY(4px);
+        border: 6px solid transparent;
+        border-top-color: #0a1a3f;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity .15s ease, transform .15s ease;
+        z-index: 30;
+    }
+
+    .idx-tip:hover::after,
+    .idx-tip:hover::before {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+
+.idx-meta {
+    margin-top: 2px;
+    color: #6b7690;
+    font-size: 13px;
+}
+
+.idx-who {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Estado: reemplaza el checkbox deshabilitado */
+.idx-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+    .idx-pill.is-on {
+        color: #146c43;
+        background: #e6f5ec;
+    }
+
+    .idx-pill.is-off {
+        color: #9a6700;
+        background: #fff6e0;
+    }
+
+/* Si / No de una sola columna, cuando la fila tiene varios booleanos */
+.idx-flag {
+    font-size: 15px;
+}
+
+    .idx-flag.is-on {
+        color: #198754;
+    }
+
+    .idx-flag.is-off {
+        color: #b9c2d3;
+    }
+
+/* Botones de la fila: siempre juntos a la derecha */
+.idx-actions {
+    display: flex;
+    gap: 7px;
+    justify-content: flex-end;
+    white-space: nowrap;
+}
+
+.idx-panel-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid #edf1f7;
+    background: #fbfcff;
+}
+
+    /* La paginacion vive dentro del pie, sin margenes propios */
+    .idx-panel-foot .pagination {
+        margin: 0;
+    }
+
+@media (max-width: 767.98px) {
+    .idx-toolbar,
+    .idx-search {
+        flex: 1 1 100%;
+    }
+}
+
+/* ================================================================
+   BOTONES GRANDES  (familia .btn-gradient-*)
+   Los de los Index y los de los formularios: misma forma, misma sombra negra
+   y el mismo juego al pasar el mouse; solo cambia el color. Los usan los
+   componentes de SharedButtonForm (ButtonFormNew, ButtonFormSave,
+   ButtonFormSaveOnClick, ButtonFormBack, AnchorFormBack, ButtonFormDark,
+   ButtonFormRed).
+
+   Viven aqui, y no en un .razor.css de pagina, porque el CSS con alcance
+   de una pagina NO llega al marcado de un componente hijo.
+   ================================================================ */
+
+.btn-gradient-blue,
+.btn-gradient-dark,
+.btn-gradient-red {
+    align-items: center;
+    border: 0;
+    border-radius: 14px;
+    color: #fff;
+    display: inline-flex;
+    font-weight: 700;
+    gap: .5rem;
+    height: 44px;
+    justify-content: center;
+    min-width: 150px;
+    padding: 0 1rem;
+    text-decoration: none;
+    /* Sombra negra y solida: el boton se ve levantado sobre la tarjeta */
+    box-shadow: 4px 6px 9px rgba(0, 0, 0, .72);
+    transition: transform .16s ease, box-shadow .16s ease, background .25s ease;
+}
+
+    /* Al pasar el mouse sube, aclara el tono y estira la sombra */
+    .btn-gradient-blue:hover,
+    .btn-gradient-dark:hover,
+    .btn-gradient-red:hover {
+        color: #fff;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 6px 10px 16px rgba(0, 0, 0, .8);
+    }
+
+    /* Al pulsar se hunde */
+    .btn-gradient-blue:active,
+    .btn-gradient-dark:active,
+    .btn-gradient-red:active {
+        transform: translateY(1px);
+        box-shadow: 2px 3px 6px rgba(0, 0, 0, .7);
+    }
+
+    .btn-gradient-blue:disabled,
+    .btn-gradient-dark:disabled,
+    .btn-gradient-red:disabled {
+        opacity: .65;
+        transform: none;
+        box-shadow: 2px 3px 6px rgba(0, 0, 0, .45);
+    }
+
+/* Accion principal: crear, guardar */
+.btn-gradient-blue {
+    background: linear-gradient(135deg, #6f42c1 0%, #4a4fe0 45%, #0d6efd 100%);
+}
+
+    .btn-gradient-blue:hover {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 45%, #3b82f6 100%);
+    }
+
+/* Accion secundaria: volver, procesos en bloque */
+.btn-gradient-dark {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 48%, #030712 100%);
+}
+
+    .btn-gradient-dark:hover {
+        background: linear-gradient(135deg, #253044 0%, #3d4a5f 48%, #161f2e 100%);
+    }
+
+/* Accion destructiva en bloque */
+.btn-gradient-red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 45%, #991b1b 100%);
+}
+
+    .btn-gradient-red:hover {
+        background: linear-gradient(135deg, #fb7185 0%, #f05252 45%, #c22626 100%);
+    }

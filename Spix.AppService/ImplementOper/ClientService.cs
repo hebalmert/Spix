@@ -210,7 +210,19 @@ namespace Spix.Services.ImplementOper
         }
 
         public async Task<ActionResponse<Client>> UpdateAsync(Client modelo, string frontUrl)
+    {
+        //El usuario de login NO se cambia al editar: Identity lo busca por ese nombre y,
+        //si cambia, quedaria una cuenta huerfana y el cliente no podria entrar.
+        var registroActual = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(x => x.ClientId == modelo.ClientId);
+        if (registroActual is not null && registroActual.UserName != modelo.UserName)
         {
+            return new ActionResponse<Client>
+            {
+                WasSuccess = false,
+                Message = _localizer["Generic_UserNameCanNotChangeIt"]
+            };
+        }
+
             await _transactionManager.BeginTransactionAsync();
 
             try

@@ -1,0 +1,48 @@
+/* Campo de usuario con revision en vivo: borde verde si esta libre, rojo si ya existe. */
+.form-control.is-available {
+    border-color: #198754;
+}
+
+.form-control.is-taken {
+    border-color: #dc3545;
+}
+
+.username-status {
+    min-width: 42px;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.username-suggest {
+    border-color: #cfd8ea;
+}
+
+.username-feedback {
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.username-suggestions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+    color: #6b7690;
+}
+
+.username-chip {
+    padding: 2px 9px;
+    color: #0d6efd;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid #b9d3ff;
+    border-radius: 20px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+    .username-chip:hover {
+        color: #ffffff;
+        background: #0d6efd;
+    }

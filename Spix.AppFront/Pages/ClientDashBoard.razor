@@ -1,4 +1,4 @@
-@page "/client-dashboard"
+﻿@page "/client-dashboard"
 @attribute [Authorize(Roles = "Client")]
 @layout MainLayout
 
@@ -33,6 +33,31 @@
                 <p>Espacio reservado para facturas, pagos pendientes e historial.</p>
             </div>
             <i class="fa fa-file-invoice-dollar client-card__icon"></i>
+        </div>
+
+        @* Documentos para firmar: entra directo al portal de firma *@
+        <div class="client-card client-card--sign" @onclick="GoToSignatures" role="button">
+            <div class="client-card__content">
+                <span class="client-card__label">Documentos</span>
+                <h2>
+                    Firmar documentos
+                    @if (pendingSignatures > 0)
+                    {
+                        <span class="client-card__badge">@pendingSignatures</span>
+                    }
+                </h2>
+                <p>
+                    @if (pendingSignatures > 0)
+                    {
+                        <text>Tiene documentos pendientes por firmar. Entre para revisarlos y firmarlos.</text>
+                    }
+                    else
+                    {
+                        <text>Consulte y descargue los documentos de su contrato.</text>
+                    }
+                </p>
+            </div>
+            <i class="fa fa-file-signature client-card__icon"></i>
         </div>
 
         <div class="client-card client-card--support">

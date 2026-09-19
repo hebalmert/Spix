@@ -1,9 +1,8 @@
-﻿using CurrieTechnologies.Razor.SweetAlert2;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.Pages.EntitiesGen.DocumentTypePage;
 using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -26,7 +25,49 @@ public partial class IndexPlanCategory
     private int PageSize = 15;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/plancategories";
+    private const string baseUrlPlans = "api/v1/plans";
+
     public List<PlanCategory>? PlanCategories { get; set; }
+    public Dictionary<Guid, List<Plan>> PlansByCategoryId { get; set; } = new();
+    public Guid? SelectedPlanCategoryId { get; set; }
+    public HashSet<Guid> LoadingPlanCategoryIds { get; set; } = new();
+
+    //Filtros del panel de planes
+    private string PlanChip { get; set; } = "all";
+    private string PlanFilter { get; set; } = string.Empty;
+
+    private PlanCategory? SelectedCategory =>
+        PlanCategories?.FirstOrDefault(x => x.PlanCategoryId == SelectedPlanCategoryId);
+
+    private List<Plan> SelectedPlans =>
+        SelectedPlanCategoryId is not null && PlansByCategoryId.TryGetValue(SelectedPlanCategoryId.Value, out var plans)
+            ? plans
+            : new List<Plan>();
+
+    private int ActivePlansCount => SelectedPlans.Count(x => x.Active);
+
+    private int InactivePlansCount => SelectedPlans.Count(x => !x.Active);
+
+    private List<Plan> FilteredPlans =>
+        PlanChip switch
+        {
+            "active" => SelectedPlans.Where(x => x.Active).ToList(),
+            "inactive" => SelectedPlans.Where(x => !x.Active).ToList(),
+            _ => SelectedPlans
+        };
+
+    private void SetPlanChip(string chip) => PlanChip = chip;
+
+    //El texto va al servidor: asi busca en TODOS los planes de la categoria, no solo en los cargados
+    private async Task SetPlanFilter(string value)
+    {
+        PlanFilter = value;
+
+        if (SelectedPlanCategoryId is not null)
+        {
+            await LoadPlansAsync(SelectedPlanCategoryId.Value);
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -34,6 +75,44 @@ public partial class IndexPlanCategory
         {
             await Cargar();
         }
+    }
+
+    private async Task SelectCategoryAsync(Guid planCategoryId)
+    {
+        SelectedPlanCategoryId = planCategoryId;
+        PlanChip = "all";
+        PlanFilter = string.Empty;
+
+        if (!PlansByCategoryId.ContainsKey(planCategoryId))
+        {
+            await LoadPlansAsync(planCategoryId);
+        }
+    }
+
+    private async Task LoadPlansAsync(Guid planCategoryId)
+    {
+        LoadingPlanCategoryIds.Add(planCategoryId);
+        await InvokeAsync(StateHasChanged);
+
+        var url = $"{baseUrlPlans}?guidId={planCategoryId}&page=1&recordsnumber=100";
+        if (!string.IsNullOrWhiteSpace(PlanFilter))
+        {
+            url += $"&filter={Uri.EscapeDataString(PlanFilter)}";
+        }
+
+        var responseHttp = await _repository.GetAsync<List<Plan>>(url);
+
+        LoadingPlanCategoryIds.Remove(planCategoryId);
+
+        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
+        if (errorHandled)
+        {
+            return;
+        }
+
+        PlansByCategoryId[planCategoryId] = responseHttp.Response ?? new List<Plan>();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SelectedPage(int page)
@@ -45,6 +124,7 @@ public partial class IndexPlanCategory
     private async Task SetFilterValue(string value)
     {
         Filter = value;
+        CurrentPage = 1;
         await Cargar();
     }
 
@@ -56,24 +136,24 @@ public partial class IndexPlanCategory
         {
             component = typeof(EditPlanCategory);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Category)]}"  }
-        };
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Category)]}"  }
+            };
         }
         else
         {
             component = typeof(CreatePlanCategory);
             parameters = new Dictionary<string, object>
-        {
-            { "Title", $"{Localizer[nameof(Resource.Create_Category)]}"  }
-        };
+            {
+                { "Title", $"{Localizer[nameof(Resource.Create_Category)]}"  }
+            };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar();   //solo refresca si hubo cambios
+                await Cargar(CurrentPage);   //solo refresca si hubo cambios
         });
     }
 
@@ -101,7 +181,21 @@ public partial class IndexPlanCategory
         PlanCategories = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
+        PlansByCategoryId.Clear();
+        LoadingPlanCategoryIds.Clear();
+
+        //Se conserva la categoria elegida si sigue en la lista; si no, se toma la primera
+        var previous = SelectedPlanCategoryId;
+        SelectedPlanCategoryId = PlanCategories?.Any(x => x.PlanCategoryId == previous) == true
+            ? previous
+            : PlanCategories?.FirstOrDefault()?.PlanCategoryId;
+
         await InvokeAsync(StateHasChanged);
+
+        if (SelectedPlanCategoryId is not null)
+        {
+            await LoadPlansAsync(SelectedPlanCategoryId.Value);
+        }
     }
 
     private async Task DeleteAsync(Guid id)
@@ -125,53 +219,13 @@ public partial class IndexPlanCategory
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
-        await Cargar();
-    }
 
-    // ===================== Acordeon: planes de cada categoria =====================
-    // Mismo patron que ProductCategory: se cargan bajo demanda y se cachean por categoria.
-    private const string baseUrlPlans = "api/v1/plans";
-
-    public Guid? ExpandedPlanCategoryId { get; set; }
-
-    public HashSet<Guid> LoadingPlanCategoryIds { get; set; } = new();
-
-    public Dictionary<Guid, List<Plan>> PlansByCategoryId { get; set; } = new();
-
-    private async Task ToggleExpandedPlanCategory(Guid planCategoryId)
-    {
-        if (ExpandedPlanCategoryId == planCategoryId)
+        if (SelectedPlanCategoryId == id)
         {
-            ExpandedPlanCategoryId = null;
-            return;
+            SelectedPlanCategoryId = null;
         }
 
-        ExpandedPlanCategoryId = planCategoryId;
-
-        if (!PlansByCategoryId.ContainsKey(planCategoryId))
-        {
-            await LoadPlansAsync(planCategoryId);
-        }
-    }
-
-    private async Task LoadPlansAsync(Guid planCategoryId)
-    {
-        LoadingPlanCategoryIds.Add(planCategoryId);
-        await InvokeAsync(StateHasChanged);
-
-        var responseHttp = await _repository.GetAsync<List<Plan>>($"{baseUrlPlans}?guidId={planCategoryId}&page=1&recordsnumber=100");
-
-        LoadingPlanCategoryIds.Remove(planCategoryId);
-
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
-        {
-            return;
-        }
-
-        PlansByCategoryId[planCategoryId] = responseHttp.Response ?? new List<Plan>();
-
-        await InvokeAsync(StateHasChanged);
+        await Cargar(CurrentPage);
     }
 
     private async Task ShowModalPlanAsync(Guid planCategoryId, Guid? planId = null, bool isEdit = false)
@@ -203,7 +257,7 @@ public partial class IndexPlanCategory
             if (result.Succeeded)
             {
                 // Se recarga el hijo y tambien el padre, porque cambia el contador de planes
-                await LoadPlansAsync(planCategoryId);
+                SelectedPlanCategoryId = planCategoryId;
                 await Cargar(CurrentPage);
 
                 await _sweetAlert.FireAsync(
@@ -237,7 +291,7 @@ public partial class IndexPlanCategory
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
 
-        await LoadPlansAsync(planCategoryId);
+        SelectedPlanCategoryId = planCategoryId;
         await Cargar(CurrentPage);
     }
 }

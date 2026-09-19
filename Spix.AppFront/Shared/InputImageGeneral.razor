@@ -1,34 +1,49 @@
-﻿<div class="row">
-    <div class="col-md-12">
-        <div class="camera-container">
-            <!-- Cámara -->
+@* Tomar foto con la camara o subirla del disco. Si no hay foto muestra un icono local,
+   nunca la imagen "NoImage" de Azure. Replicado del diseno de Rentx. *@
+<section class="spix-image-picker">
+    <div class="spix-image-picker__content">
+        <h6 class="spix-image-picker__title">@(Label ?? Localizer[nameof(Resource.Photo)])</h6>
+
+        <div class="camera-container spix-image-picker__preview">
+            <!-- Camara -->
             <div class="camera-layer" style="@(ShowCamera ? "display:block;" : "display:none;")">
-                <video id="camera" autoplay playsinline class="w-100 h-100" style="border:1px solid red; width:100%; height:auto;" />
+                <video id="camera" autoplay playsinline class="w-100 h-100" />
             </div>
 
-            <!-- Imagen desde parámetro ImageUrl -->
-            <div class="camera-layer" style="@(string.IsNullOrWhiteSpace(ImageBase64) && ShowImageUrl && !string.IsNullOrWhiteSpace(ImageUrl) ? "display:block;" : "display:none;")">
+            <!-- Imagen que llega del registro -->
+            <div class="camera-layer" style="@(string.IsNullOrWhiteSpace(ImageBase64) && ShowImageUrl && HasPhoto ? "display:block;" : "display:none;")">
                 <img src="@ImageUrl" alt="@Label" class="w-100 h-100 image-preview" />
             </div>
 
-            <!-- Preview (base64) -->
+            <!-- Foto recien tomada o cargada -->
             <div class="camera-layer" style="@(ShowPreview && !string.IsNullOrWhiteSpace(ImageBase64) ? "display:block;" : "display:none;")">
                 <img src="data:image/jpeg;base64,@ImageBase64" alt="@Label" class="w-100 h-100 image-preview" />
             </div>
+
+            @if (!ShowCamera && string.IsNullOrWhiteSpace(ImageBase64) && (!HasPhoto || !ShowImageUrl))
+            {
+                <i class="@PlaceholderIcon spix-image-picker__placeholder" aria-hidden="true"></i>
+            }
         </div>
 
-        <div class="camera-actions mt-2 d-flex flex-row justify-content-center gap-2">
+        <div class="camera-actions spix-image-picker__actions">
             @if (ShowCamera)
             {
-                <button type="button" class="btn btn-outline-primary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="CaptureImage">@Localizer[nameof(Resource.Button_Capture)]</button>
+                <button type="button" class="btn btn-outline-primary" @onclick="CaptureImage">
+                    <i class="fa fa-camera me-2" aria-hidden="true"></i>@Localizer[nameof(Resource.Button_Capture)]
+                </button>
             }
             else
             {
-                <button type="button" class="btn btn-outline-primary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="ToggleCamera">@Localizer[nameof(Resource.Button_Camara)]</button>
+                <button type="button" class="btn btn-outline-primary" @onclick="ToggleCamera">
+                    <i class="fa fa-camera me-2" aria-hidden="true"></i>@Localizer[nameof(Resource.Button_Camara)]
+                </button>
             }
 
-            <button type="button" class="btn btn-outline-secondary btn-sm" style="min-width:90px; height:28px; padding:2px 8px;" @onclick="LoadFromFile">@Localizer[nameof(Resource.Button_Disk)]</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick="LoadFromFile">
+                <i class="fa fa-folder-open me-2" aria-hidden="true"></i>@Localizer[nameof(Resource.Button_Disk)]
+            </button>
             <input type="file" id="fileInput" accept="image/*" style="display:none" />
         </div>
     </div>
-</div>
+</section>

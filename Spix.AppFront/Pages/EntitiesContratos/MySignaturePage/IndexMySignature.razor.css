@@ -1,0 +1,168 @@
+﻿/* Bloque por contrato: cabecera que lo identifica + sus documentos */
+.my-sign__contract-box {
+    border: 1px solid #e3e9f3;
+    border-radius: 16px;
+    background: #fbfcff;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+}
+
+.my-sign__contract-head {
+    margin-bottom: 14px;
+}
+
+.my-sign__contract-id {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #0a1a3f 0%, #1478ff 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.my-sign__contract-data {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    margin: 12px 0 0;
+}
+
+    .my-sign__contract-data dt {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6c7a94;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .my-sign__contract-data dd {
+        margin: 2px 0 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #0a1a3f;
+    }
+
+.my-sign__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+}
+
+.my-sign__card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid #e3e9f3;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, .06);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+    .my-sign__card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, .12);
+    }
+
+    .my-sign__card.is-pending {
+        border-left: 5px solid #ffc107;
+    }
+
+    .my-sign__card.is-signed {
+        border-left: 5px solid #198754;
+    }
+
+.my-sign__icon {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0a1a3f 0%, #1478ff 100%);
+    color: #fff;
+    font-size: 22px;
+}
+
+.my-sign__body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.my-sign__contract {
+    font-size: 12px;
+    color: #6c7a94;
+}
+
+.my-sign__title {
+    margin: 2px 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #0a1a3f;
+}
+
+.my-sign__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+    .my-sign__badge.is-ok {
+        background: #e6f5ec;
+        color: #146c43;
+    }
+
+    .my-sign__badge.is-wait {
+        background: #fff6e0;
+        color: #9a6700;
+    }
+
+/* Los botones van uno debajo del otro y del mismo ancho */
+.my-sign__actions {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 150px;
+}
+
+    .my-sign__actions .btn {
+        width: 100%;
+        white-space: nowrap;
+    }
+
+.my-sign__empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c7a94;
+}
+
+    .my-sign__empty i {
+        font-size: 44px;
+        color: #198754;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+@media (max-width: 575.98px) {
+    .my-sign__card {
+        flex-wrap: wrap;
+    }
+
+    .my-sign__actions {
+        width: 100%;
+    }
+
+        .my-sign__actions .btn {
+            width: 100%;
+        }
+}

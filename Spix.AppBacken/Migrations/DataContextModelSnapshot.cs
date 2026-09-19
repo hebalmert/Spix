@@ -1045,6 +1045,9 @@ namespace Spix.AppBacken.Migrations
                     b.Property<Guid?>("ServiceClientId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("SignatureRequestedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1397,12 +1400,137 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("ContractServers");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignatureCode", b =>
+                {
+                    b.Property<Guid>("ContractSignatureCodeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RequestIp")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("RequestUserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsuarioOwner")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ContractSignatureCodeId");
+
+                    b.HasIndex("CorporationId");
+
+                    b.HasIndex("ContractClientId", "DocumentType", "CreatedAt");
+
+                    b.ToTable("ContractSignatureCodes");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignatureEvent", b =>
+                {
+                    b.Property<Guid>("ContractSignatureEventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Detail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceIp")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsuarioOwner")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("ContractSignatureEventId");
+
+                    b.HasIndex("CorporationId");
+
+                    b.HasIndex("ContractClientId", "DocumentType", "CreatedAt");
+
+                    b.ToTable("ContractSignatureEvents");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignedDocument", b =>
                 {
                     b.Property<Guid>("ContractSignedDocumentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<DateTime?>("CodeSentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CodeValidatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ConsentHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ConsentVersion")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<Guid>("ContractClientId")
                         .HasColumnType("uniqueidentifier");
@@ -1417,17 +1545,43 @@ namespace Spix.AppBacken.Migrations
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("DateSigned")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DocumentHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("DocumentType")
                         .HasColumnType("int");
+
+                    b.Property<string>("FileHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("FileName")
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
 
+                    b.Property<int?>("SignatureMethod")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Signed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("SignerEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("SignerIp")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("SignerUserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<DateTime?>("TermsAcceptedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1441,11 +1595,26 @@ namespace Spix.AppBacken.Migrations
                     b.Property<string>("UsuarioOwnerSigned")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("VerificationCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<Guid?>("WitnessUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WitnessUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.HasKey("ContractSignedDocumentId");
 
                     b.HasIndex("ContractDocumentTemplateId");
 
                     b.HasIndex("CorporationId");
+
+                    b.HasIndex("VerificationCode")
+                        .IsUnique()
+                        .HasFilter("[VerificationCode] IS NOT NULL");
 
                     b.HasIndex("ContractClientId", "ContractDocumentTemplateId")
                         .IsUnique();
@@ -4761,6 +4930,44 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ContractClient");
 
                     b.Navigation("Server");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignatureCode", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany()
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("Corporation");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignatureEvent", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany()
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("Corporation");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignedDocument", b =>

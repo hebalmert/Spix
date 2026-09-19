@@ -1,0 +1,31 @@
+@* Buscador de filtrado para paneles angostos (maestro-detalle).
+   Dos modos, segun el tamano de la tabla que se consulta:
+   - Por defecto: busca al escribir, desde MinLength caracteres y tras la pausa (DelayMs).
+     Ideal para catalogos (categorias, marcas, bodegas).
+   - SearchOnEnter="true": busca SOLO con Enter o con la lupa. Para tablas grandes
+     (clientes, contratos, seriales), donde cada consulta cuesta. *@
+<div class="ac-filter">
+    <span class="ac-filter-icon"><i class="fa fa-search"></i></span>
+
+    <input class="ac-filter-input @(SearchOnEnter ? "has-button" : null)"
+           placeholder="@Placeholder"
+           title="@(SearchOnEnter ? EnterHint : null)"
+           @bind="SearchText"
+           @bind:event="oninput"
+           @bind:after="OnSearchChangedAsync"
+           @onkeydown="OnKeyDownAsync" />
+
+    @if (!string.IsNullOrEmpty(SearchText))
+    {
+        <button type="button" class="ac-filter-clear" title="@Localizer["Clear"]" @onclick="ClearAsync">
+            <i class="fa fa-times"></i>
+        </button>
+    }
+
+    @if (SearchOnEnter)
+    {
+        <button type="button" class="ac-filter-go" title="@Localizer["Search"]" @onclick="SearchNowAsync">
+            <i class="fa fa-search"></i>
+        </button>
+    }
+</div>

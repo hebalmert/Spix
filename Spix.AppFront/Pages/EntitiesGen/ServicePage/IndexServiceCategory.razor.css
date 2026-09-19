@@ -1,0 +1,295 @@
+﻿/* Maestro-detalle de Servicios: categorias a la izquierda, servicios de la categoria a la derecha.
+   Mismas clases y medidas que Productos. El bloque "Acordeon de dos niveles" de wwwroot/css/app.css
+   sigue intacto porque lo usan las otras pantallas de dos niveles. */
+.pc-sub {
+    margin: 0 0 14px;
+    color: #5b6784;
+    font-size: 13px;
+}
+
+.pc-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* Mismo realce que los paneles, para que los indicadores no se pierdan sobre el card grande */
+.pc-kpi {
+    padding: 12px 14px;
+    border: 1px solid rgba(45, 91, 160, .45);
+    border-radius: 12px;
+    background: #f4f7fc;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+}
+
+    .pc-kpi small {
+        display: block;
+        color: #6b7690;
+        font-size: 12px;
+    }
+
+    .pc-kpi b {
+        font-size: 20px;
+    }
+
+    .pc-kpi.is-warn b {
+        color: #c77700;
+    }
+
+    .pc-kpi.is-bad b {
+        color: #dc3545;
+    }
+
+.pc-layout {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+/* Mismo realce que .card-floating-section del acordeon: asi el panel no se confunde
+   con el card grande que lo contiene. */
+.pc-panel {
+    overflow: hidden;
+    border: 1px solid rgba(45, 91, 160, .45);
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+}
+
+.pc-panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+    color: #ffffff;
+    background: #0a1a3f;
+}
+
+    .pc-panel-head b {
+        font-size: 14px;
+    }
+
+    .pc-panel-head i {
+        margin-right: 6px;
+    }
+
+.pc-search {
+    padding: 10px 12px;
+    border-bottom: 1px solid #edf1f7;
+    background: #f7f9fd;
+}
+
+.pc-panel-foot {
+    padding: 10px 14px;
+    border-top: 1px solid #edf1f7;
+}
+
+.pc-count {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+/* ---- Categorias ---- */
+.pc-cat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    border-bottom: 1px solid #edf1f7;
+    cursor: pointer;
+}
+
+    /* Zebra: fila blanca / fila azul muy suave. Va ANTES del hover para que el hover gane. */
+    .pc-cat:nth-child(even) {
+        background: #e9f0fb;
+    }
+
+    .pc-cat:hover {
+        background: #dae5f7;
+    }
+
+    /* Seleccionado: azul mas oscuro que la zebra y que el hover, para que se note cual esta abierto.
+       Va de ultimo en la hoja, asi gana sobre :nth-child y :hover (misma especificidad). */
+    .pc-cat.is-selected {
+        padding-left: 10px;
+        border-left: 4px solid #0d6efd;
+        background: #c9dcf7;
+        box-shadow: inset 0 0 0 1px rgba(13, 110, 253, .18);
+    }
+
+        .pc-cat.is-selected .pc-cat-name {
+            color: #0a1a3f;
+        }
+
+.pc-cat-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.pc-cat-meta {
+    margin-top: 2px;
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.pc-cat-tools {
+    display: flex;
+    gap: 6px;
+}
+
+/* ---- Productos ---- */
+.pc-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #edf1f7;
+}
+
+.pc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pc-chip {
+    padding: 5px 10px;
+    color: #33405c;
+    font-size: 12px;
+    border: 1px solid #dfe6f2;
+    border-radius: 20px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+    .pc-chip.is-on {
+        color: #ffffff;
+        border-color: #0a1a3f;
+        background: #0a1a3f;
+    }
+
+/* Contenedor del buscador de la derecha (AutoCompleteFilter) */
+.pc-inline-search {
+    min-width: 260px;
+    flex: 0 1 320px;
+}
+
+.pc-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .pc-table thead th {
+        padding: 10px 14px;
+        color: #33405c;
+        font-size: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e3e9f4;
+        background: #f4f7fc;
+    }
+
+    .pc-table td {
+        padding: 12px 14px;
+        font-size: 13px;
+        vertical-align: middle;
+        border-bottom: 1px solid #edf1f7;
+    }
+
+    /* Zebra con los mismos colores del acordeon anterior */
+    .pc-table tbody tr:nth-child(even) td {
+        background: #e9f0fb;
+    }
+
+    .pc-table tbody tr:hover td {
+        background: #dae5f7;
+    }
+
+.pc-item-name {
+    font-weight: 700;
+}
+
+.pc-item-meta {
+    margin-top: 2px;
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.pc-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+}
+
+    .pc-stock i {
+        font-size: 10px;
+    }
+
+    .pc-stock.is-ok {
+        color: #198754;
+    }
+
+    .pc-stock.is-low {
+        color: #c77700;
+    }
+
+    .pc-stock.is-none {
+        color: #dc3545;
+    }
+
+.pc-pill {
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 20px;
+}
+
+    .pc-pill.is-on {
+        color: #198754;
+        background: #e6f6ee;
+    }
+
+    .pc-pill.is-off {
+        color: #6b7690;
+        background: #f1f2f5;
+    }
+
+.pc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.pc-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 34px 16px;
+    color: #6b7690;
+    font-size: 13px;
+    text-align: center;
+}
+
+.pc-empty-glyph {
+    font-size: 26px;
+    color: #b4c0d6;
+}
+
+@media (max-width: 1100px) {
+    .pc-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .pc-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

@@ -1,0 +1,125 @@
+﻿@page "/my-signatures"
+@attribute [Authorize(Roles = "Client")]
+@using Spix.DomainLogic.EntitiesContractDTO
+@layout MainLayout
+
+<PageTitle>Mis documentos</PageTitle>
+
+<div class="card shadow-lg p-4" style="border-radius:12px">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+            <h3 class="mb-1"><i class="fa fa-file-signature me-2"></i>Mis documentos</h3>
+            <p class="text-muted mb-0">Revise cada documento y firmelo con el codigo que enviamos a su correo.</p>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <Loading />
+    }
+    else if (documents.Count == 0)
+    {
+        <div class="my-sign__empty">
+            <i class="fa fa-circle-check"></i>
+            <p class="mb-0">No tiene documentos pendientes por firmar.</p>
+        </div>
+    }
+    else
+    {
+        @* Un bloque por contrato: asi el cliente sabe a que cuenta pertenece cada documento *@
+        @foreach (var contract in documents.GroupBy(x => x.ContractClientId).OrderByDescending(x => x.First().ContractNumber))
+        {
+            var head = contract.First();
+
+            <div class="my-sign__contract-box">
+                <div class="my-sign__contract-head">
+                    <div class="my-sign__contract-id">
+                        <i class="fa fa-file-lines"></i>
+                        <span>Contrato #@head.ContractNumber</span>
+                    </div>
+
+                    <dl class="my-sign__contract-data">
+                        @if (!string.IsNullOrWhiteSpace(head.ContractAddress))
+                        {
+                            <div>
+                                <dt><i class="fa fa-location-dot"></i> Direccion del servicio</dt>
+                                <dd>@head.ContractAddress</dd>
+                            </div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(head.ZoneName))
+                        {
+                            <div>
+                                <dt><i class="fa fa-map"></i> Zona</dt>
+                                <dd>@head.ZoneName</dd>
+                            </div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(head.PlanName))
+                        {
+                            <div>
+                                <dt><i class="fa fa-wifi"></i> Plan</dt>
+                                <dd>@head.PlanName</dd>
+                            </div>
+                        }
+                        <div>
+                            <dt><i class="fa fa-calendar-day"></i> Fecha</dt>
+                            <dd>@head.ContractDate.ToString("dd/MM/yyyy")</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="my-sign__grid">
+                    @foreach (var item in contract.OrderBy(x => x.DocumentType))
+                    {
+                        <div class="my-sign__card @(item.Signed ? "is-signed" : "is-pending")">
+                            <div class="my-sign__icon">
+                                <i class="@(item.DocumentType == ContractDocumentType.Contract ? "fa fa-file-contract" : "fa fa-shield-halved")"></i>
+                            </div>
+
+                            <div class="my-sign__body">
+                                <h5 class="my-sign__title">@GetDocumentName(item.DocumentType)</h5>
+
+                                @if (item.Signed)
+                                {
+                                    <span class="my-sign__badge is-ok">
+                                        <i class="fa fa-circle-check"></i> Firmado @item.DateSigned?.ToLocalTime().ToString("dd/MM/yyyy")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="my-sign__badge is-wait">
+                                        <i class="fa fa-clock"></i> Pendiente de firma
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="my-sign__actions">
+                                @if (item.Signed)
+                                {
+                                    <button class="btn btn-outline-primary btn-sm" @onclick="() => OpenViewAsync(item)">
+                                        <i class="fa fa-eye me-1"></i> Ver documento
+                                    </button>
+
+                                    @* Certificado e historial de la firma: lo mismo que muestra el QR *@
+                                    @if (!string.IsNullOrWhiteSpace(item.VerificationCode))
+                                    {
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                                title="Certificado e historial de la firma"
+                                                @onclick="() => OpenCertificateAsync(item)">
+                                            <i class="fa fa-clock-rotate-left me-1"></i> Historial
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <button class="btn btn-primary btn-sm" @onclick="() => OpenSignAsync(item)">
+                                        <i class="fa fa-pen-nib me-1"></i> Ver y firmar
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>

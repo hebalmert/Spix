@@ -97,35 +97,26 @@ public class AccountService : IAccountService
                     };
                 }
 
-                switch (user.UserFrom)
+                //Cada tipo de usuario guarda su foto en su propio contenedor
+                string? contenedorFoto = user.UserFrom switch
                 {
-                    case "Manager":
-                        if (!string.IsNullOrWhiteSpace(user.PhotoUser))
-                        {
-                            var FileResult = await _fileStorage.GetFileBase64Async(user.PhotoUser, _imgOption.ImgManager);
-                            imgUsuario = FileResult!.Base64;
-                        }
-                        else
-                        {
-                            imgUsuario = ImagenDefault;
-                        }
-                        break;
+                    "Manager" => _imgOption.ImgManager,
+                    "UsuarioSoftware" => _imgOption.ImgUsuario,
+                    "Client" => _imgOption.ImgClient,
+                    "Technician" => _imgOption.ImgTechnicians,
+                    "Contractor" => _imgOption.ImgContractor,
+                    _ => null
+                };
 
-                    case "UsuarioSoftware":
-                        if (!string.IsNullOrWhiteSpace(user.PhotoUser))
-                        {
-                            var FileResult = await _fileStorage.GetFileBase64Async(user.PhotoUser, _imgOption.ImgUsuario);
-                            imgUsuario = FileResult!.Base64;
-                        }
-                        else
-                        {
-                            imgUsuario = ImagenDefault;
-                        }
-                        break;
-
-                    case "Patient":
-                        imgUsuario = ImagenDefault;
-                        break;
+                if (contenedorFoto != null && !string.IsNullOrWhiteSpace(user.PhotoUser))
+                {
+                    var FileResult = await _fileStorage.GetFileBase64Async(user.PhotoUser, contenedorFoto);
+                    imgUsuario = FileResult!.Base64;
+                }
+                else
+                {
+                    //Sin foto: el front muestra el icono local, no pide nada a Azure
+                    imgUsuario = ImagenDefault;
                 }
             }
             return new ActionResponse<TokenDTO>

@@ -1,158 +1,190 @@
-﻿@page "/servicecategories"
+@page "/servicecategories"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
 <div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">@Localizer[nameof(Resource.Service)]</h3>
+        <h3 class="mb-1">@Localizer[nameof(Resource.Service)]</h3>
+        <p class="pc-sub">Elija una categoria a la izquierda y trabaje sus servicios a la derecha.</p>
 
-        <!-- Botón + Filtro -->
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+        @* Resumen de la categoria seleccionada *@
+        <div class="pc-kpis">
+            <div class="pc-kpi">
+                <small>@Localizer[nameof(Resource.Category)]</small>
+                <b>@(ServiceCategories?.Count ?? 0)</b>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
-                <FilterComponent ApplyFilter="SetFilterValue" />
+            <div class="pc-kpi">
+                <small>@Localizer[nameof(Resource.Service)]</small>
+                <b>@SelectedServices.Count</b>
+            </div>
+            <div class="pc-kpi">
+                <small>@Localizer[nameof(Resource.Active)]</small>
+                <b>@ActiveServicesCount</b>
+            </div>
+            <div class="pc-kpi is-warn">
+                <small>@Localizer[nameof(Resource.Inactive)]</small>
+                <b>@InactiveServicesCount</b>
             </div>
         </div>
 
-        <hr />
-        <GenericList MyList="ServiceCategories">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table align-middle acc-table">
-                        <thead class="table-dark">
-                            <tr>
-                                <th style="width: 3rem;"></th>
-                                <th>@Localizer[nameof(Resource.Category)]</th>
-                                <th style="width: 9rem;">@Localizer[nameof(Resource.Service)]</th>
-                                <th style="width: 9rem;">@Localizer[nameof(Resource.Active)]</th>
-                                <th style="width: 7rem;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in ServiceCategories!)
-                            {
-                                <tr class="acc-row @(ExpandedServiceCategoryId == item.ServiceCategoryId ? "is-open" : null)">
-                                    <td class="acc-toggle" @onclick="() => ToggleExpandedServiceCategory(item.ServiceCategoryId)">
-                                        <button class="acc-disc" type="button" title="@Localizer[nameof(Resource.Service)]">
-                                            <i class="fa fa-chevron-right"></i>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <span class="acc-name">@item.Name</span>
-                                    </td>
-                                    <td>
-                                        <span class="acc-count @(item.ServicesNumer == 0 ? "is-zero" : null)">@item.ServicesNumer</span>
-                                    </td>
-                                    <td>
-                                        <span class="acc-pill @(item.Active ? "is-on" : "is-off")">
+        <div class="pc-layout">
+
+            @* ================= Categorias ================= *@
+            <section class="pc-panel">
+                <header class="pc-panel-head">
+                    <b>@Localizer[nameof(Resource.Category)]</b>
+                    <ButtonFormNew OnClick="() => ShowModalAsync()"
+                                   TooTip="@Localizer[nameof(Resource.New)]"
+                                   Style="width:120px" />
+                </header>
+
+                <div class="pc-search">
+                    <AutoCompleteFilter ApplyFilter="SetFilterValue" Placeholder="Buscar categoria..." />
+                </div>
+
+                <GenericList MyList="ServiceCategories">
+                    <Body>
+                        @foreach (var item in ServiceCategories!)
+                        {
+                            <div class="pc-cat @(SelectedServiceCategoryId == item.ServiceCategoryId ? "is-selected" : null)"
+                                 @onclick="() => SelectCategoryAsync(item.ServiceCategoryId)">
+                                <div>
+                                    <div class="pc-cat-name">@item.Name</div>
+                                    <div class="pc-cat-meta">
+                                        @item.ServicesNumer @Localizer[nameof(Resource.Service)]
+                                        <span class="pc-pill @(item.Active ? "is-on" : "is-off")">
                                             @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
                                         </span>
-                                    </td>
-                                    <td>
-                                        <div class="acc-actions">
-                                            <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceCategoryId, true)" />
-                                            <ButtonDelete OnClick="() => DeleteAsync(item.ServiceCategoryId)" />
-                                        </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </div>
+                                <div class="pc-cat-tools">
+                                    <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceCategoryId, true)" />
+                                    <ButtonDelete OnClick="() => DeleteAsync(item.ServiceCategoryId)" />
+                                </div>
+                            </div>
+                        }
+                    </Body>
+                </GenericList>
 
-                                @if (ExpandedServiceCategoryId == item.ServiceCategoryId)
-                                {
-                                    <tr class="acc-expanded">
-                                        <td colspan="5">
-                                            <section class="acc-panel">
-                                                <div class="acc-card card-floating-section">
-                                                    <div class="acc-card-bar">
-                                                        <button class="btn btn-sm btn-gradient-primary d-flex align-items-center gap-2" @onclick="() => ShowModalServiceClientAsync(item.ServiceCategoryId)">
-                                                            <i class="fa fa-plus"></i> @Localizer[nameof(Resource.New)] @Localizer[nameof(Resource.Service)]
-                                                        </button>
-                                                    </div>
-
-                                                    @if (LoadingServiceCategoryIds.Contains(item.ServiceCategoryId))
-                                                    {
-                                                        <div class="acc-empty">
-                                                            <div class="spinner-border text-primary" role="status">
-                                                                <span class="visually-hidden">@Localizer["Loading"]</span>
-                                                            </div>
-                                                            <span>@Localizer["Loading"] @Localizer[nameof(Resource.Service)]...</span>
-                                                        </div>
-                                                    }
-
-                                                    @if (!LoadingServiceCategoryIds.Contains(item.ServiceCategoryId) && ServiceClientsByCategoryId.ContainsKey(item.ServiceCategoryId))
-                                                    {
-                                                        @if (ServiceClientsByCategoryId[item.ServiceCategoryId].Any())
-                                                        {
-                                                            <table class="acc-list">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>@Localizer[nameof(Resource.Service)]</th>
-                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.Cost)]</th>
-                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.Price)]</th>
-                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.Active)]</th>
-                                                                        <th style="width: 7rem;"></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach (var service in ServiceClientsByCategoryId[item.ServiceCategoryId])
-                                                                    {
-                                                                        <tr>
-                                                                            <td>
-                                                                                <div class="acc-item-name">@service.ServiceName</div>
-                                                                                @if (!string.IsNullOrWhiteSpace(service.Description))
-                                                                                {
-                                                                                    <div class="acc-item-meta">@service.Description</div>
-                                                                                }
-                                                                            </td>
-                                                                            <td class="acc-center">
-                                                                                <span class="acc-num">@service.Costo.ToString("N2")</span>
-                                                                            </td>
-                                                                            <td class="acc-center">
-                                                                                <span class="acc-num">@service.Price.ToString("N2")</span>
-                                                                            </td>
-                                                                            <td class="acc-center">
-                                                                                <span class="acc-pill @(service.Active ? "is-on" : "is-off")">
-                                                                                    @(service.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
-                                                                                </span>
-                                                                            </td>
-                                                                            <td>
-                                                                                <div class="acc-actions">
-                                                                                    <ButtonEdit OnClick="() => ShowModalServiceClientAsync(item.ServiceCategoryId, service.ServiceClientId, true)" />
-                                                                                    <ButtonDelete OnClick="() => DeleteServiceClientAsync(item.ServiceCategoryId, service.ServiceClientId)" />
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    }
-                                                                </tbody>
-                                                            </table>
-                                                        }
-                                                        else
-                                                        {
-                                                            <div class="acc-empty" role="alert">
-                                                                <span class="acc-empty-glyph"><i class="fa fa-concierge-bell"></i></span>
-                                                                <strong>@Localizer["NoRecordsFound"]</strong>
-                                                                <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
-                                                            </div>
-                                                        }
-                                                    }
-                                                </div>
-                                            </section>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
+                <div class="pc-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
+            </section>
 
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            @* ================= Servicios de la categoria ================= *@
+            <section class="pc-panel">
+                <header class="pc-panel-head">
+                    <b>
+                        <i class="fa fa-concierge-bell"></i>
+                        @(SelectedCategory?.Name ?? Localizer[nameof(Resource.Service)])
+                    </b>
+                    @if (SelectedServiceCategoryId is not null)
+                    {
+                        <ButtonFormNew OnClick="() => ShowModalServiceClientAsync(SelectedServiceCategoryId!.Value)"
+                                       TooTip="@($"{Localizer[nameof(Resource.New)]} {Localizer[nameof(Resource.Service)]}")"
+                                       Style="width:170px" />
+                    }
+                </header>
+
+                @if (SelectedServiceCategoryId is null)
+                {
+                    <div class="pc-empty">
+                        <span class="pc-empty-glyph"><i class="fa fa-hand-pointer"></i></span>
+                        <strong>Elija una categoria</strong>
+                        <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="pc-toolbar">
+                        <div class="pc-chips">
+                            <button type="button" class="pc-chip @(ServiceChip == "all" ? "is-on" : null)" @onclick="@(() => SetServiceChip("all"))">Todos</button>
+                            <button type="button" class="pc-chip @(ServiceChip == "active" ? "is-on" : null)" @onclick="@(() => SetServiceChip("active"))">@Localizer[nameof(Resource.Active)]</button>
+                            <button type="button" class="pc-chip @(ServiceChip == "inactive" ? "is-on" : null)" @onclick="@(() => SetServiceChip("inactive"))">@Localizer[nameof(Resource.Inactive)]</button>
+                        </div>
+                        <div class="pc-inline-search">
+                            <AutoCompleteFilter ApplyFilter="SetServiceFilter" Placeholder="Buscar servicio..." />
+                        </div>
+                    </div>
+
+                    @if (LoadingServiceCategoryIds.Contains(SelectedServiceCategoryId.Value))
+                    {
+                        <div class="pc-empty">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">@Localizer["Loading"]</span>
+                            </div>
+                            <span>@Localizer["Loading"] @Localizer[nameof(Resource.Service)]...</span>
+                        </div>
+                    }
+                    else if (FilteredServices.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="pc-table">
+                                <thead>
+                                    <tr>
+                                        <th>@Localizer[nameof(Resource.Service)]</th>
+                                        <th style="width: 8rem;">@Localizer[nameof(Resource.Cost)]</th>
+                                        <th style="width: 8rem;">@Localizer[nameof(Resource.Price)]</th>
+                                        <th style="width: 7rem;">@Localizer[nameof(Resource.Active)]</th>
+                                        <th style="width: 16rem;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var service in FilteredServices)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="pc-item-name">@service.ServiceName</div>
+                                                @if (!string.IsNullOrWhiteSpace(service.Description))
+                                                {
+                                                    <div class="pc-item-meta">@service.Description</div>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="pc-item-meta">@service.Costo.ToString("N2")</span>
+                                            </td>
+                                            <td>
+                                                <span class="pc-item-name">@service.Price.ToString("N2")</span>
+                                            </td>
+                                            <td>
+                                                <span class="pc-pill @(service.Active ? "is-on" : "is-off")">
+                                                    @(service.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="pc-actions">
+                                                    <ButtonRowText OnClick="() => ShowModalServiceClientAsync(SelectedServiceCategoryId!.Value, service.ServiceClientId, true)"
+                                                                   Icon="fa fa-pen-to-square"
+                                                                   Text="@Localizer[nameof(Resource.ButtonEdit)]" />
+                                                    <ButtonRowText OnClick="() => DeleteServiceClientAsync(SelectedServiceCategoryId!.Value, service.ServiceClientId)"
+                                                                   Icon="fa fa-trash"
+                                                                   Text="@Localizer[nameof(Resource.ButtonDelete)]"
+                                                                   CssClass="btn-row-text is-danger" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="pc-empty" role="alert">
+                            <span class="pc-empty-glyph"><i class="fa fa-concierge-bell"></i></span>
+                            <strong>@Localizer["NoRecordsFound"]</strong>
+                            <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+                        </div>
+                    }
+
+                    <div class="pc-panel-foot pc-count">
+                        @FilteredServices.Count / @SelectedServices.Count @Localizer[nameof(Resource.Service)]
+                    </div>
+                }
+            </section>
+
+        </div>
     </div>
 </div>

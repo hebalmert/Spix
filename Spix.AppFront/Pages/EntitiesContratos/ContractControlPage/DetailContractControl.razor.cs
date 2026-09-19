@@ -48,6 +48,41 @@ public partial class DetailContractControl
     private bool HasHotSpotDependencies => HasContractQue || HasContractBind;
     private bool CanActivateContract => ContractClient?.ContractState == ContractState.InProgress;
 
+    //Estado de cada elemento para la vista (solo lectura; no cambia ninguna accion ni la activacion)
+    private bool HasServer => ContractServer is not null && ContractServer.ContractServerId != Guid.Empty;
+    private bool HasIp => ContractIp is not null && ContractIp.ContractIpId != Guid.Empty;
+    private bool HasNode => ContractNode is not null && ContractNode.ContractNodeId != Guid.Empty;
+    private bool HasPlan => ContractPlan is not null && ContractPlan.ContractPlanId != Guid.Empty;
+    private bool HasMac => ContractMac is not null && ContractMac.ContractMacId != Guid.Empty;
+    private bool HasMap => ContractMap is not null && ContractMap.ContractMapId != Guid.Empty;
+
+    //Progreso de configuracion: informativo, la activacion la sigue validando el servidor
+    private List<string> MissingItems
+    {
+        get
+        {
+            var missing = new List<string>();
+            if (!HasServer) missing.Add("Servidor Gateway");
+            if (!HasIp) missing.Add("IP Cliente");
+            if (!HasNode) missing.Add("Nodo Acceso");
+            if (!HasPlan) missing.Add("Plan Cliente");
+            if (!HasMac) missing.Add("Mac Equipo");
+            if (!HasMap) missing.Add("Ubicacion");
+            if (UseHotSpotControl && !HasContractQue) missing.Add("Queue de Velocidad");
+            if (UseHotSpotControl && !HasContractBind) missing.Add("IpBinding Acceso");
+            return missing;
+        }
+    }
+
+    private int TotalItems => UseHotSpotControl ? 8 : 6;
+    private int DoneItems => TotalItems - MissingItems.Count;
+    private int ProgressPercent => DoneItems * 100 / TotalItems;
+
+    private static string StateClass(bool ok) => ok ? "is-ok" : "is-missing";
+    private static string StateIcon(bool ok) => ok ? "fa fa-check" : "fa fa-circle-exclamation";
+    private static string StateText(bool ok) => ok ? "Configurado" : "Falta";
+    private static string CheckText(bool ok) => ok ? "✓" : "✗";
+
     private string BaseUrl = "/api/v1/contractcontrols";
     private string BaseContractIpUrl = "/api/v1/contractips";
     private string BaseContractMacUrl = "/api/v1/contractmacs";

@@ -40,7 +40,7 @@
                             {
                                 <tr>
                                     <td>
-                                        <img src="@item.ImageFullPath" alt="Picture" width="90" height="90" style="border-radius:50%" />
+                                        <AvatarImage Url="@item.ImageFullPath" Icon="fa fa-id-badge" Size="90" Alt="@($"{item.FirstName} {item.LastName}")" />
                                     </td>
                                     <td>
                                         @item.FirstName @item.LastName

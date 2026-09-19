@@ -2,84 +2,85 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
-
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>IP Address Red</h3>
-
-        <!-- Botón + Filtro -->
-        <div class="row align-items-center mb-3">
-            <div class="col-md-5 d-flex justify-content-start ipnetwork-actions">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
-                <button class="btn-gradient-black-pool" @onclick="ShowPoolModalAsync">
-                    <i class="fa fa-layer-group"></i> Pool Nuevo
-                </button>
-                <button class="btn-gradient-danger-pool" @onclick="ShowDeletePoolModalAsync">
-                    <i class="fa fa-trash"></i> Borra Pool
-                </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-project-diagram"></i></span>
+            <div class="idx-head-text">
+                <h3>IP Address Red</h3>
+                <p>Direcciones IP de la red: nodos, servidores y equipos. Puede cargarlas y borrarlas por pool.</p>
             </div>
-            <div class="col-md-7 d-flex justify-content-end">
+
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@TotalRecords.ToString("N0") direcciones</span>
+                </div>
+            }
+        </div>
+
+        @* Acciones y buscador, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+            <ButtonFormDark OnClick="ShowPoolModalAsync" TooTip="Pool Nuevo" />
+            <ButtonFormRed OnClick="ShowDeletePoolModalAsync" TooTip="Borra Pool" />
+
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
-        <hr />
-        <GenericList MyList="IpNetworks">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Ip</th>
-                                <th>Descripcion</th>
-                                <th>Activa</th>
-                                <th>Asignada</th>
-                                <th>Excluida</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in IpNetworks!)
-                            {
-                                <tr>
-                                    <td>
-                                        @item.Ip
-                                    </td>
-                                    <td>
-                                        @item.Description
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Assigned" disabled />
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Excluded" disabled />
-                                    </td>
-                                    <td style="width:1px;">
 
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.IpNetworkId, true)" />
-                                        
-                                    </td>
-                                    <td style="width:1px;">
-                          
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.IpNetworkId)" />
-                                        
-                                    </td>
+        <section class="idx-panel">
+
+            <GenericList MyList="IpNetworks">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
+                                <tr>
+                                    <th>Ip</th>
+                                    <th>Descripcion</th>
+                                    <th class="text-center">Activa</th>
+                                    <th class="text-center">Asignada</th>
+                                    <th class="text-center">Excluida</th>
+                                    <th style="text-align:right">Acciones</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </Body>
-        </GenericList>
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+                            </thead>
+                            <tbody>
+                                @foreach (var item in IpNetworks!)
+                                {
+                                    <tr>
+                                        <td><span class="idx-name">@item.Ip</span></td>
+                                        <td>@item.Description</td>
+                                        <td class="text-center">
+                                            <i class="idx-flag @(item.Active ? "fa fa-circle-check is-on" : "fa fa-minus is-off")"></i>
+                                        </td>
+                                        <td class="text-center">
+                                            <i class="idx-flag @(item.Assigned ? "fa fa-circle-check is-on" : "fa fa-minus is-off")"></i>
+                                        </td>
+                                        <td class="text-center">
+                                            <i class="idx-flag @(item.Excluded ? "fa fa-circle-check is-on" : "fa fa-minus is-off")"></i>
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.IpNetworkId, true)" />
+                                                <ButtonDelete OnClick="() => DeleteAsync(item.IpNetworkId)" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+
+            <div class="idx-panel-foot">
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+            </div>
+        </section>
     </div>
 </div>
-

@@ -1,0 +1,27 @@
+﻿@page "/verificar"
+@page "/verificar/{Code}"
+@attribute [Authorize]
+@layout MainLayout
+
+<PageTitle>SPIX | Verificacion de firma electronica</PageTitle>
+
+<section class="verify">
+    <div class="verify__card">
+        <header class="verify__head">
+            <i class="fa fa-shield-halved"></i>
+            <div>
+                <h1>Verificacion de firma electronica</h1>
+                <p>Escriba el identificador impreso en la hoja de certificado del documento.</p>
+            </div>
+        </header>
+
+        <div class="verify__search">
+            <input class="form-control" placeholder="XXXX-XXXX-XXXX" maxlength="14" @bind="searchCode" @bind:event="oninput" />
+            <button class="btn btn-primary" @onclick="Search">
+                <i class="fa fa-magnifying-glass me-1"></i> Verificar
+            </button>
+        </div>
+
+        <SignatureCertificate Code="@appliedCode" />
+    </div>
+</section>

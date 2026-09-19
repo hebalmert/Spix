@@ -127,6 +127,9 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractDocumentTemplate> ContractDocumentTemplates => Set<ContractDocumentTemplate>();
     public DbSet<ContractDocumentTemplateField> ContractDocumentTemplateFields => Set<ContractDocumentTemplateField>();
     public DbSet<ContractSignedDocument> ContractSignedDocuments => Set<ContractSignedDocument>();
+    public DbSet<ContractSignatureCode> ContractSignatureCodes => Set<ContractSignatureCode>();
+
+    public DbSet<ContractSignatureEvent> ContractSignatureEvents => Set<ContractSignatureEvent>();
 
     //EntitiesSchedule
     public DbSet<ScheduleItem> ScheduleItems => Set<ScheduleItem>();

@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row mb-2">
             <div class="col-md-6">
-                <InputImageGeneral ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+                <InputImageGeneral ImageSelected="ImageSelected" ImageUrl="@ImageUrl" PlaceholderIcon="fa fa-user-tie" />
             </div>
             <div class="col-md-6">
                 <div class="mb-2">
@@ -81,12 +81,10 @@
                 <ValidationMessage For="@(() => Contractor.Email)" />
             </div>
             <div class="col-md-6">
-                <div class="input-group">
-                    <span class="input-group-text" style="width: 150px">
-                        @Localizer[nameof(Resource.UserName)]
-                    </span>
-                    <InputText class="form-control" placeholder="" @bind-Value="Contractor.UserName" />
-                </div>
+                <InputUserName @bind-Value="Contractor.UserName"
+                                   FirstName="@Contractor.FirstName"
+                                   LastName="@Contractor.LastName"
+                                   ReadOnly="@IsEditControl" />
                 <ValidationMessage For="@(() => Contractor.UserName)" />
             </div>
         </div>

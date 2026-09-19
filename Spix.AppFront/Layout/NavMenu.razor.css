@@ -178,7 +178,8 @@
     transform: translateX(1px);
 }
 
-@media (min-width: 641px) {
+/* Desde 992px el menu lateral siempre esta abierto; por debajo se usa el menu hamburguesa (igual que Rentx) */
+@media (min-width: 992px) {
     .navbar-toggler {
         display: none;
     }

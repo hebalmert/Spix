@@ -160,9 +160,17 @@ namespace Spix.AppService.ImplementContratos
                     .ToListAsync();
 
                 //Marca los que ya tienen fotos y firmas (el listado muestra el boton Aprobar)
-                var completeIds = await ContractRequirementRules.GetCompleteIdsAsync(_context, modelo.Select(x => x.ContractClientId).ToList());
+                var ids = modelo.Select(x => x.ContractClientId).ToList();
+                var completeIds = await ContractRequirementRules.GetCompleteIdsAsync(_context, ids);
+
+                //Y los que ya firmaron los dos documentos (ahi se esconde el boton de enviar la solicitud)
+                var signedIds = await ContractRequirementRules.GetSignedIdsAsync(_context, ids);
+
                 foreach (var item in modelo)
+                {
                     item.RequirementsComplete = completeIds.Contains(item.ContractClientId);
+                    item.SignaturesComplete = signedIds.Contains(item.ContractClientId);
+                }
 
                 return new ActionResponse<IEnumerable<ContractClient>>
                 {

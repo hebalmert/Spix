@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
@@ -60,6 +60,12 @@ public partial class FormContractClient
             ValueText = $"{ContractClient.Client!.FirstName} {ContractClient.Client!.LastName}";
         }
     }
+    //Correo del cliente: en creacion viene del cliente que se acaba de elegir,
+    //en edicion del cliente ya guardado en el contrato
+    private string? ClientEmail => IsEditControl
+        ? ContractClient?.Client?.Email
+        : Client?.Email;
+
     private async Task LoadStatus()
     {
         var responseHttp = await _repository.GetAsync<List<IntItemModel>>($"{BaseComboStatus}");

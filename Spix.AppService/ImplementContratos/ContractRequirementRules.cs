@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Spix.AppInfra;
 using Spix.DomainLogic.EnumTypes;
 
@@ -61,6 +61,23 @@ public static class ContractRequirementRules
             .ToListAsync();
 
         return withPhotos
+            .Where(id => signed.Any(x => x.ContractClientId == id && x.DocumentType == ContractDocumentType.ConsentData) &&
+                         signed.Any(x => x.ContractClientId == id && x.DocumentType == ContractDocumentType.Contract))
+            .ToHashSet();
+    }
+
+    //Contratos (de la lista dada) que ya tienen FIRMADOS los dos documentos.
+    //Se usa para esconder el boton de enviar la solicitud de firma.
+    public static async Task<HashSet<Guid>> GetSignedIdsAsync(DataContext context, List<Guid> contractClientIds)
+    {
+        var signed = await context.ContractSignedDocuments
+            .AsNoTracking()
+            .Where(x => contractClientIds.Contains(x.ContractClientId) && x.Signed)
+            .Select(x => new { x.ContractClientId, x.DocumentType })
+            .Distinct()
+            .ToListAsync();
+
+        return contractClientIds
             .Where(id => signed.Any(x => x.ContractClientId == id && x.DocumentType == ContractDocumentType.ConsentData) &&
                          signed.Any(x => x.ContractClientId == id && x.DocumentType == ContractDocumentType.Contract))
             .ToHashSet();

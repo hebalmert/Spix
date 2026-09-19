@@ -18,6 +18,8 @@ public partial class IndexProductCategory
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
+    private const decimal LowStockLimit = 15;
+
     private string Filter { get; set; } = string.Empty;
 
     private int CurrentPage = 1;
@@ -29,8 +31,59 @@ public partial class IndexProductCategory
 
     public List<ProductCategory>? ProductCategories { get; set; }
     public Dictionary<Guid, List<Product>> ProductsByCategoryId { get; set; } = new();
-    public Guid? ExpandedProductCategoryId { get; set; }
+    public Guid? SelectedProductCategoryId { get; set; }
     public HashSet<Guid> LoadingProductCategoryIds { get; set; } = new();
+
+    //Filtros del panel de productos (se resuelven en pantalla, sin volver al servidor)
+    private string ProductChip { get; set; } = "all";
+    private string ProductFilter { get; set; } = string.Empty;
+
+    private ProductCategory? SelectedCategory =>
+        ProductCategories?.FirstOrDefault(x => x.ProductCategoryId == SelectedProductCategoryId);
+
+    private List<Product> SelectedProducts =>
+        SelectedProductCategoryId is not null && ProductsByCategoryId.TryGetValue(SelectedProductCategoryId.Value, out var products)
+            ? products
+            : new List<Product>();
+
+    private int LowStockCount => SelectedProducts.Count(x => x.TotalInventario > 0 && x.TotalInventario <= LowStockLimit);
+
+    private int NoStockCount => SelectedProducts.Count(x => x.TotalInventario == 0);
+
+    private List<Product> FilteredProducts
+    {
+        get
+        {
+            var list = SelectedProducts.AsEnumerable();
+
+            list = ProductChip switch
+            {
+                "stock" => list.Where(x => x.TotalInventario > 0),
+                "low" => list.Where(x => x.TotalInventario > 0 && x.TotalInventario <= LowStockLimit),
+                "none" => list.Where(x => x.TotalInventario == 0),
+                "serials" => list.Where(x => x.WithSerials),
+                _ => list
+            };
+
+            return list.ToList();
+        }
+    }
+
+    private static string StockCss(decimal stock) =>
+        stock == 0 ? "is-none" : stock <= LowStockLimit ? "is-low" : "is-ok";
+
+    private void SetProductChip(string chip) => ProductChip = chip;
+
+    //El texto va al servidor: asi busca en TODOS los productos de la categoria, no solo en los cargados
+    private async Task SetProductFilter(string value)
+    {
+        ProductFilter = value;
+
+        if (SelectedProductCategoryId is not null)
+        {
+            await LoadProductsForCategory(SelectedProductCategoryId.Value);
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -40,15 +93,11 @@ public partial class IndexProductCategory
         }
     }
 
-    private async Task ToggleExpandedProductCategory(Guid productCategoryId)
+    private async Task SelectCategoryAsync(Guid productCategoryId)
     {
-        if (ExpandedProductCategoryId == productCategoryId)
-        {
-            ExpandedProductCategoryId = null;
-            return;
-        }
-
-        ExpandedProductCategoryId = productCategoryId;
+        SelectedProductCategoryId = productCategoryId;
+        ProductChip = "all";
+        ProductFilter = string.Empty;
 
         if (!ProductsByCategoryId.ContainsKey(productCategoryId))
         {
@@ -62,6 +111,10 @@ public partial class IndexProductCategory
         await InvokeAsync(StateHasChanged);
 
         var url = $"{baseUrlProducts}?guidId={productCategoryId}&page=1&recordsnumber=100";
+        if (!string.IsNullOrWhiteSpace(ProductFilter))
+        {
+            url += $"&filter={Uri.EscapeDataString(ProductFilter)}";
+        }
         var responseHttp = await _repository.GetAsync<List<Product>>(url);
 
         LoadingProductCategoryIds.Remove(productCategoryId);
@@ -153,7 +206,7 @@ public partial class IndexProductCategory
             if (result.Succeeded)
             {
                 await Cargar(CurrentPage);
-                ExpandedProductCategoryId = productCategoryId;
+                SelectedProductCategoryId = productCategoryId;
                 await LoadProductsForCategory(productCategoryId);
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
@@ -198,11 +251,21 @@ public partial class IndexProductCategory
         ProductCategories = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
 
-        ExpandedProductCategoryId = null;
         ProductsByCategoryId.Clear();
         LoadingProductCategoryIds.Clear();
 
+        //Se conserva la categoria elegida si sigue en la lista; si no, se toma la primera
+        var previous = SelectedProductCategoryId;
+        SelectedProductCategoryId = ProductCategories?.Any(x => x.ProductCategoryId == previous) == true
+            ? previous
+            : ProductCategories?.FirstOrDefault()?.ProductCategoryId;
+
         await InvokeAsync(StateHasChanged);
+
+        if (SelectedProductCategoryId is not null)
+        {
+            await LoadProductsForCategory(SelectedProductCategoryId.Value);
+        }
     }
 
     private async Task DeleteAsync(Guid id)
@@ -226,6 +289,12 @@ public partial class IndexProductCategory
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+
+        if (SelectedProductCategoryId == id)
+        {
+            SelectedProductCategoryId = null;
+        }
+
         await Cargar(CurrentPage);
     }
 
@@ -250,11 +319,8 @@ public partial class IndexProductCategory
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+
+        SelectedProductCategoryId = productCategoryId;
         await Cargar(CurrentPage);
-        ExpandedProductCategoryId = productCategoryId;
-        await LoadProductsForCategory(productCategoryId);
     }
 }
-
-
-

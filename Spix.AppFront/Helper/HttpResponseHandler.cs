@@ -72,13 +72,18 @@ public class HttpResponseHandler
                 break;
 
             case HttpStatusCode.NotFound:
+                //Los servicios devuelven 404 tambien cuando la operacion no se puede hacer
+                //(por ejemplo, borrar algo con datos relacionados): se muestra SU mensaje,
+                //que ya viene traducido del backend, y solo si no hay se usa el texto generico.
                 title = Localizer[nameof(Resource.HttpCode_NotFoundTitle)];
-                message = title = Localizer[nameof(Resource.HttpCode_NotFoundMsg)];
+                message = !string.IsNullOrWhiteSpace(errorMessage)
+                    ? errorMessage
+                    : Localizer[nameof(Resource.HttpCode_NotFoundMsg)];
                 icon = SweetAlertIcon.Warning;
                 break;
 
             case HttpStatusCode.InternalServerError:
-                title = title = Localizer[nameof(Resource.HttpCode_ServerErrorTitle)];
+                title = Localizer[nameof(Resource.HttpCode_ServerErrorTitle)];
                 message = !string.IsNullOrWhiteSpace(errorMessage)
                     ? errorMessage
                     : Localizer[nameof(Resource.HttpCode_ServerErrorMsg)];
@@ -93,7 +98,7 @@ public class HttpResponseHandler
 
                 if (isLoginError)
                 {
-                    title = title = Localizer[nameof(Resource.HttpCode_LoginTitle)];
+                    title = Localizer[nameof(Resource.HttpCode_LoginTitle)];
                     message = Localizer[nameof(Resource.HttpCode_LoginMsg)];
                     icon = SweetAlertIcon.Warning;
                 }

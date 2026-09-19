@@ -31,21 +31,14 @@
 
 main {
     flex: 1;
+    min-width: 0;
 }
 
+/* Base (pantalla chica): el sidebar es una barra arriba con el menu hamburguesa del NavMenu.
+   El ancho fijo, el alto completo y el colapso solo aplican desde 992px (igual que Rentx). */
 .sidebar {
     background: linear-gradient(180deg, #0a1a3f, #0e2a5e);
-    width: 280px;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    transition: width 0.18s ease;
-    overflow: visible;
     z-index: 3500;
-}
-
-.sidebar-collapsed {
-    width: 58px;
 }
 
 .sidebar-toggle {
@@ -77,8 +70,9 @@ main {
     right: -15px;
 }
 
+/* El logo del sidebar colapsado solo se ve en pantalla grande */
 .sidebar-collapsed-logo {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     width: 100%;
@@ -134,12 +128,10 @@ main {
             text-overflow: ellipsis;
         }
 
-@media (max-width: 640.98px) {
-    .page.sidebar-layout-expanded ::deep .modal,
-    .page.sidebar-layout-collapsed ::deep .modal {
-        left: 0;
-        right: 0;
-        width: 100% !important;
+@media (max-width: 991.98px) {
+    /* En pantalla chica no hay colapso: se usa el menu hamburguesa */
+    .sidebar-toggle {
+        display: none;
     }
 
     .top-row {
@@ -151,7 +143,7 @@ main {
         }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 992px) {
     .page {
         flex-direction: row;
     }
@@ -161,10 +153,21 @@ main {
         height: 100vh;
         position: sticky;
         top: 0;
+        overflow: visible;
+        transition: width 0.18s ease;
     }
 
     .sidebar.sidebar-collapsed {
         width: 58px;
+    }
+
+    /* Sidebar colapsado: se oculta el menu y queda solo el logo */
+    .sidebar-collapsed .sidebar-menu {
+        display: none;
+    }
+
+    .sidebar-collapsed .sidebar-collapsed-logo {
+        display: flex;
     }
 
         .top-row.auth ::deep a:first-child {

@@ -10,16 +10,14 @@
             <i class="fa @SidebarToggleIcon"></i>
         </button>
 
-        @if (!isSidebarCollapsed)
-        {
+        @* El NavMenu siempre existe: en pantalla chica es la barra con menu hamburguesa.
+           En pantalla grande, con el sidebar colapsado, el CSS lo oculta y muestra solo el logo. *@
+        <div class="sidebar-menu">
             <NavMenu />
-        }
-        else
-        {
-            <a class="sidebar-collapsed-logo" href="/dashboard">
-                <img src="https://storagespix.blob.core.windows.net/imgwwwroot/LogoNexxtplanet.png?v=20260708-2" alt="NexxtPlanet" />
-            </a>
-        }
+        </div>
+        <a class="sidebar-collapsed-logo" href="/dashboard">
+            <img src="https://storagespix.blob.core.windows.net/imgwwwroot/LogoNexxtplanet.png?v=20260708-2" alt="NexxtPlanet" />
+        </a>
     </div>
 
     <main>

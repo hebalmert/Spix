@@ -1,0 +1,81 @@
+﻿/* Buscador de filtrado en linea: campo limpio con lupa y boton de borrar. */
+.ac-filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ac-filter-icon {
+    position: absolute;
+    left: 12px;
+    color: #8a93a8;
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.ac-filter-input {
+    width: 100%;
+    padding: 8px 34px 8px 34px;
+    color: #0a1a3f;
+    font-size: 13px;
+    border: 1px solid #cfd8ea;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+    .ac-filter-input:focus {
+        border-color: #0d6efd;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, .15);
+    }
+
+/* Con boton de lupa (modo Enter) el texto deja espacio a la derecha */
+.ac-filter-input.has-button {
+    padding-right: 62px;
+}
+
+.ac-filter-go {
+    position: absolute;
+    right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    color: #ffffff;
+    border: 0;
+    border-radius: 7px;
+    background: #0d6efd;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+    .ac-filter-go:hover {
+        background: #0b5ed7;
+    }
+
+.ac-filter-clear {
+    position: absolute;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: #6b7690;
+    border: 0;
+    border-radius: 50%;
+    background: #eef1f6;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+    .ac-filter-clear:hover {
+        color: #dc3545;
+        background: #f6e7e9;
+    }
+
+/* Cuando hay lupa, la x se corre para no montarse */
+.ac-filter-input.has-button ~ .ac-filter-clear {
+    right: 38px;
+}

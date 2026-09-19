@@ -2,84 +2,84 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
-
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Nodos de Acceso</h3>
-
-        <!-- Botón + Filtro -->
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-tower-broadcast"></i></span>
+            <div class="idx-head-text">
+                <h3>Nodos de Acceso</h3>
+                <p>Puntos de acceso de la red, su zona, su IP y su ubicacion en el mapa.</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@TotalRecords.ToString("N0") nodos</span>
+                </div>
+            }
+        </div>
+
+        @* Acciones y buscador, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
-        <hr />
-        <GenericList MyList="Nodes">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>SSID</th>
-                                <th>Type</th>
-                                <th>Zona</th>
-                                <th>IP</th>
-                                <th>Activa</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Nodes!)
-                            {
-                                <tr>
-                                    <td>
-                                        @item.NodesName
-                                    </td>
-                                    <td>
-                                        @item.Operation!.OperationName
-                                    </td>
-                                    <td>
-                                        @item.Zone!.ZoneName
-                                    </td>
-                                    <td>
-                                        @item.IpNetwork!.Ip
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowMapAsync(item)"
-                                                       TooTip="Mapa"
-                                                       Icon="fa fa-map-location-dot" />
-                                    </td>
-                                    <td style="width:1px;">
 
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.NodeId, true)" />
-                                        
-                                    </td>
-                                    <td style="width:1px;">
-                          
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.NodeId)" />
-                                        
-                                    </td>
+        <section class="idx-panel">
+
+            <GenericList MyList="Nodes">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
+                                <tr>
+                                    <th>SSID</th>
+                                    <th>Type</th>
+                                    <th>Zona</th>
+                                    <th>IP</th>
+                                    <th>Activa</th>
+                                    <th style="text-align:right">Acciones</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </Body>
-        </GenericList>
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Nodes!)
+                                {
+                                    <tr>
+                                        <td><span class="idx-name">@item.NodesName</span></td>
+                                        <td>@item.Operation!.OperationName</td>
+                                        <td>@item.Zone!.ZoneName</td>
+                                        <td>@item.IpNetwork!.Ip</td>
+                                        <td>
+                                            <span class="idx-pill @(item.Active ? "is-on" : "is-off")">
+                                                @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowMapAsync(item)"
+                                                               TooTip="Mapa"
+                                                               Icon="fa fa-map-location-dot" />
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.NodeId, true)" />
+                                                <ButtonDelete OnClick="() => DeleteAsync(item.NodeId)" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+
+            <div class="idx-panel-foot">
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+            </div>
+        </section>
     </div>
 </div>
-

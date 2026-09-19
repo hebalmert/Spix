@@ -1,0 +1,35 @@
+﻿/* Aviso de firma electronica: texto versionado que el firmante acepta */
+.sign-terms {
+    border: 1px solid #e3e9f3;
+    border-radius: 10px;
+    background: #f8faff;
+    padding: 12px 14px;
+}
+
+.sign-terms__head {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0a1a3f;
+    margin-bottom: 6px;
+}
+
+.sign-terms__version {
+    margin-left: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6c7a94;
+}
+
+.sign-terms__text {
+    max-height: 110px;
+    overflow-y: auto;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #334155;
+}
+
+.sign-code {
+    letter-spacing: 8px;
+    font-size: 20px;
+    font-weight: 700;
+}

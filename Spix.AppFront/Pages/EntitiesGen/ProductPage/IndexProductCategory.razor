@@ -4,157 +4,198 @@
 
 <div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">@Localizer[nameof(Resource.ProductCategory)]</h3>
+        <h3 class="mb-1">@Localizer[nameof(Resource.ProductCategory)]</h3>
+        <p class="pc-sub">Elija una categoria a la izquierda y trabaje sus productos a la derecha.</p>
 
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+        @* Resumen de la categoria seleccionada *@
+        <div class="pc-kpis">
+            <div class="pc-kpi">
+                <small>@Localizer[nameof(Resource.ProductCategory)]</small>
+                <b>@(ProductCategories?.Count ?? 0)</b>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
-                <FilterComponent ApplyFilter="SetFilterValue" />
+            <div class="pc-kpi">
+                <small>@Localizer[nameof(Resource.Product)]</small>
+                <b>@SelectedProducts.Count</b>
+            </div>
+            <div class="pc-kpi is-warn">
+                <small>Stock bajo (15 o menos)</small>
+                <b>@LowStockCount</b>
+            </div>
+            <div class="pc-kpi is-bad">
+                <small>Sin stock</small>
+                <b>@NoStockCount</b>
             </div>
         </div>
 
-        <hr />
-        <GenericList MyList="ProductCategories">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table align-middle acc-table">
-                        <thead class="table-dark">
-                            <tr>
-                                <th style="width: 3rem;"></th>
-                                <th>@Localizer[nameof(Resource.ProductCategory)]</th>
-                                <th style="width: 9rem;">@Localizer[nameof(Resource.Product)]</th>
-                                <th style="width: 9rem;">@Localizer[nameof(Resource.Active)]</th>
-                                <th style="width: 7rem;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in ProductCategories!)
-                            {
-                                <tr class="acc-row @(ExpandedProductCategoryId == item.ProductCategoryId ? "is-open" : null)">
-                                    <td class="acc-toggle" @onclick="() => ToggleExpandedProductCategory(item.ProductCategoryId)">
-                                        <button class="acc-disc" type="button" title="@Localizer[nameof(Resource.Product)]">
-                                            <i class="fa fa-chevron-right"></i>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <span class="acc-name">@item.Name</span>
-                                    </td>
-                                    <td>
-                                        <span class="acc-count @(item.ProductsNumer == 0 ? "is-zero" : null)">@item.ProductsNumer</span>
-                                    </td>
-                                    <td>
-                                        <span class="acc-pill @(item.Active ? "is-on" : "is-off")">
+        <div class="pc-layout">
+
+            @* ================= Categorias ================= *@
+            <section class="pc-panel">
+                <header class="pc-panel-head">
+                    <b>@Localizer[nameof(Resource.ProductCategory)]</b>
+                    <ButtonFormNew OnClick="() => ShowModalAsync()"
+                                   TooTip="@Localizer[nameof(Resource.New)]"
+                                   Style="width:120px" />
+                </header>
+
+                <div class="pc-search">
+                    <AutoCompleteFilter ApplyFilter="SetFilterValue" Placeholder="Buscar categoria..." />
+                </div>
+
+                <GenericList MyList="ProductCategories">
+                    <Body>
+                        @foreach (var item in ProductCategories!)
+                        {
+                            <div class="pc-cat @(SelectedProductCategoryId == item.ProductCategoryId ? "is-selected" : null)"
+                                 @onclick="() => SelectCategoryAsync(item.ProductCategoryId)">
+                                <div>
+                                    <div class="pc-cat-name">@item.Name</div>
+                                    <div class="pc-cat-meta">
+                                        @item.ProductsNumer @Localizer[nameof(Resource.Product)]
+                                        <span class="pc-pill @(item.Active ? "is-on" : "is-off")">
                                             @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
                                         </span>
-                                    </td>
-                                    <td>
-                                        <div class="acc-actions">
-                                            <ButtonEdit OnClick="() => ShowModalAsync(item.ProductCategoryId, true)" />
-                                            <ButtonDelete OnClick="() => DeleteAsync(item.ProductCategoryId)" />
-                                        </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </div>
+                                <div class="pc-cat-tools">
+                                    <ButtonEdit OnClick="() => ShowModalAsync(item.ProductCategoryId, true)" />
+                                    <ButtonDelete OnClick="() => DeleteAsync(item.ProductCategoryId)" />
+                                </div>
+                            </div>
+                        }
+                    </Body>
+                </GenericList>
 
-                                @if (ExpandedProductCategoryId == item.ProductCategoryId)
-                                {
-                                    <tr class="acc-expanded">
-                                        <td colspan="5">
-                                            <section class="acc-panel">
-                                                <div class="acc-card card-floating-section">
-                                                    <div class="acc-card-bar">
-                                                        <button class="btn btn-sm btn-gradient-primary d-flex align-items-center gap-2" @onclick="() => ShowModalProductAsync(item.ProductCategoryId)">
-                                                            <i class="fa fa-plus"></i> @Localizer[nameof(Resource.New)] @Localizer[nameof(Resource.Product)]
-                                                        </button>
-                                                    </div>
-
-                                                    @if (LoadingProductCategoryIds.Contains(item.ProductCategoryId))
-                                                    {
-                                                        <div class="acc-empty">
-                                                            <div class="spinner-border text-primary" role="status">
-                                                                <span class="visually-hidden">@Localizer["Loading"]</span>
-                                                            </div>
-                                                            <span>@Localizer["Loading"] @Localizer[nameof(Resource.Product)]...</span>
-                                                        </div>
-                                                    }
-
-                                                    @if (!LoadingProductCategoryIds.Contains(item.ProductCategoryId) && ProductsByCategoryId.ContainsKey(item.ProductCategoryId))
-                                                    {
-                                                        @if (ProductsByCategoryId[item.ProductCategoryId].Any())
-                                                        {
-                                                            <table class="acc-list">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>@Localizer[nameof(Resource.Product)]</th>
-                                                                        <th class="acc-center" style="width: 6rem;">@Localizer[nameof(Resource.Stock)]</th>
-                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.WithSerials)]</th>
-                                                                        <th class="acc-center" style="width: 8rem;">@Localizer[nameof(Resource.Active)]</th>
-                                                                        <th style="width: 9rem;"></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach (var product in ProductsByCategoryId[item.ProductCategoryId])
-                                                                    {
-                                                                        <tr>
-                                                                            <td>
-                                                                                <div class="acc-item-name">@product.ProductName</div>
-                                                                                @if (!string.IsNullOrWhiteSpace(product.Mark?.MarkName) || !string.IsNullOrWhiteSpace(product.MarkModel?.MarkModelName))
-                                                                                {
-                                                                                    <div class="acc-item-meta">@product.Mark?.MarkName @(string.IsNullOrWhiteSpace(product.MarkModel?.MarkModelName) ? null : "· " + product.MarkModel!.MarkModelName)</div>
-                                                                                }
-                                                                            </td>
-                                                                            <td class="acc-center">
-                                                                                <span class="acc-num @(product.TotalInventario == 0 ? "is-none" : product.TotalInventario <= 15 ? "is-low" : null)">@product.TotalInventario</span>
-                                                                            </td>
-                                                                            <td class="acc-center">
-                                                                                <span class="acc-chip @(product.WithSerials ? null : "is-muted")">
-                                                                                    @(product.WithSerials ? Localizer[nameof(Resource.Yes)] : Localizer[nameof(Resource.No)])
-                                                                                </span>
-                                                                            </td>
-                                                                            <td class="acc-center">
-                                                                                <span class="acc-pill @(product.Active ? "is-on" : "is-off")">
-                                                                                    @(product.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
-                                                                                </span>
-                                                                            </td>
-                                                                            <td>
-                                                                                <div class="acc-actions">
-                                                                                    <ButtonGeneric OnClick="() => ShowModalStockAsync(product.ProductId)" TooTip="@Localizer[nameof(Resource.Stock)]" Icon="fa fa-warehouse" />
-                                                                                    <ButtonEdit OnClick="() => ShowModalProductAsync(product.ProductCategoryId, product.ProductId, true)" />
-                                                                                    <ButtonDelete OnClick="() => DeleteProductAsync(product.ProductCategoryId, product.ProductId)" />
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    }
-                                                                </tbody>
-                                                            </table>
-                                                        }
-                                                        else
-                                                        {
-                                                            <div class="acc-empty" role="alert">
-                                                                <span class="acc-empty-glyph"><i class="fa fa-box-open"></i></span>
-                                                                <strong>@Localizer["NoRecordsFound"]</strong>
-                                                                <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
-                                                            </div>
-                                                        }
-                                                    }
-                                                </div>
-                                            </section>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
+                <div class="pc-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
+            </section>
 
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            @* ================= Productos de la categoria ================= *@
+            <section class="pc-panel">
+                <header class="pc-panel-head">
+                    <b>
+                        <i class="fa fa-folder-open"></i>
+                        @(SelectedCategory?.Name ?? Localizer[nameof(Resource.Product)])
+                    </b>
+                    @if (SelectedProductCategoryId is not null)
+                    {
+                        <ButtonFormNew OnClick="() => ShowModalProductAsync(SelectedProductCategoryId!.Value)"
+                                       TooTip="@($"{Localizer[nameof(Resource.New)]} {Localizer[nameof(Resource.Product)]}")"
+                                       Style="width:170px" />
+                    }
+                </header>
+
+                @if (SelectedProductCategoryId is null)
+                {
+                    <div class="pc-empty">
+                        <span class="pc-empty-glyph"><i class="fa fa-hand-pointer"></i></span>
+                        <strong>Elija una categoria</strong>
+                        <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="pc-toolbar">
+                        <div class="pc-chips">
+                            <button type="button" class="pc-chip @(ProductChip == "all" ? "is-on" : null)" @onclick="@(() => SetProductChip("all"))">Todos</button>
+                            <button type="button" class="pc-chip @(ProductChip == "stock" ? "is-on" : null)" @onclick="@(() => SetProductChip("stock"))">Con stock</button>
+                            <button type="button" class="pc-chip @(ProductChip == "low" ? "is-on" : null)" @onclick="@(() => SetProductChip("low"))">Stock bajo</button>
+                            <button type="button" class="pc-chip @(ProductChip == "none" ? "is-on" : null)" @onclick="@(() => SetProductChip("none"))">Sin stock</button>
+                            <button type="button" class="pc-chip @(ProductChip == "serials" ? "is-on" : null)" @onclick="@(() => SetProductChip("serials"))">@Localizer[nameof(Resource.WithSerials)]</button>
+                        </div>
+                        <div class="pc-inline-search">
+                            <AutoCompleteFilter ApplyFilter="SetProductFilter"
+                                                Placeholder="Buscar producto..." />
+                        </div>
+                    </div>
+
+                    @if (LoadingProductCategoryIds.Contains(SelectedProductCategoryId.Value))
+                    {
+                        <div class="pc-empty">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">@Localizer["Loading"]</span>
+                            </div>
+                            <span>@Localizer["Loading"] @Localizer[nameof(Resource.Product)]...</span>
+                        </div>
+                    }
+                    else if (FilteredProducts.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="pc-table">
+                                <thead>
+                                    <tr>
+                                        <th>@Localizer[nameof(Resource.Product)]</th>
+                                        <th style="width: 10rem;">@Localizer[nameof(Resource.Stock)]</th>
+                                        <th style="width: 7rem;">@Localizer[nameof(Resource.WithSerials)]</th>
+                                        <th style="width: 7rem;">@Localizer[nameof(Resource.Active)]</th>
+                                        <th style="width: 22rem;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var product in FilteredProducts)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="pc-item-name">@product.ProductName</div>
+                                                @if (!string.IsNullOrWhiteSpace(product.Mark?.MarkName) || !string.IsNullOrWhiteSpace(product.MarkModel?.MarkModelName))
+                                                {
+                                                    <div class="pc-item-meta">@product.Mark?.MarkName @(string.IsNullOrWhiteSpace(product.MarkModel?.MarkModelName) ? null : "· " + product.MarkModel!.MarkModelName)</div>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="pc-stock @StockCss(product.TotalInventario)">
+                                                    <i class="fa fa-circle"></i>@product.TotalInventario
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="pc-pill @(product.WithSerials ? "is-on" : "is-off")">
+                                                    @(product.WithSerials ? Localizer[nameof(Resource.Yes)] : Localizer[nameof(Resource.No)])
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="pc-pill @(product.Active ? "is-on" : "is-off")">
+                                                    @(product.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="pc-actions">
+                                                    <ButtonRowText OnClick="() => ShowModalStockAsync(product.ProductId)"
+                                                                   Icon="fa fa-warehouse"
+                                                                   Text="@Localizer[nameof(Resource.Stock)]"
+                                                                   CssClass="btn-row-text is-primary" />
+                                                    <ButtonRowText OnClick="() => ShowModalProductAsync(product.ProductCategoryId, product.ProductId, true)"
+                                                                   Icon="fa fa-pen-to-square"
+                                                                   Text="@Localizer[nameof(Resource.ButtonEdit)]" />
+                                                    <ButtonRowText OnClick="() => DeleteProductAsync(product.ProductCategoryId, product.ProductId)"
+                                                                   Icon="fa fa-trash"
+                                                                   Text="@Localizer[nameof(Resource.ButtonDelete)]"
+                                                                   CssClass="btn-row-text is-danger" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="pc-empty" role="alert">
+                            <span class="pc-empty-glyph"><i class="fa fa-box-open"></i></span>
+                            <strong>@Localizer["NoRecordsFound"]</strong>
+                            <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+                        </div>
+                    }
+
+                    <div class="pc-panel-foot pc-count">
+                        @FilteredProducts.Count / @SelectedProducts.Count @Localizer[nameof(Resource.Product)]
+                    </div>
+                }
+            </section>
+
+        </div>
     </div>
 </div>

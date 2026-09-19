@@ -1,8 +1,10 @@
+﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.AuthenticationProviders;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.AppFront.Shared;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
@@ -21,12 +23,24 @@ public partial class Login
     [Inject] private ILoginService _loginService { get; set; } = null!;
     [Inject] private HttpResponseHandler _httpHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
+    [Inject] private ILocalStorageService _localStorage { get; set; } = null!;
 
     private LoginDTO loginDTO = new();
     private SessionModelDTO sessionModelDTO = new();
     private bool rememberMe;
     private bool isProcessing = false;
     private bool showPassword = false;
+    //Si venia de una direccion protegida (el QR de un documento), se vuelve alli
+    private async Task<string?> TakeReturnUrlAsync()
+    {
+        var returnUrl = await _localStorage.GetItemAsStringAsync(UnauthorizedRedirect.ReturnUrlKey);
+        if (string.IsNullOrWhiteSpace(returnUrl))
+            return null;
+
+        await _localStorage.RemoveItemAsync(UnauthorizedRedirect.ReturnUrlKey);
+        return returnUrl;
+    }
+
     private async Task LoginAsync()
     {
         isProcessing = true;
@@ -56,7 +70,7 @@ public partial class Login
         await _sessionModel.SetSessionAsync(sessionModelDTO, "SessionDTO");
 
         isProcessing = false;
-        var dashboardUrl = GetDashboardUrl(roles);
+        var dashboardUrl = await TakeReturnUrlAsync() ?? GetDashboardUrl(roles);
 
         _navigation.NavigateTo(dashboardUrl);
     }

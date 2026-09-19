@@ -2,87 +2,93 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
-
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>@Localizer[nameof(Resource.Control_Client)]</h3>
-
-        <!-- Botón + Filtro -->
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-user-large"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.Control_Client)]</h3>
+                <p>Administre sus clientes, sus datos de contacto y su acceso al portal.</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@TotalRecords.ToString("N0") clientes</span>
+                </div>
+            }
+        </div>
+
+        @* Acciones y buscador, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
-        <hr />
-        <GenericList MyList="Clients">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>@Localizer[nameof(Resource.Photo)]</th>
-                                <th>@Localizer[nameof(Resource.Name)]</th>
-                                <th>@Localizer[nameof(Resource.Phone)]</th>
-                                <th>@Localizer[nameof(Resource.Email)]</th>
-                                <th>@Localizer[nameof(Resource.Active)]</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Clients!)
-                            {
-                                <tr>
-                                    <td>
-                                        <img src="@item.ImageFullPath" alt="Picture" width="90" height="90" style="border-radius:50%" />
-                                    </td>
-                                    <td>
-                                        @item.FirstName @item.LastName
-                                    </td>
-                                    <td>
-                                        @item.PhoneNumber
-                                    </td>
-                                    <td>
-                                        @item.Email
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
-                                    </td>
-                                    <td style="width:1px;">
-                                        @if (item.CreateAccount)
-                                        {
-                                            <ButtonGeneric OnClick="() => ResendActivationEmailAsync(item.ClientId)"
-                                                           TooTip="Re-Email"
-                                                           Icon="fa fa-envelope" />
-                                        }
-                                    </td>
-                                    <td style="width:1px;">
 
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ClientId, true)" />
-                                        
-                                    </td>
-                                    <td style="width:1px;">
-                          
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.ClientId)" />
-                                        
-                                    </td>
+        <section class="idx-panel">
+
+            <GenericList MyList="Clients">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer[nameof(Resource.Name)]</th>
+                                    <th>@Localizer[nameof(Resource.Phone)]</th>
+                                    <th>@Localizer[nameof(Resource.Email)]</th>
+                                    <th>@Localizer[nameof(Resource.Active)]</th>
+                                    <th style="text-align:right">Acciones</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </Body>
-        </GenericList>
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Clients!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-who">
+                                                <AvatarImage Url="@item.ImageFullPath" Icon="fa fa-user-large" Size="46" Alt="@($"{item.FirstName} {item.LastName}")" />
+                                                <div>
+                                                    <div class="idx-name">@item.FirstName @item.LastName</div>
+                                                    <div class="idx-meta">@item.Document</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@item.PhoneNumber</td>
+                                        <td>@item.Email</td>
+                                        <td>
+                                            <span class="idx-pill @(item.Active ? "is-on" : "is-off")">
+                                                @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                @if (item.CreateAccount)
+                                                {
+                                                    <ButtonGeneric OnClick="() => ResendActivationEmailAsync(item.ClientId)"
+                                                                   TooTip="Re-Email"
+                                                                   Icon="fa fa-envelope" />
+                                                }
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.ClientId, true)" />
+                                                <ButtonDelete OnClick="() => DeleteAsync(item.ClientId)" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+
+            <div class="idx-panel-foot">
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+            </div>
+        </section>
     </div>
 </div>
-

@@ -1,92 +1,114 @@
 ﻿@page "/contractcontrol"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.EnumTypes
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">@Localizer[nameof(Resource.Control_Contracts)]</h3>
 
-        <!-- Botón + Filtro -->
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary btn-bor d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-clipboard-list"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.Control_Contracts)]</h3>
+                <p>Seguimiento de los contratos y el detalle de cada uno.</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@TotalRecords.ToString("N0") contratos</span>
+                </div>
+            }
+        </div>
+
+        @* Acciones y buscador, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+
+            @* Filtro por estado. Esta pantalla solo maneja contratos ya operativos,
+               por eso no aparecen Borrador, Por Aprobacion, Anulado ni Terminado. *@
+            <div class="input-group" style="width:240px; min-width:200px;">
+                <span class="input-group-text bg-light">
+                    <i class="fa fa-filter text-dark"></i>
+                </span>
+                <select class="form-select" value="@StatusFilter" @onchange="StatusFilterChanged">
+                    <option value="0">Todos los estados</option>
+                    <option value="@((int)ContractState.InProgress)">@Localizer[nameof(Resource.ContractState_InProgress)]</option>
+                    <option value="@((int)ContractState.Active)">@Localizer[nameof(Resource.ContractState_Active)]</option>
+                    <option value="@((int)ContractState.Exempt)">@Localizer[nameof(Resource.ContractState_Exempt)]</option>
+                    <option value="@((int)ContractState.Suspended)">@Localizer[nameof(Resource.ContractState_Suspended)]</option>
+                </select>
+            </div>
+
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr />
-        <GenericList MyList="ContractClients">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>@Localizer[nameof(Resource.Contracts)]</th>
-                                <th>@Localizer[nameof(Resource.Client)]</th>
-                                <th>@Localizer[nameof(Resource.Contractor)]</th>
-                                <th>@Localizer[nameof(Resource.EstratoSocial)]</th>
-                                <th>@Localizer[nameof(Resource.Equipment)]</th>
-                                <th>@Localizer[nameof(Resource.Invoice)]</th>
-                                <th>@Localizer[nameof(Resource.Status)]</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in ContractClients!)
-                            {
+        <section class="idx-panel">
+
+            <GenericList MyList="ContractClients">
+                <Body>
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
                                 <tr>
-                                    <td>@item.ControlContrato</td>
-                                    <td>@item.Client!.FirstName @item.Client.LastName</td>
-                                    <td>@item.Contractor!.FirstName @item.Contractor.LastName</td>
-                                    <td>@GetEstratoNumber(item.EstratoSocial?.EstratoSocialName)</td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.EquipoEmpres" disabled />
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input" checked="@item.EnvoiceClient" disabled />
-                                    </td>
-                                    <td>
-                                        <StatusBadge Value="@item.ContractState" />
-                                    </td>
-
-                                  
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModaDetailsAsync(item.ContractClientId)"
-                                                       TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
-                                                       Icon="fa fa-id-card" />
-                                    </td>
-
-                                    <td style="width:1px;">
-                                        |
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ContractClientId, true)" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.ContractClientId)" />
-                                    </td>
+                                    <th>@Localizer["Table_Contract"]</th>
+                                    <th>@Localizer[nameof(Resource.Client)]</th>
+                                    <th>@Localizer[nameof(Resource.Contractor)]</th>
+                                    <th class="text-center">@Localizer["Table_Stratum"]</th>
+                                    <th class="text-center">@Localizer[nameof(Resource.Equipment)]</th>
+                                    <th class="text-center">@Localizer[nameof(Resource.Invoice)]</th>
+                                    <th>@Localizer[nameof(Resource.Status)]</th>
+                                    <th style="text-align:right">Acciones</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ContractClients!)
+                                {
+                                    <tr>
+                                        <td><span class="idx-name">@item.ControlContrato</span></td>
+                                        <td>@item.Client!.FirstName @item.Client.LastName</td>
+                                        <td>
+                                            <span class="idx-tip" data-tip="@($"{item.Contractor!.FirstName} {item.Contractor.LastName}")">@item.Contractor!.FirstName</span>
+                                        </td>
+                                        <td class="text-center">@GetEstratoNumber(item.EstratoSocial?.EstratoSocialName)</td>
+                                        <td class="text-center">
+                                            <i class="idx-flag @(item.EquipoEmpres ? "fa fa-circle-check is-on" : "fa fa-minus is-off")"></i>
+                                        </td>
+                                        <td class="text-center">
+                                            <i class="idx-flag @(item.EnvoiceClient ? "fa fa-circle-check is-on" : "fa fa-minus is-off")"></i>
+                                        </td>
+                                        <td>
+                                            <StatusBadge Value="@item.ContractState" />
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowModaDetailsAsync(item.ContractClientId)"
+                                                               TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
+                                                               Icon="fa fa-id-card" />
+
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.ContractClientId, true)" />
+                                                <ButtonDelete OnClick="() => DeleteAsync(item.ContractClientId)" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Body>
+            </GenericList>
+
+            @if (ContractClients is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
-        <!-- Tabla -->
-        <hr />
-        @if (ContractClients is not null)
-        {
-            <!-- Paginación -->
-            <Pagination CurrentPage="CurrentPage"
-                        SelectedPage="SelectedPage"
-                        TotalPages="TotalPages" />
-        }
+            }
+        </section>
     </div>
 </div>

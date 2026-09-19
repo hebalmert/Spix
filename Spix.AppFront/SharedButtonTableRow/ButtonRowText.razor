@@ -1,0 +1,24 @@
+@* Boton de fila CON TEXTO (icono + etiqueta). Para listados donde la accion debe leerse,
+   no solo verse: "Stock por bodega", "Editar", "Borrar".
+   Variantes por CssClass: btn-row-text (normal), is-primary, is-danger. *@
+<button type="@Type" class="@CssClass" style="@Style" @onclick="@OnClick" title="@TooTip">
+    <i class="@Icon"></i><span>@Text</span>
+</button>
+
+@code {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = default!;
+
+    [Parameter] public string Icon { get; set; } = "fa fa-list";
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public string CssClass { get; set; } = "btn-row-text";
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string? TooTip { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public string? Style { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Text ??= Localizer[nameof(Resource.ButtonDetails)];
+        TooTip ??= Text;
+    }
+}

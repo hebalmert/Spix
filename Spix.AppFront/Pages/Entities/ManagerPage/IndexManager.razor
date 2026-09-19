@@ -43,15 +43,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            @if (!string.IsNullOrEmpty(item.ImageFullPath))
-                                            {
-                                                <img src="@item.ImageFullPath" alt="Picture" width="90" height="90"
-                                                     style="border-radius:50%" onerror="this.src='/Images/NoImage.png'" />
-                                            }
-                                            else
-                                            {
-                                                <img src="https://spiximage.blob.core.windows.net/imgwwwroot/NoImage.png" alt="NotPicture" width="90" height="90" style="border-radius:50%" />
-                                            }
+                                            <AvatarImage Url="@item.ImageFullPath" Icon="fa fa-user-tie" Size="90" />
                                         </td>
                                         <td>
                                             @item.FirstName @item.LastName
