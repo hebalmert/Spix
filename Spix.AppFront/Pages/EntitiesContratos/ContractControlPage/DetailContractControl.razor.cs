@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -569,6 +569,25 @@ public partial class DetailContractControl
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await LoadContractBind(Id);
+    }
+
+    //Cambio de estado del contrato: las opciones y las reglas las pone el backend
+    private async Task ShowChangeStateAsync()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "ContractClientId", Id },
+            { "CurrentState", ContractClient!.ContractState }
+        };
+
+        await _modalService.ShowAsync(typeof(ChangeContractState), parameters, async result =>
+        {
+            if (result.Succeeded)
+            {
+                await LoadContractClient();
+                await _sweetAlert.FireAsync(Localizer["ContractState_ChangeTitle"], Localizer["ContractState_ChangeOk"], SweetAlertIcon.Success);
+            }
+        });
     }
 
     private async Task ActivateContractAsync()

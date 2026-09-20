@@ -40,6 +40,9 @@ public partial class FormContractClient
     private string ValueText = string.Empty;
     private string BaseView = "/contractclients";
     private string BaseClient = "/api/v1/clients";
+    //En este modulo el contrato solo se mueve entre Draft, Por aprobacion y En progreso.
+    //Activar, suspender, anular o retirar se hace en DetailContractControl, que es donde
+    //se toca el MikroTik: si se cambiara aqui, el contrato quedaria suspendido pero con servicio.
     private string BaseComboStatus = "/api/v1/contractclients/loadContractClientStatus";
     private string BaseComboContractor = "/api/v1/combosData/ComboContractor";
     private string BaseComboClients = "/api/v1/combosData/ComboClients";
@@ -47,6 +50,20 @@ public partial class FormContractClient
     private string BaseComboCity = "/api/v1/combosData/ComboCity";
     private string BaseComboZone = "/api/v1/zones/loadCombo";
     private string BaseComboEstratoSocial = "/api/v1/estratossociales/loadCombo";
+
+    //Se enciende cuando intentan guardar sin elegir estado
+    private bool StatusMissing;
+
+    //Valor del combo de estado: un int, igual que CountryId en FormCorporation
+    private int StatusValue => (int)ContractClient.ContractState;
+
+    //El estado solo se edita aqui mientras el contrato se esta armando. Ya operativo
+    //(Activo, Exento, Suspendido, Anulado, Terminado) se muestra pero no se cambia.
+    private bool StatusEditable =>
+        !IsEditControl ||
+        ContractClient.ContractState == ContractState.Draft ||
+        ContractClient.ContractState == ContractState.PendingApproval ||
+        ContractClient.ContractState == ContractState.InProgress;
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,7 +85,7 @@ public partial class FormContractClient
 
     private async Task LoadStatus()
     {
-        var responseHttp = await _repository.GetAsync<List<IntItemModel>>($"{BaseComboStatus}");
+        var responseHttp = await _repository.GetAsync<List<IntItemModel>>(BaseComboStatus);
         bool errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandler)
         {
@@ -102,21 +119,25 @@ public partial class FormContractClient
         ContractClient.EstratoSocialId = null;
     }
 
-    private async Task StatusChanged(ChangeEventArgs e)
+    //Sin estado elegido no se manda nada al servidor
+    private async Task HandleSubmitAsync()
+    {
+        if (ContractClient.ContractState == 0)
+        {
+            StatusMissing = true;
+            return;
+        }
+
+        StatusMissing = false;
+        await OnSubmit.InvokeAsync();
+    }
+
+    private void StatusChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out var value))
         {
-            if (int.TryParse(e?.Value?.ToString(), out int modelo))
-            {
-                if (value == 1) { ContractClient.ContractState = ContractState.Draft; }
-                if (value == 2) { ContractClient.ContractState = ContractState.PendingApproval; }
-                if (value == 3) { ContractClient.ContractState = ContractState.Active; }
-                if (value == 4) { ContractClient.ContractState = ContractState.Exempt; }
-                if (value == 5) { ContractClient.ContractState = ContractState.Suspended; }
-                if (value == 6) { ContractClient.ContractState = ContractState.Cancelled; }
-                if (value == 7) { ContractClient.ContractState = ContractState.Terminated; }
-                if (value == 8) { ContractClient.ContractState = ContractState.InProgress; }
-            }
+            ContractClient.ContractState = (ContractState)value;
+            StatusMissing = false;
         }
     }
 

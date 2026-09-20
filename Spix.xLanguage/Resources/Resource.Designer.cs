@@ -259,6 +259,105 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Created on.
+        /// </summary>
+        public static string Audit_Created {
+            get {
+                return ResourceManager.GetString("Audit_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created by.
+        /// </summary>
+        public static string Audit_CreatedBy {
+            get {
+                return ResourceManager.GetString("Audit_CreatedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspension date.
+        /// </summary>
+        public static string Audit_Date {
+            get {
+                return ResourceManager.GetString("Audit_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Origin.
+        /// </summary>
+        public static string Audit_Origin {
+            get {
+                return ResourceManager.GetString("Audit_Origin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reactivated by.
+        /// </summary>
+        public static string Audit_ReactivatedBy {
+            get {
+                return ResourceManager.GetString("Audit_ReactivatedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reactivation date.
+        /// </summary>
+        public static string Audit_ReactivatedDate {
+            get {
+                return ResourceManager.GetString("Audit_ReactivatedDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reason.
+        /// </summary>
+        public static string Audit_Reason {
+            get {
+                return ResourceManager.GetString("Audit_Reason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Registered by.
+        /// </summary>
+        public static string Audit_RegisteredBy {
+            get {
+                return ResourceManager.GetString("Audit_RegisteredBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signature request sent.
+        /// </summary>
+        public static string Audit_SignatureSent {
+            get {
+                return ResourceManager.GetString("Audit_SignatureSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audit.
+        /// </summary>
+        public static string Audit_Tip {
+            get {
+                return ResourceManager.GetString("Audit_Tip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Record audit.
+        /// </summary>
+        public static string Audit_Title {
+            get {
+                return ResourceManager.GetString("Audit_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Camara.
         /// </summary>
         public static string Button_Camara {
@@ -664,6 +763,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The contract status was updated..
+        /// </summary>
+        public static string ContractState_ChangeOk {
+            get {
+                return ResourceManager.GetString("ContractState_ChangeOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract status will change to {0}. Do you want to continue?.
+        /// </summary>
+        public static string ContractState_ChangeQuestion {
+            get {
+                return ResourceManager.GetString("ContractState_ChangeQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change status.
+        /// </summary>
+        public static string ContractState_ChangeTitle {
+            get {
+                return ResourceManager.GetString("ContractState_ChangeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Draft.
         /// </summary>
         public static string ContractState_Draft {
@@ -691,11 +817,74 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to To suspend, the contract must have an IpBinding in blocked or regular; in bypassed the client would keep the service..
+        /// </summary>
+        public static string ContractState_NeedsBindControlled {
+            get {
+                return ResourceManager.GetString("ContractState_NeedsBindControlled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To suspend, the contract must have an IpBinding in bypassed: that is how an active contract looks..
+        /// </summary>
+        public static string ContractState_NeedsBypassed {
+            get {
+                return ResourceManager.GetString("ContractState_NeedsBypassed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To close the contract, first remove its Queue and IpBinding: nothing of this client can remain in the MikroTik..
+        /// </summary>
+        public static string ContractState_NeedsCleanMikrotik {
+            get {
+                return ResourceManager.GetString("ContractState_NeedsCleanMikrotik", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To activate, the contract must have its Queue and IpBinding configured..
+        /// </summary>
+        public static string ContractState_NeedsQueueAndBind {
+            get {
+                return ResourceManager.GetString("ContractState_NeedsQueueAndBind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is nothing to change from this status..
+        /// </summary>
+        public static string ContractState_NoTransitions {
+            get {
+                return ResourceManager.GetString("ContractState_NoTransitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The status of an operational contract is changed from Contract Control, where the MikroTik is updated..
+        /// </summary>
+        public static string ContractState_OnlyFromControl {
+            get {
+                return ResourceManager.GetString("ContractState_OnlyFromControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pending approval.
         /// </summary>
         public static string ContractState_PendingApproval {
             get {
                 return ResourceManager.GetString("ContractState_PendingApproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reason.
+        /// </summary>
+        public static string ContractState_Reason {
+            get {
+                return ResourceManager.GetString("ContractState_Reason", resourceCulture);
             }
         }
         
@@ -3922,6 +4111,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select new status].
+        /// </summary>
+        public static string Select_NewStatus {
+            get {
+                return ResourceManager.GetString("Select_NewStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Node].
         /// </summary>
         public static string Select_Node {
@@ -4318,11 +4516,146 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reactivate.
+        /// </summary>
+        public static string Suspend_ActivateButton {
+            get {
+                return ResourceManager.GetString("Suspend_ActivateButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract was reactivated and its service restored..
+        /// </summary>
+        public static string Suspend_ActivateOk {
+            get {
+                return ResourceManager.GetString("Suspend_ActivateOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract {0} of {1} will be reactivated and its access will be restored in the MikroTik. Do you want to continue?.
+        /// </summary>
+        public static string Suspend_ActivateQuestion {
+            get {
+                return ResourceManager.GetString("Suspend_ActivateQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reactivate service.
+        /// </summary>
+        public static string Suspend_ActivateTitle {
+            get {
+                return ResourceManager.GetString("Suspend_ActivateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the IpBindings is missing data (server, IP, MAC or MikroTik id) and cannot be suspended..
+        /// </summary>
+        public static string Suspend_BindIncomplete {
+            get {
+                return ResourceManager.GetString("Suspend_BindIncomplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspend.
+        /// </summary>
+        public static string Suspend_Button {
+            get {
+                return ResourceManager.GetString("Suspend_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract must have an IpBinding in bypassed to be suspended: that is how an active contract looks..
+        /// </summary>
+        public static string Suspend_NeedsBypassed {
+            get {
+                return ResourceManager.GetString("Suspend_NeedsBypassed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no active HotSpot type named bypassed, which is needed to restore the service..
+        /// </summary>
+        public static string Suspend_NoBypassedType {
+            get {
+                return ResourceManager.GetString("Suspend_NoBypassedType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no active HotSpot type named regular, which is needed to suspend..
+        /// </summary>
+        public static string Suspend_NoRegularType {
+            get {
+                return ResourceManager.GetString("Suspend_NoRegularType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract was suspended and its access blocked..
+        /// </summary>
+        public static string Suspend_Ok {
+            get {
+                return ResourceManager.GetString("Suspend_Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only an active contract can be suspended..
+        /// </summary>
+        public static string Suspend_OnlyActive {
+            get {
+                return ResourceManager.GetString("Suspend_OnlyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract {0} of {1} will be suspended and its access will be blocked in the MikroTik. Do you want to continue?.
+        /// </summary>
+        public static string Suspend_Question {
+            get {
+                return ResourceManager.GetString("Suspend_Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspend contract.
+        /// </summary>
+        public static string Suspend_Title {
+            get {
+                return ResourceManager.GetString("Suspend_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contract.
         /// </summary>
         public static string Table_Contract {
             get {
                 return ResourceManager.GetString("Table_Contract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string Table_Loading {
+            get {
+                return ResourceManager.GetString("Table_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no records to show.
+        /// </summary>
+        public static string Table_NoRecords {
+            get {
+                return ResourceManager.GetString("Table_NoRecords", resourceCulture);
             }
         }
         
@@ -4602,6 +4935,15 @@ namespace Spix.xLanguage.Resources {
         public static string Validation_Required {
             get {
                 return ResourceManager.GetString("Validation_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select a status..
+        /// </summary>
+        public static string Validation_SelectStatus {
+            get {
+                return ResourceManager.GetString("Validation_SelectStatus", resourceCulture);
             }
         }
         

@@ -161,4 +161,14 @@ public partial class IndexContractControl
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar(CurrentPage);
     }
+
+    //Rastro del registro: cuando se creo, quien lo creo y cuando se le pidio la firma
+    //al cliente. Va en un boton para no gastar columnas de la tabla.
+    private async Task ShowAuditAsync(ContractClient item)
+    {
+        await AuditAlert.ShowAsync(_sweetAlert, Localizer["Audit_Title"],
+            (Localizer["Audit_Created"], item.DateCreado.ToLocalTime().ToString("dd/MM/yyyy HH:mm")),
+            (Localizer["Audit_CreatedBy"], item.UsuarioOwner),
+            (Localizer["Audit_SignatureSent"], item.SignatureRequestedAt?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")));
+    }
 }

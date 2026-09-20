@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +25,34 @@ public class ContractSuspendedController : ControllerBase
     {
         _contractSuspendedService = contractSuspendedService;
         _localizer = localizer;
+    }
+
+    //Suspender: reglas propias de este modulo
+    [HttpPost("{id}/suspend")]
+    public async Task<IActionResult> SuspendAsync(Guid id, [FromQuery] string? motivo)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _contractSuspendedService.SuspendAsync(id, motivo, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Listado del registro de suspensiones, con sus totales
+    [HttpGet("records")]
+    public async Task<IActionResult> GetRecordsAsync([FromQuery] string? filter, [FromQuery] DateTime? desde,
+        [FromQuery] DateTime? hasta, [FromQuery] bool soloAbiertas = true)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _contractSuspendedService.GetRecordsAsync(filter, desde, hasta, soloAbiertas, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Contratos activos que se pueden suspender (autocompletar del Create)
+    [HttpGet("active")]
+    public async Task<IActionResult> SearchActiveAsync([FromQuery] string filter)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _contractSuspendedService.SearchActiveAsync(filter, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
     }
 
     [HttpGet]

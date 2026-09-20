@@ -1384,6 +1384,12 @@ code {
         background: #fff6e0;
     }
 
+    /* Para lo que corta el servicio: suspendido, anulado */
+    .idx-pill.is-danger {
+        color: #ffffff;
+        background: #dc3545;
+    }
+
 /* Si / No de una sola columna, cuando la fila tiene varios booleanos */
 .idx-flag {
     font-size: 15px;
@@ -1441,6 +1447,7 @@ code {
    ================================================================ */
 
 .btn-gradient-blue,
+.btn-gradient-green,
 .btn-gradient-dark,
 .btn-gradient-red {
     align-items: center;
@@ -1462,6 +1469,7 @@ code {
 
     /* Al pasar el mouse sube, aclara el tono y estira la sombra */
     .btn-gradient-blue:hover,
+    .btn-gradient-green:hover,
     .btn-gradient-dark:hover,
     .btn-gradient-red:hover {
         color: #fff;
@@ -1472,6 +1480,7 @@ code {
 
     /* Al pulsar se hunde */
     .btn-gradient-blue:active,
+    .btn-gradient-green:active,
     .btn-gradient-dark:active,
     .btn-gradient-red:active {
         transform: translateY(1px);
@@ -1479,6 +1488,7 @@ code {
     }
 
     .btn-gradient-blue:disabled,
+    .btn-gradient-green:disabled,
     .btn-gradient-dark:disabled,
     .btn-gradient-red:disabled {
         opacity: .65;
@@ -1493,6 +1503,15 @@ code {
 
     .btn-gradient-blue:hover {
         background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 45%, #3b82f6 100%);
+    }
+
+/* Accion afirmativa: activar, aprobar */
+.btn-gradient-green {
+    background: linear-gradient(135deg, #17a673 0%, #0f8a5f 55%, #0a6b4c 100%);
+}
+
+    .btn-gradient-green:hover {
+        background: linear-gradient(135deg, #22c58c 0%, #14a172 55%, #0d8259 100%);
     }
 
 /* Accion secundaria: volver, procesos en bloque */

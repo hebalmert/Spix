@@ -131,6 +131,8 @@ public class DataContext : IdentityDbContext<User>
 
     public DbSet<ContractSignatureEvent> ContractSignatureEvents => Set<ContractSignatureEvent>();
 
+    public DbSet<ContractSuspended> ContractSuspendeds => Set<ContractSuspended>();
+
     //EntitiesSchedule
     public DbSet<ScheduleItem> ScheduleItems => Set<ScheduleItem>();
     public DbSet<ServiceRequest> ServiceRequests => Set<ServiceRequest>();

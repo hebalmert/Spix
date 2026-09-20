@@ -88,11 +88,19 @@ namespace Spix.AppService.ImplementContratos
                     (int)ContractState.InProgress
                 };
 
-                List<IntItemModel> list = _enumMultilLanguageService
-                    .GetEnumSelectList<ContractState>(nameof(Resource.Select_Status))
+                //Igual que CorporationService.ComboAsync: el backend entrega la lista lista para pintar,
+                //con el elemento neutro traducido en la primera posicion. El front no filtra nada.
+                List<IntItemModel> todos = _enumMultilLanguageService
+                    .GetEnumSelectList<ContractState>(nameof(Resource.Select_Status));
+
+                IntItemModel neutro = todos.First();
+
+                List<IntItemModel> list = todos
                     .Where(x => contractClientStates.Contains(x.Value))
                     .OrderBy(x => Array.IndexOf(contractClientStates, x.Value))
                     .ToList();
+
+                list.Insert(0, neutro);
 
                 return new ActionResponse<IEnumerable<IntItemModel>>
                 {
@@ -152,9 +160,15 @@ namespace Spix.AppService.ImplementContratos
 
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
 
-                //Del mas nuevo al mas viejo
+                //Orden del trabajo: primero lo que hay que atender (Draft), luego lo que espera
+                //aprobacion, luego lo que se esta configurando, y de ultimo el resto.
+                //Dentro de cada estado, del mas nuevo al mas viejo.
                 var modelo = await queryable
-                    .OrderByDescending(x => x.DateCreado)
+                    .OrderBy(x => x.ContractState == ContractState.Draft ? 0
+                                : x.ContractState == ContractState.PendingApproval ? 1
+                                : x.ContractState == ContractState.InProgress ? 2
+                                : 3)
+                    .ThenByDescending(x => x.DateCreado)
                     .ThenByDescending(x => x.ControlContrato)
                     .Paginate(pagination)
                     .ToListAsync();

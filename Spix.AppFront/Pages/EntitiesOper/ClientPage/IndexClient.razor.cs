@@ -148,4 +148,12 @@ public partial class IndexClient
 
         await _sweetAlert.FireAsync("Re-Email", "Correo de activacion enviado correctamente.", SweetAlertIcon.Success);
     }
+
+    //Rastro del registro: por ahora el sistema solo guarda cuando se creo.
+    //Va en un boton para no gastar una columna de la tabla.
+    private async Task ShowAuditAsync(Client item)
+    {
+        await AuditAlert.ShowAsync(_sweetAlert, Localizer["Audit_Title"],
+            (Localizer["Audit_Created"], item.DateCreated?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")));
+    }
 }

@@ -1,8 +1,10 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.DomainLogic.EntitiesContractDTO;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 using System.Net;
@@ -11,64 +13,135 @@ namespace Spix.AppFront.Pages.EntitiesContratos.ContractSuspendedPage;
 
 public partial class IndexContractSuspended
 {
-    private const string ContractBindRequiredMessage = "El contrato no tiene un IpBinding activo configurado.";
     private const string HotSpotActivationRequirementsMessage = "MikroTik Hotspot";
 
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
-    [Inject] private IStringLocalizer<Resource> _localizer { get; set; } = null!;
+    [Inject] private ModalService _modalService { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
 
     private const string BaseUrl = "api/v1/contractsuspended";
+
     private string Filter { get; set; } = string.Empty;
-    private List<ContractSuspendedDTO> Contracts { get; set; } = new();
+    private DateTime? Desde { get; set; }
+    private DateTime? Hasta { get; set; }
+    private bool SoloAbiertas { get; set; } = true;
 
-    private async Task SearchAsync(ChangeEventArgs e)
+    private SuspendedListDTO? Data;
+    private List<SuspendedRecordDTO>? Records;
+
+    protected override async Task OnInitializedAsync()
     {
-        Filter = e.Value?.ToString()?.Trim() ?? string.Empty;
+        await LoadAsync();
+    }
 
-        if (Filter.Length < 2)
+    private async Task LoadAsync()
+    {
+        var url = $"{BaseUrl}/records?soloAbiertas={SoloAbiertas}";
+
+        if (!string.IsNullOrWhiteSpace(Filter))
         {
-            Contracts.Clear();
+            url += $"&filter={Uri.EscapeDataString(Filter)}";
+        }
+        if (Desde.HasValue)
+        {
+            url += $"&desde={Desde.Value:yyyy-MM-dd}";
+        }
+        if (Hasta.HasValue)
+        {
+            url += $"&hasta={Hasta.Value:yyyy-MM-dd}";
+        }
+
+        var responseHttp = await _repository.GetAsync<SuspendedListDTO>(url);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
-        }
 
-        var responseHttp = await _repository.GetAsync<List<ContractSuspendedDTO>>(
-            $"{BaseUrl}?filter={Uri.EscapeDataString(Filter)}");
-        if (!await _responseHandler.HandleErrorAsync(responseHttp))
+        Data = responseHttp.Response;
+        Records = Data?.Records ?? new();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SetFilterValue(string value)
+    {
+        Filter = value;
+        await LoadAsync();
+    }
+
+    private async Task DesdeChanged(ChangeEventArgs e)
+    {
+        Desde = DateTime.TryParse(e.Value?.ToString(), out var fecha) ? fecha : null;
+        await LoadAsync();
+    }
+
+    private async Task HastaChanged(ChangeEventArgs e)
+    {
+        Hasta = DateTime.TryParse(e.Value?.ToString(), out var fecha) ? fecha : null;
+        await LoadAsync();
+    }
+
+    private async Task SoloAbiertasChanged(ChangeEventArgs e)
+    {
+        SoloAbiertas = bool.TryParse(e.Value?.ToString(), out var valor) && valor;
+        await LoadAsync();
+    }
+
+    //Suspender: se elige un contrato activo y el backend hace todo el proceso
+    private async Task ShowSuspendAsync()
+    {
+        await _modalService.ShowAsync(typeof(CreateContractSuspended), null, async result =>
         {
-            Contracts = responseHttp.Response ?? new();
-        }
+            if (result.Succeeded)
+            {
+                await LoadAsync();
+                await _sweetAlert.FireAsync("Suspension", "El contrato quedo suspendido.", SweetAlertIcon.Success);
+            }
+        });
     }
 
-    private Task ClearAsync()
+    private async Task ShowMotivoAsync(SuspendedRecordDTO item)
     {
-        Filter = string.Empty;
-        Contracts.Clear();
-        return Task.CompletedTask;
+        await _sweetAlert.FireAsync(Localizer["Audit_Reason"], item.Motivo, SweetAlertIcon.Info);
     }
 
-    private async Task ActivateAsync(ContractSuspendedDTO contract)
+    //Rastro de la suspension: quien la registro, cuando, de donde vino y, si ya se
+    //reactivo, quien la cerro. Va en un boton para no gastar una columna de la tabla.
+    private async Task ShowAuditAsync(SuspendedRecordDTO item)
     {
+        await AuditAlert.ShowAsync(_sweetAlert, Localizer["Audit_Title"],
+            (Localizer["Audit_RegisteredBy"], item.UserByName),
+            (Localizer["Audit_Date"], item.DateSuspended.ToLocalTime().ToString("dd/MM/yyyy HH:mm")),
+            (Localizer["Audit_Origin"], item.Origin == SuspendedOrigin.Corte ? "Corte" : "Manual"),
+            (Localizer["Audit_Reason"], item.Motivo),
+            (Localizer["Audit_ReactivatedBy"], item.UserByNameReactivated),
+            (Localizer["Audit_ReactivatedDate"], item.DateReactivated?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")));
+    }
+
+    //Reactivar: MikroTik a bypassed, contrato a Activo y se cierra el registro
+    private async Task ActivateAsync(SuspendedRecordDTO item)
+    {
+        //Se pregunta antes de tocar el equipo, igual que el borrado de los demas modulos:
+        //un clic por error no puede devolverle el servicio a un cliente suspendido.
         var confirmation = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Activar contrato",
-            Text = $"Desea activar el contrato {contract.ControlContrato} de {contract.ClientFullName}?",
+            Title = Localizer["Suspend_ActivateTitle"],
+            Text = Localizer["Suspend_ActivateQuestion", item.ControlContrato, item.ClientName],
             Icon = SweetAlertIcon.Question,
             ShowCancelButton = true,
-            ConfirmButtonText = "Activar",
-            CancelButtonText = "Cancelar"
+            ConfirmButtonText = Localizer["Suspend_ActivateButton"],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
         if (confirmation.IsDismissed || confirmation.Value != "true")
             return;
 
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{contract.ContractClientId}/activate", new { });
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{item.ContractClientId}/activate", new { });
 
         if (responseHttp.HttpResponseMessage?.StatusCode == HttpStatusCode.BadRequest)
         {
             var errorMessage = await responseHttp.GetErrorMessageAsync();
-            var mikrotikConnectionMessage = _localizer[nameof(Resource.Mikrotik_Connection_Error)].Value;
+            var mikrotikConnectionMessage = Localizer[nameof(Resource.Mikrotik_Connection_Error)].Value;
 
             if (string.Equals(errorMessage, mikrotikConnectionMessage, StringComparison.OrdinalIgnoreCase))
             {
@@ -87,16 +160,15 @@ public partial class IndexContractSuspended
                     SweetAlertIcon.Warning);
                 return;
             }
-
         }
 
         if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 
-        Contracts.Remove(contract);
+        await LoadAsync();
         await _sweetAlert.FireAsync(
-            "Contrato activado",
-            "El contrato fue activado correctamente.",
+            Localizer["Suspend_ActivateTitle"],
+            Localizer["Suspend_ActivateOk"],
             SweetAlertIcon.Success);
     }
 }

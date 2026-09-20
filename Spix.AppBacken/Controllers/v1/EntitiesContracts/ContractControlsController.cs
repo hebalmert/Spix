@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +7,7 @@ using Spix.AppBack.Helper;
 using Spix.AppServiceX.InterfaceContratos;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.AppResponses;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.Pagination;
 
 namespace Spix.AppBack.Controllers.v1.EntitiesContracts
@@ -27,6 +28,38 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             _contractControlUnitOfWork = contractControlUnitOfWork;
             _configuration = configuration;
             _localizer = localizer;
+        }
+
+        //Estados a los que puede pasar este contrato. Combo de seguridad alta:
+        //vive en el controlador del modulo, no en ComboDatasController.
+        [HttpGet("loadStateChangeOptions/{id}")]
+        public async Task<ActionResult<IEnumerable<IntItemModel>>> GetStateChangeOptions(Guid id)
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _contractControlUnitOfWork.GetStateChangeOptionsAsync(id, userClaimsInfo.UserName);
+
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+
+            return BadRequest(response.Message);
+        }
+
+        //Cambio de estado del contrato. Es el unico punto donde se cambia, porque es la
+        //pantalla que tambien administra el MikroTik.
+        [HttpPut("changeState/{id}/{newState:int}")]
+        public async Task<IActionResult> ChangeState(Guid id, int newState, [FromQuery] string? motivo)
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _contractControlUnitOfWork.ChangeStateAsync(id, newState, motivo, userClaimsInfo.UserName);
+
+            if (response.WasSuccess)
+            {
+                return Ok(response.Result);
+            }
+
+            return BadRequest(response.Message);
         }
 
         [HttpGet]

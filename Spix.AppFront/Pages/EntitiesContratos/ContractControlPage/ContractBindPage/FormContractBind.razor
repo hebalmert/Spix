@@ -1,4 +1,5 @@
-<EditForm Model="ContractBind" OnSubmit="OnSubmit">
+﻿@* OnValidSubmit: si falta el tipo de acceso no se envia nada al servidor *@
+<EditForm Model="ContractBind" OnValidSubmit="HandleValidSubmitAsync">
     <DataAnnotationsValidator />
     <GenericSelectWrapper Tmodel="IntItemModel" Items="HotSpotTypes">
         <Body>
@@ -26,6 +27,7 @@
                 }
             </select>
         </div>
+        <ValidationMessage For="@(() => ContractBind.HotSpotTypeId)" />
         </Body>
     </GenericSelectWrapper>
 

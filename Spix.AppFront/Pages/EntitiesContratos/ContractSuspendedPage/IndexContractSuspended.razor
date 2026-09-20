@@ -1,76 +1,159 @@
-@page "/contractsuspended"
+﻿@page "/contractsuspended"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
-
 @using Spix.DomainLogic.EntitiesContractDTO
+@using Spix.DomainLogic.EnumTypes
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Contratos Suspendidos</h3>
 
-        <div class="row g-2 align-items-start mb-3">
-            <div class="col-12 col-md-8">
-                <div class="input-group">
-                    <span class="input-group-text" style="width:125px">Cedula o nombre</span>
-                    <input class="form-control"
-                           placeholder="Buscar por cedula o nombre del cliente..."
-                           value="@Filter"
-                           @oninput="SearchAsync" />
-                </div>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-ban"></i></span>
+            <div class="idx-head-text">
+                <h3>Contratos Suspendidos</h3>
+                <p>Registro de las suspensiones, manuales y de corte, con su monto al momento de suspender.</p>
             </div>
-            <div class="col-12 col-md-4 d-flex justify-content-end">
-                <ButtonGeneric OnClick="ClearAsync"
-                               Icon="fa fa-rotate"
-                               TooTip="Limpiar"
-                               CssClass="btn-mini"
-                               Style="font-size:17px;" />
+
+            @if (Data is not null)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@Data.OpenCount suspendidos &middot; @Data.OpenAmount.ToString("N2")</span>
+                </div>
+            }
+        </div>
+
+        @* Acciones y filtros, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="ShowSuspendAsync" TooTip="Suspender" Icon="fa fa-ban" />
+
+            <div class="input-group" style="width:190px">
+                <span class="input-group-text"><i class="fa fa-calendar-day"></i></span>
+                <input type="date" class="form-control" value="@Desde?.ToString("yyyy-MM-dd")" @onchange="DesdeChanged" />
+            </div>
+
+            <div class="input-group" style="width:190px">
+                <span class="input-group-text"><i class="fa fa-calendar-check"></i></span>
+                <input type="date" class="form-control" value="@Hasta?.ToString("yyyy-MM-dd")" @onchange="HastaChanged" />
+            </div>
+
+            <div class="input-group" style="width:210px">
+                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                <select class="form-select" value="@SoloAbiertas" @onchange="SoloAbiertasChanged">
+                    <option value="true">Solo suspendidos</option>
+                    <option value="false">Todo el historico</option>
+                </select>
+            </div>
+
+            <div class="idx-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr />
+        <section class="idx-panel">
 
-        <GenericList MyList="Contracts">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Cedula</th>
-                                <th>Cliente</th>
-                                <th>Contrato</th>
-                                <th>Telefono</th>
-                                <th>Direccion</th>
-                                <th>Plan</th>
-                                <th>Estado</th>
-                                <th class="text-center">Accion</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var contract in Contracts)
-                            {
+            @* La tabla vive afuera del GenericList: el encabezado se pinta siempre,
+               aunque no haya registros, y el borde del panel no queda cortado. *@
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Table_Contract"]</th>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer[nameof(Resource.Address)]</th>
+                            <th>Plan</th>
+                            <th class="text-end">Monto</th>
+                            <th>Suspendido</th>
+                            <th>Origen</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* El GenericList solo arma las filas: el cargando y el "sin registros"
+                           entran como una fila mas, debajo del encabezado. *@
+                        <GenericList MyList="Records">
+                            <Loading>
                                 <tr>
-                                    <td>@contract.ClientDocument</td>
-                                    <td>@contract.ClientFullName</td>
-                                    <td>@contract.ControlContrato</td>
-                                    <td>@contract.PhoneNumber</td>
-                                    <td>@($"{contract.Address} - {contract.CityName} / {contract.ZoneName}")</td>
-                                    <td>@contract.PlanName</td>
-                                    <td>
-                                        <StatusBadge Value="ContractState.Suspended" />
-                                    </td>
-                                    <td class="text-center" style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ActivateAsync(contract)"
-                                                       Icon="fa fa-circle-check"
-                                                       TooTip="Activar contrato"
-                                                       CssClass="btn-mini"
-                                                       Style="font-size:17px;color:#198754;" />
+                                    <td colspan="9" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="9" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Records!)
+                                {
+                                    <tr>
+                                        <td><span class="idx-name">@item.ControlContrato</span></td>
+                                        <td>
+                                            <div class="idx-name">@item.ClientName</div>
+                                            <div class="idx-meta">@item.ClientDocument</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.ContractAddress</div>
+                                            <div class="idx-meta">@item.CityName · @item.ZoneName</div>
+                                        </td>
+                                        <td>@item.PlanName</td>
+                                        <td class="text-end">@item.PlanAmount.ToString("N2")</td>
+                                        <td>@item.DateSuspended.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <span class="idx-pill @(item.Origin == SuspendedOrigin.Corte ? "is-off" : "is-on")">
+                                                @(item.Origin == SuspendedOrigin.Corte ? "Corte" : "Manual")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (item.DateReactivated is null)
+                                            {
+                                                <span class="idx-pill is-danger">Suspendido</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="idx-tip is-on-text" data-tip="@($"{item.DateReactivated?.ToLocalTime():dd/MM/yyyy} · {item.UserByNameReactivated}")">
+                                                    Reactivado
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                @* Quien registro la suspension no ocupa una columna: se consulta aqui *@
+                                                <ButtonGeneric Icon="fa fa-clock-rotate-left"
+                                                               TooTip="@Localizer["Audit_Tip"]"
+                                                               OnClick="() => ShowAuditAsync(item)" />
+                                                @if (!string.IsNullOrWhiteSpace(item.Motivo))
+                                                {
+                                                    <ButtonGeneric Icon="fa fa-comment-dots"
+                                                                   TooTip="@item.Motivo"
+                                                                   OnClick="() => ShowMotivoAsync(item)" />
+                                                }
+                                                @if (item.DateReactivated is null)
+                                                {
+                                                    <ButtonGeneric Icon="fa fa-circle-play"
+                                                                   TooTip="Reactivar el servicio"
+                                                                   Style="font-size:17px;color:#198754;"
+                                                                   OnClick="() => ActivateAsync(item)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Data is not null)
+            {
+                <div class="idx-panel-foot">
+                    <span class="idx-meta">@Data.TotalCount registros en el filtro</span>
+                    <span class="idx-name">Total @Data.TotalAmount.ToString("N2")</span>
                 </div>
-            </Body>
-        </GenericList>
+            }
+        </section>
     </div>
 </div>

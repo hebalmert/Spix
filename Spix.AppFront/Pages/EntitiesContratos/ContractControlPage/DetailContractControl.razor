@@ -1,4 +1,4 @@
-@page "/detailscontractcontrol/{Id:guid}"
+﻿@page "/detailscontractcontrol/{Id:guid}"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -47,12 +47,12 @@
 
                 <hr class="side-divider" />
 
-                <div class="progress-head">
-                    <b>Configuracion</b>
-                    <b>@DoneItems de @TotalItems</b>
-                </div>
-                <div class="progress-bar-track">
-                    <span style="width:@(ProgressPercent)%"></span>
+                @* Anillo de avance: el porcentaje entra por la variable --p *@
+                <div class="progress-ring-wrap">
+                    <div class="progress-ring @(MissingItems.Count == 0 ? "is-done" : null)" style="--p:@(ProgressPercent)%">
+                        <span>@DoneItems/@TotalItems</span>
+                    </div>
+                    <b class="progress-caption">Configuracion</b>
                 </div>
                 @if (MissingItems.Count > 0)
                 {
@@ -83,8 +83,10 @@
                             <i class="fa fa-pen-to-square"></i>@Localizer[nameof(Resource.Edit)]
                         </button>
                     </div>
-                    <button type="button" title="Retirar" class="side-btn side-btn-danger">
-                        <i class="fa fa-cloud-arrow-down"></i>Retirar contrato
+                    @* Unico punto donde se cambia el estado del contrato: aqui tambien se administra
+                       el MikroTik, asi que no puede quedar suspendido y con servicio. *@
+                    <button type="button" class="side-btn side-btn-danger" @onclick="ShowChangeStateAsync">
+                        <i class="fa fa-arrows-rotate"></i>@Localizer["ContractState_ChangeTitle"]
                     </button>
                 </div>
             </aside>

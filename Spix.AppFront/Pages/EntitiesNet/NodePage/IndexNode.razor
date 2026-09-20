@@ -31,21 +31,37 @@
 
         <section class="idx-panel">
 
-            <GenericList MyList="Nodes">
-                <Body>
-                    <div class="table-responsive">
-                        <table class="idx-table">
-                            <thead>
+            @* La tabla vive afuera del GenericList: el encabezado se pinta siempre,
+               aunque no haya registros, y el borde del panel no queda cortado. *@
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>SSID</th>
+                            <th>Type</th>
+                            <th>Zona</th>
+                            <th>IP</th>
+                            <th>Activa</th>
+                            <th style="text-align:right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* El GenericList solo arma las filas: el cargando y el "sin registros"
+                           entran como una fila mas, debajo del encabezado. *@
+                        <GenericList MyList="Nodes">
+                            <Loading>
                                 <tr>
-                                    <th>SSID</th>
-                                    <th>Type</th>
-                                    <th>Zona</th>
-                                    <th>IP</th>
-                                    <th>Activa</th>
-                                    <th style="text-align:right">Acciones</th>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
                                 @foreach (var item in Nodes!)
                                 {
                                     <tr>
@@ -69,11 +85,11 @@
                                         </td>
                                     </tr>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                </Body>
-            </GenericList>
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
 
             <div class="idx-panel-foot">
                 <Pagination CurrentPage="CurrentPage"

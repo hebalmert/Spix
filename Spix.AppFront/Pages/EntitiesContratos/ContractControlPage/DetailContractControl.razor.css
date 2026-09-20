@@ -1,4 +1,4 @@
-.contract-detail-page {
+﻿.contract-detail-page {
     color: #0a1a3f;
     isolation: isolate;
 }
@@ -6,7 +6,7 @@
 /* Dos columnas: ficha a la izquierda, configuracion a la derecha */
 .detail-layout {
     display: grid;
-    grid-template-columns: 380px minmax(0, 1fr);
+    grid-template-columns: 330px minmax(0, 1fr);
     gap: 18px;
     align-items: start;
     max-width: 1400px;
@@ -61,7 +61,9 @@
 
     .side-kv span {
         color: #33405c;
+        white-space: normal;
         overflow-wrap: anywhere;
+        line-height: 1.45;
     }
 
 .side-state {
@@ -75,11 +77,13 @@
         font-weight: 700;
     }
 
+/* Uno debajo del otro: en una ficha angosta no caben en la misma linea */
 .side-flags {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 6px;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
 .side-flag {
@@ -96,26 +100,51 @@
     border-top: 1px solid #e8edf5;
 }
 
-.progress-head {
+/* ===== Anillo de avance ===== */
+.progress-ring-wrap {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 12px;
+}
+
+/* El porcentaje entra por la variable --p desde el marcado */
+.progress-ring {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(#c77700 0 var(--p, 0%), #e6ebf3 var(--p, 0%) 100%);
+}
+
+    .progress-ring.is-done {
+        background: conic-gradient(#198754 0 100%);
+    }
+
+    .progress-ring span {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        font-weight: 800;
+        color: #c77700;
+    }
+
+    .progress-ring.is-done span {
+        color: #146c43;
+    }
+
+.progress-caption {
+    color: #5b6784;
     font-size: 13px;
 }
-
-.progress-bar-track {
-    height: 10px;
-    overflow: hidden;
-    border-radius: 10px;
-    background: #dfe6f2;
-}
-
-    .progress-bar-track span {
-        display: block;
-        height: 100%;
-        background: #198754;
-        transition: width .3s ease;
-    }
 
 .missing-list {
     margin: 12px 0 0;
@@ -170,10 +199,22 @@
     border-radius: 8px;
     background: #ffffff;
     cursor: pointer;
+    /* Sombra negra: el boton se ve levantado sobre la ficha */
+    box-shadow: 3px 4px 7px rgba(0, 0, 0, .35);
+    transition: transform .16s ease, box-shadow .16s ease, background .2s ease;
 }
 
+    /* Con el mouse encima sube y la sombra se estira */
     .side-btn:hover {
         background: #f2f6fc;
+        transform: translateY(-2px);
+        box-shadow: 5px 7px 12px rgba(0, 0, 0, .45);
+    }
+
+    /* Al pulsar se hunde */
+    .side-btn:active {
+        transform: translateY(1px);
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, .35);
     }
 
 .side-btn-activate {
@@ -183,7 +224,7 @@
 }
 
     .side-btn-activate:hover {
-        background: #157347;
+        background: #17925c;
     }
 
 .side-btn-danger {
@@ -279,11 +320,13 @@
     grid-column: 1 / -1;
 }
 
+/* Mismo relieve azul de los Index: el card despega del fondo del panel */
 .cc-item {
+    border: 1px solid #e6ecf6;
     border-left: 6px solid #198754;
     border-radius: 12px;
     background: #ffffff;
-    box-shadow: 0 4px 14px rgba(10, 26, 63, .10);
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
 }
 
     .cc-item.is-missing {
@@ -371,7 +414,26 @@
     border-radius: 7px;
     background: #ffffff;
     cursor: pointer;
+    box-shadow: 2px 3px 6px rgba(0, 0, 0, .32);
+    transition: transform .16s ease, box-shadow .16s ease, background .2s ease;
 }
+
+    .cc-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 4px 5px 10px rgba(0, 0, 0, .42);
+    }
+
+    .cc-btn:active {
+        transform: translateY(1px);
+        box-shadow: 1px 2px 4px rgba(0, 0, 0, .32);
+    }
+
+    /* El bloqueado no se mueve ni se levanta */
+    .cc-btn.cc-btn-lock,
+    .cc-btn.cc-btn-lock:hover {
+        transform: none;
+        box-shadow: none;
+    }
 
 .cc-btn-add {
     color: #ffffff;

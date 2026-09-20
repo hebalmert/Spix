@@ -1,0 +1,14 @@
+﻿@* Boton azul de accion general (editar, ver, procesar). ButtonFormNew queda solo para "New".
+   Plano, como el resto de la familia. *@
+<button type="@Type" class="@CssClass" style="@Style" @onclick="@OnClick" title="@TooTip">
+    <i class="@Icon" style="margin-right:5px;"></i><span>@TooTip</span>
+</button>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "fa fa-pen-to-square";
+    [Parameter] public string CssClass { get; set; } = "btn-gradient-blue";
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string? TooTip { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public string? Style { get; set; }
+}

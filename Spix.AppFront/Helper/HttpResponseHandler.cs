@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Spix.xLanguage.Resources;
 using Spix.AppFront.AuthenticationProviders;
 using System.Net;
+using System.Text.Json;
 using Spix.HttpService;
 
 namespace Spix.AppFront.Helper;
@@ -105,7 +106,12 @@ public class HttpResponseHandler
                 else
                 {
                     title = Localizer[nameof(Resource.HttpCode_BadRequestTitle)];
-                    message = errorMessage ?? Localizer[nameof(Resource.HttpCode_BadRequestMsg)];
+
+                    //Si el backend respondio con el formato de validacion de ASP.NET, se muestran
+                    //los mensajes de los campos y no el JSON crudo
+                    message = ReadValidationErrors(errorMessage)
+                              ?? errorMessage
+                              ?? Localizer[nameof(Resource.HttpCode_BadRequestMsg)];
                     icon = SweetAlertIcon.Warning;
                 }
                 break;
@@ -153,5 +159,46 @@ public class HttpResponseHandler
 
         await _sweetAlert.FireAsync(title, message, icon);
         return true;
+    }
+
+    //ASP.NET responde los 400 de validacion con ValidationProblemDetails: el detalle util
+    //vive en "errors", un objeto de campo -> lista de mensajes. Si no es ese formato,
+    //devuelve null y el manejador usa el texto tal como vino.
+    private static string? ReadValidationErrors(string? body)
+    {
+        if (string.IsNullOrWhiteSpace(body) || !body.TrimStart().StartsWith("{"))
+            return null;
+
+        try
+        {
+            using var documento = JsonDocument.Parse(body);
+
+            if (!documento.RootElement.TryGetProperty("errors", out var errores) ||
+                errores.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
+            var mensajes = new List<string>();
+
+            foreach (var campo in errores.EnumerateObject())
+            {
+                if (campo.Value.ValueKind != JsonValueKind.Array)
+                    continue;
+
+                foreach (var mensaje in campo.Value.EnumerateArray())
+                {
+                    var texto = mensaje.GetString();
+                    if (!string.IsNullOrWhiteSpace(texto))
+                        mensajes.Add(texto);
+                }
+            }
+
+            return mensajes.Count == 0 ? null : string.Join(Environment.NewLine, mensajes);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 }

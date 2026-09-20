@@ -48,23 +48,39 @@
 
         <section class="idx-panel">
 
-            <GenericList MyList="ContractClients">
-                <Body>
-                    <div class="table-responsive">
-                        <table class="idx-table">
-                            <thead>
+            @* La tabla vive afuera del GenericList: el encabezado se pinta siempre,
+               aunque no haya registros, y el borde del panel no queda cortado. *@
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Table_Contract"]</th>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer[nameof(Resource.Contractor)]</th>
+                            <th class="text-center">@Localizer["Table_Stratum"]</th>
+                            <th class="text-center">@Localizer[nameof(Resource.Equipment)]</th>
+                            <th class="text-center">@Localizer[nameof(Resource.Invoice)]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* El GenericList solo arma las filas: el cargando y el "sin registros"
+                           entran como una fila mas, debajo del encabezado. *@
+                        <GenericList MyList="ContractClients">
+                            <Loading>
                                 <tr>
-                                    <th>@Localizer["Table_Contract"]</th>
-                                    <th>@Localizer[nameof(Resource.Client)]</th>
-                                    <th>@Localizer[nameof(Resource.Contractor)]</th>
-                                    <th class="text-center">@Localizer["Table_Stratum"]</th>
-                                    <th class="text-center">@Localizer[nameof(Resource.Equipment)]</th>
-                                    <th class="text-center">@Localizer[nameof(Resource.Invoice)]</th>
-                                    <th>@Localizer[nameof(Resource.Status)]</th>
-                                    <th style="text-align:right">Acciones</th>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
                                 @foreach (var item in ContractClients!)
                                 {
                                     <tr>
@@ -85,6 +101,10 @@
                                         </td>
                                         <td>
                                             <div class="idx-actions">
+                                                @* Los datos de auditoria no ocupan columna: se consultan aqui *@
+                                                <ButtonGeneric Icon="fa fa-clock-rotate-left"
+                                                               TooTip="@Localizer["Audit_Tip"]"
+                                                               OnClick="() => ShowAuditAsync(item)" />
                                                 <ButtonGeneric OnClick="() => ShowModaDetailsAsync(item.ContractClientId)"
                                                                TooTip="@Localizer[nameof(Resource.Create_IDPics)]"
                                                                Icon="fa fa-id-card" />
@@ -95,11 +115,11 @@
                                         </td>
                                     </tr>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                </Body>
-            </GenericList>
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
 
             @if (ContractClients is not null)
             {

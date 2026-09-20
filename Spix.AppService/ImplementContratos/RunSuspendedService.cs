@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
@@ -368,6 +368,10 @@ public class RunSuspendedService : IRunSuspendedService
                 var bill = debtByContract[contract.ContractClientId];
 
                 contract.ContractState = ContractState.Suspended;
+
+                //Queda el registro de la suspension, igual que cuando se hace a mano
+                await ContractSuspendedRegistry.OpenAsync(_context, contract, SuspendedOrigin.Corte,
+                    null, run.RunSuspendedId, run.UserByName, run.UserId);
                 _context.RunSuspendedDetails.Add(new RunSuspendedDetail
                 {
                     RunSuspendedId = run.RunSuspendedId,

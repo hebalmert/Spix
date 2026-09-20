@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.ItemsGeneric;
@@ -39,6 +39,12 @@ public partial class FormContractBind
         }
 
         HotSpotTypes = responseHttp.Response;
+    }
+
+    //Solo llega aqui si el modelo paso la validacion
+    private async Task HandleValidSubmitAsync()
+    {
+        await OnSubmit.InvokeAsync();
     }
 
     private void HotSpotTypeChanged(ChangeEventArgs e)

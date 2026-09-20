@@ -1577,4 +1577,118 @@
   <data name="Table_Stratum" xml:space="preserve">
     <value>Estrato</value>
   </data>
+  <data name="Validation_SelectStatus" xml:space="preserve">
+    <value>Debe seleccionar un estado.</value>
+  </data>
+  <data name="ContractState_OnlyFromControl" xml:space="preserve">
+    <value>El estado de un contrato operativo se cambia desde Control de Contratos, que es donde se actualiza el MikroTik.</value>
+  </data>
+  <data name="ContractState_NeedsCleanMikrotik" xml:space="preserve">
+    <value>Para cerrar el contrato primero quite su Queue y su IpBinding: no puede quedar nada de este cliente en el MikroTik.</value>
+  </data>
+  <data name="ContractState_NeedsBindControlled" xml:space="preserve">
+    <value>Para suspender, el contrato debe tener IpBinding y estar en blocked o regular; en bypassed el cliente seguiria con servicio.</value>
+  </data>
+  <data name="ContractState_ChangeTitle" xml:space="preserve">
+    <value>Cambiar estado</value>
+  </data>
+  <data name="ContractState_ChangeQuestion" xml:space="preserve">
+    <value>El contrato pasara al estado {0}. Desea continuar?</value>
+  </data>
+  <data name="ContractState_NoTransitions" xml:space="preserve">
+    <value>Desde este estado no hay cambios disponibles.</value>
+  </data>
+  <data name="Select_NewStatus" xml:space="preserve">
+    <value>[Seleccione el nuevo estado]</value>
+  </data>
+  <data name="ContractState_ChangeOk" xml:space="preserve">
+    <value>El estado del contrato quedo actualizado.</value>
+  </data>
+  <data name="ContractState_NeedsBypassed" xml:space="preserve">
+    <value>Para suspender, el contrato debe tener su IpBinding en bypassed: asi esta un contrato activo.</value>
+  </data>
+  <data name="ContractState_Reason" xml:space="preserve">
+    <value>Motivo</value>
+  </data>
+  <data name="ContractState_NeedsQueueAndBind" xml:space="preserve">
+    <value>Para activar, el contrato debe tener su Queue y su IpBinding configurados.</value>
+  </data>
+  <data name="Suspend_OnlyActive" xml:space="preserve">
+    <value>Solo se puede suspender un contrato que este activo.</value>
+  </data>
+  <data name="Suspend_NeedsBypassed" xml:space="preserve">
+    <value>El contrato debe tener su IpBinding en bypassed para poder suspenderlo: asi luce uno activo.</value>
+  </data>
+  <data name="Suspend_NoRegularType" xml:space="preserve">
+    <value>No existe un tipo de HotSpot activo llamado regular, que es el que se usa para suspender.</value>
+  </data>
+  <data name="Suspend_BindIncomplete" xml:space="preserve">
+    <value>A uno de los IpBinding le faltan datos (servidor, IP, MAC o id de MikroTik) y no se puede suspender.</value>
+  </data>
+  <data name="Suspend_NoBypassedType" xml:space="preserve">
+    <value>No existe un tipo de HotSpot activo llamado bypassed, que es el que devuelve el servicio.</value>
+  </data>
+  <data name="Suspend_ActivateTitle" xml:space="preserve">
+    <value>Reactivar el servicio</value>
+  </data>
+  <data name="Suspend_ActivateQuestion" xml:space="preserve">
+    <value>Se reactivara el contrato {0} de {1} y se le devolvera el acceso en el MikroTik. Desea continuar?</value>
+  </data>
+  <data name="Suspend_ActivateButton" xml:space="preserve">
+    <value>Reactivar</value>
+  </data>
+  <data name="Suspend_ActivateOk" xml:space="preserve">
+    <value>El contrato quedo reactivado y se le devolvio el servicio.</value>
+  </data>
+  <data name="Suspend_Title" xml:space="preserve">
+    <value>Suspender contrato</value>
+  </data>
+  <data name="Suspend_Question" xml:space="preserve">
+    <value>Se suspendera el contrato {0} de {1} y se bloqueara su acceso en el MikroTik. Desea continuar?</value>
+  </data>
+  <data name="Suspend_Button" xml:space="preserve">
+    <value>Suspender</value>
+  </data>
+  <data name="Suspend_Ok" xml:space="preserve">
+    <value>El contrato quedo suspendido y su acceso bloqueado.</value>
+  </data>
+  <data name="Table_NoRecords" xml:space="preserve">
+    <value>No hay registros para mostrar</value>
+  </data>
+  <data name="Table_Loading" xml:space="preserve">
+    <value>Cargando...</value>
+  </data>
+  <data name="Audit_Title" xml:space="preserve">
+    <value>Auditoria del registro</value>
+  </data>
+  <data name="Audit_RegisteredBy" xml:space="preserve">
+    <value>Registrado por</value>
+  </data>
+  <data name="Audit_Date" xml:space="preserve">
+    <value>Fecha de suspension</value>
+  </data>
+  <data name="Audit_Origin" xml:space="preserve">
+    <value>Origen</value>
+  </data>
+  <data name="Audit_Reason" xml:space="preserve">
+    <value>Motivo</value>
+  </data>
+  <data name="Audit_ReactivatedBy" xml:space="preserve">
+    <value>Reactivado por</value>
+  </data>
+  <data name="Audit_ReactivatedDate" xml:space="preserve">
+    <value>Fecha de reactivacion</value>
+  </data>
+  <data name="Audit_Tip" xml:space="preserve">
+    <value>Auditoria</value>
+  </data>
+  <data name="Audit_Created" xml:space="preserve">
+    <value>Creado el</value>
+  </data>
+  <data name="Audit_CreatedBy" xml:space="preserve">
+    <value>Creado por</value>
+  </data>
+  <data name="Audit_SignatureSent" xml:space="preserve">
+    <value>Solicitud de firma enviada</value>
+  </data>
 </root>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spix.AppInfra;
 
@@ -11,9 +12,11 @@ using Spix.AppInfra;
 namespace Spix.AppBacken.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260919233849_ContractSuspendedRegistro")]
+    partial class ContractSuspendedRegistro
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1667,10 +1670,6 @@ namespace Spix.AppBacken.Migrations
                     b.Property<DateTime>("DateSuspended")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("MkIndex")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
                     b.Property<string>("Motivo")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -1686,9 +1685,6 @@ namespace Spix.AppBacken.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid?>("RunSuspendedId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ServerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserByName")
