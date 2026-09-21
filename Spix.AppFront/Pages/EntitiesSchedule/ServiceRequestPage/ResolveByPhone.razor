@@ -1,0 +1,42 @@
+﻿@inherits ComponentBase
+
+@* Cerrar la solicitud sin mandar a nadie: lo que se escriba aqui es lo que el cliente
+   va a leer en su portal, por eso se avisa. *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title"><i class="fa fa-phone me-2"></i>@Localizer["Request_ByPhone"]</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <div class="rp-note">
+                <i class="fa fa-circle-info me-2"></i>@Localizer["Phone_ClientWillRead"]
+            </div>
+
+            <div class="mb-3">
+                <div class="rp-label">@Localizer["Phone_WhatWasDone"]</div>
+                <textarea class="form-control" rows="4" maxlength="500"
+                          placeholder="@Localizer["Phone_WhatPlaceholder"]"
+                          value="@Comment" @oninput="CommentChanged"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <div class="rp-label">@Localizer["MyRequest_Recommendation"]</div>
+                <textarea class="form-control" rows="3" maxlength="500"
+                          placeholder="@Localizer["Phone_RecommendationPlaceholder"]"
+                          value="@Recommendation" @oninput="RecommendationChanged"></textarea>
+            </div>
+
+            <hr />
+            <div class="d-flex justify-content-center gap-3">
+                <ButtonFormSaveOnClick OnClick="SaveAsync" IsSaving="IsSaving"
+                                       TooTip="@Localizer[nameof(Resource.ButtonSave)]"
+                                       Icon="fa fa-phone" />
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+@page "/servicerequests/details/{Id:guid}"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar, Technician")]
+
+@* La orden de trabajo es una pantalla, no un modal: aqui el tecnico carga fotos,
+   servicios y comentarios sin pelear con una ventana encima. *@
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @if (isLoading || Model is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <FormServiceRequest Model="Model"
+                                IsSaving="IsSaving"
+                                IsEditControl="true"
+                                OnSubmit="SaveAsync"
+                                ReturnAction="Return" />
+        }
+    </div>
+</div>

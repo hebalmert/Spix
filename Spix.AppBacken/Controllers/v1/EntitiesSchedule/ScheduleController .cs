@@ -39,6 +39,32 @@ public class ScheduleController : ControllerBase
         return BadRequest(response.Message);
     }
 
+    //Los estados que se pueden elegir a mano en la orden (sin los cierres)
+    [HttpGet("loadStatusChange")]
+    public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStatusChange()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.ComboStatusChangeAsync(userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
+    //La misma lista para filtrar la agenda, con "Todos" al inicio
+    [HttpGet("loadStatusFilter")]
+    public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboStatusFilter()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.ComboStatusFilterAsync(userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] DateTime fromUtc, [FromQuery] DateTime toUtc, [FromQuery] Guid? technicianId)
     {

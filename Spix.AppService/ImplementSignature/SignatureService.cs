@@ -661,7 +661,7 @@ public class SignatureService : ISignatureService
 
             //Bitacora: queda constancia de quien envio la solicitud y desde donde
             foreach (var documentType in PendingTypes(signedTypes))
-                AddEvent(contractClientId, documentType, SignatureEventType.RequestSent, MaskEmail(contract.Client.Email), context, corporationId);
+                await AddEventAsync(contractClientId, documentType, SignatureEventType.RequestSent, MaskEmail(contract.Client.Email), context, corporationId);
 
             await _context.SaveChangesAsync();
 
@@ -1034,7 +1034,7 @@ public class SignatureService : ISignatureService
             };
 
             _context.ContractSignatureCodes.Add(record);
-            AddEvent(contractClientId, documentType, SignatureEventType.CodeSent, MaskEmail(contract.Client.Email), context, contract.CorporationId);
+            await AddEventAsync(contractClientId, documentType, SignatureEventType.CodeSent, MaskEmail(contract.Client.Email), context, contract.CorporationId);
             await _transactionManager.SaveChangesAsync();
 
             var sent = await SendCodeEmailAsync(contract, code);
@@ -1115,7 +1115,7 @@ public class SignatureService : ISignatureService
             if (record.CodeHash != HashCode(model.Code?.Trim() ?? string.Empty, model.ContractClientId, model.DocumentType))
             {
                 record.Attempts++;
-                AddEvent(model.ContractClientId, model.DocumentType, SignatureEventType.CodeFailed, $"Intento {record.Attempts}", context, contract.CorporationId);
+                await AddEventAsync(model.ContractClientId, model.DocumentType, SignatureEventType.CodeFailed, $"Intento {record.Attempts}", context, contract.CorporationId);
                 await _transactionManager.SaveChangesAsync();
                 await _transactionManager.CommitTransactionAsync();
                 return new ActionResponse<bool> { WasSuccess = false, Message = "El codigo no es correcto." };
@@ -1220,8 +1220,8 @@ public class SignatureService : ISignatureService
             //El codigo queda quemado: un solo uso
             record.UsedAt = signedAt;
 
-            AddEvent(model.ContractClientId, model.DocumentType, SignatureEventType.CodeValidated, MaskEmail(record.Email), context, contract.CorporationId);
-            AddEvent(model.ContractClientId, model.DocumentType, SignatureEventType.Signed, verificationCode, context, contract.CorporationId);
+            await AddEventAsync(model.ContractClientId, model.DocumentType, SignatureEventType.CodeValidated, MaskEmail(record.Email), context, contract.CorporationId);
+            await AddEventAsync(model.ContractClientId, model.DocumentType, SignatureEventType.Signed, verificationCode, context, contract.CorporationId);
 
             await _transactionManager.SaveChangesAsync();
 
@@ -1349,7 +1349,7 @@ public class SignatureService : ISignatureService
 
             var previewUrl = await BuildPreviewUrlAsync(contract, template);
 
-            AddEvent(contractClientId, documentType, SignatureEventType.DocumentViewed, null, context, contract.CorporationId);
+            await AddEventAsync(contractClientId, documentType, SignatureEventType.DocumentViewed, null, context, contract.CorporationId);
             await _context.SaveChangesAsync();
 
             return new ActionResponse<SignatureLinkDTO> { WasSuccess = true, Result = new SignatureLinkDTO { Url = previewUrl ?? string.Empty } };
@@ -1435,6 +1435,34 @@ public class SignatureService : ISignatureService
     //----- Bitacora e identificadores -----
 
     //Solo agrega el renglon: quien llama decide cuando guardar, dentro de su transaccion
+    //Un paso de la firma queda en dos sitios: su bitacora propia, que es la evidencia
+    //que sostiene el certificado, y la bitacora del contrato, para verlo junto a lo demas.
+    private async Task AddEventAsync(Guid contractClientId, ContractDocumentType documentType, SignatureEventType eventType,
+        string? detail, ClaimsDTOs context, int corporationId)
+    {
+        var detalle = string.IsNullOrWhiteSpace(detail) ? documentType.ToString() : $"{documentType} - {detail}";
+
+        await ContractAuditLog.AddAsync(_context, contractClientId, ToContractEvent(eventType), detalle,
+            context.UserName,
+            Guid.TryParse(context.Id, out var auditUserId) ? auditUserId : null,
+            sourceIp: context.SourceIp,
+            userAgent: context.UserAgent,
+            corporationId: corporationId);
+
+        AddEvent(contractClientId, documentType, eventType, detail, context, corporationId);
+    }
+
+    private static ContractEventType ToContractEvent(SignatureEventType eventType) => eventType switch
+    {
+        SignatureEventType.RequestSent => ContractEventType.SignatureRequested,
+        SignatureEventType.DocumentViewed => ContractEventType.DocumentViewed,
+        SignatureEventType.CodeSent => ContractEventType.CodeSent,
+        SignatureEventType.CodeFailed => ContractEventType.CodeFailed,
+        SignatureEventType.CodeValidated => ContractEventType.CodeValidated,
+        _ => ContractEventType.Signed
+    };
+
+
     private void AddEvent(Guid contractClientId, ContractDocumentType documentType, SignatureEventType eventType,
         string? detail, ClaimsDTOs context, int corporationId)
     {

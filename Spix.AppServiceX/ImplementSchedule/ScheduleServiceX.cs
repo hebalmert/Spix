@@ -17,6 +17,10 @@ public class ScheduleServiceX : IScheduleServiceX
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusAsync(string username) => await _scheduleService.ComboStatusAsync(username);
 
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusFilterAsync(string username) => await _scheduleService.ComboStatusFilterAsync(username);
+
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusChangeAsync(string username) => await _scheduleService.ComboStatusChangeAsync(username);
+
     public Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id, string username) => _scheduleService.GetByIdAsync(id, username);
 
     public Task<ActionResponse<ScheduleItemDto>> CreateAsync(ScheduleItemDto dto, string UserName) => _scheduleService.CreateAsync(dto, UserName);

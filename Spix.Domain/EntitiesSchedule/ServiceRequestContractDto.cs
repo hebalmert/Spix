@@ -1,3 +1,5 @@
+﻿using Spix.DomainLogic.EnumTypes;
+
 namespace Spix.Domain.EntitiesSchedule;
 
 public class ServiceRequestContractDto
@@ -15,4 +17,7 @@ public class ServiceRequestContractDto
     public string? MacCliente { get; set; }
     public string? PlanName { get; set; }
     public string? PlanSpeed { get; set; }
+    public string? NodeName { get; set; }
+    public string? NodeIp { get; set; }
+    public ContractState ContractState { get; set; }
 }

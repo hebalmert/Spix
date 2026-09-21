@@ -1,0 +1,108 @@
+﻿/* El tablero: los numeros del dia, con el mismo relieve de los cards */
+.sr-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.sr-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    /* Lo que pidio el cliente y nadie ha revisado */
+    .sr-tile.is-requested {
+        border-left-color: #0dcaf0;
+    }
+
+    .sr-tile.is-pending {
+        border-left-color: #f59f00;
+    }
+
+    .sr-tile.is-progress {
+        border-left-color: #6f42c1;
+    }
+
+    .sr-tile.is-done {
+        border-left-color: #198754;
+    }
+
+.sr-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.sr-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Pildoras de filtro */
+.sr-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sr-chip {
+    border: 1px solid #e3e9f4;
+    border-radius: 999px;
+    background: #f1f4fa;
+    color: #33405c;
+    font-size: 12.5px;
+    padding: 6px 15px;
+    cursor: pointer;
+}
+
+    .sr-chip:hover {
+        background: #dae5f7;
+    }
+
+    .sr-chip.is-on {
+        background: #16305e;
+        border-color: #16305e;
+        color: #ffffff;
+    }
+
+/* La fecha programada dice que tan urgente es */
+.sr-when {
+    display: inline-block;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 11px;
+}
+
+    .sr-when.is-late {
+        background: #fceaea;
+        color: #a32d2d;
+    }
+
+    .sr-when.is-today {
+        background: #e6f1fb;
+        color: #0c447c;
+    }
+
+    .sr-when.is-next {
+        background: #f1f4fa;
+        color: #33405c;
+    }
+
+    .sr-when.is-done {
+        background: #eaf3de;
+        color: #3b6d11;
+    }
+
+/* El motivo no puede romper la fila */
+.sr-clip {
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

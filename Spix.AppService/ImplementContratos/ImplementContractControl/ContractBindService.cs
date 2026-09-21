@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Spix.DomainLogic.EnumTypes;
+using Spix.AppService.ImplementContratos;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -170,6 +172,10 @@ public class ContractBindService : IContractBindService
             modelo.MikrotikId = mikrotiIndex;
 
             _context.ContractBinds.Add(modelo);
+
+            await ContractAuditLog.AddAsync(_context, modelo.ContractClientId, ContractEventType.BindCreated,
+                modelo.MikrotikId, $"{user.FirstName} {user.LastName}".Trim(),
+                Guid.TryParse(user.Id, out var auditUserId) ? auditUserId : null);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 

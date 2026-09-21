@@ -1,78 +1,170 @@
-@page "/servicerequests"
+﻿@page "/servicerequests"
 @page "/servicerequests/{Id:guid}"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar, Technician")]
 @using Spix.Domain.EntitiesSchedule
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">Solicitudes de Servicio</h3>
 
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <ButtonFormNew OnClick="() => ShowModalAsync()" TooTip="Nueva" Style="width:130px" />
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-tools"></i></span>
+            <div class="idx-head-text">
+                <h3>Solicitudes de Servicio</h3>
+                <p>Visitas tecnicas del cliente: a quien se le asigno, para cuando y como quedo.</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+
+            @* El tecnico atiende visitas, no las registra *@
+            <AuthorizeView Roles="Administrator, Auxiliar">
+                <Authorized>
+                    <div class="idx-head-tools">
+                        <ButtonFormNew OnClick="ShowModalAsync" TooTip="Nueva" />
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
+        @* El tablero: los numeros salen del backend, sobre todo lo que el usuario puede ver *@
+        @if (Summary is not null)
+        {
+            <div class="sr-board">
+                <div class="sr-tile is-requested">
+                    <div class="sr-tile-label">@Localizer["Board_Requested"]</div>
+                    <div class="sr-tile-value">@Summary.Requested</div>
+                </div>
+                <div class="sr-tile is-today">
+                    <div class="sr-tile-label">Hoy</div>
+                    <div class="sr-tile-value">@Summary.Today</div>
+                </div>
+                <div class="sr-tile is-pending">
+                    <div class="sr-tile-label">Pendientes</div>
+                    <div class="sr-tile-value">@Summary.Pending</div>
+                </div>
+                <div class="sr-tile is-progress">
+                    <div class="sr-tile-label">En sitio</div>
+                    <div class="sr-tile-value">@Summary.InProgress</div>
+                </div>
+                <div class="sr-tile is-done">
+                    <div class="sr-tile-label">Cerradas del mes</div>
+                    <div class="sr-tile-value">@Summary.CompletedMonth</div>
+                </div>
+            </div>
+        }
+
+        @* Pildoras de filtro: la lista la arma el backend, con "Todas" en la posicion 0 *@
+        <div class="idx-bar">
+            @if (Statuses is not null)
+            {
+                <div class="sr-chips">
+                    @foreach (var item in Statuses)
+                    {
+                        <button type="button"
+                                class="sr-chip @(StatusFilter == item.Value ? "is-on" : null)"
+                                @onclick="() => SetStatusAsync(item.Value)">
+                            @item.Name
+                        </button>
+                    }
+                </div>
+            }
+
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr />
-        <GenericList MyList="Requests">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Cliente</th>
-                                <th>Contrato</th>
-                                <th>Tecnico</th>
-                                <th>Programada</th>
-                                <th>Status</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Requests!)
-                            {
+        <section class="idx-panel">
+
+            @* La tabla vive afuera del GenericList: el encabezado se pinta siempre,
+               aunque no haya registros, y el borde del panel no queda cortado. *@
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>Motivo</th>
+                            <th>Tecnico</th>
+                            <th>Programada</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* El GenericList solo arma las filas: el cargando y el "sin registros"
+                           entran como una fila mas, debajo del encabezado. *@
+                        <GenericList MyList="Requests">
+                            <Loading>
                                 <tr>
-                                    <td>@item.RequestNumber</td>
-                                    <td>@item.ClientFullName</td>
-                                    <td>@item.ControlContrato</td>
-                                    <td>@item.TechnicianName</td>
-                                    <td>@item.ScheduledAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
-                                    <td><ScheduleStatusBadge Value="@item.ScheduleStatus" /></td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModalPicsAsync(item.ServiceRequestId, item.ServiceRequestPicId, item.ScheduleStatus == ScheduleStatus.Completed)"
-                                                       TooTip="Fotos"
-                                                       Icon="fa fa-camera" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.ServiceRequestId, true)" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        @if (item.ScheduleStatus != ScheduleStatus.Completed)
-                                        {
-                                            <ButtonDelete OnClick="() => DeleteAsync(item.ServiceRequestId)" />
-                                        }
+                                    <td colspan="7" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </Body>
-        </GenericList>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="7" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Requests!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.RequestNumber</div>
+                                            <div class="idx-meta">@item.CreatedAtUtc.ToLocalTime().ToString("dd/MM/yyyy")</div>
+                                        </td>
+                                        <td>
+                                            <div class="idx-name">@item.ClientFullName</div>
+                                            <div class="idx-meta">Contrato @item.ControlContrato &middot; @item.ZoneName</div>
+                                        </td>
+                                        <td>
+                                            <div class="sr-clip" title="@item.ClientReason">@item.ClientReason</div>
+                                            <div class="idx-meta">@item.Address</div>
+                                        </td>
+                                        <td>@item.TechnicianName</td>
+                                        <td>
+                                            @* La fecha dice que tan urgente es, no solo cuando es *@
+                                            <span class="sr-when @WhenClass(item)">@WhenText(item)</span>
+                                            <div class="idx-meta">@item.ScheduledAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                                        </td>
+                                        <td><ScheduleStatusBadge Value="@item.ScheduleStatus" /></td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                @* La orden es una pantalla: fotos, servicios y comentarios viven ahi *@
+                                                <ButtonGeneric OnClick="() => GoToOrder(item.ServiceRequestId)"
+                                                               TooTip="Orden de trabajo"
+                                                               Icon="fa fa-clipboard-list" />
+                                                <ButtonGeneric Icon="fa fa-clock-rotate-left"
+                                                               TooTip="@Localizer["Audit_Tip"]"
+                                                               OnClick="() => ShowAuditAsync(item)" />
+                                                @if (item.ScheduleStatus != ScheduleStatus.Completed)
+                                                {
+                                                    <AuthorizeView Roles="Administrator, Auxiliar">
+                                                        <Authorized>
+                                                            <ButtonDelete OnClick="() => DeleteAsync(item.ServiceRequestId)" />
+                                                        </Authorized>
+                                                    </AuthorizeView>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
 
-        <hr />
-        @if (Requests is not null)
-        {
-            <Pagination CurrentPage="CurrentPage"
-                        SelectedPage="SelectedPage"
-                        TotalPages="TotalPages" />
-        }
+            @if (Requests is not null)
+            {
+                <div class="idx-panel-foot">
+                    <span class="idx-meta">@TotalRecords solicitudes</span>
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
     </div>
 </div>

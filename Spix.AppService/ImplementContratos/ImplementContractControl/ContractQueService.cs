@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Spix.AppService.ImplementContratos;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -371,6 +372,10 @@ public class ContractQueService : IContractQueService
             modelo.MikrotikId = mikrotiIndex;
 
             _context.ContractQues.Add(modelo);
+
+            await ContractAuditLog.AddAsync(_context, modelo.ContractClientId, ContractEventType.QueueCreated,
+                modelo.PlanName, $"{user.FirstName} {user.LastName}".Trim(),
+                Guid.TryParse(user.Id, out var auditUserId) ? auditUserId : null);
             await _transactionManager.SaveChangesAsync();
 
             await _transactionManager.CommitTransactionAsync();

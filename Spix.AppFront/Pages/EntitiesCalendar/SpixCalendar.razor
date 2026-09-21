@@ -15,7 +15,11 @@
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
     private DotNetObjectReference<SpixCalendar>? _objRef;
+
+    //_all es la agenda completa; _events es lo que se esta viendo con el filtro puesto
+    private List<CalendarEventDto> _all = new();
     private List<CalendarEventDto> _events = new();
+    private int _statusFilter;
     private Dictionary<Guid, string> _technicianColors = new();
     private string UserTimeZone = "UTC";
 
@@ -67,7 +71,7 @@
             return;
         }
 
-        _events = httpResponse.Response!
+        _all = httpResponse.Response!
             .Select(x => new CalendarEventDto
             {
                 id = x.Id.ToString(),
@@ -78,10 +82,28 @@
                 origin = x.Origin,
                 serviceRequestId = x.ServiceRequestId,
                 scheduleStatus = x.ScheduleStatus,
-                color = x.ScheduleStatus == ScheduleStatus.Completed ? "#6B8E23" : null,
-                textColor = x.ScheduleStatus == ScheduleStatus.Completed ? "#FFFFFF" : null
+                color = ScheduleColors.Get(x.ScheduleStatus),
+                textColor = "#FFFFFF"
             })
             .ToList();
+
+        AplicarFiltro();
+    }
+
+    //Cero es "todos"; con un estatus puesto solo quedan las citas de ese estatus
+    private void AplicarFiltro()
+    {
+        _events = _statusFilter == 0
+            ? _all
+            : _all.Where(x => (int?)x.scheduleStatus == _statusFilter).ToList();
+    }
+
+    public async Task SetStatusFilterAsync(int status)
+    {
+        _statusFilter = status;
+        AplicarFiltro();
+
+        await JS.InvokeVoidAsync("SpixCalendar.refreshEvents", "spix-calendar", _events);
     }
 
     [JSInvokable]

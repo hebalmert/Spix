@@ -259,6 +259,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Billed on.
+        /// </summary>
+        public static string Audit_Billed {
+            get {
+                return ResourceManager.GetString("Audit_Billed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed by.
+        /// </summary>
+        public static string Audit_ClosedBy {
+            get {
+                return ResourceManager.GetString("Audit_ClosedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closing date.
+        /// </summary>
+        public static string Audit_ClosedDate {
+            get {
+                return ResourceManager.GetString("Audit_ClosedDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Created on.
         /// </summary>
         public static string Audit_Created {
@@ -291,6 +318,15 @@ namespace Spix.xLanguage.Resources {
         public static string Audit_Origin {
             get {
                 return ResourceManager.GetString("Audit_Origin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exempted period.
+        /// </summary>
+        public static string Audit_Period {
+            get {
+                return ResourceManager.GetString("Audit_Period", resourceCulture);
             }
         }
         
@@ -331,11 +367,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scheduled for.
+        /// </summary>
+        public static string Audit_Scheduled {
+            get {
+                return ResourceManager.GetString("Audit_Scheduled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Signature request sent.
         /// </summary>
         public static string Audit_SignatureSent {
             get {
                 return ResourceManager.GetString("Audit_SignatureSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technician.
+        /// </summary>
+        public static string Audit_Technician {
+            get {
+                return ResourceManager.GetString("Audit_Technician", resourceCulture);
             }
         }
         
@@ -354,6 +408,15 @@ namespace Spix.xLanguage.Resources {
         public static string Audit_Title {
             get {
                 return ResourceManager.GetString("Audit_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To review.
+        /// </summary>
+        public static string Board_Requested {
+            get {
+                return ResourceManager.GetString("Board_Requested", resourceCulture);
             }
         }
         
@@ -628,6 +691,78 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close order.
+        /// </summary>
+        public static string Close_Button {
+            get {
+                return ResourceManager.GetString("Close_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load a service, write the technician comment and take the after photo before closing..
+        /// </summary>
+        public static string Close_Missing {
+            get {
+                return ResourceManager.GetString("Close_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technician comment.
+        /// </summary>
+        public static string Close_NeedComment {
+            get {
+                return ResourceManager.GetString("Close_NeedComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After photo.
+        /// </summary>
+        public static string Close_NeedPhoto {
+            get {
+                return ResourceManager.GetString("Close_NeedPhoto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A service loaded.
+        /// </summary>
+        public static string Close_NeedService {
+            get {
+                return ResourceManager.GetString("Close_NeedService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To close this order you still need.
+        /// </summary>
+        public static string Close_Pending {
+            get {
+                return ResourceManager.GetString("Close_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Once closed, the order can no longer be edited. Do you want to continue?.
+        /// </summary>
+        public static string Close_Question {
+            get {
+                return ResourceManager.GetString("Close_Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close the work order.
+        /// </summary>
+        public static string Close_Title {
+            get {
+                return ResourceManager.GetString("Close_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code.
         /// </summary>
         public static string Code {
@@ -673,6 +808,69 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Where should we call you?.
+        /// </summary>
+        public static string Contact_Label {
+            get {
+                return ResourceManager.GetString("Contact_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write the number we should call..
+        /// </summary>
+        public static string Contact_NeedPhone {
+            get {
+                return ResourceManager.GetString("Contact_NeedPhone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New contact number.
+        /// </summary>
+        public static string Contact_NewPlaceholder {
+            get {
+                return ResourceManager.GetString("Contact_NewPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No number on file.
+        /// </summary>
+        public static string Contact_NoPhone {
+            get {
+                return ResourceManager.GetString("Contact_NoPhone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On the contract:.
+        /// </summary>
+        public static string Contact_OnContract {
+            get {
+                return ResourceManager.GetString("Contact_OnContract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Another number.
+        /// </summary>
+        public static string Contact_Other {
+            get {
+                return ResourceManager.GetString("Contact_Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save this number on my contract.
+        /// </summary>
+        public static string Contact_SaveOnContract {
+            get {
+                return ResourceManager.GetString("Contact_SaveOnContract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A Transaction is already Active.
         /// </summary>
         public static string Context_Begin {
@@ -705,6 +903,186 @@ namespace Spix.xLanguage.Resources {
         public static string Contract {
             get {
                 return ResourceManager.GetString("Contract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract approved.
+        /// </summary>
+        public static string ContractEvent_Approved {
+            get {
+                return ResourceManager.GetString("ContractEvent_Approved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IpBinding changed.
+        /// </summary>
+        public static string ContractEvent_BindChanged {
+            get {
+                return ResourceManager.GetString("ContractEvent_BindChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IpBinding created.
+        /// </summary>
+        public static string ContractEvent_BindCreated {
+            get {
+                return ResourceManager.GetString("ContractEvent_BindCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong verification code.
+        /// </summary>
+        public static string ContractEvent_CodeFailed {
+            get {
+                return ResourceManager.GetString("ContractEvent_CodeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verification code sent.
+        /// </summary>
+        public static string ContractEvent_CodeSent {
+            get {
+                return ResourceManager.GetString("ContractEvent_CodeSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code validated.
+        /// </summary>
+        public static string ContractEvent_CodeValidated {
+            get {
+                return ResourceManager.GetString("ContractEvent_CodeValidated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract created.
+        /// </summary>
+        public static string ContractEvent_Created {
+            get {
+                return ResourceManager.GetString("ContractEvent_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract deleted.
+        /// </summary>
+        public static string ContractEvent_Deleted {
+            get {
+                return ResourceManager.GetString("ContractEvent_Deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document opened by the client.
+        /// </summary>
+        public static string ContractEvent_DocumentViewed {
+            get {
+                return ResourceManager.GetString("ContractEvent_DocumentViewed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract exempted.
+        /// </summary>
+        public static string ContractEvent_Exempted {
+            get {
+                return ResourceManager.GetString("ContractEvent_Exempted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exemption removed.
+        /// </summary>
+        public static string ContractEvent_ExemptRemoved {
+            get {
+                return ResourceManager.GetString("ContractEvent_ExemptRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Month exempted.
+        /// </summary>
+        public static string ContractEvent_MonthExonerated {
+            get {
+                return ResourceManager.GetString("ContractEvent_MonthExonerated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Month exemption closed.
+        /// </summary>
+        public static string ContractEvent_MonthExoneratedClosed {
+            get {
+                return ResourceManager.GetString("ContractEvent_MonthExoneratedClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queue created.
+        /// </summary>
+        public static string ContractEvent_QueueCreated {
+            get {
+                return ResourceManager.GetString("ContractEvent_QueueCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service restored.
+        /// </summary>
+        public static string ContractEvent_Reactivated {
+            get {
+                return ResourceManager.GetString("ContractEvent_Reactivated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signature request sent.
+        /// </summary>
+        public static string ContractEvent_SignatureRequested {
+            get {
+                return ResourceManager.GetString("ContractEvent_SignatureRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document signed.
+        /// </summary>
+        public static string ContractEvent_Signed {
+            get {
+                return ResourceManager.GetString("ContractEvent_Signed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status changed.
+        /// </summary>
+        public static string ContractEvent_StateChanged {
+            get {
+                return ResourceManager.GetString("ContractEvent_StateChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract suspended.
+        /// </summary>
+        public static string ContractEvent_Suspended {
+            get {
+                return ResourceManager.GetString("ContractEvent_Suspended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract updated.
+        /// </summary>
+        public static string ContractEvent_Updated {
+            get {
+                return ResourceManager.GetString("ContractEvent_Updated", resourceCulture);
             }
         }
         
@@ -2077,6 +2455,231 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove the exoneration.
+        /// </summary>
+        public static string Exempt_ActivateButton {
+            get {
+                return ResourceManager.GetString("Exempt_ActivateButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract went back to Active..
+        /// </summary>
+        public static string Exempt_ActivateOk {
+            get {
+                return ResourceManager.GetString("Exempt_ActivateOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract {0} of {1} will go back to Active and will be charged again. Do you want to continue?.
+        /// </summary>
+        public static string Exempt_ActivateQuestion {
+            get {
+                return ResourceManager.GetString("Exempt_ActivateQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the exoneration.
+        /// </summary>
+        public static string Exempt_ActivateTitle {
+            get {
+                return ResourceManager.GetString("Exempt_ActivateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full history.
+        /// </summary>
+        public static string Exempt_AllHistory {
+            get {
+                return ResourceManager.GetString("Exempt_AllHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string Exempt_Amount {
+            get {
+                return ResourceManager.GetString("Exempt_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exonerate.
+        /// </summary>
+        public static string Exempt_Button {
+            get {
+                return ResourceManager.GetString("Exempt_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract must have its IpBinding in bypassed to be exonerated..
+        /// </summary>
+        public static string Exempt_NeedsBypassed {
+            get {
+                return ResourceManager.GetString("Exempt_NeedsBypassed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no active contracts that match..
+        /// </summary>
+        public static string Exempt_NoActiveFound {
+            get {
+                return ResourceManager.GetString("Exempt_NoActiveFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract is no longer exempted..
+        /// </summary>
+        public static string Exempt_NotExempt {
+            get {
+                return ResourceManager.GetString("Exempt_NotExempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract is no longer exonerated..
+        /// </summary>
+        public static string Exempt_NotExonerated {
+            get {
+                return ResourceManager.GetString("Exempt_NotExonerated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract is now exonerated..
+        /// </summary>
+        public static string Exempt_Ok {
+            get {
+                return ResourceManager.GetString("Exempt_Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only an active contract can be exonerated..
+        /// </summary>
+        public static string Exempt_OnlyActive {
+            get {
+                return ResourceManager.GetString("Exempt_OnlyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only exonerated.
+        /// </summary>
+        public static string Exempt_OnlyOpen {
+            get {
+                return ResourceManager.GetString("Exempt_OnlyOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts that keep the service without being charged, with the plan amount at the time they were exonerated..
+        /// </summary>
+        public static string Exempt_PageSubtitle {
+            get {
+                return ResourceManager.GetString("Exempt_PageSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exonerated contracts.
+        /// </summary>
+        public static string Exempt_PageTitle {
+            get {
+                return ResourceManager.GetString("Exempt_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to exonerated.
+        /// </summary>
+        public static string Exempt_Pill {
+            get {
+                return ResourceManager.GetString("Exempt_Pill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract {0} of {1} will be exonerated: the service is not touched, it just stops being charged. Do you want to continue?.
+        /// </summary>
+        public static string Exempt_Question {
+            get {
+                return ResourceManager.GetString("Exempt_Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to records in the filter.
+        /// </summary>
+        public static string Exempt_RecordsInFilter {
+            get {
+                return ResourceManager.GetString("Exempt_RecordsInFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exonerating....
+        /// </summary>
+        public static string Exempt_Saving {
+            get {
+                return ResourceManager.GetString("Exempt_Saving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type the name or the document....
+        /// </summary>
+        public static string Exempt_SearchHint {
+            get {
+                return ResourceManager.GetString("Exempt_SearchHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exonerated on.
+        /// </summary>
+        public static string Exempt_Since {
+            get {
+                return ResourceManager.GetString("Exempt_Since", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed.
+        /// </summary>
+        public static string Exempt_StateClosed {
+            get {
+                return ResourceManager.GetString("Exempt_StateClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exonerated.
+        /// </summary>
+        public static string Exempt_StateOpen {
+            get {
+                return ResourceManager.GetString("Exempt_StateOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exonerate contract.
+        /// </summary>
+        public static string Exempt_Title {
+            get {
+                return ResourceManager.GetString("Exempt_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fax Number.
         /// </summary>
         public static string Fax_Number {
@@ -2109,6 +2712,15 @@ namespace Spix.xLanguage.Resources {
         public static string File_OnlyImage {
             get {
                 return ResourceManager.GetString("File_OnlyImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All statuses.
+        /// </summary>
+        public static string Filter_AllStatus {
+            get {
+                return ResourceManager.GetString("Filter_AllStatus", resourceCulture);
             }
         }
         
@@ -3310,6 +3922,123 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Request.
+        /// </summary>
+        public static string MyRequest_Button {
+            get {
+                return ResourceManager.GetString("MyRequest_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technician comment.
+        /// </summary>
+        public static string MyRequest_Comment {
+            get {
+                return ResourceManager.GetString("MyRequest_Comment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose the contract first..
+        /// </summary>
+        public static string MyRequest_NeedContract {
+            get {
+                return ResourceManager.GetString("MyRequest_NeedContract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tell us what is happening before sending it..
+        /// </summary>
+        public static string MyRequest_NeedProblem {
+            get {
+                return ResourceManager.GetString("MyRequest_NeedProblem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New request.
+        /// </summary>
+        public static string MyRequest_New {
+            get {
+                return ResourceManager.GetString("MyRequest_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tell us what you see: no signal, slow, the router does not turn on....
+        /// </summary>
+        public static string MyRequest_Placeholder {
+            get {
+                return ResourceManager.GetString("MyRequest_Placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is happening?.
+        /// </summary>
+        public static string MyRequest_Problem {
+            get {
+                return ResourceManager.GetString("MyRequest_Problem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recommendation.
+        /// </summary>
+        public static string MyRequest_Recommendation {
+            get {
+                return ResourceManager.GetString("MyRequest_Recommendation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How it went.
+        /// </summary>
+        public static string MyRequest_Result {
+            get {
+                return ResourceManager.GetString("MyRequest_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send.
+        /// </summary>
+        public static string MyRequest_Send {
+            get {
+                return ResourceManager.GetString("MyRequest_Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your request was sent. We will call you to confirm..
+        /// </summary>
+        public static string MyRequest_Sent {
+            get {
+                return ResourceManager.GetString("MyRequest_Sent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ask for a technical visit and follow how it went..
+        /// </summary>
+        public static string MyRequest_Subtitle {
+            get {
+                return ResourceManager.GetString("MyRequest_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My service requests.
+        /// </summary>
+        public static string MyRequest_Title {
+            get {
+                return ResourceManager.GetString("MyRequest_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
@@ -3580,6 +4309,42 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What you write here is what the client reads on their portal..
+        /// </summary>
+        public static string Phone_ClientWillRead {
+            get {
+                return ResourceManager.GetString("Phone_ClientWillRead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Optional: what they should do to avoid it happening again.
+        /// </summary>
+        public static string Phone_RecommendationPlaceholder {
+            get {
+                return ResourceManager.GetString("Phone_RecommendationPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We walked them through restarting the router and the service came back....
+        /// </summary>
+        public static string Phone_WhatPlaceholder {
+            get {
+                return ResourceManager.GetString("Phone_WhatPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What was done or explained.
+        /// </summary>
+        public static string Phone_WhatWasDone {
+            get {
+                return ResourceManager.GetString("Phone_WhatWasDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Phone 2.
         /// </summary>
         public static string Phone2 {
@@ -3594,6 +4359,78 @@ namespace Spix.xLanguage.Resources {
         public static string Photo {
             get {
                 return ResourceManager.GetString("Photo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add photo.
+        /// </summary>
+        public static string Photo_Add {
+            get {
+                return ResourceManager.GetString("Photo_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After.
+        /// </summary>
+        public static string Photo_After {
+            get {
+                return ResourceManager.GetString("Photo_After", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Before.
+        /// </summary>
+        public static string Photo_Before {
+            get {
+                return ResourceManager.GetString("Photo_Before", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A closed order does not allow changing its photos..
+        /// </summary>
+        public static string Photo_ClosedOrder {
+            get {
+                return ResourceManager.GetString("Photo_ClosedOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose a photo first..
+        /// </summary>
+        public static string Photo_Empty {
+            get {
+                return ResourceManager.GetString("Photo_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No photos have been taken yet..
+        /// </summary>
+        public static string Photo_Empty_List {
+            get {
+                return ResourceManager.GetString("Photo_Empty_List", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This order already has the maximum of 4 photos..
+        /// </summary>
+        public static string Photo_MaxReached {
+            get {
+                return ResourceManager.GetString("Photo_MaxReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visit photos.
+        /// </summary>
+        public static string Photo_Title {
+            get {
+                return ResourceManager.GetString("Photo_Title", resourceCulture);
             }
         }
         
@@ -3778,6 +4615,60 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Schedule visit.
+        /// </summary>
+        public static string Request_Assign {
+            get {
+                return ResourceManager.GetString("Request_Assign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solve by phone.
+        /// </summary>
+        public static string Request_ByPhone {
+            get {
+                return ResourceManager.GetString("Request_ByPhone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only a request that has not been reviewed yet can be handled this way..
+        /// </summary>
+        public static string Request_OnlyRequested {
+            get {
+                return ResourceManager.GetString("Request_OnlyRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write what was solved on the call before closing it..
+        /// </summary>
+        public static string Request_PhoneNeedsComment {
+            get {
+                return ResourceManager.GetString("Request_PhoneNeedsComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A technician cannot register a service request..
+        /// </summary>
+        public static string Request_TechnicianCannotCreate {
+            get {
+                return ResourceManager.GetString("Request_TechnicianCannotCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A technician cannot delete a service request..
+        /// </summary>
+        public static string Request_TechnicianCannotDelete {
+            get {
+                return ResourceManager.GetString("Request_TechnicianCannotDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Role.
         /// </summary>
         public static string Role {
@@ -3801,6 +4692,15 @@ namespace Spix.xLanguage.Resources {
         public static string SavePayment {
             get {
                 return ResourceManager.GetString("SavePayment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technician visits and appointments, by status..
+        /// </summary>
+        public static string Schedule_Subtitle {
+            get {
+                return ResourceManager.GetString("Schedule_Subtitle", resourceCulture);
             }
         }
         
@@ -3846,6 +4746,24 @@ namespace Spix.xLanguage.Resources {
         public static string ScheduleStatus_Pending {
             get {
                 return ResourceManager.GetString("ScheduleStatus_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solved by phone.
+        /// </summary>
+        public static string ScheduleStatus_PhoneResolved {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_PhoneResolved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested.
+        /// </summary>
+        public static string ScheduleStatus_Requested {
+            get {
+                return ResourceManager.GetString("ScheduleStatus_Requested", resourceCulture);
             }
         }
         
@@ -4017,6 +4935,15 @@ namespace Spix.xLanguage.Resources {
         public static string Select_Client {
             get {
                 return ResourceManager.GetString("Select_Client", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select contract].
+        /// </summary>
+        public static string Select_Contract {
+            get {
+                return ResourceManager.GetString("Select_Contract", resourceCulture);
             }
         }
         
@@ -4426,6 +5353,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start visit.
+        /// </summary>
+        public static string Start_Button {
+            get {
+                return ResourceManager.GetString("Start_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start Date.
         /// </summary>
         public static string StartDate {
@@ -4633,6 +5569,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actions.
+        /// </summary>
+        public static string Table_Actions {
+            get {
+                return ResourceManager.GetString("Table_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contract.
         /// </summary>
         public static string Table_Contract {
@@ -4656,6 +5601,15 @@ namespace Spix.xLanguage.Resources {
         public static string Table_NoRecords {
             get {
                 return ResourceManager.GetString("Table_NoRecords", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scheduled.
+        /// </summary>
+        public static string Table_Scheduled {
+            get {
+                return ResourceManager.GetString("Table_Scheduled", resourceCulture);
             }
         }
         
@@ -4966,11 +5920,74 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start the visit to load services and photos..
+        /// </summary>
+        public static string Visit_NotStarted {
+            get {
+                return ResourceManager.GetString("Visit_NotStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Wan Name.
         /// </summary>
         public static string WanName {
             get {
                 return ResourceManager.GetString("WanName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed.
+        /// </summary>
+        public static string When_Closed {
+            get {
+                return ResourceManager.GetString("When_Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In.
+        /// </summary>
+        public static string When_InDays {
+            get {
+                return ResourceManager.GetString("When_InDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overdue by.
+        /// </summary>
+        public static string When_Overdue {
+            get {
+                return ResourceManager.GetString("When_Overdue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Today.
+        /// </summary>
+        public static string When_Today {
+            get {
+                return ResourceManager.GetString("When_Today", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tomorrow.
+        /// </summary>
+        public static string When_Tomorrow {
+            get {
+                return ResourceManager.GetString("When_Tomorrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not scheduled.
+        /// </summary>
+        public static string When_Unassigned {
+            get {
+                return ResourceManager.GetString("When_Unassigned", resourceCulture);
             }
         }
         

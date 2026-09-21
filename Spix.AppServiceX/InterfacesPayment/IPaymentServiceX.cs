@@ -1,4 +1,4 @@
-using Spix.Domain.EntitiesPayment;
+﻿using Spix.Domain.EntitiesPayment;
 using Spix.Domain.EntitiesBilling;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
@@ -30,13 +30,13 @@ public interface IPaymentServiceX
 
     Task<ActionResponse<bool>> DeletePrePaymentAsync(Guid id, string username);
 
-    Task<ActionResponse<IEnumerable<PreExonerated>>> GetPreExoneratedsAsync(PaginationDTO pagination, string username);
+    Task<ActionResponse<IEnumerable<ContractExonerated>>> GetContractExoneratedsAsync(PaginationDTO pagination, string username);
 
-    Task<ActionResponse<PreExonerated>> GetPreExoneratedAsync(Guid id, string username);
+    Task<ActionResponse<ContractExonerated>> GetContractExoneratedAsync(Guid id, string username);
 
-    Task<ActionResponse<PreExonerated>> AddPreExoneratedAsync(PreExonerated model, string username);
+    Task<ActionResponse<ContractExonerated>> AddContractExoneratedAsync(ContractExonerated model, string username);
 
-    Task<ActionResponse<PreExonerated>> UpdatePreExoneratedAsync(PreExonerated model, string username);
+    Task<ActionResponse<ContractExonerated>> UpdateContractExoneratedAsync(ContractExonerated model, string username);
 
-    Task<ActionResponse<bool>> DeletePreExoneratedAsync(Guid id, string username);
+    Task<ActionResponse<bool>> DeleteContractExoneratedAsync(Guid id, string username);
 }

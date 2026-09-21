@@ -2,56 +2,52 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Technician")]
 @using Spix.AppFront.GenericModel
+@using Spix.AppFront.Helper
 
 <PageTitle>@Localizer["Schedule"]</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>@Localizer["Schedule"]</h3>
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
 
-@*     <button class="btn btn-primary" @onclick="() => ShowModalAsync(null, false)">
-        <i class="fa fa-plus me-2"></i> @Localizer["Create_Schedule"]
-    </button> *@
-</div>
+        @* El titulo vive DENTRO del card: sobre el fondo azul no se leia *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-calendar-days"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Schedule"]</h3>
+                <p>@Localizer["Schedule_Subtitle"]</p>
+            </div>
 
-<div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-    <SpixCalendar @ref="_calendar" />
-</div>
+            <div class="idx-head-tools">
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="Statuses">
+                    <Body>
+                        <div class="input-group" style="width:230px">
+                            <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                            <select class="form-select" value="@StatusFilter" @onchange="StatusChanged">
+                                @foreach (var item in Statuses!)
+                                {
+                                    <option value="@item.Value">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+        </div>
 
-@code {
-    [Inject] private ModalService _modalService { get; set; } = null!;
-    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
-
-    private SpixCalendar? _calendar;
-
-    private async Task ShowModalAsync(Guid? id, bool isEdit)
-    {
-        Type component;
-        Dictionary<string, object> parameters;
-        if (isEdit)
+        @* Leyenda: que significa cada color del calendario *@
+        @if (Statuses is not null)
         {
-            component = typeof(EditSchedule);
-            parameters = new Dictionary<string, object>
+            <div class="sch-legend">
+                @foreach (var item in Statuses.Where(x => x.Value > 0))
                 {
-                    { "Id", id! },
-                    { "Title", $"{Localizer[nameof(Resource.Edit_Schedule)]}"  }
-                };
-        }
-        else
-        {
-            component = typeof(CreateSchedule);
-            parameters = new Dictionary<string, object>
-                {
-                    { "Title", $"{Localizer[nameof(Resource.Create_Schedule)]}"  }
-                };
+                    <span class="sch-chip">
+                        <span class="sch-dot" style="background:@ScheduleColors.Get(item.Value)"></span>
+                        @item.Name
+                    </span>
+                }
+            </div>
         }
 
-        await _modalService.ShowAsync(component, parameters, async result =>
-        {
-            if (result.Succeeded)
-            {
-                if (_calendar is not null)
-                    await _calendar.ReloadAsync();
-            }
-        });
-    }
-}
+        <SpixCalendar @ref="_calendar" />
+    </div>
+</div>

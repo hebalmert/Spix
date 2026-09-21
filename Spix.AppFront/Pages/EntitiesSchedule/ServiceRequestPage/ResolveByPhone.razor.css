@@ -1,0 +1,15 @@
+/* Aviso de que esto lo lee el cliente */
+.rp-note {
+    border-radius: 8px;
+    background: #e6f1fb;
+    color: #0c447c;
+    font-size: 12.5px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+}
+
+.rp-label {
+    font-size: 11.5px;
+    color: #6b7690;
+    margin-bottom: 3px;
+}

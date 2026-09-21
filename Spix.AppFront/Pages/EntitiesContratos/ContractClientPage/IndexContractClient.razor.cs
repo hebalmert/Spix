@@ -1,4 +1,5 @@
-﻿using CurrieTechnologies.Razor.SweetAlert2;
+﻿using Spix.AppFront.Pages.EntitiesContratos.ContractAuditPage;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -252,13 +253,15 @@ public partial class IndexContractClient
         await Cargar(CurrentPage);
     }
 
-    //Rastro del registro: cuando se creo, quien lo creo y cuando se le pidio la firma
-    //al cliente. Va en un boton para no gastar columnas de la tabla.
+    //Rastro del contrato: la bitacora completa, no solo lo que guarda esta tabla.
+    //Creacion, estados, firma, suspension y exoneraciones salen de ContractAudit.
     private async Task ShowAuditAsync(ContractClient item)
     {
-        await AuditAlert.ShowAsync(_sweetAlert, Localizer["Audit_Title"],
-            (Localizer["Audit_Created"], item.DateCreado.ToLocalTime().ToString("dd/MM/yyyy HH:mm")),
-            (Localizer["Audit_CreatedBy"], item.UsuarioOwner),
-            (Localizer["Audit_SignatureSent"], item.SignatureRequestedAt?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")));
+        var parametros = new Dictionary<string, object>
+        {
+            { "ContractClientId", item.ContractClientId }
+        };
+
+        await _modalService.ShowAsync(typeof(ContractAuditModal), parametros);
     }
 }

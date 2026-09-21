@@ -20,6 +20,9 @@ public class ImgSetting
 
     public string ImgContractIDPic { get; set; } = null!;
 
+    //Fotos de las visitas tecnicas: contenedor propio, no el de las cedulas
+    public string RequiereServicePicture { get; set; } = null!;
+
     public string ContractConsent { get; set; } = null!;
 
     public string ContractContract { get; set; } = null!;

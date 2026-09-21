@@ -372,6 +372,11 @@ namespace Spix.AppService.ImplementContratos
 
                 contract.ContractState = ContractState.InProgress;
 
+                await ContractAuditLog.AddAsync(_context, contract.ContractClientId, ContractEventType.Approved,
+                    ContractState.InProgress.ToString(), $"{user.FirstName} {user.LastName}".Trim(),
+                    Guid.TryParse(user.Id, out var approveUserId) ? approveUserId : null,
+                    clientId: contract.ClientId, corporationId: contract.CorporationId);
+
                 await _transactionManager.SaveChangesAsync();
                 await _transactionManager.CommitTransactionAsync();
 
@@ -417,6 +422,12 @@ namespace Spix.AppService.ImplementContratos
                 modelo.UserId = Guid.Parse(user.Id);
 
                 _context.ContractClients.Add(modelo);
+
+                //Primer renglon de la bitacora del contrato
+                await ContractAuditLog.AddAsync(_context, modelo.ContractClientId, ContractEventType.Created,
+                    $"Contrato {modelo.ControlContrato}", modelo.UsuarioOwner, modelo.UserId,
+                    clientId: modelo.ClientId, corporationId: modelo.CorporationId);
+
                 await _transactionManager.SaveChangesAsync();
                 await _transactionManager.CommitTransactionAsync();
 

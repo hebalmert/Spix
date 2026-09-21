@@ -1,9 +1,13 @@
+﻿@using Spix.Domain.EntitiesSchedule
+@using Spix.AppFront.SharedEnumColor
+
 <EditForm Model="Model" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
+    @* Buscar el contrato: solo al registrar la solicitud *@
     @if (!IsEditControl)
     {
-        <div class="row mb-2">
+        <div class="row mb-3">
             <div class="col-12">
                 <div class="input-group position-relative">
                     <span class="input-group-text" style="width:150px">Cliente</span>
@@ -19,9 +23,10 @@
                             style="top:100%; left:0; z-index:2000; max-height:240px; overflow-y:auto;">
                             @foreach (var contract in Contracts)
                             {
-                                <li class="list-group-item list-group-item-action"
+                                <li class="list-group-item list-group-item-action d-flex align-items-center gap-2"
                                     @onclick="() => SelectContract(contract)">
-                                    @contract.ClientFullName - Contrato @contract.ControlContrato - @contract.ZoneName
+                                    <span class="flex-grow-1">@contract.ClientFullName - Contrato @contract.ControlContrato - @contract.ZoneName</span>
+                                    <StatusBadge Value="@contract.ContractState" />
                                 </li>
                             }
                         </ul>
@@ -31,194 +36,340 @@
         </div>
     }
 
-    <div class="row">
-        <div class="col-12 col-md-4 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Contrato</span>
-                <input class="form-control" value="@Model.ControlContrato" disabled />
-            </div>
-        </div>
-        <div class="col-12 col-md-4 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Telefono</span>
-                <input class="form-control" value="@Model.PhoneNumber" disabled />
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Direccion</span>
-                <input class="form-control" value="@($"{Model.Address} - {Model.CityName} / {Model.ZoneName}")" disabled />
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Red</span>
-                <input class="form-control" value="@($"Srv: {Model.ServerName} | IP: {Model.IpCliente} | MAC: {Model.MacCliente} | Plan: {Model.PlanName} {Model.PlanSpeed}")" disabled />
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 col-md-4 mb-2">
-            <GenericSelectWrapper Tmodel="GuidItemModel" Items="Technicians">
-                <Body>
-                <div class="input-group">
-                    <span class="input-group-text" style="width:150px">Tecnico</span>
-                    <select class="form-select" value="@Model.TechnicianId" @onchange="TechnicianChanged" disabled="@IsCompleted">
-                        @foreach (var technician in Technicians)
-                        {
-                            <option value="@technician.Value">@technician.Name</option>
-                        }
-                    </select>
-                </div>
-                </Body>
-            </GenericSelectWrapper>
-        </div>
-        <div class="col-12 col-md-4 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Programada</span>
-                <input type="datetime-local" class="form-control" disabled="@IsCompleted"
-                       value="@Model.ScheduledAtUtc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
-                       @oninput="OnScheduledChanged" />
-            </div>
-        </div>
-        <div class="col-12 col-md-4 mb-2">
-            <GenericSelectWrapper Tmodel="IntItemModel" Items="ScheduleStatuses">
-                <Body>
-                <div class="input-group">
-                    <span class="input-group-text" style="width:150px">Estatus</span>
-                    <select class="form-select" value="@(IsEditControl ? ((int)Model.ScheduleStatus).ToString() : "1")" @onchange="StatusChanged" disabled="@IsCompleted">
-                        @foreach (var item in ScheduleStatuses!)
-                        {
-                            <option value="@item.Value">@item.Name</option>
-                        }
-                    </select>
-                </div>
-                </Body>
-            </GenericSelectWrapper>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Razon</span>
-                <InputTextArea class="form-control" @bind-Value="Model.ClientReason" disabled="@IsCompleted" />
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 col-md-6 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Comentario tecnico</span>
-                <InputTextArea class="form-control" @bind-Value="Model.TechnicianComment" disabled="@IsCompleted" />
-            </div>
-        </div>
-        <div class="col-12 col-md-6 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">Recomendacion</span>
-                <InputTextArea class="form-control" @bind-Value="Model.Recommendation" disabled="@IsCompleted" />
-            </div>
-        </div>
-    </div>
-
-    @if (IsEditControl && Model.ServiceRequestId != Guid.Empty)
+    @* Encabezado: de quien es la orden, como va y el unico boton que importa *@
+    @if (IsEditControl)
     {
-        <hr />
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Servicios realizados</h5>
-        </div>
-
-        @if (!IsCompleted)
-        {
-            <div class="row mb-3">
-                <div class="col-12 col-md-3 mb-2">
-                    <GenericSelectWrapper Tmodel="ServiceCategory" Items="ServiceCategories">
-                        <Body>
-                    <select class="form-select" value="@Detail.ServiceCategoryId" @onchange="CategoryChanged">
-                        <option value="@Guid.Empty">[Categoria]</option>
-                        @foreach (var category in ServiceCategories)
-                        {
-                            <option value="@category.ServiceCategoryId">@category.Name</option>
-                        }
-                    </select>
-                        </Body>
-                    </GenericSelectWrapper>
-                </div>
-                <div class="col-12 col-md-3 mb-2">
-                    <GenericSelectWrapper Tmodel="ServiceClient" Items="ServiceClients">
-                        <Body>
-                    <select class="form-select" value="@Detail.ServiceClientId" @onchange="ServiceClientChanged">
-                        <option value="@Guid.Empty">[Servicio]</option>
-                        @foreach (var service in ServiceClients)
-                        {
-                            <option value="@service.ServiceClientId">@service.ServiceName</option>
-                        }
-                    </select>
-                        </Body>
-                    </GenericSelectWrapper>
-                </div>
-                <div class="col-12 col-md-4 mb-2">
-                    <InputText class="form-control" placeholder="Detalle" @bind-Value="Detail.Detail" />
-                </div>
-                <div class="col-12 col-md-2 mb-2">
-                    <ButtonFormNew OnClick="AddDetail" TooTip="Agregar" Style="width:100%" />
-                </div>
+        <div class="sr-title">
+            <span class="sr-glifo"><i class="fa fa-clipboard-list"></i></span>
+            <div class="sr-title-text">
+                <div class="sr-name">Orden de trabajo #@Model.RequestNumber - @Model.ClientFullName - Contrato @Model.ControlContrato</div>
+                <div class="sr-meta">@Model.Address &middot; @Model.CityName / @Model.ZoneName</div>
             </div>
-        }
 
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>Categoria</th>
-                    <th>Servicio</th>
-                    <th>Detalle</th>
-                    <th class="text-end">Precio</th>
-                    <th class="text-end">Tax</th>
-                    <th class="text-end">Total</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var detail in Model.Details)
-                {
-                    <tr>
-                        <td>@detail.ServiceCategoryName</td>
-                        <td>@detail.ServiceClientName</td>
-                        <td>@detail.Detail</td>
-                        <td class="text-end">@detail.Price.ToString("N2")</td>
-                        <td class="text-end">@detail.TaxAmount.ToString("N2")</td>
-                        <td class="text-end">@detail.Total.ToString("N2")</td>
-                        <td class="text-end">
-                            @if (!IsCompleted)
-                            {
-                                <ButtonDelete OnClick="() => DeleteDetail(detail.ServiceRequestDetailId)" />
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="3" class="text-end">Totales</th>
-                    <th class="text-end">@Model.SubTotal.ToString("N2")</th>
-                    <th class="text-end">@Model.TotalTax.ToString("N2")</th>
-                    <th class="text-end">@Model.Total.ToString("N2")</th>
-                    <th></th>
-                </tr>
-            </tfoot>
-        </table>
+            <ScheduleStatusBadge Value="@Model.ScheduleStatus" />
+
+            @* Una solicitud del cliente primero se tria: se agenda o se resuelve llamando *@
+            @if (IsRequested)
+            {
+                <button type="button" class="sr-go" @onclick="ShowAssignAsync">
+                    <i class="fa fa-calendar-check me-2"></i>@Localizer["Request_Assign"]
+                </button>
+                <button type="button" class="sr-go is-phone" @onclick="ResolveByPhoneAsync">
+                    <i class="fa fa-phone me-2"></i>@Localizer["Request_ByPhone"]
+                </button>
+            }
+            else if (!IsCompleted)
+            {
+                <button type="button" class="sr-go @(IsStarted ? "is-close" : null)" @onclick="AdvanceAsync" disabled="@IsSavingStep">
+                    @if (IsSavingStep)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                    }
+                    else
+                    {
+                        <i class="fa @(IsStarted ? "fa-flag-checkered" : "fa-play") me-2"></i>
+                    }
+                    @(IsStarted ? Localizer["Close_Button"] : Localizer["Start_Button"])
+                </button>
+            }
+        </div>
     }
 
+    <div class="sr-sheet @(IsEditControl ? null : "is-single")">
+
+        @* Panel lateral: lo que solo se consulta *@
+        @if (IsEditControl || Model.ContractClientId != Guid.Empty)
+        {
+            <aside class="sr-side">
+                <div class="sr-card">
+                    <div class="sr-block"><i class="fa fa-address-card"></i>Datos del servicio</div>
+
+                    @if (!IsEditControl)
+                    {
+                        <div class="sr-side-row">
+                            <div class="sr-label">Direccion</div>
+                            <div class="sr-value">@Model.Address</div>
+                            <div class="sr-meta">@Model.CityName / @Model.ZoneName</div>
+                        </div>
+                    }
+
+                    <div class="sr-side-row">
+                        <div class="sr-label">Telefono</div>
+                        <div class="sr-value">@(string.IsNullOrWhiteSpace(Model.ContactPhone) ? Model.PhoneNumber : Model.ContactPhone)</div>
+                        @if (!string.IsNullOrWhiteSpace(Model.ContactPhone) && Model.ContactPhone != Model.PhoneNumber)
+                        {
+                            @* El cliente pidio que lo llamaran a otro numero *@
+                            <div class="sr-meta">@Localizer["Contact_OnContract"] @Model.PhoneNumber</div>
+                        }
+                    </div>
+                    <div class="sr-side-row">
+                        <div class="sr-label">Red</div>
+                        <div class="sr-value">@Model.ServerName &middot; @Model.IpCliente</div>
+                        <div class="sr-meta">@Model.MacCliente</div>
+                    </div>
+                    <div class="sr-side-row">
+                        <div class="sr-label">AP / Nodo</div>
+                        <div class="sr-value">@Model.NodeName</div>
+                        <div class="sr-meta">@Model.NodeIp</div>
+                    </div>
+                    <div class="sr-side-row is-last">
+                        <div class="sr-label">Plan</div>
+                        <div class="sr-value">@Model.PlanName</div>
+                        <div class="sr-meta">@Model.PlanSpeed</div>
+                    </div>
+                </div>
+
+                @* Las fotos son de la VISITA, no de cada servicio *@
+                @if (IsEditControl && Model.ServiceRequestId != Guid.Empty)
+                {
+                    <div class="sr-card">
+                        <div class="sr-block"><i class="fa fa-camera"></i>@Localizer["Photo_Title"]</div>
+
+                        @if (Model.Photos.Count == 0 && !CanWork)
+                        {
+                            <div class="sr-empty">
+                                @(IsCompleted ? Localizer["Photo_Empty_List"] : Localizer["Visit_NotStarted"])
+                            </div>
+                        }
+
+                        <div class="sr-photos">
+                            @foreach (var photo in Model.Photos)
+                            {
+                                <div class="sr-photo" @onclick="() => ShowPhotoViewerAsync(photo)">
+                                    <img src="@photo.ImageFullPath" alt="@photo.PhotoType" />
+                                    <span class="sr-photo-tag @(photo.PhotoType == ServicePhotoType.After ? "is-after" : null)">
+                                        @(photo.PhotoType == ServicePhotoType.After ? Localizer["Photo_After"] : Localizer["Photo_Before"])
+                                    </span>
+                                    @if (CanWork)
+                                    {
+                                        <button type="button" class="sr-photo-del" @onclick:stopPropagation="true"
+                                                @onclick="() => DeletePhotoAsync(photo)" title="@Localizer[nameof(Resource.ButtonDelete)]">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    }
+                                </div>
+                            }
+
+                            @* Un solo cuadro para agregar: la carga vive en su propio modal *@
+                            @if (CanWork && Model.Photos.Count < 4)
+                            {
+                                <button type="button" class="sr-photo-add" @onclick="ShowPhotoUploadAsync">
+                                    <i class="fa fa-camera-retro"></i>
+                                    <span>@Localizer["Photo_Add"]</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            </aside>
+        }
+
+        @* Columna de trabajo: lo que el tecnico llena *@
+        <div class="sr-work">
+
+            @* Como va la orden: su propio card, aparte de los datos de la visita *@
+            @if (IsEditControl && !IsRequested)
+            {
+                <div class="sr-card">
+                    <div class="sr-steps">
+                        <span class="sr-step is-done"><i class="fa fa-circle-check"></i>Registrada</span>
+                        <span class="sr-bar @(IsStarted ? "is-done" : null)"></span>
+                        <span class="sr-step @(IsStarted ? "is-now" : null)"><i class="fa fa-play"></i>En sitio</span>
+                        <span class="sr-bar @(IsCompleted ? "is-done" : null)"></span>
+                        <span class="sr-step @(IsCompleted ? "is-done" : null)"><i class="fa fa-flag"></i>Cerrada</span>
+                    </div>
+
+                    @if (!IsCompleted && IsStarted && !CanClose)
+                    {
+                        <div class="sr-check">
+                            <span class="sr-check-title">@Localizer["Close_Pending"]</span>
+                            <span class="@(HasService ? "is-ok" : null)"><i class="fa @(HasService ? "fa-circle-check" : "fa-circle")"></i>@Localizer["Close_NeedService"]</span>
+                            <span class="@(HasComment ? "is-ok" : null)"><i class="fa @(HasComment ? "fa-circle-check" : "fa-circle")"></i>@Localizer["Close_NeedComment"]</span>
+                            <span class="@(HasAfterPhoto ? "is-ok" : null)"><i class="fa @(HasAfterPhoto ? "fa-circle-check" : "fa-circle")"></i>@Localizer["Close_NeedPhoto"]</span>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="sr-card">
+                <div class="sr-block"><i class="fa fa-user-clock"></i>Visita</div>
+
+                <div class="row">
+                    <div class="col-12 col-md-4">
+                        <div class="sr-field">
+                            <div class="sr-label">Tecnico</div>
+                            <GenericSelectWrapper Tmodel="GuidItemModel" Items="Technicians">
+                                <Body>
+                                    <select class="form-select" value="@Model.TechnicianId" @onchange="TechnicianChanged" disabled="@IsCompleted">
+                                        @foreach (var technician in Technicians!)
+                                        {
+                                            <option value="@technician.Value">@technician.Name</option>
+                                        }
+                                    </select>
+                                </Body>
+                            </GenericSelectWrapper>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="sr-field">
+                            <div class="sr-label">Programada</div>
+                            <input type="datetime-local" class="form-control" disabled="@IsCompleted"
+                                   value="@Model.ScheduledAtUtc?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
+                                   @oninput="OnScheduledChanged" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="sr-field">
+                            <div class="sr-label">Otro estado</div>
+                            <GenericSelectWrapper Tmodel="IntItemModel" Items="ScheduleStatuses">
+                                <Body>
+                                    <select class="form-select" value="@(IsEditControl ? ((int)Model.ScheduleStatus).ToString() : "1")" @onchange="StatusChanged" disabled="@IsCompleted">
+                                        @foreach (var item in ScheduleStatuses!)
+                                        {
+                                            <option value="@item.Value">@item.Name</option>
+                                        }
+                                    </select>
+                                </Body>
+                            </GenericSelectWrapper>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 @(IsEditControl ? "col-md-4" : null)">
+                        <div class="sr-field">
+                            <div class="sr-label">Razon del cliente</div>
+                            <InputTextArea class="form-control" rows="3" @bind-Value="Model.ClientReason" disabled="@IsEditControl" />
+                        </div>
+                    </div>
+
+                    @* Lo que escribe el tecnico es del cierre de la visita: al registrarla todavia no existe *@
+                    @if (IsEditControl)
+                    {
+                        <div class="col-12 col-md-4">
+                            <div class="sr-field">
+                                <div class="sr-label">Comentario tecnico</div>
+                                <InputTextArea class="form-control" rows="3" @bind-Value="Model.TechnicianComment" disabled="@(!CanWork)" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="sr-field">
+                                <div class="sr-label">Recomendacion</div>
+                                <InputTextArea class="form-control" rows="3" @bind-Value="Model.Recommendation" disabled="@(!CanWork)" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @* Guarda SOLO esta tarjeta: el recorrido, los servicios y las fotos se guardan solos *@
+                @if (!IsCompleted)
+                {
+                    <div class="sr-save">
+                        <button type="submit" class="sr-btn" disabled="@IsSaving">
+                            @if (IsSaving)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span>
+                            }
+                            else
+                            {
+                                <i class="fa fa-floppy-disk"></i>
+                            }
+                            @Localizer[nameof(Resource.ButtonSave)]
+                        </button>
+                    </div>
+                }
+            </div>
+
+            @* Lo que se le hizo al cliente, y lo que se le cobra *@
+            @if (IsEditControl && !IsRequested && Model.ServiceRequestId != Guid.Empty)
+            {
+                <div class="sr-card">
+                    <div class="sr-block"><i class="fa fa-screwdriver-wrench"></i>Servicios realizados</div>
+
+                    @if (CanWork)
+                    {
+                        <div class="sr-add">
+                            <div class="row g-2">
+                                <div class="col-12 col-md-4">
+                                    <GenericSelectWrapper Tmodel="ServiceCategory" Items="ServiceCategories">
+                                        <Body>
+                                            <select class="form-select" value="@Detail.ServiceCategoryId" @onchange="CategoryChanged">
+                                                <option value="@Guid.Empty">[Categoria]</option>
+                                                @foreach (var category in ServiceCategories)
+                                                {
+                                                    <option value="@category.ServiceCategoryId">@category.Name</option>
+                                                }
+                                            </select>
+                                        </Body>
+                                    </GenericSelectWrapper>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <GenericSelectWrapper Tmodel="ServiceClient" Items="ServiceClients">
+                                        <Body>
+                                            <select class="form-select" value="@Detail.ServiceClientId" @onchange="ServiceClientChanged">
+                                                <option value="@Guid.Empty">[Servicio]</option>
+                                                @foreach (var service in ServiceClients)
+                                                {
+                                                    <option value="@service.ServiceClientId">@service.ServiceName</option>
+                                                }
+                                            </select>
+                                        </Body>
+                                    </GenericSelectWrapper>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="d-flex gap-2">
+                                        <InputText class="form-control" placeholder="Detalle" @bind-Value="Detail.Detail" />
+                                        <button type="button" class="sr-btn" @onclick="AddDetail">
+                                            <i class="fa fa-plus"></i>Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Details.Count == 0)
+                    {
+                        <div class="sr-empty">
+                            @(CanWork ? "Todavia no se ha cargado ningun servicio." : Localizer["Visit_NotStarted"])
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="sr-list">
+                            @foreach (var detail in Model.Details)
+                            {
+                                <div class="sr-item">
+                                    <div class="sr-item-text">
+                                        <div class="sr-value">@detail.ServiceClientName</div>
+                                        <div class="sr-meta">@detail.ServiceCategoryName @(string.IsNullOrWhiteSpace(detail.Detail) ? null : $"· {detail.Detail}")</div>
+                                    </div>
+                                    <div class="sr-item-money">
+                                        <div class="sr-value">@detail.Total.ToString("N2")</div>
+                                        <div class="sr-meta">@detail.Price.ToString("N2") + @detail.TaxAmount.ToString("N2")</div>
+                                    </div>
+                                    @if (CanWork)
+                                    {
+                                        <ButtonDelete OnClick="() => DeleteDetail(detail.ServiceRequestDetailId)" />
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @* El total en una sola linea, al pie de la tarjeta *@
+                    <div class="sr-foot">
+                        <span class="sr-meta">Subtotal @Model.SubTotal.ToString("N2") &middot; Impuesto @Model.TotalTax.ToString("N2")</span>
+                        <span class="sr-total-name">Total</span>
+                        <span class="sr-total">@Model.Total.ToString("N2")</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
     <div class="mb-4 d-flex justify-content-center gap-2 mt-4">
-        @if (!IsCompleted)
+        @if (!IsEditControl && !IsCompleted)
         {
             <ButtonFormSave IsSaving="IsSaving" />
         }

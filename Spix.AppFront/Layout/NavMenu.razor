@@ -56,6 +56,11 @@
                         <span class="fa fa-file-signature"></span> Mis documentos
                     </NavLink>
                 </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/my-servicerequests">
+                        <span class="fa fa-tools"></span> Mis solicitudes
+                    </NavLink>
+                </div>
             </Authorized>
         </AuthorizeView>
 
@@ -265,10 +270,6 @@
 
                     @if (expandSubMenu6)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/schedule">
-                            <span class="fa fa-users nav-subicon me-2"></span> Schedule
-                        </NavLink>
-                        <hr class="border-top border-light opacity-50 my-2" />
                         <NavLink class="nav-link text-white nav-subitem" href="/clients">
                             <span class="fa fa-users nav-subicon me-2"></span> Clientes
                         </NavLink>
@@ -281,6 +282,12 @@
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/contractsuspended">
                             <span class="fa fa-ban nav-subicon me-2"></span> Contratos Suspendidos
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractexempt">
+                            <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> Exonerados Fijos
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractexonerateds">
+                            <span class="fa fa-percent nav-subicon me-2"></span> Exoneraciones por Mes
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/contractsuspendedaudits">
                             <span class="fa fa-clipboard-check nav-subicon me-2"></span> Auditoria Activaciones
@@ -296,6 +303,9 @@
 
                         <NavLink class="nav-link text-white nav-subitem" href="/servicerequests">
                             <span class="fa fa-tools nav-subicon me-2"></span> Solicitud Servicio
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/schedule">
+                            <span class="fa fa-calendar-days nav-subicon me-2"></span> Schedule
                         </NavLink>
                     }
                 </div>
@@ -326,9 +336,6 @@
 
                         <NavLink class="nav-link text-white nav-subitem" href="/prepayments">
                             <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> Pagos Adelantados
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/preexonerateds">
-                            <span class="fa fa-percent nav-subicon me-2"></span> Exoneraciones
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />

@@ -1,0 +1,43 @@
+﻿@inherits ComponentBase
+@using Spix.DomainLogic.ItemsGeneric
+
+@* Agendar la visita: la oficina le pone tecnico y fecha a lo que pidio el cliente *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title"><i class="fa fa-calendar-check me-2"></i>@Localizer["Request_Assign"]</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <div class="as-label">Tecnico</div>
+                <GenericSelectWrapper Tmodel="GuidItemModel" Items="Technicians">
+                    <Body>
+                        <select class="form-select" value="@TechnicianId" @onchange="TechnicianChanged">
+                            @foreach (var technician in Technicians!)
+                            {
+                                <option value="@technician.Value">@technician.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+
+            <div class="mb-3">
+                <div class="as-label">@Localizer["Table_Scheduled"]</div>
+                <input type="datetime-local" class="form-control"
+                       value="@ScheduledAt.ToString("yyyy-MM-ddTHH:mm")"
+                       @oninput="ScheduledChanged" />
+            </div>
+
+            <hr />
+            <div class="d-flex justify-content-center gap-3">
+                <ButtonFormSaveOnClick OnClick="SaveAsync" IsSaving="IsSaving" TooTip="@Localizer[nameof(Resource.ButtonSave)]" Icon="fa fa-calendar-check" />
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +28,19 @@ public class ServiceRequestsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination, [FromQuery] int? status)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
+        var response = await _unitOfWork.GetAsync(pagination, status, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Los numeros del tablero
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.GetSummaryAsync(userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
@@ -51,7 +60,9 @@ public class ServiceRequestsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    //Registrar la visita es de la oficina, no del tecnico
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> PostAsync(ServiceRequestDto dto)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -67,27 +78,42 @@ public class ServiceRequestsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    //Agendar la solicitud del cliente: tecnico y fecha
+    [HttpPost("{id}/assign")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+    public async Task<IActionResult> AssignAsync(Guid id, [FromQuery] Guid technicianId, [FromQuery] DateTime scheduledAtUtc)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.AssignAsync(id, technicianId, scheduledAtUtc, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Cerrar la visita: exige servicio, comentario y foto del despues
+    [HttpPost("{id}/close")]
+    public async Task<IActionResult> CloseAsync(Guid id, [FromQuery] string? comment, [FromQuery] string? recommendation)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.CloseAsync(id, comment, recommendation, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Resuelta por telefono: se cierra sin mandar a nadie
+    [HttpPost("{id}/resolvebyphone")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+    public async Task<IActionResult> ResolveByPhoneAsync(Guid id, [FromQuery] string? comment, [FromQuery] string? recommendation)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.ResolveByPhoneAsync(id, comment, recommendation, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Eliminar la orden tampoco es del tecnico
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
-        return ResponseHelper.Format(response);
-    }
-
-    [HttpPost("details")]
-    public async Task<IActionResult> PostDetailAsync(ServiceRequestDetailDto dto)
-    {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _unitOfWork.AddDetailAsync(dto, userClaimsInfo.UserName);
-        return ResponseHelper.Format(response);
-    }
-
-    [HttpDelete("details/{id}")]
-    public async Task<IActionResult> DeleteDetailAsync(Guid id)
-    {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _unitOfWork.DeleteDetailAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 }

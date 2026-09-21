@@ -1,4 +1,4 @@
-using Spix.Domain.Entities;
+﻿using Spix.Domain.Entities;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesOper;
@@ -15,7 +15,8 @@ public class ServiceRequest
 
     public DateTime CreatedAtUtc { get; set; }
 
-    public DateTime ScheduledAtUtc { get; set; }
+    //Nulos mientras la solicitud no se agenda (la pidio el cliente y falta revisarla)
+    public DateTime? ScheduledAtUtc { get; set; }
 
     public DateTime? CompletedAtUtc { get; set; }
 
@@ -26,10 +27,18 @@ public class ServiceRequest
     [Required]
     public Guid ContractClientId { get; set; }
 
-    [Required]
-    public Guid TechnicianId { get; set; }
+    //Sin [Required]: la solicitud del cliente nace sin tecnico, la oficina lo asigna
+    public Guid? TechnicianId { get; set; }
 
     public ScheduleStatus ScheduleStatus { get; set; } = ScheduleStatus.Pending;
+
+    //Con que numero hay que llamar para esta visita: puede no ser el del contrato,
+    //porque los clientes cambian de numero.
+    [MaxLength(50)]
+    public string? ContactPhone { get; set; }
+
+    //Si la levanto la oficina o el propio cliente desde su portal
+    public ServiceRequestOrigin Origin { get; set; } = ServiceRequestOrigin.Office;
 
     [Required]
     [MaxLength(500)]
@@ -76,6 +85,13 @@ public class ServiceRequest
     [MaxLength(100)]
     public string? PlanSpeed { get; set; }
 
+    //Por donde entra el cliente: el tecnico lo necesita para resetear el transmisor
+    [MaxLength(100)]
+    public string? NodeName { get; set; }
+
+    [MaxLength(50)]
+    public string? NodeIp { get; set; }
+
     public bool Active { get; set; } = true;
 
     public bool Billed { get; set; }
@@ -101,6 +117,9 @@ public class ServiceRequest
     public Sell? Sell { get; set; }
 
     public ICollection<ServiceRequestDetail>? ServiceRequestDetails { get; set; }
+
+    //Las fotos de la visita: cada una es un registro
+    public ICollection<ServiceRequestPhoto>? ServiceRequestPhotos { get; set; }
 
     public decimal SubTotal => ServiceRequestDetails == null ? 0 : ServiceRequestDetails.Sum(x => x.Price);
 

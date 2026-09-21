@@ -1,0 +1,23 @@
+﻿/* Antes o despues, dentro del modal de carga */
+.up-type {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.up-chip {
+    flex: 1;
+    border: 1px solid #e3e9f4;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #33405c;
+    font-size: 12.5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+    .up-chip.is-on {
+        background: #16305e;
+        border-color: #16305e;
+        color: #ffffff;
+    }

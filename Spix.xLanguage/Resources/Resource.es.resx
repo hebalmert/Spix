@@ -1691,4 +1691,345 @@
   <data name="Audit_SignatureSent" xml:space="preserve">
     <value>Solicitud de firma enviada</value>
   </data>
+  <data name="Exempt_PageTitle" xml:space="preserve">
+    <value>Contratos Exonerados</value>
+  </data>
+  <data name="Exempt_PageSubtitle" xml:space="preserve">
+    <value>Contratos que mantienen el servicio sin que se les cobre, con el monto del plan al momento de exonerar.</value>
+  </data>
+  <data name="Exempt_Pill" xml:space="preserve">
+    <value>exonerados</value>
+  </data>
+  <data name="Exempt_Title" xml:space="preserve">
+    <value>Exonerar contrato</value>
+  </data>
+  <data name="Exempt_Question" xml:space="preserve">
+    <value>Se exonerara el contrato {0} de {1}: el servicio no se toca, solo deja de cobrarsele. Desea continuar?</value>
+  </data>
+  <data name="Exempt_Button" xml:space="preserve">
+    <value>Exonerar</value>
+  </data>
+  <data name="Exempt_Saving" xml:space="preserve">
+    <value>Exonerando...</value>
+  </data>
+  <data name="Exempt_Ok" xml:space="preserve">
+    <value>El contrato quedo exonerado.</value>
+  </data>
+  <data name="Exempt_ActivateTitle" xml:space="preserve">
+    <value>Retirar la exoneracion</value>
+  </data>
+  <data name="Exempt_ActivateQuestion" xml:space="preserve">
+    <value>El contrato {0} de {1} volvera a Activo y se le empezara a cobrar de nuevo. Desea continuar?</value>
+  </data>
+  <data name="Exempt_ActivateButton" xml:space="preserve">
+    <value>Retirar la exoneracion</value>
+  </data>
+  <data name="Exempt_ActivateOk" xml:space="preserve">
+    <value>El contrato volvio a Activo.</value>
+  </data>
+  <data name="Exempt_OnlyOpen" xml:space="preserve">
+    <value>Solo exonerados</value>
+  </data>
+  <data name="Exempt_AllHistory" xml:space="preserve">
+    <value>Todo el historico</value>
+  </data>
+  <data name="Exempt_StateOpen" xml:space="preserve">
+    <value>Exonerado</value>
+  </data>
+  <data name="Exempt_StateClosed" xml:space="preserve">
+    <value>Retirado</value>
+  </data>
+  <data name="Exempt_Amount" xml:space="preserve">
+    <value>Monto</value>
+  </data>
+  <data name="Exempt_Since" xml:space="preserve">
+    <value>Exonerado el</value>
+  </data>
+  <data name="Exempt_RecordsInFilter" xml:space="preserve">
+    <value>registros en el filtro</value>
+  </data>
+  <data name="Exempt_SearchHint" xml:space="preserve">
+    <value>Escriba el nombre o la cedula...</value>
+  </data>
+  <data name="Exempt_NoActiveFound" xml:space="preserve">
+    <value>No hay contratos activos que coincidan.</value>
+  </data>
+  <data name="Exempt_OnlyActive" xml:space="preserve">
+    <value>Solo se puede exonerar un contrato que este activo.</value>
+  </data>
+  <data name="Exempt_NeedsBypassed" xml:space="preserve">
+    <value>El contrato debe tener su IpBinding en bypassed para poder exonerarlo.</value>
+  </data>
+  <data name="Exempt_NotExonerated" xml:space="preserve">
+    <value>El contrato ya no se encuentra exonerado.</value>
+  </data>
+  <data name="Table_Actions" xml:space="preserve">
+    <value>Acciones</value>
+  </data>
+  <data name="Exempt_NotExempt" xml:space="preserve">
+    <value>El contrato ya no se encuentra exonerado.</value>
+  </data>
+  <data name="Audit_Period" xml:space="preserve">
+    <value>Periodo exonerado</value>
+  </data>
+  <data name="Audit_Billed" xml:space="preserve">
+    <value>Facturado el</value>
+  </data>
+  <data name="ContractEvent_Created" xml:space="preserve">
+    <value>Contrato creado</value>
+  </data>
+  <data name="ContractEvent_Updated" xml:space="preserve">
+    <value>Contrato modificado</value>
+  </data>
+  <data name="ContractEvent_StateChanged" xml:space="preserve">
+    <value>Cambio de estado</value>
+  </data>
+  <data name="ContractEvent_Approved" xml:space="preserve">
+    <value>Contrato aprobado</value>
+  </data>
+  <data name="ContractEvent_Deleted" xml:space="preserve">
+    <value>Contrato eliminado</value>
+  </data>
+  <data name="ContractEvent_SignatureRequested" xml:space="preserve">
+    <value>Solicitud de firma enviada</value>
+  </data>
+  <data name="ContractEvent_DocumentViewed" xml:space="preserve">
+    <value>El cliente abrio el documento</value>
+  </data>
+  <data name="ContractEvent_CodeSent" xml:space="preserve">
+    <value>Codigo de verificacion enviado</value>
+  </data>
+  <data name="ContractEvent_CodeFailed" xml:space="preserve">
+    <value>Codigo de verificacion errado</value>
+  </data>
+  <data name="ContractEvent_CodeValidated" xml:space="preserve">
+    <value>Codigo validado</value>
+  </data>
+  <data name="ContractEvent_Signed" xml:space="preserve">
+    <value>Documento firmado</value>
+  </data>
+  <data name="ContractEvent_Suspended" xml:space="preserve">
+    <value>Contrato suspendido</value>
+  </data>
+  <data name="ContractEvent_Reactivated" xml:space="preserve">
+    <value>Servicio restablecido</value>
+  </data>
+  <data name="ContractEvent_Exempted" xml:space="preserve">
+    <value>Contrato exonerado</value>
+  </data>
+  <data name="ContractEvent_ExemptRemoved" xml:space="preserve">
+    <value>Exoneracion retirada</value>
+  </data>
+  <data name="ContractEvent_MonthExonerated" xml:space="preserve">
+    <value>Mes exonerado</value>
+  </data>
+  <data name="ContractEvent_MonthExoneratedClosed" xml:space="preserve">
+    <value>Exoneracion del mes cerrada</value>
+  </data>
+  <data name="ContractEvent_BindCreated" xml:space="preserve">
+    <value>IpBinding creado</value>
+  </data>
+  <data name="ContractEvent_BindChanged" xml:space="preserve">
+    <value>IpBinding modificado</value>
+  </data>
+  <data name="ContractEvent_QueueCreated" xml:space="preserve">
+    <value>Queue creada</value>
+  </data>
+  <data name="Filter_AllStatus" xml:space="preserve">
+    <value>Todos los estatus</value>
+  </data>
+  <data name="Schedule_Subtitle" xml:space="preserve">
+    <value>Visitas tecnicas y citas de la agenda, por estatus.</value>
+  </data>
+  <data name="Audit_Scheduled" xml:space="preserve">
+    <value>Programada para</value>
+  </data>
+  <data name="Audit_Technician" xml:space="preserve">
+    <value>Tecnico</value>
+  </data>
+  <data name="Audit_ClosedBy" xml:space="preserve">
+    <value>Cerrada por</value>
+  </data>
+  <data name="Audit_ClosedDate" xml:space="preserve">
+    <value>Fecha de cierre</value>
+  </data>
+  <data name="When_Today" xml:space="preserve">
+    <value>Hoy</value>
+  </data>
+  <data name="When_Tomorrow" xml:space="preserve">
+    <value>Manana</value>
+  </data>
+  <data name="When_Overdue" xml:space="preserve">
+    <value>Vencida hace</value>
+  </data>
+  <data name="When_InDays" xml:space="preserve">
+    <value>En</value>
+  </data>
+  <data name="When_Closed" xml:space="preserve">
+    <value>Cerrada</value>
+  </data>
+  <data name="Start_Button" xml:space="preserve">
+    <value>Iniciar visita</value>
+  </data>
+  <data name="Close_Button" xml:space="preserve">
+    <value>Cerrar orden</value>
+  </data>
+  <data name="Close_Title" xml:space="preserve">
+    <value>Cerrar la orden de trabajo</value>
+  </data>
+  <data name="Close_Question" xml:space="preserve">
+    <value>Una vez cerrada, la orden ya no se puede editar. Desea continuar?</value>
+  </data>
+  <data name="Close_Missing" xml:space="preserve">
+    <value>Cargue un servicio, escriba el comentario del tecnico y tome la foto del despues antes de cerrar.</value>
+  </data>
+  <data name="Close_Pending" xml:space="preserve">
+    <value>Para cerrar la orden falta</value>
+  </data>
+  <data name="Close_NeedService" xml:space="preserve">
+    <value>Un servicio cargado</value>
+  </data>
+  <data name="Close_NeedComment" xml:space="preserve">
+    <value>Comentario del tecnico</value>
+  </data>
+  <data name="Close_NeedPhoto" xml:space="preserve">
+    <value>Foto del despues</value>
+  </data>
+  <data name="Photo_ClosedOrder" xml:space="preserve">
+    <value>Una orden cerrada no permite cambiarle las fotos.</value>
+  </data>
+  <data name="Photo_MaxReached" xml:space="preserve">
+    <value>Esta orden ya tiene el maximo de 4 fotos.</value>
+  </data>
+  <data name="Photo_Empty" xml:space="preserve">
+    <value>Primero elija una foto.</value>
+  </data>
+  <data name="Photo_Before" xml:space="preserve">
+    <value>Antes</value>
+  </data>
+  <data name="Photo_After" xml:space="preserve">
+    <value>Despues</value>
+  </data>
+  <data name="Photo_Add" xml:space="preserve">
+    <value>Agregar foto</value>
+  </data>
+  <data name="Photo_Title" xml:space="preserve">
+    <value>Fotos de la visita</value>
+  </data>
+  <data name="Photo_Empty_List" xml:space="preserve">
+    <value>Todavia no se ha tomado ninguna foto.</value>
+  </data>
+  <data name="Request_TechnicianCannotCreate" xml:space="preserve">
+    <value>Un tecnico no puede registrar una solicitud de servicio.</value>
+  </data>
+  <data name="Request_TechnicianCannotDelete" xml:space="preserve">
+    <value>Un tecnico no puede eliminar una solicitud de servicio.</value>
+  </data>
+  <data name="Request_OnlyRequested" xml:space="preserve">
+    <value>Solo se puede hacer esto con una solicitud que todavia no se ha revisado.</value>
+  </data>
+  <data name="Request_PhoneNeedsComment" xml:space="preserve">
+    <value>Escriba que se resolvio en la llamada antes de cerrarla.</value>
+  </data>
+
+
+  <data name="Request_Assign" xml:space="preserve">
+    <value>Agendar visita</value>
+  </data>
+  <data name="Request_ByPhone" xml:space="preserve">
+    <value>Resolver por telefono</value>
+  </data>
+  <data name="Board_Requested" xml:space="preserve">
+    <value>Por revisar</value>
+  </data>
+  <data name="ScheduleStatus_Requested" xml:space="preserve">
+    <value>Solicitada</value>
+  </data>
+  <data name="ScheduleStatus_PhoneResolved" xml:space="preserve">
+    <value>Resuelta por telefono</value>
+  </data>
+  <data name="When_Unassigned" xml:space="preserve">
+    <value>Sin agendar</value>
+  </data>
+  <data name="Table_Scheduled" xml:space="preserve">
+    <value>Programada</value>
+  </data>
+  <data name="MyRequest_Title" xml:space="preserve">
+    <value>Mis solicitudes de servicio</value>
+  </data>
+  <data name="MyRequest_Subtitle" xml:space="preserve">
+    <value>Pida una visita tecnica y siga como quedo.</value>
+  </data>
+  <data name="MyRequest_New" xml:space="preserve">
+    <value>Nueva solicitud</value>
+  </data>
+  <data name="MyRequest_Send" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="MyRequest_Sent" xml:space="preserve">
+    <value>Su solicitud fue enviada. Lo llamamos para confirmar.</value>
+  </data>
+  <data name="MyRequest_Problem" xml:space="preserve">
+    <value>Que esta pasando?</value>
+  </data>
+  <data name="MyRequest_Placeholder" xml:space="preserve">
+    <value>Cuentenos que ve: sin senal, lento, el router no enciende...</value>
+  </data>
+  <data name="MyRequest_NeedContract" xml:space="preserve">
+    <value>Primero elija el contrato.</value>
+  </data>
+  <data name="MyRequest_NeedProblem" xml:space="preserve">
+    <value>Cuentenos que esta pasando antes de enviarla.</value>
+  </data>
+  <data name="MyRequest_Result" xml:space="preserve">
+    <value>Como quedo</value>
+  </data>
+  <data name="MyRequest_Comment" xml:space="preserve">
+    <value>Comentario del tecnico</value>
+  </data>
+  <data name="MyRequest_Recommendation" xml:space="preserve">
+    <value>Recomendacion</value>
+  </data>
+  <data name="Contact_Label" xml:space="preserve">
+    <value>A que numero lo llamamos?</value>
+  </data>
+  <data name="Contact_Other" xml:space="preserve">
+    <value>Otro numero</value>
+  </data>
+  <data name="Contact_NewPlaceholder" xml:space="preserve">
+    <value>Nuevo numero de contacto</value>
+  </data>
+  <data name="Contact_SaveOnContract" xml:space="preserve">
+    <value>Guardar este numero en mi contrato</value>
+  </data>
+  <data name="Contact_NeedPhone" xml:space="preserve">
+    <value>Escriba el numero al que lo llamamos.</value>
+  </data>
+  <data name="Contact_NoPhone" xml:space="preserve">
+    <value>Sin numero registrado</value>
+  </data>
+  <data name="Contact_OnContract" xml:space="preserve">
+    <value>En el contrato:</value>
+  </data>
+  <data name="Select_Contract" xml:space="preserve">
+    <value>[Seleccione contrato]</value>
+  </data>
+  <data name="MyRequest_Button" xml:space="preserve">
+    <value>Servicio</value>
+  </data>
+  <data name="Phone_ClientWillRead" xml:space="preserve">
+    <value>Lo que escriba aqui es lo que el cliente lee en su portal.</value>
+  </data>
+  <data name="Phone_WhatWasDone" xml:space="preserve">
+    <value>Que se hizo o que se le indico</value>
+  </data>
+  <data name="Phone_WhatPlaceholder" xml:space="preserve">
+    <value>Se le guio para reiniciar el router y el servicio volvio...</value>
+  </data>
+  <data name="Phone_RecommendationPlaceholder" xml:space="preserve">
+    <value>Opcional: que debe hacer para que no vuelva a pasar</value>
+  </data>
+  <data name="Visit_NotStarted" xml:space="preserve">
+    <value>Inicie la visita para cargar servicios y fotos.</value>
+  </data>
 </root>

@@ -1,0 +1,150 @@
+﻿@page "/contractexempt"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.EntitiesContractDTO
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-hand-holding-dollar"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Exempt_PageTitle"]</h3>
+                <p>@Localizer["Exempt_PageSubtitle"]</p>
+            </div>
+
+            @if (Data is not null)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@Data.OpenCount @Localizer["Exempt_Pill"] &middot; @Data.OpenAmount.ToString("N2")</span>
+                </div>
+            }
+        </div>
+
+        @* Acciones y filtros, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="ShowExemptAsync" TooTip="@Localizer["Exempt_Button"]" Icon="fa fa-hand-holding-dollar" />
+
+            <div class="input-group" style="width:190px">
+                <span class="input-group-text"><i class="fa fa-calendar-day"></i></span>
+                <input type="date" class="form-control" value="@Desde?.ToString("yyyy-MM-dd")" @onchange="DesdeChanged" />
+            </div>
+
+            <div class="input-group" style="width:190px">
+                <span class="input-group-text"><i class="fa fa-calendar-check"></i></span>
+                <input type="date" class="form-control" value="@Hasta?.ToString("yyyy-MM-dd")" @onchange="HastaChanged" />
+            </div>
+
+            <div class="input-group" style="width:230px">
+                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                <select class="form-select" value="@SoloAbiertas" @onchange="SoloAbiertasChanged">
+                    <option value="true">@Localizer["Exempt_OnlyOpen"]</option>
+                    <option value="false">@Localizer["Exempt_AllHistory"]</option>
+                </select>
+            </div>
+
+            <div class="idx-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <section class="idx-panel">
+
+            @* La tabla vive afuera del GenericList: el encabezado se pinta siempre,
+               aunque no haya registros, y el borde del panel no queda cortado. *@
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Table_Contract"]</th>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer[nameof(Resource.Address)]</th>
+                            <th>Plan</th>
+                            <th class="text-end">@Localizer["Exempt_Amount"]</th>
+                            <th>@Localizer["Exempt_Since"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* El GenericList solo arma las filas: el cargando y el "sin registros"
+                           entran como una fila mas, debajo del encabezado. *@
+                        <GenericList MyList="Records">
+                            <Loading>
+                                <tr>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Records!)
+                                {
+                                    <tr>
+                                        <td><span class="idx-name">@item.ControlContrato</span></td>
+                                        <td>
+                                            <div class="idx-name">@item.ClientName</div>
+                                            <div class="idx-meta">@item.ClientDocument</div>
+                                        </td>
+                                        <td>
+                                            <div>@item.ContractAddress</div>
+                                            <div class="idx-meta">@item.CityName · @item.ZoneName</div>
+                                        </td>
+                                        <td>@item.PlanName</td>
+                                        <td class="text-end">@item.PlanAmount.ToString("N2")</td>
+                                        <td>@item.DateExempt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (item.DateEnded is null)
+                                            {
+                                                <span class="idx-pill is-on">@Localizer["Exempt_StateOpen"]</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="idx-pill is-off">@Localizer["Exempt_StateClosed"]</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                @* Los datos de auditoria no ocupan columna: se consultan aqui *@
+                                                <ButtonGeneric Icon="fa fa-clock-rotate-left"
+                                                               TooTip="@Localizer["Audit_Tip"]"
+                                                               OnClick="() => ShowAuditAsync(item)" />
+                                                @if (!string.IsNullOrWhiteSpace(item.Motivo))
+                                                {
+                                                    <ButtonGeneric Icon="fa fa-comment-dots"
+                                                                   TooTip="@item.Motivo"
+                                                                   OnClick="() => ShowMotivoAsync(item)" />
+                                                }
+                                                @if (item.DateEnded is null)
+                                                {
+                                                    <ButtonGeneric Icon="fa fa-circle-play"
+                                                                   TooTip="@Localizer["Exempt_ActivateButton"]"
+                                                                   Style="font-size:17px;color:#198754;"
+                                                                   OnClick="() => ActivateAsync(item)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Data is not null)
+            {
+                <div class="idx-panel-foot">
+                    <span class="idx-meta">@Data.TotalCount @Localizer["Exempt_RecordsInFilter"]</span>
+                    <span class="idx-name">Total @Data.TotalAmount.ToString("N2")</span>
+                </div>
+            }
+        </section>
+    </div>
+</div>

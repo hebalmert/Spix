@@ -1,3 +1,4 @@
+﻿using Spix.AppService.ImplementContratos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -297,7 +298,7 @@ public class PaymentService : IPaymentService
                 prePayment.CxCBillId = null;
             }
 
-            var preExonerateds = await _context.PreExonerateds
+            var preExonerateds = await _context.ContractExonerateds
                 .Where(x => x.CorporationId == user.CorporationId && x.CxCBillId == bill.CxCBillId)
                 .ToListAsync();
 
@@ -653,19 +654,20 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<ActionResponse<IEnumerable<PreExonerated>>> GetPreExoneratedsAsync(PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ContractExonerated>>> GetContractExoneratedsAsync(PaginationDTO pagination, string username)
     {
         try
         {
             var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
-                return AuthFail<IEnumerable<PreExonerated>>();
+                return AuthFail<IEnumerable<ContractExonerated>>();
 
-            var queryable = _context.PreExonerateds.AsNoTracking()
+            var queryable = _context.ContractExonerateds.AsNoTracking()
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient)
                 .Include(x => x.Plan)
-                .Where(x => x.CorporationId == user.CorporationId && !x.Billed)
+                //Solo las vigentes: las cerradas quedan como historia del registro
+                .Where(x => x.CorporationId == user.CorporationId && !x.Billed && x.DateEnded == null)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -687,23 +689,23 @@ public class PaymentService : IPaymentService
                 .Paginate(pagination)
                 .ToListAsync();
 
-            return new ActionResponse<IEnumerable<PreExonerated>> { WasSuccess = true, Result = list };
+            return new ActionResponse<IEnumerable<ContractExonerated>> { WasSuccess = true, Result = list };
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<PreExonerated>>(ex);
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ContractExonerated>>(ex);
         }
     }
 
-    public async Task<ActionResponse<PreExonerated>> GetPreExoneratedAsync(Guid id, string username)
+    public async Task<ActionResponse<ContractExonerated>> GetContractExoneratedAsync(Guid id, string username)
     {
         try
         {
             var user = await _userHelper.GetUserByUserNameAsync(username);
             if (user == null)
-                return AuthFail<PreExonerated>();
+                return AuthFail<ContractExonerated>();
 
-            var model = await _context.PreExonerateds
+            var model = await _context.ContractExonerateds
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient!)
                     .ThenInclude(x => x.Zone!)
@@ -713,26 +715,26 @@ public class PaymentService : IPaymentService
                         .ThenInclude(x => x.Plan!)
                             .ThenInclude(x => x.Tax)
                 .Include(x => x.Plan)
-                .FirstOrDefaultAsync(x => x.PreExoneratedId == id && x.CorporationId == user.CorporationId);
+                .FirstOrDefaultAsync(x => x.ContractExoneratedId == id && x.CorporationId == user.CorporationId);
 
             if (model == null)
             {
-                return new ActionResponse<PreExonerated>
+                return new ActionResponse<ContractExonerated>
                 {
                     WasSuccess = false,
                     Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
 
-            return new ActionResponse<PreExonerated> { WasSuccess = true, Result = model };
+            return new ActionResponse<ContractExonerated> { WasSuccess = true, Result = model };
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<PreExonerated>(ex);
+            return await _httpErrorHandler.HandleErrorAsync<ContractExonerated>(ex);
         }
     }
 
-    public async Task<ActionResponse<PreExonerated>> AddPreExoneratedAsync(PreExonerated model, string username)
+    public async Task<ActionResponse<ContractExonerated>> AddContractExoneratedAsync(ContractExonerated model, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
@@ -741,10 +743,10 @@ public class PaymentService : IPaymentService
             if (user == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return AuthFail<PreExonerated>();
+                return AuthFail<ContractExonerated>();
             }
 
-            var response = await PreparePreExoneratedAsync(model, user.CorporationId!.Value);
+            var response = await PrepareContractExoneratedAsync(model, user.CorporationId!.Value);
             if (!response.WasSuccess)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -754,39 +756,47 @@ public class PaymentService : IPaymentService
             model.DateExonerated = NormalizeDate(model.DateExonerated == default ? DateTime.UtcNow : model.DateExonerated);
             ApplyDefaultMonth(model);
             model.CorporationId = user.CorporationId.Value;
-            model.UsuarioOwner = $"{user.FirstName} {user.LastName}";
+            model.UserByName = $"{user.FirstName} {user.LastName}";
             model.UserId = Guid.Parse(user.Id);
 
-            var exists = await _context.PreExonerateds.AnyAsync(x =>
+            //Solo estorba una exoneracion VIGENTE del mismo mes; las cerradas son historia
+            var exists = await _context.ContractExonerateds.AnyAsync(x =>
                 x.CorporationId == model.CorporationId &&
                 x.ContractClientId == model.ContractClientId &&
                 x.YearNumber == model.YearNumber &&
-                x.MonthType == model.MonthType);
+                x.MonthType == model.MonthType &&
+                x.DateEnded == null);
 
             if (exists)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<PreExonerated>
+                return new ActionResponse<ContractExonerated>
                 {
                     WasSuccess = false,
                     Message = "Ya existe una exoneracion para este contrato, ano y mes."
                 };
             }
 
-            _context.PreExonerateds.Add(model);
+            _context.ContractExonerateds.Add(model);
+
+            await ContractAuditLog.AddAsync(_context, model.ContractClientId, ContractEventType.MonthExonerated,
+                $"{model.MonthType} {model.YearNumber}", model.UserByName, model.UserId,
+                referenceId: model.ContractExoneratedId, clientId: model.ClientId,
+                corporationId: model.CorporationId);
+
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<PreExonerated> { WasSuccess = true, Result = model };
+            return new ActionResponse<ContractExonerated> { WasSuccess = true, Result = model };
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<PreExonerated>(ex);
+            return await _httpErrorHandler.HandleErrorAsync<ContractExonerated>(ex);
         }
     }
 
-    public async Task<ActionResponse<PreExonerated>> UpdatePreExoneratedAsync(PreExonerated model, string username)
+    public async Task<ActionResponse<ContractExonerated>> UpdateContractExoneratedAsync(ContractExonerated model, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
@@ -795,16 +805,16 @@ public class PaymentService : IPaymentService
             if (user == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return AuthFail<PreExonerated>();
+                return AuthFail<ContractExonerated>();
             }
 
-            var current = await _context.PreExonerateds
-                .FirstOrDefaultAsync(x => x.PreExoneratedId == model.PreExoneratedId && x.CorporationId == user.CorporationId);
+            var current = await _context.ContractExonerateds
+                .FirstOrDefaultAsync(x => x.ContractExoneratedId == model.ContractExoneratedId && x.CorporationId == user.CorporationId);
 
             if (current == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<PreExonerated>
+                return new ActionResponse<ContractExonerated>
                 {
                     WasSuccess = false,
                     Message = _localizer[nameof(Resource.Generic_IdNotFound)]
@@ -814,7 +824,7 @@ public class PaymentService : IPaymentService
             if (current.Billed)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<PreExonerated>
+                return new ActionResponse<ContractExonerated>
                 {
                     WasSuccess = false,
                     Message = "No se puede editar una exoneracion facturada."
@@ -827,15 +837,16 @@ public class PaymentService : IPaymentService
             current.YearNumber = model.YearNumber;
             current.MonthType = model.MonthType;
 
-            var response = await PreparePreExoneratedAsync(current, user.CorporationId!.Value);
+            var response = await PrepareContractExoneratedAsync(current, user.CorporationId!.Value);
             if (!response.WasSuccess)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return response;
             }
 
-            var exists = await _context.PreExonerateds.AnyAsync(x =>
-                x.PreExoneratedId != current.PreExoneratedId &&
+            var exists = await _context.ContractExonerateds.AnyAsync(x =>
+                x.DateEnded == null &&
+                x.ContractExoneratedId != current.ContractExoneratedId &&
                 x.CorporationId == current.CorporationId &&
                 x.ContractClientId == current.ContractClientId &&
                 x.YearNumber == current.YearNumber &&
@@ -844,27 +855,27 @@ public class PaymentService : IPaymentService
             if (exists)
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<PreExonerated>
+                return new ActionResponse<ContractExonerated>
                 {
                     WasSuccess = false,
                     Message = "Ya existe una exoneracion para este contrato, ano y mes."
                 };
             }
 
-            _context.PreExonerateds.Update(current);
+            _context.ContractExonerateds.Update(current);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<PreExonerated> { WasSuccess = true, Result = current };
+            return new ActionResponse<ContractExonerated> { WasSuccess = true, Result = current };
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<PreExonerated>(ex);
+            return await _httpErrorHandler.HandleErrorAsync<ContractExonerated>(ex);
         }
     }
 
-    public async Task<ActionResponse<bool>> DeletePreExoneratedAsync(Guid id, string username)
+    public async Task<ActionResponse<bool>> DeleteContractExoneratedAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
@@ -876,8 +887,8 @@ public class PaymentService : IPaymentService
                 return AuthFail<bool>();
             }
 
-            var current = await _context.PreExonerateds
-                .FirstOrDefaultAsync(x => x.PreExoneratedId == id && x.CorporationId == user.CorporationId);
+            var current = await _context.ContractExonerateds
+                .FirstOrDefaultAsync(x => x.ContractExoneratedId == id && x.CorporationId == user.CorporationId);
 
             if (current == null)
             {
@@ -899,7 +910,16 @@ public class PaymentService : IPaymentService
                 };
             }
 
-            _context.PreExonerateds.Remove(current);
+            //No se borra: se cierra, y asi queda quien la retiro y cuando
+            current.DateEnded = DateTime.UtcNow;
+            current.UserIdEnded = Guid.Parse(user.Id);
+            current.UserByNameEnded = $"{user.FirstName} {user.LastName}";
+            _context.ContractExonerateds.Update(current);
+
+            await ContractAuditLog.AddAsync(_context, current.ContractClientId, ContractEventType.MonthExoneratedClosed,
+                $"{current.MonthType} {current.YearNumber}", current.UserByNameEnded, current.UserIdEnded,
+                referenceId: current.ContractExoneratedId, clientId: current.ClientId,
+                corporationId: current.CorporationId);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
@@ -915,6 +935,9 @@ public class PaymentService : IPaymentService
     private async Task<ActionResponse<PrePayment>> PreparePrePaymentAsync(PrePayment model, int corporationId)
     {
         var contract = await _context.ContractClients
+            .Include(x => x.Client)
+            .Include(x => x.Zone)
+                .ThenInclude(x => x!.City)
             .Include(x => x.ContractPlans!)
                 .ThenInclude(x => x.Plan!)
                     .ThenInclude(x => x.Tax)
@@ -956,7 +979,7 @@ public class PaymentService : IPaymentService
         return new ActionResponse<PrePayment> { WasSuccess = true, Result = model };
     }
 
-    private async Task<ActionResponse<PreExonerated>> PreparePreExoneratedAsync(PreExonerated model, int corporationId)
+    private async Task<ActionResponse<ContractExonerated>> PrepareContractExoneratedAsync(ContractExonerated model, int corporationId)
     {
         var contract = await _context.ContractClients
             .Include(x => x.ContractPlans!)
@@ -968,7 +991,7 @@ public class PaymentService : IPaymentService
 
         if (contract == null)
         {
-            return new ActionResponse<PreExonerated>
+            return new ActionResponse<ContractExonerated>
             {
                 WasSuccess = false,
                 Message = "Debe seleccionar un contrato activo."
@@ -978,7 +1001,7 @@ public class PaymentService : IPaymentService
         var contractPlan = contract.ContractPlans?.FirstOrDefault(x => x.Plan != null);
         if (contractPlan?.Plan == null)
         {
-            return new ActionResponse<PreExonerated>
+            return new ActionResponse<ContractExonerated>
             {
                 WasSuccess = false,
                 Message = "El contrato seleccionado no tiene plan configurado."
@@ -997,7 +1020,17 @@ public class PaymentService : IPaymentService
         model.DateBilled = null;
         model.CxCBillId = null;
 
-        return new ActionResponse<PreExonerated> { WasSuccess = true, Result = model };
+        //Foto del momento: lo que se ve hoy queda guardado en el registro
+        model.ControlContrato = contract.ControlContrato;
+        model.ClientName = $"{contract.Client?.FirstName} {contract.Client?.LastName}".Trim();
+        model.ClientDocument = contract.Client?.Document;
+        model.ContractAddress = contract.Address;
+        model.ContractPhone = contract.PhoneNumber;
+        model.CityName = contract.Zone?.City?.Name;
+        model.ZoneName = contract.Zone?.ZoneName;
+        model.PlanName = plan.PlanName;
+
+        return new ActionResponse<ContractExonerated> { WasSuccess = true, Result = model };
     }
 
     private static void ApplyDefaultMonth(PrePayment model)
@@ -1010,7 +1043,7 @@ public class PaymentService : IPaymentService
         model.MonthType = (MonthType)nextMonth.Month;
     }
 
-    private static void ApplyDefaultMonth(PreExonerated model)
+    private static void ApplyDefaultMonth(ContractExonerated model)
     {
         if (model.YearNumber > 0 && Enum.IsDefined(model.MonthType))
             return;

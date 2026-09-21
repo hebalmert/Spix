@@ -60,11 +60,27 @@
             <i class="fa fa-file-signature client-card__icon"></i>
         </div>
 
-        <div class="client-card client-card--support">
+        @* Soporte: pedir una visita tecnica y seguir como va *@
+        <div class="client-card client-card--support" @onclick="GoToRequests" role="button">
             <div class="client-card__content">
                 <span class="client-card__label">Soporte</span>
-                <h2>Solicitudes</h2>
-                <p>Base para tickets, reportes de servicio y seguimiento tecnico.</p>
+                <h2>
+                    Solicitudes de servicio
+                    @if (openRequests > 0)
+                    {
+                        <span class="client-card__badge">@openRequests</span>
+                    }
+                </h2>
+                <p>
+                    @if (openRequests > 0)
+                    {
+                        <text>Tiene solicitudes en proceso. Entre para ver como van.</text>
+                    }
+                    else
+                    {
+                        <text>Pida una visita tecnica y siga como quedo.</text>
+                    }
+                </p>
             </div>
             <i class="fa fa-headset client-card__icon"></i>
         </div>

@@ -1,0 +1,71 @@
+﻿@inherits ComponentBase
+@using Spix.Domain.EntitiesSchedule
+
+@* Como quedo la visita, con los ojos del cliente: lo que dijo el tecnico, la
+   recomendacion y las fotos del despues. Nada de montos ni de lo interno. *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title"><i class="fa fa-circle-check me-2"></i>@Localizer["MyRequest_Result"]</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <div class="rs-head">
+                <div class="rs-name">@Localizer["Table_Contract"] @Item.ControlContrato</div>
+                <div class="rs-meta">@Item.ClientReason</div>
+            </div>
+
+            <div class="rs-facts">
+                <div class="rs-fact">
+                    <div class="rs-label">@Localizer["Audit_Technician"]</div>
+                    <div class="rs-value">@Item.TechnicianName</div>
+                </div>
+                <div class="rs-fact">
+                    <div class="rs-label">@Localizer["Audit_ClosedDate"]</div>
+                    <div class="rs-value">@Item.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+            </div>
+
+            @* Lo que dijo el tecnico y lo que recomienda, uno al lado del otro *@
+            <div class="rs-facts">
+                <div class="rs-fact">
+                    <div class="rs-label">@Localizer["MyRequest_Comment"]</div>
+                    <div class="rs-text">@Item.TechnicianComment</div>
+                </div>
+                <div class="rs-fact">
+                    <div class="rs-label">@Localizer["MyRequest_Recommendation"]</div>
+                    <div class="rs-text">@(string.IsNullOrWhiteSpace(Item.Recommendation) ? "-" : Item.Recommendation)</div>
+                </div>
+            </div>
+
+            @* Las fotos de como quedo el trabajo *@
+            @if (Item.Photos.Count > 0)
+            {
+                <div class="rs-fact">
+                    <div class="rs-label">@Localizer["Photo_After"]</div>
+                    <div class="rs-photos">
+                        @foreach (var photo in Item.Photos)
+                        {
+                            <img src="@photo.ImageFullPath" alt="@Localizer["Photo_After"]" @onclick="() => Zoom(photo)" />
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Zoomed is not null)
+            {
+                <div class="rs-zoom" @onclick="CloseZoom">
+                    <img src="@Zoomed.ImageFullPath" alt="@Localizer["Photo_After"]" />
+                </div>
+            }
+
+            <hr />
+            <div class="d-flex justify-content-center">
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

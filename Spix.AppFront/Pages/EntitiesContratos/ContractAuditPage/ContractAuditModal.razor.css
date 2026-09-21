@@ -1,0 +1,63 @@
+/* Encabezado: de que contrato es la bitacora */
+.ca-head {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #f5f8ff;
+    box-shadow: inset 3px 0 0 #16305e;
+    margin-bottom: 14px;
+}
+
+.ca-name {
+    font-weight: 700;
+    color: #152238;
+    font-size: 15px;
+}
+
+.ca-meta {
+    color: #6b7690;
+    font-size: 12.5px;
+}
+
+/* La linea de tiempo */
+.ca-line {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 22px;
+    border-left: 2px solid #e3e9f4;
+}
+
+    .ca-line li {
+        position: relative;
+        padding: 0 0 18px 8px;
+    }
+
+        .ca-line li:last-child {
+            padding-bottom: 0;
+        }
+
+.ca-dot {
+    position: absolute;
+    left: -31px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #3b3fd8;
+}
+
+.ca-when {
+    color: #6b7690;
+    font-size: 12.5px;
+}
+
+.ca-what {
+    font-weight: 700;
+    color: #152238;
+    font-size: 14px;
+}
+
+.ca-detail {
+    color: #33405a;
+    font-size: 13px;
+}

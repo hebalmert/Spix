@@ -131,7 +131,13 @@ public class DataContext : IdentityDbContext<User>
 
     public DbSet<ContractSignatureEvent> ContractSignatureEvents => Set<ContractSignatureEvent>();
 
+    public DbSet<ServiceRequestPhoto> ServiceRequestPhotos => Set<ServiceRequestPhoto>();
+
+    public DbSet<ContractAudit> ContractAudits => Set<ContractAudit>();
+
     public DbSet<ContractSuspended> ContractSuspendeds => Set<ContractSuspended>();
+
+    public DbSet<ContractExempt> ContractExempts => Set<ContractExempt>();
 
     //EntitiesSchedule
     public DbSet<ScheduleItem> ScheduleItems => Set<ScheduleItem>();
@@ -154,7 +160,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractorPayment> ContractorPayments => Set<ContractorPayment>();
     public DbSet<ContractorPaymentDetail> ContractorPaymentDetails => Set<ContractorPaymentDetail>();
     public DbSet<PrePayment> PrePayments => Set<PrePayment>();
-    public DbSet<PreExonerated> PreExonerateds => Set<PreExonerated>();
+    public DbSet<ContractExonerated> ContractExonerateds => Set<ContractExonerated>();
 
     //EntitiesEmails
     public DbSet<EmailProviderSetting> EmailProviderSettings => Set<EmailProviderSetting>();

@@ -7,6 +7,10 @@ namespace Spix.AppService.InterfaceSchedule;
 public interface IScheduleService
 {
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusAsync(string username);
+
+    Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusFilterAsync(string username);
+
+    Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusChangeAsync(string username);
     Task<ActionResponse<ScheduleItemDto>> GetByIdAsync(Guid id, string username);
     Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId, string username);
     Task<ActionResponse<ScheduleItemDto>> CreateAsync(ScheduleItemDto dto, string UserName);

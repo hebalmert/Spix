@@ -1,0 +1,94 @@
+﻿@inherits ComponentBase
+@using Spix.Domain.EntitiesSchedule
+
+@* El cliente pide una visita: elige su contrato y cuenta que le pasa.
+   La oficina decide despues si manda a alguien o lo resuelve por telefono. *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title"><i class="fa fa-tools me-2"></i>@Localizer["MyRequest_New"]</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (Contracts is not null)
+            {
+                <div class="mb-2">
+                    <div class="mr-label">@Localizer["Table_Contract"]</div>
+                    <GenericSelectWrapper Tmodel="MyContractItemDto" Items="Contracts">
+                        <Body>
+                            <select class="form-select" value="@ContractClientId" @onchange="ContractChanged">
+                                @foreach (var contract in Contracts!)
+                                {
+                                    <option value="@contract.ContractClientId">
+                                        @(contract.ContractClientId == Guid.Empty
+                                            ? contract.Address
+                                            : $"{contract.ControlContrato} - {contract.Address} - {contract.ZoneName}")
+                                    </option>
+                                }
+                            </select>
+                        </Body>
+                    </GenericSelectWrapper>
+                </div>
+            }
+
+            @* Del contrato elegido se muestra la direccion: un numero solo confunde *@
+            @if (Selected is not null)
+            {
+                <div class="mr-contract">
+                    <div class="mr-label">@Localizer["Table_Contract"] @Selected.ControlContrato</div>
+                    <div class="mr-value">@Selected.Address</div>
+                    <div class="mr-meta">@Selected.CityName / @Selected.ZoneName</div>
+                    <div class="mr-meta">@Selected.PlanName</div>
+                </div>
+            }
+
+            @* A que numero llamarlo: el del contrato o uno nuevo *@
+            @if (Selected is not null)
+            {
+                <div class="mb-3">
+                    <div class="mr-label">@Localizer["Contact_Label"]</div>
+
+                    <div class="mr-phone">
+                        <button type="button" class="mr-chip @(UseNewPhone ? null : "is-on")" @onclick="UseContractPhone">
+                            <i class="fa fa-phone"></i>
+                            @(string.IsNullOrWhiteSpace(Selected.PhoneNumber) ? Localizer["Contact_NoPhone"] : Selected.PhoneNumber)
+                        </button>
+                        <button type="button" class="mr-chip @(UseNewPhone ? "is-on" : null)" @onclick="UseAnotherPhone">
+                            <i class="fa fa-pen"></i>@Localizer["Contact_Other"]
+                        </button>
+                    </div>
+
+                    @if (UseNewPhone)
+                    {
+                        <input class="form-control mt-2" maxlength="50"
+                               placeholder="@Localizer["Contact_NewPlaceholder"]"
+                               value="@ContactPhone" @oninput="PhoneChanged" />
+
+                        <label class="mr-check mt-2">
+                            <input type="checkbox" checked="@UpdateContractPhone" @onchange="UpdatePhoneChanged" />
+                            @Localizer["Contact_SaveOnContract"]
+                        </label>
+                    }
+                </div>
+            }
+
+            <div class="mb-3">
+                <div class="mr-label">@Localizer["MyRequest_Problem"]</div>
+                <textarea class="form-control" rows="4" maxlength="400"
+                          placeholder="@Localizer["MyRequest_Placeholder"]"
+                          value="@Reason" @oninput="ReasonChanged"></textarea>
+            </div>
+
+            <hr />
+            <div class="d-flex justify-content-center gap-3">
+                <ButtonFormSaveOnClick OnClick="SaveAsync" IsSaving="IsSaving"
+                                       TooTip="@Localizer["MyRequest_Send"]"
+                                       Icon="fa fa-paper-plane" />
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

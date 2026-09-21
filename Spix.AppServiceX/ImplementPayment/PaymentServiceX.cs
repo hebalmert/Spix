@@ -1,4 +1,4 @@
-using Spix.AppService.InterfacesPayment;
+﻿using Spix.AppService.InterfacesPayment;
 using Spix.AppServiceX.InterfacesPayment;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesPayment;
@@ -50,18 +50,18 @@ public class PaymentServiceX : IPaymentServiceX
     public async Task<ActionResponse<bool>> DeletePrePaymentAsync(Guid id, string username) =>
         await _paymentService.DeletePrePaymentAsync(id, username);
 
-    public async Task<ActionResponse<IEnumerable<PreExonerated>>> GetPreExoneratedsAsync(PaginationDTO pagination, string username) =>
-        await _paymentService.GetPreExoneratedsAsync(pagination, username);
+    public async Task<ActionResponse<IEnumerable<ContractExonerated>>> GetContractExoneratedsAsync(PaginationDTO pagination, string username) =>
+        await _paymentService.GetContractExoneratedsAsync(pagination, username);
 
-    public async Task<ActionResponse<PreExonerated>> GetPreExoneratedAsync(Guid id, string username) =>
-        await _paymentService.GetPreExoneratedAsync(id, username);
+    public async Task<ActionResponse<ContractExonerated>> GetContractExoneratedAsync(Guid id, string username) =>
+        await _paymentService.GetContractExoneratedAsync(id, username);
 
-    public async Task<ActionResponse<PreExonerated>> AddPreExoneratedAsync(PreExonerated model, string username) =>
-        await _paymentService.AddPreExoneratedAsync(model, username);
+    public async Task<ActionResponse<ContractExonerated>> AddContractExoneratedAsync(ContractExonerated model, string username) =>
+        await _paymentService.AddContractExoneratedAsync(model, username);
 
-    public async Task<ActionResponse<PreExonerated>> UpdatePreExoneratedAsync(PreExonerated model, string username) =>
-        await _paymentService.UpdatePreExoneratedAsync(model, username);
+    public async Task<ActionResponse<ContractExonerated>> UpdateContractExoneratedAsync(ContractExonerated model, string username) =>
+        await _paymentService.UpdateContractExoneratedAsync(model, username);
 
-    public async Task<ActionResponse<bool>> DeletePreExoneratedAsync(Guid id, string username) =>
-        await _paymentService.DeletePreExoneratedAsync(id, username);
+    public async Task<ActionResponse<bool>> DeleteContractExoneratedAsync(Guid id, string username) =>
+        await _paymentService.DeleteContractExoneratedAsync(id, username);
 }

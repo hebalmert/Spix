@@ -177,6 +177,18 @@ namespace Spix.Services.ImplementContratos
                     await ContractSuspendedRegistry.CloseAsync(_context, contract.ContractClientId, userName, userId);
                 }
 
+                //Lo mismo con la exoneracion: si el contrato sale de Exonerado, su registro se cierra.
+                //Exonerar solo se hace desde su modulo, por eso aqui unicamente se cierra.
+                if (destino != ContractState.Exempt)
+                {
+                    await ContractExemptRegistry.CloseAsync(_context, contract.ContractClientId, userName, userId);
+                }
+
+                //Y el paso queda en la bitacora del contrato
+                await ContractAuditLog.AddAsync(_context, contract.ContractClientId, ContractEventType.StateChanged,
+                    string.IsNullOrWhiteSpace(motivo) ? destino.ToString() : $"{destino} - {motivo}",
+                    userName, userId, clientId: contract.ClientId, corporationId: contract.CorporationId);
+
                 await _transactionManager.SaveChangesAsync();
                 await _transactionManager.CommitTransactionAsync();
 

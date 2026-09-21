@@ -1,3 +1,4 @@
+﻿using Spix.DomainLogic.ItemsGeneric;
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
@@ -24,7 +25,14 @@ public partial class IndexServiceRequest
     private int CurrentPage = 1;
     private int TotalPages;
     private int PageSize = 10;
-    private bool OpenedRouteModal;
+    private int TotalRecords;
+
+    //El tablero y las pildoras: los numeros y la lista los arma el backend
+    private const string BaseComboStatus = "/api/v1/schedulecontrol/loadStatusFilter";
+
+    private ServiceRequestSummaryDto? Summary;
+    private List<IntItemModel>? Statuses;
+    private int StatusFilter;
 
     private const string baseUrl = "api/v1/servicerequests";
     public List<ServiceRequestDto>? Requests { get; set; }
@@ -33,18 +41,16 @@ public partial class IndexServiceRequest
     {
         if (firstRender)
         {
-            await Cargar();
-
+            //Quien llegue con /servicerequests/{id} va derecho a la orden
             if (Id.HasValue)
             {
-                OpenedRouteModal = true;
-                await ShowModalAsync(Id.Value, true);
+                GoToOrder(Id.Value);
+                return;
             }
-        }
-        else if (Id.HasValue && !OpenedRouteModal)
-        {
-            OpenedRouteModal = true;
-            await ShowModalAsync(Id.Value, true);
+
+            await LoadStatusesAsync();
+            await LoadSummaryAsync();
+            await Cargar();
         }
     }
 
@@ -62,7 +68,7 @@ public partial class IndexServiceRequest
 
     private async Task Cargar(int page = 1)
     {
-        var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}";
+        var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}&status={StatusFilter}";
         if (!string.IsNullOrWhiteSpace(Filter))
         {
             url += $"&filter={Uri.EscapeDataString(Filter)}";
@@ -79,79 +85,38 @@ public partial class IndexServiceRequest
         Requests = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault() ?? "1");
 
+        //Cuantas hay en total: el backend ya lo manda en la cabecera
+        if (responseHttp.HttpResponseMessage.Headers.TryGetValues("Counting", out var counting) &&
+            int.TryParse(counting.FirstOrDefault(), out var total))
+        {
+            TotalRecords = total;
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
+    //Nueva solicitud: lo unico que sigue siendo modal, porque es corto
+    private async Task ShowModalAsync()
     {
-        Type component;
-        Dictionary<string, object> parameters;
-
-        if (isEdit)
+        var parameters = new Dictionary<string, object>
         {
-            component = typeof(EditServiceRequest);
-            parameters = new Dictionary<string, object>
-            {
-                { "Id", id! },
-                { "Title", "Editar Solicitud" }
-            };
-        }
-        else
-        {
-            component = typeof(CreateServiceRequest);
-            parameters = new Dictionary<string, object>
-            {
-                { "Title", "Nueva Solicitud" }
-            };
-        }
+            { "Title", "Nueva Solicitud" }
+        };
 
-        await _modalService.ShowAsync(component, parameters, async result =>
+        await _modalService.ShowAsync(typeof(CreateServiceRequest), parameters, async result =>
         {
             if (result.Succeeded)
             {
                 await Cargar(CurrentPage);
-            }
-
-            if (Id.HasValue)
-            {
-                _navigationManager.NavigateTo("/servicerequests");
+                await LoadSummaryAsync();
             }
         });
     }
 
-    private async Task ShowModalPicsAsync(Guid serviceRequestId, Guid? serviceRequestPicId, bool isCompleted)
+    //La orden de trabajo es una pantalla propia
+    private void GoToOrder(Guid id)
     {
-        Type component;
-        Dictionary<string, object> parameters;
-
-        if (serviceRequestPicId.HasValue)
-        {
-            component = typeof(EditServiceRequestPic);
-            parameters = new Dictionary<string, object>
-            {
-                { "Id", serviceRequestPicId.Value },
-                { "Title", "Fotos de Solicitud" },
-                { "IsCompleted", isCompleted }
-            };
-        }
-        else
-        {
-            component = typeof(CreateServiceRequestPic);
-            parameters = new Dictionary<string, object>
-            {
-                { "Id", serviceRequestId },
-                { "Title", "Fotos de Solicitud" },
-                { "IsCompleted", isCompleted }
-            };
-        }
-
-        await _modalService.ShowAsync(component, parameters, async result =>
-        {
-            if (result.Succeeded)
-            {
-                await Cargar(CurrentPage);
-            }
-        });
+        _navigationManager.NavigateTo($"/servicerequests/details/{id}");
     }
 
     private async Task DeleteAsync(Guid id)
@@ -176,5 +141,89 @@ public partial class IndexServiceRequest
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar(CurrentPage);
+        await LoadSummaryAsync();
+    }
+
+    private async Task LoadStatusesAsync()
+    {
+        var responseHttp = await _repository.GetAsync<List<IntItemModel>>(BaseComboStatus);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Statuses = responseHttp.Response ?? new();
+    }
+
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<ServiceRequestSummaryDto>($"{baseUrl}/summary");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Summary = responseHttp.Response;
+    }
+
+    //Cero es "todas"; al cambiar de pildora se vuelve a la primera pagina
+    private async Task SetStatusAsync(int status)
+    {
+        StatusFilter = status;
+        CurrentPage = 1;
+        await Cargar();
+    }
+
+    //Rastro de la solicitud: cuando se creo, quien la cerro y cuando.
+    private async Task ShowAuditAsync(ServiceRequestDto item)
+    {
+        await AuditAlert.ShowAsync(_sweetAlert, Localizer["Audit_Title"],
+            (Localizer["Audit_Created"], item.CreatedAtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")),
+            (Localizer["Audit_Scheduled"], item.ScheduledAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")),
+            (Localizer["Audit_Technician"], item.TechnicianName),
+            (Localizer["Audit_ClosedBy"], item.UsuarioOwnerCompleted),
+            (Localizer["Audit_ClosedDate"], item.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")));
+    }
+
+    //La fecha programada dice que tan urgente es, no solo cuando es
+    private string WhenText(ServiceRequestDto item)
+    {
+        //Mientras el cliente la pide y nadie la revisa, no hay cuando
+        if (item.ScheduleStatus == ScheduleStatus.Requested)
+            return Localizer["When_Unassigned"];
+
+        if (item.ScheduleStatus == ScheduleStatus.Completed ||
+            item.ScheduleStatus == ScheduleStatus.PhoneResolved)
+            return Localizer["When_Closed"];
+
+        if (item.ScheduledAtUtc == null)
+            return Localizer["When_Unassigned"];
+
+        var fecha = item.ScheduledAtUtc.Value.ToLocalTime();
+        var dias = (fecha.Date - DateTime.Now.Date).Days;
+
+        if (dias == 0)
+            return $"{Localizer["When_Today"]} {fecha:HH:mm}";
+
+        if (dias == 1)
+            return Localizer["When_Tomorrow"];
+
+        if (dias < 0)
+            return $"{Localizer["When_Overdue"]} {Math.Abs(dias)}d";
+
+        return $"{Localizer["When_InDays"]} {dias}d";
+    }
+
+    private string WhenClass(ServiceRequestDto item)
+    {
+        if (item.ScheduleStatus == ScheduleStatus.Completed ||
+            item.ScheduleStatus == ScheduleStatus.PhoneResolved)
+            return "is-done";
+
+        if (item.ScheduledAtUtc == null)
+            return "is-next";
+
+        var dias = (item.ScheduledAtUtc.Value.ToLocalTime().Date - DateTime.Now.Date).Days;
+
+        if (dias < 0)
+            return "is-late";
+
+        return dias == 0 ? "is-today" : "is-next";
     }
 }

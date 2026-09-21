@@ -317,6 +317,9 @@ public class ContractSuspendedService : IContractSuspendedService
             await ContractSuspendedRegistry.OpenAsync(_context, contract, SuspendedOrigin.Manual,
                 motivo, null, userName, userId);
 
+            await ContractAuditLog.AddAsync(_context, contract.ContractClientId, ContractEventType.Suspended,
+                motivo, userName, userId, clientId: contract.ClientId, corporationId: contract.CorporationId);
+
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
@@ -381,21 +384,17 @@ public class ContractSuspendedService : IContractSuspendedService
 
             contract.ContractState = ContractState.Active;
 
-            var audit = new ContractSuspendedAudit
-            {
-                ContractId = contract.ContractClientId,
-                ClientId = contract.ClientId,
-                DateModified = DateTime.UtcNow,
-                UserId = Guid.Parse(user.Id),
-                UserByName = $"{user.FirstName} {user.LastName}",
-                CorporationId = contract.CorporationId
-            };
-
-            _context.ContractSuspendedAudits.Add(audit);
+            var auditUserId = Guid.Parse(user.Id);
+            var auditUserName = $"{user.FirstName} {user.LastName}".Trim();
 
             //Se cierra la suspension abierta: la fila queda como historia, no se borra
             await ContractSuspendedRegistry.CloseAsync(_context, contract.ContractClientId,
-                audit.UserByName, audit.UserId);
+                auditUserName, auditUserId);
+
+            //La reactivacion vive en la bitacora del contrato, no en una tabla aparte
+            await ContractAuditLog.AddAsync(_context, contract.ContractClientId, ContractEventType.Reactivated,
+                null, auditUserName, auditUserId, clientId: contract.ClientId,
+                corporationId: contract.CorporationId);
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

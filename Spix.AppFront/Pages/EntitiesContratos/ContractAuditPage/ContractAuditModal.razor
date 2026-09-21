@@ -1,0 +1,64 @@
+@inherits ComponentBase
+@using Spix.DomainLogic.EntitiesContractDTO
+
+@* Linea de tiempo del contrato: todo lo que le ha pasado, en un solo lugar. *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title"><i class="fa fa-clock-rotate-left me-2"></i>@Localizer["Audit_Title"]</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (Data is not null)
+            {
+                <div class="ca-head">
+                    <div class="ca-name">#@Data.ControlContrato &middot; @Data.ClientName</div>
+                    <div class="ca-meta">@Data.ClientDocument &middot; @Data.ContractAddress</div>
+                </div>
+            }
+
+            @if (IsLoading)
+            {
+                <div class="ca-meta py-3">
+                    <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                </div>
+            }
+            else if (Data is null || Data.Events.Count == 0)
+            {
+                <div class="ca-meta py-3">@Localizer["Table_NoRecords"]</div>
+            }
+            else
+            {
+                <ol class="ca-line">
+                    @foreach (var item in Data.Events)
+                    {
+                        <li>
+                            <span class="ca-dot"></span>
+                            <div class="ca-when">@item.DateEvent.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                            <div class="ca-what">@Localizer[$"ContractEvent_{item.EventType}"]</div>
+                            @if (!string.IsNullOrWhiteSpace(item.Detail))
+                            {
+                                <div class="ca-detail">@item.Detail</div>
+                            }
+                            <div class="ca-meta">
+                                @item.UserByName
+                                @if (!string.IsNullOrWhiteSpace(item.SourceIp))
+                                {
+                                    <span> &middot; @item.SourceIp</span>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ol>
+            }
+
+            <hr />
+            <div class="d-flex justify-content-center">
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

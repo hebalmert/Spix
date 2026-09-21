@@ -1,0 +1,96 @@
+﻿/* De que solicitud es */
+.rs-head {
+    border: 1px solid #e6ecf6;
+    border-left: 5px solid #16305e;
+    border-radius: 10px;
+    background: #f5f8ff;
+    box-shadow: 4px 5px 0 rgba(44, 95, 173, .2);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.rs-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #152238;
+}
+
+.rs-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    align-items: start;
+}
+
+.rs-fact {
+    border: 1px solid #e6ecf6;
+    border-left: 5px solid #16305e;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 4px 5px 0 rgba(44, 95, 173, .2);
+    padding: 10px 12px;
+    margin-bottom: 14px;
+}
+
+.rs-block {
+    margin-bottom: 14px;
+}
+
+.rs-label {
+    font-size: 11.5px;
+    color: #6b7690;
+    margin-bottom: 3px;
+}
+
+.rs-value {
+    font-size: 13.5px;
+    color: #152238;
+}
+
+.rs-meta {
+    font-size: 12.5px;
+    color: #6b7690;
+}
+
+.rs-text {
+    font-size: 14px;
+    color: #152238;
+    white-space: pre-wrap;
+}
+
+/* Las fotos de como quedo */
+.rs-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 160px));
+    gap: 10px;
+}
+
+    .rs-photos img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border: 1px solid #e3e9f4;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+/* La foto en grande, al tocarla */
+.rs-zoom {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 26, 63, .92);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    cursor: zoom-out;
+    z-index: 5;
+}
+
+    .rs-zoom img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 10px;
+    }

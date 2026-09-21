@@ -69,6 +69,76 @@ public class ScheduleService : IScheduleService
     }
 
 
+    //La lista para el combo "Otro estado" de la orden: sin los cierres ni Solicitada.
+    //Cerrar la visita y resolver por telefono tienen su propio boton y sus reglas.
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusChangeAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<IntItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var list = _enumMultilLanguageService.GetEnumSelectList<ScheduleStatus>()
+                .Where(x => x.Value != (int)ScheduleStatus.Completed &&
+                            x.Value != (int)ScheduleStatus.PhoneResolved &&
+                            x.Value != (int)ScheduleStatus.Requested)
+                .ToList();
+
+            return new ActionResponse<IEnumerable<IntItemModel>>
+            {
+                WasSuccess = true,
+                Result = list
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
+        }
+    }
+
+    //Misma lista, pero para FILTRAR la agenda: el neutro dice "Todos", no "[Seleccione]".
+    //La arma el backend, igual que los demas combos.
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusFilterAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<IntItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var list = _enumMultilLanguageService.GetEnumSelectList<ScheduleStatus>();
+
+            list.Insert(0, new IntItemModel
+            {
+                Value = 0,
+                Name = _localizer["Filter_AllStatus"]
+            });
+
+            return new ActionResponse<IEnumerable<IntItemModel>>
+            {
+                WasSuccess = true,
+                Result = list
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<ScheduleItemDto>>> GetAsync(DateTime fromUtc, DateTime toUtc, Guid? technicianId, string username)
     {
         try

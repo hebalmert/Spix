@@ -1,9 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceContratos;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.xLanguage.Resources;
@@ -57,25 +58,28 @@ public class ContractSuspendedAuditService : IContractSuspendedAuditService
                 };
             }
 
+            //Las reactivaciones ya no tienen tabla propia: salen de la bitacora del contrato,
+            //que es donde quedan todos los pasos.
             var endExclusive = end.AddDays(1);
-            var audits = await _context.ContractSuspendedAudits
+            var audits = await _context.ContractAudits
                 .AsNoTracking()
                 .Include(x => x.ContractClient)
                 .Include(x => x.Client)
                 .Where(x => x.CorporationId == user.CorporationId &&
-                            x.DateModified >= start &&
-                            x.DateModified < endExclusive)
-                .OrderByDescending(x => x.DateModified)
+                            x.EventType == ContractEventType.Reactivated &&
+                            x.DateEvent >= start &&
+                            x.DateEvent < endExclusive)
+                .OrderByDescending(x => x.DateEvent)
                 .Select(x => new ContractSuspendedAuditDTO
                 {
-                    ContractSuspendedAuditId = x.ContractSuspendedAuditId,
-                    ContractId = x.ContractId,
+                    ContractSuspendedAuditId = x.ContractAuditId,
+                    ContractId = x.ContractClientId,
                     ClientId = x.ClientId,
                     ControlContrato = x.ContractClient!.ControlContrato,
                     ClientDocument = x.Client!.Document,
                     ClientFullName = $"{x.Client.FirstName} {x.Client.LastName}",
-                    DateModified = x.DateModified,
-                    UserByName = x.UserByName
+                    DateModified = x.DateEvent,
+                    UserByName = x.UserByName!
                 })
                 .ToListAsync();
 

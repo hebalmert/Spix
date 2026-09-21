@@ -933,6 +933,61 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("SellDetails");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractAudit", b =>
+                {
+                    b.Property<Guid>("ContractAuditId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateEvent")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Detail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ReferenceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SourceIp")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("UserByName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ContractAuditId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ContractClientId", "DateEvent");
+
+                    b.HasIndex("CorporationId", "DateEvent");
+
+                    b.ToTable("ContractAudits");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractBind", b =>
                 {
                     b.Property<Guid>("ContractBindId")
@@ -1162,6 +1217,91 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractDocumentTemplateId");
 
                     b.ToTable("ContractDocumentTemplateFields");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractExempt", b =>
+                {
+                    b.Property<Guid>("ContractExemptId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("CityName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClientDocument")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClientName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ContractAddress")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContractPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<long>("ControlContrato")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateEnded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateExempt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Motivo")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("PlanAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PlanName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserByName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("UserByNameEnded")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserIdEnded")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ZoneName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ContractExemptId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ContractClientId", "DateEnded");
+
+                    b.HasIndex("CorporationId", "DateExempt");
+
+                    b.ToTable("ContractExempts");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractIDPic", b =>
@@ -3555,6 +3695,128 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("Technicians");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractExonerated", b =>
+                {
+                    b.Property<Guid>("ContractExoneratedId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<bool>("Billed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CityName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClientDocument")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClientName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ContractAddress")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContractPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<long>("ControlContrato")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("CxCBillId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DateBilled")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DateEnded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateExonerated")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ExoneratedControl")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<int>("MonthType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Motivo")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("PlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PlanName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("PriceWithTax")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TaxRate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserByName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("UserByNameEnded")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserIdEnded")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("YearNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ZoneName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ContractExoneratedId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ContractClientId");
+
+                    b.HasIndex("CxCBillId");
+
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("CorporationId", "ContractClientId", "YearNumber", "MonthType")
+                        .IsUnique()
+                        .HasFilter("[DateEnded] IS NULL");
+
+                    b.ToTable("ContractExonerateds");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractorAccountPayable", b =>
                 {
                     b.Property<Guid>("ContractorAccountPayableId")
@@ -3853,81 +4115,6 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CxCBillId");
 
                     b.ToTable("CxCBillDetails");
-                });
-
-            modelBuilder.Entity("Spix.Domain.EntitiesPayment.PreExonerated", b =>
-                {
-                    b.Property<Guid>("PreExoneratedId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.Property<bool>("Billed")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ContractClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CorporationId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("CxCBillId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DateBilled")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("DateExonerated")
-                        .HasColumnType("date");
-
-                    b.Property<string>("ExoneratedControl")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<int>("MonthType")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("PlanId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("PriceWithTax")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TaxRate")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UsuarioOwner")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("YearNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("PreExoneratedId");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("ContractClientId");
-
-                    b.HasIndex("CxCBillId");
-
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("CorporationId", "ContractClientId", "YearNumber", "MonthType")
-                        .IsUnique();
-
-                    b.ToTable("PreExonerateds");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.PrePayment", b =>
@@ -4291,6 +4478,10 @@ namespace Spix.AppBacken.Migrations
                     b.Property<DateTime?>("CompletedAtUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<Guid>("ContractClientId")
                         .HasColumnType("uniqueidentifier");
 
@@ -4315,6 +4506,17 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("NodeIp")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NodeName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
@@ -4337,7 +4539,7 @@ namespace Spix.AppBacken.Migrations
                     b.Property<int>("ScheduleStatus")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ScheduledAtUtc")
+                    b.Property<DateTime?>("ScheduledAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("SellId")
@@ -4351,7 +4553,7 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("TechnicianId")
+                    b.Property<Guid?>("TechnicianId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UserId")
@@ -4436,6 +4638,45 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("TaxId");
 
                     b.ToTable("ServiceRequestDetails");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequestPhoto", b =>
+                {
+                    b.Property<Guid>("ServiceRequestPhotoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Photo")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("PhotoType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ServiceRequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserByName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ServiceRequestPhotoId");
+
+                    b.HasIndex("CorporationId");
+
+                    b.HasIndex("ServiceRequestId", "PhotoType");
+
+                    b.ToTable("ServiceRequestPhotos");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequestPic", b =>
@@ -4757,6 +4998,33 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Tax");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractAudit", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany()
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("Corporation");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractBind", b =>
                 {
                     b.HasOne("Spix.Domain.EntitiesInven.CargueDetail", "CargueDetail")
@@ -4870,6 +5138,33 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired();
 
                     b.Navigation("ContractDocumentTemplate");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractExempt", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany()
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("Corporation");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractIDPic", b =>
@@ -5951,6 +6246,48 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("DocumentType");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractExonerated", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany()
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesPayment.CxCBill", "CxCBill")
+                        .WithMany("ContractExonerateds")
+                        .HasForeignKey("CxCBillId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Spix.Domain.EntitiesGen.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("Corporation");
+
+                    b.Navigation("CxCBill");
+
+                    b.Navigation("Plan");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractorAccountPayable", b =>
                 {
                     b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
@@ -6093,48 +6430,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("CxCBill");
                 });
 
-            modelBuilder.Entity("Spix.Domain.EntitiesPayment.PreExonerated", b =>
-                {
-                    b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
-                        .WithMany()
-                        .HasForeignKey("ContractClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
-                        .WithMany()
-                        .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Spix.Domain.EntitiesPayment.CxCBill", "CxCBill")
-                        .WithMany("PreExonerateds")
-                        .HasForeignKey("CxCBillId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Spix.Domain.EntitiesGen.Plan", "Plan")
-                        .WithMany()
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("ContractClient");
-
-                    b.Navigation("Corporation");
-
-                    b.Navigation("CxCBill");
-
-                    b.Navigation("Plan");
-                });
-
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.PrePayment", b =>
                 {
                     b.HasOne("Spix.Domain.EntitiesOper.Client", "Client")
@@ -6244,8 +6539,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasOne("Spix.Domain.EntitiesOper.Technician", "Technician")
                         .WithMany()
                         .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ContractClient");
 
@@ -6295,6 +6589,25 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ServiceRequest");
 
                     b.Navigation("Tax");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequestPhoto", b =>
+                {
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesSchedule.ServiceRequest", "ServiceRequest")
+                        .WithMany("ServiceRequestPhotos")
+                        .HasForeignKey("ServiceRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Corporation");
+
+                    b.Navigation("ServiceRequest");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequestPic", b =>
@@ -6622,11 +6935,11 @@ namespace Spix.AppBacken.Migrations
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.CxCBill", b =>
                 {
+                    b.Navigation("ContractExonerateds");
+
                     b.Navigation("ContractorAccountPayables");
 
                     b.Navigation("CxCBillDetails");
-
-                    b.Navigation("PreExonerateds");
 
                     b.Navigation("PrePayments");
 
@@ -6643,6 +6956,8 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ScheduleItem");
 
                     b.Navigation("ServiceRequestDetails");
+
+                    b.Navigation("ServiceRequestPhotos");
 
                     b.Navigation("ServiceRequestPic");
                 });

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
@@ -747,7 +747,7 @@ public class BillingService : IBillingService
         }
 
         var total = sell.SellDetails.Sum(x => x.TotalPrice);
-        var preExonerated = await _context.PreExonerateds.FirstOrDefaultAsync(x =>
+        var preExonerated = await _context.ContractExonerateds.FirstOrDefaultAsync(x =>
             x.CorporationId == corporationId &&
             x.ContractClientId == contract.ContractClientId &&
             x.YearNumber == yearNumber &&
@@ -798,7 +798,7 @@ public class BillingService : IBillingService
             CxCBillId = cxCBill.CxCBillId,
             DatePayment = utcNow.Date,
             PaymentMode = prePayment == null ? null : "PrePayment",
-            DiscountRate = preExonerated == null ? null : "PreExonerated",
+            DiscountRate = preExonerated == null ? null : "ContractExonerated",
             Detail = BuildBillDetailText(prePayment, preExonerated, yearNumber, monthType),
             Debt = total,
             Payment = payment,
@@ -879,7 +879,7 @@ public class BillingService : IBillingService
         return $"Solicitud #{request.RequestNumber} - {serviceName} - {executedDate} - {comment}";
     }
 
-    private static string BuildBillDetailText(PrePayment? prePayment, PreExonerated? preExonerated, int yearNumber, MonthType monthType)
+    private static string BuildBillDetailText(PrePayment? prePayment, ContractExonerated? preExonerated, int yearNumber, MonthType monthType)
     {
         if (preExonerated != null)
             return $"Deuda generada con exoneracion aplicada para {monthType} {yearNumber}.";

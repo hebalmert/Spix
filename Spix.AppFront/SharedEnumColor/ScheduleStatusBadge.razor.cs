@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Spix.AppInfra.EnumMultilLanguage;
 using Spix.Domain.EntitiesSchedule;
 
@@ -14,6 +14,8 @@ public partial class ScheduleStatusBadge
 
     protected string Color => Value switch
     {
+        ScheduleStatus.Requested => "#0DCAF0",
+        ScheduleStatus.PhoneResolved => "#20C997",
         ScheduleStatus.Pending => "#FD7E14",
         ScheduleStatus.InProgress => "#6F42C1",
         ScheduleStatus.OnHold => "#E67700",

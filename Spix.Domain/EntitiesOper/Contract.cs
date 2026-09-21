@@ -137,7 +137,7 @@ public class Contract
 
     //public ICollection<ContractCutDetail>? ContractCutDetails { get; set; }
 
-    //public ICollection<PreExonerated>? PreExonerateds { get; set; }
+    //public ICollection<ContractExonerated>? ContractExonerateds { get; set; }
 
     //public ICollection<PaymentCachier>? PaymentCachiers { get; set; }
 

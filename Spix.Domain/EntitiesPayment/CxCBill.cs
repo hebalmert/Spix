@@ -1,4 +1,4 @@
-using Spix.Domain.Entities;
+﻿using Spix.Domain.Entities;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesOper;
@@ -77,7 +77,7 @@ public class CxCBill
 
     public ICollection<PrePayment>? PrePayments { get; set; }
 
-    public ICollection<PreExonerated>? PreExonerateds { get; set; }
+    public ICollection<ContractExonerated>? ContractExonerateds { get; set; }
 
     public ICollection<ContractorAccountPayable>? ContractorAccountPayables { get; set; }
 

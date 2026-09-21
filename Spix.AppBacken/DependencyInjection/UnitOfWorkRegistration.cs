@@ -185,6 +185,16 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IContractControlService, ContractControlService>();
             services.AddScoped<IContractSuspendedServiceX, ContractSuspendedServiceX>();
             services.AddScoped<IContractSuspendedService, ContractSuspendedService>();
+            services.AddScoped<IServiceRequestDetailServiceX, ServiceRequestDetailServiceX>();
+            services.AddScoped<IServiceRequestDetailService, ServiceRequestDetailService>();
+            services.AddScoped<IServiceRequestPhotoServiceX, ServiceRequestPhotoServiceX>();
+            services.AddScoped<IServiceRequestPhotoService, ServiceRequestPhotoService>();
+            services.AddScoped<IMyServiceRequestServiceX, MyServiceRequestServiceX>();
+            services.AddScoped<IMyServiceRequestService, MyServiceRequestService>();
+            services.AddScoped<IContractAuditServiceX, ContractAuditServiceX>();
+            services.AddScoped<IContractAuditService, ContractAuditService>();
+            services.AddScoped<IContractExemptServiceX, ContractExemptServiceX>();
+            services.AddScoped<IContractExemptService, ContractExemptService>();
             services.AddScoped<IContractSuspendedAuditServiceX, ContractSuspendedAuditServiceX>();
             services.AddScoped<IContractSuspendedAuditService, ContractSuspendedAuditService>();
             services.AddScoped<IRunSuspendedServiceX, RunSuspendedServiceX>();
