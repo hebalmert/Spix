@@ -1,4 +1,3 @@
-@inherits ComponentBase
 @using Spix.AppFront.SharedMap
 
 <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
@@ -16,7 +15,7 @@
                        SecondLongitude="SecondLongitude"
                        FirstLabel="@FirstLabel"
                        SecondLabel="@SecondLabel"
-                       Title="@(Title ?? "Map")"
+                       Title="@Title"
                        Height="520" />
             <hr />
             <div class="d-flex justify-content-center">
@@ -25,19 +24,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    [Inject] private ModalService ModalService { get; set; } = null!;
-    [Parameter] public decimal? Latitude { get; set; }
-    [Parameter] public decimal? Longitude { get; set; }
-    [Parameter] public decimal? SecondLatitude { get; set; }
-    [Parameter] public decimal? SecondLongitude { get; set; }
-    [Parameter] public string FirstLabel { get; set; } = "Cliente";
-    [Parameter] public string SecondLabel { get; set; } = "Nodo";
-    [Parameter] public string? Title { get; set; }
-
-    private async Task Return()
-    {
-        await ModalService.CloseAsync(ModalResult.Cancel());
-    }
-}

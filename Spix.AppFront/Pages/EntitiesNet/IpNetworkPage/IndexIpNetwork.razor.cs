@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -24,6 +25,7 @@ public partial class IndexIpNetwork
     private int TotalPages;      //Cantidad total de paginas
     private int TotalRecords;   //Total de registros (header Counting)
     private int PageSize = 15;  //Cantidad de registros por pagina
+    private IpSummaryDto? Summary;
 
     private const string baseUrl = "api/v1/ipnetworks";
     public List<IpNetwork>? IpNetworks { get; set; }
@@ -32,7 +34,7 @@ public partial class IndexIpNetwork
     {
         if (firstRender)
         {
-            await Cargar();
+            await ReloadAsync();
         }
     }
 
@@ -104,7 +106,7 @@ public partial class IndexIpNetwork
         {
             if (result.Succeeded)
             {
-                await Cargar(CurrentPage);   // refresca la tabla
+                await ReloadAsync();   // refresca la tabla
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
                     Localizer[nameof(Resource.msg_SuccessMessage)],
@@ -125,7 +127,7 @@ public partial class IndexIpNetwork
         {
             if (result.Succeeded)
             {
-                await Cargar(CurrentPage);
+                await ReloadAsync();
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
                     Localizer[nameof(Resource.msg_SuccessMessage)],
@@ -146,7 +148,7 @@ public partial class IndexIpNetwork
         {
             if (result.Succeeded)
             {
-                await Cargar(CurrentPage);
+                await ReloadAsync();
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_DeleteConfirmationTitle)],
                     Localizer[nameof(Resource.msg_DeleteConfirmationText)],
@@ -177,6 +179,23 @@ public partial class IndexIpNetwork
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await ReloadAsync();
+    }
+
+    //El tablero se cuenta sobre todas las direcciones, no solo la pagina visible
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<IpSummaryDto>($"{baseUrl}/summary");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Summary = responseHttp.Response;
+    }
+
+    //Despues de crear, editar o borrar: tabla y tablero. Paginar y buscar solo recargan la tabla.
+    private async Task ReloadAsync()
+    {
+        await LoadSummaryAsync();
         await Cargar(CurrentPage);
     }
 }

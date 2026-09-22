@@ -1,87 +1,80 @@
-﻿<EditForm Model="PurchaseDetail" OnValidSubmit="OnSubmit">
+<EditForm Model="PurchaseDetail" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
+    @* Categoria: la lista (con su neutro traducido) la arma el backend *@
     <div class="mb-2">
         <GenericSelectWrapper Tmodel="ProductCategory" Items="Categories">
             <Body>
-            <div class="input-group">
-                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Category)]</span>
-                <select class="form-select" value="@(IsEditControl ? PurchaseDetail.Product!.ProductCategoryId.ToString() : null)" @onchange="CategoryChanged">
-                    @foreach (var item in Categories!)
-                    {
-                        <option value="@item.ProductCategoryId">@item.Name</option>
-                    }
-                </select>
-            </div>
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Category)]</span>
+                    <select class="form-select" value="@PurchaseDetail.ProductCategoryId" @onchange="CategoryChanged">
+                        @foreach (var item in Categories!)
+                        {
+                            <option value="@item.ProductCategoryId">@item.Name</option>
+                        }
+                    </select>
+                </div>
             </Body>
         </GenericSelectWrapper>
     </div>
 
+    @* Producto de la categoria elegida *@
     <div class="mb-2">
         <GenericSelectWrapper Tmodel="Product" Items="Products">
             <Body>
-            <div class="input-group">
-                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Product)]</span>
-                <select class="form-select" value="@(IsEditControl ? PurchaseDetail.ProductId.ToString() : null)" @onchange="ProductsChanged">
-                    @foreach (var item in Products!)
-                    {
-                        <option value="@item.ProductId">@item.ProductName</option>
-                    }
-                </select>
-            </div>
+                <div class="input-group">
+                    <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Product)]</span>
+                    <select class="form-select" value="@PurchaseDetail.ProductId" @onchange="ProductsChanged">
+                        @foreach (var item in Products!)
+                        {
+                            <option value="@item.ProductId">@item.ProductName</option>
+                        }
+                    </select>
+                </div>
+                <ValidationMessage For="@(() => PurchaseDetail.ProductId)" />
             </Body>
         </GenericSelectWrapper>
     </div>
 
-
-
-
-    <!-- Impuesto -->
-    <div class="col-12 mb-4">
-        <div class="input-group">
-            <span class="input-group-text" style="width: 100px">
-                @Localizer[nameof(Resource.Rate)]
-            </span>
-            <InputNumber class="form-control" @bind-Value="PurchaseDetail.RateTax" readonly="true" />
+    @if (WithSerials)
+    {
+        <div class="pu-form-hint">
+            <i class="fa fa-barcode"></i> @Localizer["Purchase_SerialsHint"]
         </div>
-        <ValidationMessage For="@(() => PurchaseDetail.RateTax)" />
+    }
+
+    @* Tasa de impuesto: sale del producto, no se escribe *@
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">@Localizer["Purchase_TaxRate"]</span>
+            <input class="form-control" value="@PurchaseDetail.RateTax.ToString("N2")" readonly />
+        </div>
     </div>
 
-    <!-- Costo Unitario -->
-    <div class="col-12 mb-4">
+    <div class="mb-2">
         <div class="input-group">
-            <span class="input-group-text" style="width: 100px">
-                @Localizer[nameof(Resource.UnitCost)]
-            </span>
-            <InputNumber class="form-control" @bind-Value="PurchaseDetail.UnitCost" @oninput="@(e => CalculoTotalUnit(decimal.Parse(e.Value?.ToString() ?? "0")))" />
+            <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.UnitCost)]</span>
+            <InputNumber class="form-control" @bind-Value="PurchaseDetail.UnitCost" />
         </div>
         <ValidationMessage For="@(() => PurchaseDetail.UnitCost)" />
     </div>
 
-    <!-- Cantidad -->
-    <div class="col-12 mb-4">
+    <div class="mb-2">
         <div class="input-group">
-            <span class="input-group-text" style="width: 100px">
-                @Localizer[nameof(Resource.Quantity)]
-            </span>
-            <InputNumber class="form-control" @bind-Value="PurchaseDetail.Quantity" @oninput="@(e => CalculoTotalCant(decimal.Parse(e.Value?.ToString() ?? "0")))" />
+            <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Quantity)]</span>
+            <InputNumber class="form-control" @bind-Value="PurchaseDetail.Quantity" step="@(WithSerials ? "1" : "any")" />
         </div>
         <ValidationMessage For="@(() => PurchaseDetail.Quantity)" />
     </div>
 
-    <!-- Subtotal -->
-    <div class="col-12 mb-4">
-        <div class="input-group">
-            <span class="input-group-text" style="width: 100px">
-                @Localizer[nameof(Resource.Subtotal)]
-            </span>
-            <InputNumber class="form-control" @bind-Value="Total" readonly="true" />
-        </div>
-        <ValidationMessage For="@(() => Total)" />
+    @* Se calcula solo al salir de cada campo: costo por cantidad, mas su impuesto *@
+    <div class="pu-form-totals">
+        <span>@Localizer[nameof(Resource.Subtotal)] <b>@PurchaseDetail.SubTotal.ToString("N2")</b></span>
+        <span>@Localizer[nameof(Resource.Tax)] <b>@PurchaseDetail.Impuesto.ToString("N2")</b></span>
+        <span>@Localizer[nameof(Resource.Total)] <b>@PurchaseDetail.TotalGeneral.ToString("N2")</b></span>
     </div>
 
-    <!-- Botones -->
-    <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
+    <div class="mb-4 d-flex justify-content-center gap-2 mt-4">
         <ButtonFormSave IsSaving="IsSaving" />
         <ButtonFormBack OnClick="ReturnAction" />
     </div>

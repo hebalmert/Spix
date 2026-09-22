@@ -8,6 +8,7 @@
         try {
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
+            cameraInterop.stream = stream;
 
             const track = stream.getVideoTracks()[0];
             const settings = track.getSettings();
@@ -20,11 +21,25 @@
                 const fallbackConstraints = { video: { deviceId: { exact: savedId } } };
                 const fallbackStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
                 video.srcObject = fallbackStream;
+                cameraInterop.stream = fallbackStream;
                 video.style.display = "block";
             } else {
                 console.warn("No se pudo acceder a la cámara. Mostrando selector de archivo.");
                 document.getElementById("fileInput").click();
             }
+        }
+    },
+
+    //Suelta la camara: sin esto el navegador la sigue usando al salir de la pantalla
+    stopCamera: function () {
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+        }
+
+        const video = document.getElementById("camera");
+        if (video) {
+            video.srcObject = null;
         }
     },
 

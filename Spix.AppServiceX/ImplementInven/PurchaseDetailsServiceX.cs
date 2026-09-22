@@ -18,15 +18,15 @@ public class PurchaseDetailsServiceX : IPurchaseDetailsServiceX
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatus() => await _purchaseDetailsService.GetComboStatus();
 
-    public async Task<ActionResponse<IEnumerable<PurchaseDetail>>> GetAsync(PaginationDTO pagination, string email) => await _purchaseDetailsService.GetAsync(pagination, email);
+    public async Task<ActionResponse<IEnumerable<PurchaseDetail>>> GetAsync(PaginationDTO pagination, string username) => await _purchaseDetailsService.GetAsync(pagination, username);
 
-    public async Task<ActionResponse<PurchaseDetail>> GetAsync(Guid id) => await _purchaseDetailsService.GetAsync(id);
+    public async Task<ActionResponse<PurchaseDetail>> GetAsync(Guid id, string username) => await _purchaseDetailsService.GetAsync(id, username);
 
-    public async Task<ActionResponse<PurchaseDetail>> UpdateAsync(PurchaseDetail modelo) => await _purchaseDetailsService.UpdateAsync(modelo);
+    public async Task<ActionResponse<PurchaseDetail>> UpdateAsync(PurchaseDetail modelo, string username) => await _purchaseDetailsService.UpdateAsync(modelo, username);
 
-    public async Task<ActionResponse<PurchaseDetail>> AddAsync(PurchaseDetail modelo, string email) => await _purchaseDetailsService.AddAsync(modelo, email);
+    public async Task<ActionResponse<PurchaseDetail>> AddAsync(PurchaseDetail modelo, string username) => await _purchaseDetailsService.AddAsync(modelo, username);
 
-    public async Task<ActionResponse<Purchase>> ClosePurchaseSync(Purchase modelo, string email) => await _purchaseDetailsService.ClosePurchaseSync(modelo, email);
+    public async Task<ActionResponse<Purchase>> ClosePurchaseSync(Purchase modelo, string username) => await _purchaseDetailsService.ClosePurchaseSync(modelo, username);
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _purchaseDetailsService.DeleteAsync(id);
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username) => await _purchaseDetailsService.DeleteAsync(id, username);
 }

@@ -1,10 +1,10 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -19,16 +19,20 @@ public partial class DetailsPurchases
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
+    private const string BaseUrl = "/api/v1/purchaseDetails";
+    private const string PurchaseUrl = "/api/v1/purchases";
+
     private int CurrentPage = 1;
     private int TotalPages;
     private int PageSize = 15;
-    private const string baseUrl = "/api/v1/purchaseDetails";
+
+    [Parameter] public Guid Id { get; set; }  //Codigo del PurchaseId
 
     public Purchase? Purchase { get; set; }
     public List<PurchaseDetail>? PurchaseDetails { get; set; }
 
-    [Parameter] public Guid Id { get; set; }  //Codigo del PurchaseId
-    [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
+    //Solo una compra abierta se modifica
+    private bool IsOpen => Purchase?.Status == PurchaseStatus.Pendiente;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -38,46 +42,31 @@ public partial class DetailsPurchases
         }
     }
 
-    private async Task SetFilterValue(string value)
-    {
-        Filter = value;
-        await Cargar();
-    }
-
     private async Task SelectedPage(int page)
     {
         CurrentPage = page;
         await Cargar(page);
     }
 
+    //La cabecera trae sus renglones para los totales; la tabla va paginada aparte
     private async Task Cargar(int page = 1)
     {
-        var url = $"{baseUrl}?GuidId={Id}&page={page}&recordsnumber={PageSize}";
-        if (!string.IsNullOrWhiteSpace(Filter))
-        {
-            url += $"&filter={Filter}";
-        }
-        var responseHttpCountry = await _repository.GetAsync<Purchase>($"/api/v1/purchases/{Id}");
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttpCountry);
-        if (errorHandled)
+        var responseHttpPurchase = await _repository.GetAsync<Purchase>($"{PurchaseUrl}/{Id}");
+        if (await _responseHandler.HandleErrorAsync(responseHttpPurchase))
         {
             _navigationManager.NavigateTo("/purchases");
             return;
         }
 
-        var responseHttp = await _repository.GetAsync<List<PurchaseDetail>>(url);
-        // Centralizamos el manejo de errores
-        bool errorHandled2 = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled2)
+        var responseHttp = await _repository.GetAsync<List<PurchaseDetail>>($"{BaseUrl}?GuidId={Id}&page={page}&recordsnumber={PageSize}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             _navigationManager.NavigateTo("/purchases");
             return;
         }
 
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
-
-        Purchase = responseHttpCountry.Response;
+        Purchase = responseHttpPurchase.Response;
         PurchaseDetails = responseHttp.Response;
 
         await InvokeAsync(StateHasChanged);
@@ -91,56 +80,53 @@ public partial class DetailsPurchases
         {
             component = typeof(EditPurchaseDetails);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Items)]}"  }
-        };
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Items)]}" }
+            };
         }
         else
         {
             component = typeof(CreatePurchaseDetails);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", Id },
-            { "Title", $"{Localizer[nameof(Resource.Create_Items)]}"  }
-        };
+            {
+                { "Id", Id },
+                { "Title", $"{Localizer[nameof(Resource.Create_Items)]}" }
+            };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar(CurrentPage);   //solo refresca si hubo cambios
+                await Cargar(CurrentPage);
         });
     }
 
-    private async Task ClosePurchaseAsync(Guid id)
+    //Cerrar sube el stock y abre los cargues: se confirma antes, y el aviso de exito va despues
+    private async Task ClosePurchaseAsync()
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Desea Cerrar Compra",
-            Text = "¿Al Cerrar la Compra, no podra volver editar y los Inventarios se actualizaran, Continuar?",
+            Title = Localizer["Purchase_CloseTitle"],
+            Text = Localizer["Purchase_CloseText"],
             Icon = SweetAlertIcon.Question,
             ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Si"
+            ConfirmButtonText = Localizer["Purchase_Close"],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
-        {
+        if (result.IsDismissed || result.Value != "true")
             return;
-        }
 
-        var responseHttp = await _repository.PostAsync($"{baseUrl}/CerrarPurchase", Purchase);
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/CerrarPurchase", Purchase);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
-            _navigationManager.NavigateTo("/purchases");
+            await Cargar(CurrentPage);
             return;
         }
 
         await Cargar(CurrentPage);
+        await _sweetAlert.FireAsync(Localizer["Purchase_Closed"], Localizer["Purchase_ClosedText"], SweetAlertIcon.Success);
     }
 
     private async Task DeleteAsync(Guid id)
@@ -158,9 +144,8 @@ public partial class DetailsPurchases
         if (result.IsDismissed || result.Value != "true")
             return;
 
-        var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        var responseHttp = await _repository.DeleteAsync($"{BaseUrl}/{id}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);

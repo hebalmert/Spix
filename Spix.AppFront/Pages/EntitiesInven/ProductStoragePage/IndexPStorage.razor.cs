@@ -1,30 +1,32 @@
 using CurrieTechnologies.Razor.SweetAlert2;
-using Spix.AppFront.GenericModel;
-using Spix.AppFront.Helper;
-using Spix.Domain.EntitiesInven;
-using Spix.HttpService;
-using Spix.xLanguage.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Spix.AppFront.GenericModel;
+using Spix.AppFront.Helper;
+using Spix.DomainLogic.EntitiesInvenDTO;
+using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesInven.ProductStoragePage;
+
 public partial class IndexPStorage
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
-    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
+    //El listado ya trae las existencias de cada bodega
+    private const string BaseUrl = "api/v1/productstorages";
+
     private string Filter { get; set; } = string.Empty;
+    private int CurrentPage = 1;
+    private int TotalPages;
+    private int TotalRecords;
+    private int PageSize = 15;
 
-    private int CurrentPage = 1;  //Pagina seleccionada
-    private int TotalPages;      //Cantidad total de paginas
-    private int PageSize = 15;  //Cantidad de registros por pagina
-
-    private const string baseUrl = "api/v1/productstorages";
-    public List<ProductStorage>? ProductStorages { get; set; }
+    public List<StorageListItemDto>? ProductStorages { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -43,27 +45,31 @@ public partial class IndexPStorage
     private async Task SetFilterValue(string value)
     {
         Filter = value;
+        CurrentPage = 1;
         await Cargar();
     }
 
     private async Task Cargar(int page = 1)
     {
-        var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}";
+        var url = $"{BaseUrl}?page={page}&recordsnumber={PageSize}";
         if (!string.IsNullOrWhiteSpace(Filter))
         {
             url += $"&filter={Filter}";
         }
-        var responseHttp = await _repository.GetAsync<List<ProductStorage>>(url);
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
-        {
-            _navigationManager.NavigateTo("/");
+
+        var responseHttp = await _repository.GetAsync<List<StorageListItemDto>>(url);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
-        }
 
         ProductStorages = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        //El conteo total viene en el header Counting; si no llega, la pantalla funciona igual
+        if (responseHttp.HttpResponseMessage.Headers.TryGetValues("Counting", out var counting) &&
+            double.TryParse(counting.FirstOrDefault(), out var total))
+        {
+            TotalRecords = (int)total;
+        }
 
         await InvokeAsync(StateHasChanged);
     }
@@ -76,24 +82,24 @@ public partial class IndexPStorage
         {
             component = typeof(EditPStorage);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Storage)]}"  }
-        };
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Storage)]}" }
+            };
         }
         else
         {
             component = typeof(CreatePStorage);
             parameters = new Dictionary<string, object>
-        {
-            { "Title", $"{Localizer[nameof(Resource.Create_Storage)]}"  }
-        };
+            {
+                { "Title", $"{Localizer[nameof(Resource.Create_Storage)]}" }
+            };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
-                await Cargar(CurrentPage);   //solo refresca si hubo cambios
+                await Cargar(CurrentPage);
         });
     }
 
@@ -112,9 +118,8 @@ public partial class IndexPStorage
         if (result.IsDismissed || result.Value != "true")
             return;
 
-        var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        var responseHttp = await _repository.DeleteAsync($"{BaseUrl}/{id}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);

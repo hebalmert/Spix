@@ -1,4 +1,4 @@
-using Asp.Versioning;
+ï»¿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,110 +8,119 @@ using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.AppResponses;
-using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.Pagination;
-using System.Security.Claims;
 
-namespace Spix.AppBack.Controllers.EntitiesInven
+namespace Spix.AppBack.Controllers.EntitiesInven;
+
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/productstorages")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+[ApiController]
+public class ProductStoragesController : ControllerBase
 {
-    [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/productstorages")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
-    [ApiController]
-    public class ProductStoragesController : ControllerBase
+    private readonly IProductStorageServiceX _unitOfWork;
+    private readonly IStringLocalizer _localizer;
+
+    public ProductStoragesController(
+        IProductStorageServiceX unitOfWork,
+        IStringLocalizer localizer)
     {
-        private readonly IProductStorageServiceX _productStorageUnitOfWork;
-        private readonly IStringLocalizer _localizer;
+        _unitOfWork = unitOfWork;
+        _localizer = localizer;
+    }
 
-        public ProductStoragesController(IProductStorageServiceX productStorageUnitOfWork, IStringLocalizer localizer)
+    [HttpGet]
+    public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+    {
+        try
         {
-            _productStorageUnitOfWork = productStorageUnitOfWork;
-            _localizer = localizer;
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationDTO pagination)
+        catch (ApplicationException ex)
         {
-            try
-            {
-                ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-                var response = await _productStorageUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
-                return ResponseHelper.Format(response);
-            }
-            catch (ApplicationException ex)
-            {
-                return BadRequest(ex.Message); // Ya está localizado
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
-            }
+            return BadRequest(ex.Message);
         }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(Guid id)
+        catch (Exception)
         {
-            try
-            {
-                var response = await _productStorageUnitOfWork.GetAsync(id);
-                return ResponseHelper.Format(response);
-            }
-            catch (ApplicationException ex)
-            {
-                return BadRequest(ex.Message); // Ya está localizado
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
-            }
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
+    }
 
-        [HttpPut]
-        public async Task<IActionResult> PutAsync(ProductStorage modelo)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAsync(Guid id)
+    {
+        try
         {
-            try
-            {
-                var response = await _productStorageUnitOfWork.UpdateAsync(modelo);
-                return ResponseHelper.Format(response);
-            }
-            catch (ApplicationException ex)
-            {
-                return BadRequest(ex.Message); // Ya está localizado
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
-            }
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetAsync(id, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> PostAsync(ProductStorage modelo)
+        catch (ApplicationException ex)
         {
-            try
-            {
-                ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-                var response = await _productStorageUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
-                return ResponseHelper.Format(response);
-            }
-            catch (ApplicationException ex)
-            {
-                return BadRequest(ex.Message); // Ya está localizado
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
-            }
+            return BadRequest(ex.Message);
         }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<bool>> DeleteAsync(Guid id)
+        catch (Exception)
         {
-            var response = await _productStorageUnitOfWork.DeleteAsync(id);
-            if (response.WasSuccess)
-            {
-                return Ok(response.Result);
-            }
-            return BadRequest(response.Message);
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> PutAsync(ProductStorage modelo)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.UpdateAsync(modelo, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> PostAsync(ProductStorage modelo)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
 }

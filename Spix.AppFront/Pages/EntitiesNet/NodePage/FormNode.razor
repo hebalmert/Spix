@@ -70,6 +70,7 @@
                 </span>
                 <InputText class="form-control"
                            name="node_clave"
+                           placeholder="@(IsEditControl ? Localizer["Net_KeepPassword"] : null)"
                            autocomplete="new-password"
                            type="@(showClave ? "text" : "password")"
                            @bind-value="Node.Clave" />
@@ -211,7 +212,7 @@
                 <span class="input-group-text" style="width:150px">
                     @Localizer[nameof(Resource.Security)]
                 </span>
-                <InputText class="form-control" @bind-value="Node.FraseSeguridad" />
+                <InputText class="form-control" @bind-value="Node.FraseSeguridad" placeholder="@(IsEditControl ? Localizer["Net_KeepPassword"] : null)" />
             </div>
         </div>
     </div>

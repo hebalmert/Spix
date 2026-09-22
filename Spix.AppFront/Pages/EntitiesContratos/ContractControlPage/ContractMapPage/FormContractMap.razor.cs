@@ -1,6 +1,8 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.Domain.EntitiesContratos;
+using Spix.xLanguage.Resources;
 using System.Globalization;
 
 namespace Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMapPage;
@@ -8,6 +10,7 @@ namespace Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMapP
 public partial class FormContractMap
 {
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
 
     [Parameter, EditorRequired] public ContractMap ContractMap { get; set; } = null!;
     [Parameter, EditorRequired] public EventCallback OnSubmit { get; set; }
@@ -32,7 +35,7 @@ public partial class FormContractMap
             !decimal.TryParse(parts[0], NumberStyles.Number, CultureInfo.InvariantCulture, out var latitude) ||
             !decimal.TryParse(parts[1], NumberStyles.Number, CultureInfo.InvariantCulture, out var longitude))
         {
-            await _sweetAlert.FireAsync("Coordenadas", "Formato invalido. Use: 25.82370270482433, -80.38556718743175", SweetAlertIcon.Warning);
+            await _sweetAlert.FireAsync(Localizer["Map_Coordinates"], Localizer["Map_InvalidFormat", "25.82370270482433, -80.38556718743175"], SweetAlertIcon.Warning);
             return;
         }
 

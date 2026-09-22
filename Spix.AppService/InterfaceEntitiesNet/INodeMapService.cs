@@ -1,0 +1,16 @@
+using Spix.DomainLogic.EntitiesNetDTO;
+using Spix.DomainLogic.ItemsGeneric;
+using Spix.DomainLogic.ModelUtility;
+
+namespace Spix.AppService.InterfaceEntitiesNet;
+
+public interface INodeMapService
+{
+    Task<ActionResponse<IEnumerable<GuidNameModel>>> ComboNodesAsync(string username);
+
+    Task<ActionResponse<IEnumerable<IntItemModel>>> ComboViewsAsync();
+
+    Task<ActionResponse<IEnumerable<IntItemModel>>> ComboCoveragesAsync();
+
+    Task<ActionResponse<NodeMapDto>> GetAsync(Guid nodeId, string username);
+}

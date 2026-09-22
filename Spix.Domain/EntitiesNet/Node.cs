@@ -72,7 +72,7 @@ public class Node
 
     [Display(Name = nameof(Resource.Password), ResourceType = typeof(Resource))]
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
-    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    //Obligatoria al crear (lo valida el servicio). Al editar puede llegar vacia: se conserva la guardada.
     public string Clave { get; set; } = null!;
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]

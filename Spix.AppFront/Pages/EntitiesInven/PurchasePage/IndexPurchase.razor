@@ -1,71 +1,115 @@
-﻿@page "/purchases"
+@page "/purchases"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.EnumTypes
+@using Spix.DomainLogic.EntitiesInvenDTO
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Compras</h3>
 
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-cart-shopping"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Purchase_Title"]</h3>
+                <p>@Localizer["Purchase_Subtitle"]</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+        </div>
+
+        @* El tablero: lo cuenta la base *@
+        @if (Summary is not null)
+        {
+            <div class="pu-board">
+                <div class="pu-tile is-open">
+                    <div class="pu-tile-label">@Localizer["Purchase_Open"]</div>
+                    <div class="pu-tile-value">@Summary.OpenPurchases</div>
+                </div>
+                <div class="pu-tile">
+                    <div class="pu-tile-label">@Localizer["Purchase_MonthCount"]</div>
+                    <div class="pu-tile-value">@Summary.MonthPurchases</div>
+                </div>
+                <div class="pu-tile is-money">
+                    <div class="pu-tile-label">@Localizer["Purchase_MonthTotal"]</div>
+                    <div class="pu-tile-value">@Summary.MonthTotal.ToString("N2")</div>
+                </div>
+            </div>
+        }
+
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr />
-        <!-- Tabla -->
-        <GenericList MyList="Purchases">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Proveedor</th>
-                                <th>Factura</th>
-                                <th>Fecha Fact</th>
-                                <th>@Localizer[nameof(Resource.Status)]</th>
-                                <th colspan="4" class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Purchases!)
-                            {
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>@Localizer[nameof(Resource.Provider)]</th>
+                            <th>@Localizer[nameof(Resource.InvoiceNumber)]</th>
+                            <th>@Localizer[nameof(Resource.Storage)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Purchases">
+                            <Loading>
                                 <tr>
-                                    <td>@item.Supplier!.Name</td>
-                                    <td>@item.NroFactura</td>
-                                    <td>@item.FacuraDate.ToString("dd/MM/yyyy")</td>
-                                    <td><PurchaseStatusBadge Value="@item.Status" /></td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.PurchaseId)" TooTip="@Localizer[nameof(Resource.Purchase)]"
-                                                       Icon="fa fa-table-list" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        |
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowModalAsync(item.PurchaseId, true)" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonDelete OnClick="() => DeleteAsync(item.PurchaseId)" />
+                                    <td colspan="7" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="7" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Purchases!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.NroPurchase</div>
+                                            <div class="idx-meta">@item.FacuraDate.ToString("dd/MM/yyyy")</div>
+                                        </td>
+                                        <td>@item.Supplier?.Name</td>
+                                        <td>@item.NroFactura</td>
+                                        <td>@item.ProductStorage?.StorageName</td>
+                                        <td style="text-align:right">@item.TotalCompra.ToString("N2")</td>
+                                        <td><PurchaseStatusBadge Value="@item.Status" /></td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowDetailsAsync(item.PurchaseId)" TooTip="@Localizer["Purchase_Details"]" Icon="fa fa-table-list" />
+                                                @* Una compra cerrada ya movio inventario: no se edita ni se borra *@
+                                                @if (item.Status == PurchaseStatus.Pendiente)
+                                                {
+                                                    <ButtonEdit OnClick="() => ShowModalAsync(item.PurchaseId, true)" />
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.PurchaseId)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Purchases is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
-        <!-- Tabla -->
-        <hr />
-        <!-- Paginación -->
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            }
+        </section>
     </div>
 </div>
-

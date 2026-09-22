@@ -4,7 +4,7 @@
     <DataAnnotationsValidator />
 
     <div class="input-group mb-2">
-        <span class="input-group-text" style="width:130px">Coordenadas</span>
+        <span class="input-group-text" style="width:130px">@Localizer["Map_Coordinates"]</span>
         <input class="form-control"
                placeholder="25.82370270482433, -80.38556718743175"
                value="@CoordinatesText"
@@ -14,14 +14,14 @@
     <div class="row g-2 mb-2">
         <div class="col-12 col-md-6">
             <div class="input-group">
-                <span class="input-group-text" style="width:130px">Latitud</span>
+                <span class="input-group-text" style="width:130px">@Localizer[nameof(Resource.Latitude)]</span>
                 <InputNumber class="form-control" @bind-Value="ContractMap.Latitude" />
             </div>
             <ValidationMessage For="@(() => ContractMap.Latitude)" />
         </div>
         <div class="col-12 col-md-6">
             <div class="input-group">
-                <span class="input-group-text" style="width:130px">Longitud</span>
+                <span class="input-group-text" style="width:130px">@Localizer[nameof(Resource.Longitude)]</span>
                 <InputNumber class="form-control" @bind-Value="ContractMap.Longitude" />
             </div>
             <ValidationMessage For="@(() => ContractMap.Longitude)" />

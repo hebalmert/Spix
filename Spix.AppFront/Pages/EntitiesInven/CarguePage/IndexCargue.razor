@@ -1,76 +1,130 @@
-﻿@page "/cargues"
+@page "/cargues"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.EnumTypes
+@using Spix.DomainLogic.EntitiesInvenDTO
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Cargue de Seriales</h3>
 
-        <div class="row align-items-center mb-3">
-            <!-- Columna para el botón -->
-            <div class="col-md-3 d-flex justify-content-start">
-                <!-- Si decides reactivar el botón "Nuevo", usa tu componente personalizado -->
-                @* <ButtonFormNew CssClass="btn btn-dark d-flex align-items-center gap-2" Style="width:130px" OnClick="ShowModalAsync" /> *@
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-barcode"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Cargue_Title"]</h3>
+                <p>@Localizer["Cargue_Subtitle"]</p>
             </div>
+        </div>
 
-            <!-- Columna para el filtro -->
-            <div class="col-md-9 d-flex justify-content-end">
+        @* El tablero: los numeros los cuenta la base, sobre todo el inventario *@
+        @if (Summary is not null)
+        {
+            <div class="cg-board">
+                <div class="cg-tile is-pending">
+                    <div class="cg-tile-label">@Localizer["Cargue_Pending"]</div>
+                    <div class="cg-tile-value">@Summary.PendingCargues</div>
+                </div>
+                <div class="cg-tile">
+                    <div class="cg-tile-label">@Localizer["Cargue_ToUpload"]</div>
+                    <div class="cg-tile-value">@Summary.ToUpload</div>
+                </div>
+                <div class="cg-tile is-free">
+                    <div class="cg-tile-label">@Localizer["Cargue_Available"]</div>
+                    <div class="cg-tile-value">@Summary.Available</div>
+                </div>
+                <div class="cg-tile is-used">
+                    <div class="cg-tile-label">@Localizer["Cargue_Installed"]</div>
+                    <div class="cg-tile-value">@Summary.Installed</div>
+                </div>
+            </div>
+        }
+
+        <div class="idx-bar">
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr class="my-4" />
-
-        <div class="row">
-            <div class="col-md-12 table-responsive">
-                <GenericList MyList="Cargues">
-                    <Body>
-                        <table class="table table-hover table-striped align-middle">
-                            <thead class="table-dark">
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>@Localizer["Cargue_Product"]</th>
+                            <th>@Localizer["Cargue_Invoice"]</th>
+                            <th style="min-width:220px">@Localizer["Cargue_Progress"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Cargues">
+                            <Loading>
                                 <tr>
-                                    <th>Fecha</th>
-                                    <th>Control</th>
-                                    <th>Factura</th>
-                                    <th>A Subir</th>
-                                    <th>Subidos</th>
-                                    <th>Estatus</th>
-                                    <th></th>
-                                    <th></th>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
                                 @foreach (var item in Cargues!)
                                 {
                                     <tr>
-                                        <td>@item.DateCargue.ToLocalTime()</td>
-                                        <td>@item.ControlCargue</td>
-                                        <td>@item.PurchaseDetail!.Purchase!.NroFactura</td>
-                                        <td>@item.CantToUp</td>
-                                        <td>@item.TotalSeriales</td>
-                                        <td>@item.Status.ToString()</td>
-                                        <td style="width:1px;">
-                                            <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.CargueId)" TooTip="Detalle"
-                                                           Icon="fa fa-list" />
+                                        <td>
+                                            <div class="idx-name">@item.ControlCargue</div>
+                                            <div class="idx-meta">@item.DateCargue.ToLocalTime().ToString("dd/MM/yyyy")</div>
                                         </td>
-                                        <td style="width:1px;">
-                                            @if (item.Status == CargueType.Pendiente)
-                                            {
-                                                <ButtonDelete OnClick="() => DeleteAsync(item.CargueId)" />
-                                            }
+                                        <td>@item.ProductName</td>
+                                        <td>@item.NroFactura</td>
+                                        <td>
+                                            @* Cuanto se ha subido de lo que dice la compra *@
+                                            <div class="cg-progress-text">
+                                                <span>@item.Uploaded @Localizer["Cargue_Of"] @item.CantToUp.ToString("N0")</span>
+                                                @if (Missing(item) > 0)
+                                                {
+                                                    <span>@Localizer["Cargue_Missing"] @Missing(item)</span>
+                                                }
+                                            </div>
+                                            <div class="cg-bar">
+                                                <div class="cg-bar-fill @(item.Status == CargueType.Completado ? "is-done" : null)" style="width:@Percent(item)%"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="cg-pill @(item.Status == CargueType.Completado ? "is-done" : "is-pending")">
+                                                @(item.Status == CargueType.Completado ? Localizer["Cargue_Done"] : Localizer["Cargue_PendingOne"])
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowModalDetailsAsync(item.CargueId)" TooTip="Detalle" Icon="fa fa-list" />
+                                                @if (item.Status == CargueType.Pendiente)
+                                                {
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.CargueId)" />
+                                                }
+                                            </div>
                                         </td>
                                     </tr>
                                 }
-                            </tbody>
-                        </table>
-                    </Body>
-                </GenericList>
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
             </div>
-        </div>
 
-        <hr class="my-4" />
-
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            @if (Cargues is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
     </div>
 </div>

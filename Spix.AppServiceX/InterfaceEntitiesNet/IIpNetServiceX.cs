@@ -9,17 +9,19 @@ public interface IIpNetServiceX
 {
     Task<ActionResponse<IEnumerable<IpNet>>> ComboAsync(string username, Guid? id = null);
 
-    Task<ActionResponse<IEnumerable<IpNet>>> GetAsync(PaginationDTO pagination, string email);
+    Task<ActionResponse<IpSummaryDto>> GetSummaryAsync(string username);
 
-    Task<ActionResponse<IpNet>> GetAsync(Guid id);
+    Task<ActionResponse<IEnumerable<IpNet>>> GetAsync(PaginationDTO pagination, string username);
 
-    Task<ActionResponse<IpNet>> UpdateAsync(IpNet modelo);
+    Task<ActionResponse<IpNet>> GetAsync(Guid id, string username);
 
-    Task<ActionResponse<IpNet>> AddAsync(IpNet modelo, string email);
+    Task<ActionResponse<IpNet>> UpdateAsync(IpNet modelo, string username);
 
-    Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string email);
+    Task<ActionResponse<IpNet>> AddAsync(IpNet modelo, string username);
 
-    Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string email);
+    Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string username);
+
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

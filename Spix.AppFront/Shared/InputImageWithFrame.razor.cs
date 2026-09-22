@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace Spix.AppFront.Shared;
 
-public partial class InputImageWithFrame
+public partial class InputImageWithFrame : IAsyncDisposable
 {
     [Inject] private IJSRuntime JS { get; set; } = null!;
 
@@ -55,5 +55,21 @@ public partial class InputImageWithFrame
             return $"data:image/jpeg;base64,{ImageBase64}";
 
         return string.Empty;
+    }
+
+    //Esta camara queda en vivo mientras la pantalla esta abierta, para poder tomar
+    //otra foto. Al cerrarla hay que soltarla, o el navegador la sigue usando.
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("cameraInterop.stopCamera");
+        }
+        catch (JSException)
+        {
+        }
+        catch (JSDisconnectedException)
+        {
+        }
     }
 }

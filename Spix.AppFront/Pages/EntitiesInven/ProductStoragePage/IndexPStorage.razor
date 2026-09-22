@@ -1,79 +1,101 @@
-﻿@page "/productstorages"
+@page "/productstorages"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
 
-@if (ProductStorages is null)
-{
-    <FullScreenSpinner IsVisible=true />
-}
-else
-{
-    <div class="container pt-4">
-        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-            <h3 class="mb-4">@Localizer[nameof(Resource.Storage)]</h3>
-
-            <div class="row align-items-center mb-3">
-                <!-- Columna para el botón -->
-                <div class="col-md-3 d-flex justify-content-start">
-                    <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                        <i class="bi bi-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                    </button>
-                </div>
-
-                <!-- Columna para el filtro -->
-                <div class="col-md-9 d-flex justify-content-end">
-                    <FilterComponent ApplyFilter="SetFilterValue" />
-                </div>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-warehouse"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.Storage)]</h3>
+                <p>@Localizer["Storage_Subtitle"]</p>
             </div>
 
-            <hr class="my-4" />
-
-            <div class="row">
-                <div class="col-md-12 table-responsive">
-                    <GenericList MyList="ProductStorages">
-                        <Body>
-                            <table class="table table-hover table-striped align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>@Localizer[nameof(Resource.Name)]</th>
-                                        <th>@Localizer[nameof(Resource.State)]</th>
-                                        <th>@Localizer[nameof(Resource.City)]</th>
-                                        <th>@Localizer[nameof(Resource.Active)]</th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in ProductStorages!)
-                                    {
-                                        <tr>
-                                            <td>@item.StorageName</td>
-                                            <td>@item.State!.Name</td>
-                                            <td>@item.City!.Name</td>
-                                            <td>
-                                                <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
-                                            </td>
-                                            <td style="width:1px;">
-                                                <ButtonEdit OnClick="() => ShowModalAsync(item.ProductStorageId, true)" />
-                                            </td>
-                                            <td style="width:1px;">
-                                                <ButtonDelete OnClick="() => DeleteAsync(item.ProductStorageId)" />
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </Body>
-                    </GenericList>
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@Localizer[TotalRecords == 1 ? "Storage_CountOne" : "Storage_CountMany", TotalRecords.ToString("N0")]</span>
                 </div>
-            </div>
-
-            <hr class="my-4" />
-
-            <Pagination CurrentPage="CurrentPage"
-                        SelectedPage="SelectedPage"
-                        TotalPages="TotalPages" />
+            }
         </div>
+
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+            <div class="idx-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Storage)]</th>
+                            <th style="text-align:right">@Localizer["Storage_Products"]</th>
+                            <th style="text-align:right">@Localizer["Storage_Units"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="ProductStorages">
+                            <Loading>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in ProductStorages!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.StorageName</div>
+                                            <div class="idx-meta"><i class="fa fa-location-dot"></i> @item.CityName · @item.StateName</div>
+                                        </td>
+                                        @* Existencias: lo que hay hoy en la bodega *@
+                                        <td style="text-align:right">@item.Products.ToString("N0")</td>
+                                        <td style="text-align:right">@item.Units.ToString("#,0.##")</td>
+                                        <td>
+                                            <span class="idx-pill @(item.Active ? "is-on" : "is-off")">
+                                                @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.ProductStorageId, true)" />
+                                                @* Con existencias no se borra: el backend lo explica si ya tuvo movimientos *@
+                                                @if (item.Products == 0)
+                                                {
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.ProductStorageId)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (ProductStorages is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
     </div>
-}
+</div>

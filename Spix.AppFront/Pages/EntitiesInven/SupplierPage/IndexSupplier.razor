@@ -1,6 +1,6 @@
 ﻿@page "/suppliers"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
@@ -9,13 +9,13 @@
             <span class="idx-glifo"><i class="fa fa-truck"></i></span>
             <div class="idx-head-text">
                 <h3>@Localizer[nameof(Resource.Supplier)]</h3>
-                <p>Administre sus proveedores, sus datos de contacto y su estado.</p>
+                <p>@Localizer["Supplier_Subtitle"]</p>
             </div>
 
             @if (TotalRecords > 0)
             {
                 <div class="idx-head-tools">
-                    <span class="idx-count">@TotalRecords.ToString("N0") proveedores</span>
+                    <span class="idx-count">@Localizer[TotalRecords == 1 ? "Supplier_CountOne" : "Supplier_CountMany", TotalRecords.ToString("N0")]</span>
                 </div>
             }
         </div>
@@ -40,8 +40,9 @@
                             <th>@Localizer[nameof(Resource.Supplier)]</th>
                             <th>@Localizer[nameof(Resource.Phone)]</th>
                             <th>@Localizer[nameof(Resource.Email)]</th>
-                            <th>@Localizer[nameof(Resource.Active)]</th>
-                            <th style="text-align:right">Acciones</th>
+                            <th>@Localizer["Supplier_Purchases"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,14 +51,14 @@
                         <GenericList MyList="Suppliers">
                             <Loading>
                                 <tr>
-                                    <td colspan="5" class="idx-meta" style="text-align:center">
+                                    <td colspan="6" class="idx-meta" style="text-align:center">
                                         <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
                             </Loading>
                             <NoRecords>
                                 <tr>
-                                    <td colspan="5" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
                                 </tr>
                             </NoRecords>
                             <Body>
@@ -76,15 +77,31 @@
                                         <td>@item.PhoneNumber</td>
                                         <td>@item.Email</td>
                                         <td>
+                                            @* Con quien se trabaja: cuantas compras y la ultima *@
+                                            @if (item.Purchases > 0)
+                                            {
+                                                <div class="idx-name">@item.Purchases.ToString("N0")</div>
+                                                <div class="idx-meta">@Localizer["Supplier_LastPurchase", item.LastPurchase?.ToString("dd/MM/yyyy") ?? string.Empty]</div>
+                                            }
+                                            else
+                                            {
+                                                <span class="idx-meta">@Localizer["Supplier_NoPurchases"]</span>
+                                            }
+                                        </td>
+                                        <td>
                                             <span class="idx-pill @(item.Active ? "is-on" : "is-off")">
                                                 @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
                                             </span>
                                         </td>
                                         <td>
                                             <div class="idx-actions">
-                                                <ButtonGeneric Icon="fa fa-list" OnClick="() => ShowDetailsAsync(item.SupplierId)" />
+                                                <ButtonGeneric Icon="fa fa-list" TooTip="@Localizer["Purchase_Details"]" OnClick="() => ShowDetailsAsync(item.SupplierId)" />
                                                 <ButtonEdit OnClick="() => ShowModalAsync(item.SupplierId, true)" />
-                                                <ButtonDelete OnClick="() => DeleteAsync(item.SupplierId)" />
+                                                @* Con compras no se borra: se inactiva *@
+                                                @if (item.Purchases == 0)
+                                                {
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.SupplierId)" />
+                                                }
                                             </div>
                                         </td>
                                     </tr>

@@ -1,44 +1,51 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.Extensions;
-using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesInven;
+using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using Spix.xLanguage.Resources;
 
 namespace Spix.Services.ImplementInven;
 
+//Los renglones de la compra y su cierre. Todo filtrado por la corporacion del usuario,
+//y solo se tocan renglones de una compra abierta (Pendiente).
 public class PurchaseDetailsService : IPurchaseDetailsService
 {
     private readonly DataContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IMapperService _mapperService;
     private readonly ITransactionManager _transactionManager;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IUserHelper _userHelper;
     private readonly IEnumMultilLanguageService _enumMultilLanguageService;
+    private readonly IStringLocalizer _localizer;
 
-    public PurchaseDetailsService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
-        ITransactionManager transactionManager, IMemoryCache cache,
-        IUserHelper userHelper, HttpErrorHandler httpErrorHandle, IEnumMultilLanguageService enumMultilLanguageService)
+    public PurchaseDetailsService(
+        DataContext context,
+        IHttpContextAccessor httpContextAccessor,
+        ITransactionManager transactionManager,
+        IUserHelper userHelper,
+        HttpErrorHandler httpErrorHandler,
+        IEnumMultilLanguageService enumMultilLanguageService,
+        IStringLocalizer localizer)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
-        _mapperService = mapperService;
         _transactionManager = transactionManager;
         _userHelper = userHelper;
-        _httpErrorHandler = httpErrorHandle;
+        _httpErrorHandler = httpErrorHandler;
         _enumMultilLanguageService = enumMultilLanguageService;
+        _localizer = localizer;
     }
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatus()
@@ -47,15 +54,11 @@ public class PurchaseDetailsService : IPurchaseDetailsService
         {
             List<IntItemModel> list = _enumMultilLanguageService.GetEnumSelectList<PurchaseStatus>();
 
-            return new ActionResponse<IEnumerable<IntItemModel>>
-            {
-                WasSuccess = true,
-                Result = list
-            };
+            return Success<IEnumerable<IntItemModel>>(list);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
         }
     }
 
@@ -63,271 +66,320 @@ public class PurchaseDetailsService : IPurchaseDetailsService
     {
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<IEnumerable<PurchaseDetail>>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
-                };
-            }
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<PurchaseDetail>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            var queryable = _context.PurchaseDetails.AsNoTracking()
+            var queryable = _context.PurchaseDetails
+                .AsNoTracking()
                 .Include(x => x.Product)
-                .Include(x => x.Product).ThenInclude(x => x!.ProductCategory)
-                .Where(x => x.CorporationId == user.CorporationId && x.PurchaseId == pagination.GuidId).AsQueryable();
+                .ThenInclude(x => x!.ProductCategory)
+                .Where(x => x.CorporationId == corporationId && x.PurchaseId == pagination.GuidId);
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.PurchaseDetailId).Paginate(pagination).ToListAsync();
 
-            return new ActionResponse<IEnumerable<PurchaseDetail>>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            var list = await queryable
+                .OrderBy(x => x.NameProduct)
+                .Paginate(pagination)
+                .ToListAsync();
+
+            return Success<IEnumerable<PurchaseDetail>>(list);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<PurchaseDetail>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<PurchaseDetail>>(ex);
         }
     }
 
-    public async Task<ActionResponse<PurchaseDetail>> GetAsync(Guid id)
+    public async Task<ActionResponse<PurchaseDetail>> GetAsync(Guid id, string username)
     {
         try
         {
-            var modelo = await _context.PurchaseDetails.AsNoTracking()
-                .Include(x=> x.Product)
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<PurchaseDetail>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var modelo = await _context.PurchaseDetails
+                .AsNoTracking()
+                .Include(x => x.Product)
                 .ThenInclude(x => x!.ProductCategory)
-                .FirstOrDefaultAsync(x => x.PurchaseDetailId == id);
-            if (modelo == null)
-            {
-                return new ActionResponse<PurchaseDetail>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
-                };
-            }
+                .FirstOrDefaultAsync(x => x.PurchaseDetailId == id && x.CorporationId == corporationId);
+            if (modelo == null) return Fail<PurchaseDetail>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
-            return new ActionResponse<PurchaseDetail>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            return Success(modelo);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<PurchaseDetail>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<PurchaseDetail>(ex);
         }
     }
 
-    public async Task<ActionResponse<PurchaseDetail>> UpdateAsync(PurchaseDetail modelo)
-    {
-        await _transactionManager.BeginTransactionAsync();
-
-        try
-        {
-            PurchaseDetail NewModelo = _mapperService.Map<PurchaseDetail, PurchaseDetail>(modelo);
-
-            _context.PurchaseDetails.Update(NewModelo);
-            await _transactionManager.SaveChangesAsync();
-
-            await _transactionManager.CommitTransactionAsync();
-
-            return new ActionResponse<PurchaseDetail>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
-        }
-        catch (Exception ex)
-        {
-            await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<PurchaseDetail>(ex); // ✅ Manejo de errores automático
-        }
-    }
-
+    //Un producto va una sola vez por compra: si ya esta, se edita su renglon
     public async Task<ActionResponse<PurchaseDetail>> AddAsync(PurchaseDetail modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<PurchaseDetail>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
-                };
-            }
-            modelo.CorporationId = Convert.ToInt32(user.CorporationId);
-            //Guardar el nombre del producto para el Historial
-            var nombreProduct = await _context.Products.Where(x => x.ProductId == modelo.ProductId)
-                .Select(x => x.ProductName).FirstOrDefaultAsync();
-            modelo.NameProduct = nombreProduct;
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<PurchaseDetail>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            var BuscarItem = await _context.PurchaseDetails.FirstOrDefaultAsync(x => x.PurchaseId == modelo.PurchaseId && x.ProductId == modelo.ProductId);
-            if (BuscarItem == null)
-            {
-                _context.PurchaseDetails.Add(modelo);
-            }
-            else
-            {
-                BuscarItem.Quantity += modelo.Quantity;
-                BuscarItem.UnitCost = modelo.UnitCost;
-                _context.PurchaseDetails.Update(BuscarItem);
-            }
+            var purchaseError = await ValidateOpenPurchaseAsync(modelo.PurchaseId, corporationId.Value);
+            if (purchaseError != null) return await FailRollbackAsync<PurchaseDetail>(purchaseError);
 
+            var product = await GetProductAsync(modelo.ProductId, corporationId.Value);
+            if (product == null) return await FailRollbackAsync<PurchaseDetail>(_localizer["Purchase_InvalidProduct"]);
+
+            var lineError = await ValidateLineAsync(modelo, product, null);
+            if (lineError != null) return await FailRollbackAsync<PurchaseDetail>(lineError);
+
+            //Lo que decide el servidor: la tasa y el nombre salen del producto
+            var nuevo = new PurchaseDetail
+            {
+                PurchaseId = modelo.PurchaseId,
+                ProductId = product.ProductId,
+                NameProduct = product.ProductName,
+                RateTax = product.Tax?.Rate ?? 0,
+                Quantity = modelo.Quantity,
+                UnitCost = modelo.UnitCost,
+                CorporationId = corporationId.Value
+            };
+
+            //Persistencia
+            _context.PurchaseDetails.Add(nuevo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<PurchaseDetail>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            return Success(nuevo);
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<PurchaseDetail>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<PurchaseDetail>(ex);
         }
     }
 
+    public async Task<ActionResponse<PurchaseDetail>> UpdateAsync(PurchaseDetail modelo, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<PurchaseDetail>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var current = await _context.PurchaseDetails.FirstOrDefaultAsync(x =>
+                x.PurchaseDetailId == modelo.PurchaseDetailId &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<PurchaseDetail>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            var purchaseError = await ValidateOpenPurchaseAsync(current.PurchaseId, corporationId.Value);
+            if (purchaseError != null) return await FailRollbackAsync<PurchaseDetail>(purchaseError);
+
+            var product = await GetProductAsync(modelo.ProductId, corporationId.Value);
+            if (product == null) return await FailRollbackAsync<PurchaseDetail>(_localizer["Purchase_InvalidProduct"]);
+
+            //El renglon sigue en su compra aunque el cliente mande otra
+            modelo.PurchaseId = current.PurchaseId;
+            var lineError = await ValidateLineAsync(modelo, product, current.PurchaseDetailId);
+            if (lineError != null) return await FailRollbackAsync<PurchaseDetail>(lineError);
+
+            //Mapeo campo por campo
+            current.ProductId = product.ProductId;
+            current.NameProduct = product.ProductName;
+            current.RateTax = product.Tax?.Rate ?? 0;
+            current.Quantity = modelo.Quantity;
+            current.UnitCost = modelo.UnitCost;
+
+            //Persistencia
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return Success(current);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<PurchaseDetail>(ex);
+        }
+    }
+
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var current = await _context.PurchaseDetails.FirstOrDefaultAsync(x =>
+                x.PurchaseDetailId == id &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            var purchaseError = await ValidateOpenPurchaseAsync(current.PurchaseId, corporationId.Value);
+            if (purchaseError != null) return await FailRollbackAsync<bool>(purchaseError);
+
+            //Persistencia
+            _context.PurchaseDetails.Remove(current);
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return Success(true);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
+    //Cierra la compra: sube el stock a la bodega de la compra, actualiza el costo del producto
+    //y abre un cargue por cada producto con seriales.
+    //Del modelo que llega solo se usa el PurchaseId: la bodega y la corporacion salen de la base.
     public async Task<ActionResponse<Purchase>> ClosePurchaseSync(Purchase modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<Purchase>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var purchase = await _context.Purchases.FirstOrDefaultAsync(x =>
+                x.PurchaseId == modelo.PurchaseId &&
+                x.CorporationId == corporationId);
+            if (purchase == null) return await FailRollbackAsync<Purchase>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            var details = await _context.PurchaseDetails
+                .Include(x => x.Product)
+                .Where(x => x.PurchaseId == purchase.PurchaseId && x.CorporationId == corporationId)
+                .ToListAsync();
+            if (details.Count == 0) return await FailRollbackAsync<Purchase>(_localizer["Purchase_NoItems"]);
+
+            //Renglones viejos que quedaron con cantidad partida en productos con seriales
+            var partida = details.FirstOrDefault(x => x.Product!.WithSerials && x.Quantity != decimal.Truncate(x.Quantity));
+            if (partida != null) return await FailRollbackAsync<Purchase>(_localizer["Purchase_QuantityWhole", partida.NameProduct ?? string.Empty]);
+
+            //El cierre se reclama en UNA sentencia: si dos cierres llegan a la vez (doble clic,
+            //reintento), solo uno encuentra la compra Pendiente y el otro no suma nada.
+            var claimed = await _context.Purchases
+                .Where(x => x.PurchaseId == purchase.PurchaseId && x.Status == PurchaseStatus.Pendiente)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, PurchaseStatus.Completado));
+            if (claimed == 0) return await FailRollbackAsync<Purchase>(_localizer["Purchase_NotPending"]);
+
+            var register = await _context.Registers.FirstOrDefaultAsync(x => x.CorporationId == corporationId);
+            if (register == null)
             {
-                return new ActionResponse<Purchase>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
-                };
+                register = new Register { CorporationId = corporationId.Value };
+                _context.Registers.Add(register);
             }
-            //Vemos cuantos Items hay en la compra por PurchaseDetails
-            var PurchaseDetails = await _context.PurchaseDetails.Where(x => x.PurchaseId == modelo.PurchaseId).ToListAsync();
-            if (PurchaseDetails.Count == 0)
-                return new ActionResponse<Purchase>
-                {
-                    WasSuccess = false,
-                    Message = "No Existe ningun Item para poder hacer un Cierre de Compra, Agregue Item o Elimine la Compra"
-                };
-            foreach (var item in PurchaseDetails)
+
+            foreach (var item in details)
             {
-                //Actualizamos los inventarios segun la bodega venga en el Modelo
-                var ProductStocks = await _context.ProductStocks.FirstOrDefaultAsync(x => x.ProductId == item.ProductId && x.ProductStorageId == modelo.ProductStorageId);
-                if (ProductStocks == null)
+                //Stock en la bodega de la compra
+                var stock = await _context.ProductStocks.FirstOrDefaultAsync(x =>
+                    x.ProductId == item.ProductId &&
+                    x.ProductStorageId == purchase.ProductStorageId &&
+                    x.CorporationId == corporationId);
+                if (stock == null)
                 {
-                    ProductStock Inventario = new()
+                    _context.ProductStocks.Add(new ProductStock
                     {
                         ProductId = item.ProductId,
-                        ProductStorageId = modelo.ProductStorageId,
+                        ProductStorageId = purchase.ProductStorageId,
                         Stock = item.Quantity,
-                        CorporationId = modelo.CorporationId
-                    };
-                    _context.ProductStocks.Add(Inventario);
+                        CorporationId = corporationId.Value
+                    });
                 }
                 else
                 {
-                    decimal NuevoStock = (decimal)(ProductStocks.Stock + item.Quantity);
-                    ProductStocks.Stock = NuevoStock;
-                    _context.ProductStocks.Update(ProductStocks);
+                    stock.AddStock(item.Quantity);
                 }
-                //Actualizamos el producto con su nuevo valor de Costo
-                var UpdateProduct = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == item.ProductId);
-                var tasa = (item.RateTax / 100) + 1;
-                var costoUnitario = item.UnitCost;
-                var NewUniCost = (tasa * costoUnitario);
-                UpdateProduct!.Costo = NewUniCost;
 
-                _context.Products.Update(UpdateProduct);
+                //Costo del producto: el ultimo costo unitario con su impuesto
+                item.Product!.Costo = ((item.RateTax / 100) + 1) * item.UnitCost;
 
-                //Preguntamos si el equipo va a manejar seriales
-                if (UpdateProduct.WithSerials)
+                //Un producto con seriales abre su cargue para subir las MAC
+                if (item.Product.WithSerials)
                 {
-                    var CheckRegister = await _context.Registers
-                        .FirstOrDefaultAsync(x => x.CorporationId == modelo.CorporationId);
-
-                    CheckRegister!.Cargue += 1;
-                    _context.Registers.Update(CheckRegister);
-
-                    Cargue cargue = new()
+                    register.Cargue += 1;
+                    _context.Cargues.Add(new Cargue
                     {
                         DateCargue = DateTime.UtcNow,
-                        ControlCargue = Convert.ToString(CheckRegister.Cargue),
+                        ControlCargue = Convert.ToString(register.Cargue),
                         PurchaseDetailId = item.PurchaseDetailId,
                         ProductId = item.ProductId,
                         CantToUp = item.Quantity,
                         Status = CargueType.Pendiente,
-                        CorporationId = modelo.CorporationId
-                    };
-
-                    _context.Cargues.Add(cargue);
+                        CorporationId = corporationId.Value
+                    });
                 }
             }
-            //Cambiamos el estatus del Purchas para ya no se pueda editar o borrar.
-            var UpdatePurchase = await _context.Purchases.FirstOrDefaultAsync(x => x.PurchaseId == modelo.PurchaseId);
-            if (UpdatePurchase == null)
-                return new ActionResponse<Purchase>
-                {
-                    WasSuccess = false,
-                    Message = "Error en la Actualizacion del Estado de Compra, no se pudo Guradar Nada"
-                };
-            UpdatePurchase.Status = PurchaseStatus.Completado;
-            _context.Purchases.Update(UpdatePurchase);
 
+            //Persistencia
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<Purchase>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            purchase.Status = PurchaseStatus.Completado;
+            return Success(purchase);
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<Purchase>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Purchase>(ex);
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    //La compra existe, es de la corporacion y sigue abierta
+    private async Task<string?> ValidateOpenPurchaseAsync(Guid purchaseId, int corporationId)
     {
-        await _transactionManager.BeginTransactionAsync();
-        try
-        {
-            var DataRemove = await _context.PurchaseDetails.FindAsync(id);
-            if (DataRemove == null)
-            {
-                return new ActionResponse<bool>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
-                };
-            }
+        var status = await _context.Purchases
+            .Where(x => x.PurchaseId == purchaseId && x.CorporationId == corporationId)
+            .Select(x => (PurchaseStatus?)x.Status)
+            .FirstOrDefaultAsync();
 
-            _context.PurchaseDetails.Remove(DataRemove);
-
-            await _transactionManager.SaveChangesAsync();
-            await _transactionManager.CommitTransactionAsync();
-
-            return new ActionResponse<bool>
-            {
-                WasSuccess = true,
-                Result = true
-            };
-        }
-        catch (Exception ex)
-        {
-            await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
-        }
+        if (status == null) return _localizer[nameof(Resource.Generic_IdNotFound)];
+        if (status != PurchaseStatus.Pendiente) return _localizer["Purchase_NotPending"];
+        return null;
     }
+
+    private async Task<Product?> GetProductAsync(Guid productId, int corporationId)
+    {
+        return await _context.Products
+            .AsNoTracking()
+            .Include(x => x.Tax)
+            .FirstOrDefaultAsync(x => x.ProductId == productId && x.CorporationId == corporationId);
+    }
+
+    //Cantidad y costo validos, entera si el producto lleva seriales, y sin repetir producto
+    private async Task<string?> ValidateLineAsync(PurchaseDetail modelo, Product product, Guid? purchaseDetailId)
+    {
+        if (modelo.Quantity <= 0) return _localizer["Purchase_QuantityInvalid"];
+        if (modelo.UnitCost < 0) return _localizer["Purchase_CostInvalid"];
+        if (product.WithSerials && modelo.Quantity != decimal.Truncate(modelo.Quantity)) return _localizer["Purchase_QuantityWhole", product.ProductName];
+
+        var repeated = await _context.PurchaseDetails.AnyAsync(x =>
+            x.PurchaseId == modelo.PurchaseId &&
+            x.ProductId == product.ProductId &&
+            x.PurchaseDetailId != purchaseDetailId);
+        if (repeated) return _localizer["Purchase_ProductRepeated", product.ProductName];
+
+        return null;
+    }
+
+    private async Task<int?> GetCorporationIdAsync(string username)
+    {
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        return user?.CorporationId;
+    }
+
+    private async Task<ActionResponse<T>> FailRollbackAsync<T>(string message)
+    {
+        await _transactionManager.RollbackTransactionAsync();
+        return Fail<T>(message);
+    }
+
+    private static ActionResponse<T> Success<T>(T result) => new() { WasSuccess = true, Result = result };
+
+    private static ActionResponse<T> Fail<T>(string message) => new() { WasSuccess = false, Message = message };
 }

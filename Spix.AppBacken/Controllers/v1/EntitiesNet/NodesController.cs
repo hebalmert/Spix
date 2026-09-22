@@ -1,14 +1,14 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Spix.AppBack.Helper;
+using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
-using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.EntitiesNet;
 
@@ -18,81 +18,149 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 [ApiController]
 public class NodesController : ControllerBase
 {
-    private readonly INodeServiceX _nodeUnitOfWork;
+    private readonly INodeServiceX _unitOfWork;
     private readonly IStringLocalizer _localizer;
 
-    public NodesController(INodeServiceX nodeUnitOfWork, IStringLocalizer localizer)
+    public NodesController(
+        INodeServiceX unitOfWork,
+        IStringLocalizer localizer)
     {
-        _nodeUnitOfWork = nodeUnitOfWork;
+        _unitOfWork = unitOfWork;
         _localizer = localizer;
     }
 
     [HttpGet("loadCombo/{id?}")]
-    public async Task<ActionResult<IEnumerable<Node>>> GetComboAsync([FromRoute] Guid? id = null)
+    public async Task<IActionResult> GetComboAsync([FromRoute] Guid? id = null)
     {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _nodeUnitOfWork.ComboAsync(userClaimsInfo.UserName, id);
-        if (!response.WasSuccess)
+        try
         {
-            return BadRequest(response.Message);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.ComboAsync(userClaimsInfo.UserName, id);
+            return ResponseHelper.Format(response);
         }
-        return Ok(response.Result);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetSummaryAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Node>>> GetAll([FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
     {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _nodeUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
-        if (!response.WasSuccess)
+        try
         {
-            return BadRequest(response.Message);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-        return Ok(response.Result);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
+    //Las credenciales solo se entregan al Administrator
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(Guid id)
     {
-        var response = await _nodeUnitOfWork.GetAsync(id);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var withCredentials = User.IsInRole("Administrator");
+            var response = await _unitOfWork.GetAsync(id, userClaimsInfo.UserName, withCredentials);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpPut]
-    public async Task<ActionResult<Node>> PutAsync(Node modelo)
+    public async Task<IActionResult> PutAsync(Node modelo)
     {
-        var response = await _nodeUnitOfWork.UpdateAsync(modelo);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.UpdateAsync(modelo, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpPost]
-    public async Task<ActionResult<Node>> PostAsync(Node modelo)
+    public async Task<IActionResult> PostAsync(Node modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _nodeUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<bool>> DeleteAsync(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        var response = await _nodeUnitOfWork.DeleteAsync(id);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 }

@@ -17,11 +17,25 @@
 /* Mismo realce que los paneles, para que los indicadores no se pierdan sobre el card grande */
 .pc-kpi {
     padding: 12px 14px;
-    border: 1px solid rgba(45, 91, 160, .45);
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
     border-radius: 12px;
-    background: #f4f7fc;
+    background: #ffffff;
     box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
 }
+
+    /* La linea de color dice que es cada numero: verde lo activo, ambar el aviso, rojo el problema */
+    .pc-kpi.is-ok {
+        border-left-color: #198754;
+    }
+
+    .pc-kpi.is-warn {
+        border-left-color: #f59f00;
+    }
+
+    .pc-kpi.is-bad {
+        border-left-color: #dc3545;
+    }
 
     .pc-kpi small {
         display: block;

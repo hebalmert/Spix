@@ -1,24 +1,47 @@
 ﻿@page "/nodes"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
         @* Encabezado: el unico titulo de la pantalla *@
         <div class="idx-head">
             <span class="idx-glifo"><i class="fa fa-tower-broadcast"></i></span>
             <div class="idx-head-text">
-                <h3>Nodos de Acceso</h3>
-                <p>Puntos de acceso de la red, su zona, su IP y su ubicacion en el mapa.</p>
+                <h3>@Localizer["Node_Title"]</h3>
+                <p>@Localizer["Node_Subtitle"]</p>
             </div>
 
             @if (TotalRecords > 0)
             {
                 <div class="idx-head-tools">
-                    <span class="idx-count">@TotalRecords.ToString("N0") nodos</span>
+                    <span class="idx-count">@Localizer[TotalRecords == 1 ? "Node_CountOne" : "Node_CountMany", TotalRecords.ToString("N0")]</span>
                 </div>
             }
         </div>
+
+        @* El tablero: lo cuenta la base, sobre todos los equipos *@
+        @if (Summary is not null)
+        {
+            <div class="net-board">
+                <div class="net-tile">
+                    <div class="net-tile-label">@Localizer["Net_Total"]</div>
+                    <div class="net-tile-value">@Summary.Total.ToString("N0")</div>
+                </div>
+                <div class="net-tile is-on">
+                    <div class="net-tile-label">@Localizer["Net_Active"]</div>
+                    <div class="net-tile-value">@Summary.Active.ToString("N0")</div>
+                </div>
+                <div class="net-tile is-off">
+                    <div class="net-tile-label">@Localizer["Net_Inactive"]</div>
+                    <div class="net-tile-value">@Summary.Inactive.ToString("N0")</div>
+                </div>
+                <div class="net-tile is-used">
+                    <div class="net-tile-label">@Localizer["Net_Clients"]</div>
+                    <div class="net-tile-value">@Summary.Clients.ToString("N0")</div>
+                </div>
+            </div>
+        }
 
         @* Acciones y buscador, fuera del panel de la tabla *@
         <div class="idx-bar">
@@ -37,12 +60,13 @@
                 <table class="idx-table">
                     <thead>
                         <tr>
-                            <th>SSID</th>
-                            <th>Type</th>
-                            <th>Zona</th>
-                            <th>IP</th>
-                            <th>Activa</th>
-                            <th style="text-align:right">Acciones</th>
+                            <th>@Localizer["Node_Name"]</th>
+                            <th>@Localizer[nameof(Resource.Operation)]</th>
+                            <th>@Localizer[nameof(Resource.Zone)]</th>
+                            <th>@Localizer["Ip_Address"]</th>
+                            <th style="text-align:right">@Localizer["Net_Clients"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,14 +75,14 @@
                         <GenericList MyList="Nodes">
                             <Loading>
                                 <tr>
-                                    <td colspan="6" class="idx-meta" style="text-align:center">
+                                    <td colspan="7" class="idx-meta" style="text-align:center">
                                         <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
                             </Loading>
                             <NoRecords>
                                 <tr>
-                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                    <td colspan="7" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
                                 </tr>
                             </NoRecords>
                             <Body>
@@ -66,9 +90,10 @@
                                 {
                                     <tr>
                                         <td><span class="idx-name">@item.NodesName</span></td>
-                                        <td>@item.Operation!.OperationName</td>
-                                        <td>@item.Zone!.ZoneName</td>
-                                        <td>@item.IpNetwork!.Ip</td>
+                                        <td>@item.OperationName</td>
+                                        <td>@item.ZoneName</td>
+                                        <td>@item.Ip</td>
+                                        <td style="text-align:right">@item.Clients.ToString("N0")</td>
                                         <td>
                                             <span class="idx-pill @(item.Active ? "is-on" : "is-off")">
                                                 @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
@@ -77,10 +102,14 @@
                                         <td>
                                             <div class="idx-actions">
                                                 <ButtonGeneric OnClick="() => ShowMapAsync(item)"
-                                                               TooTip="Mapa"
+                                                               TooTip="@Localizer["Map_Map"]"
                                                                Icon="fa fa-map-location-dot" />
                                                 <ButtonEdit OnClick="() => ShowModalAsync(item.NodeId, true)" />
-                                                <ButtonDelete OnClick="() => DeleteAsync(item.NodeId)" />
+                                                @* Con clientes no se borra: se inactiva *@
+                                                @if (item.Clients == 0)
+                                                {
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.NodeId)" />
+                                                }
                                             </div>
                                         </td>
                                     </tr>

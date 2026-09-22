@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -26,13 +26,14 @@ public partial class IndexServer
     private int PageSize = 15;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/servers";
-    public List<Server>? Servers { get; set; }
+    public List<ServerListItemDto>? Servers { get; set; }
+    private NetSummaryDto? Summary;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await Cargar();
+            await ReloadAsync();
         }
     }
 
@@ -55,7 +56,7 @@ public partial class IndexServer
         {
             url += $"&filter={Filter}";
         }
-        var responseHttp = await _repository.GetAsync<List<Server>>(url);
+        var responseHttp = await _repository.GetAsync<List<ServerListItemDto>>(url);
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
@@ -94,7 +95,7 @@ public partial class IndexServer
         var parameters = new Dictionary<string, object>
         {
             { "Host", host },
-            { "Title", $"Diagnóstico de Red ({host})" }
+            { "Title", $"{Localizer["Net_PingTitle", host]}" }
         };
 
         await _modalService.ShowAsync(typeof(PingModal), parameters);
@@ -126,7 +127,7 @@ public partial class IndexServer
         {
             if (result.Succeeded)
             {
-                await Cargar(CurrentPage);   // refresca la tabla
+                await ReloadAsync();   // refresca la tabla
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
                     Localizer[nameof(Resource.msg_SuccessMessage)],
@@ -157,6 +158,23 @@ public partial class IndexServer
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await ReloadAsync();
+    }
+
+    //El tablero se cuenta sobre todos los equipos, no solo la pagina visible
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<NetSummaryDto>($"{baseUrl}/summary");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Summary = responseHttp.Response;
+    }
+
+    //Despues de crear, editar o borrar: tabla y tablero. Paginar y buscar solo recargan la tabla.
+    private async Task ReloadAsync()
+    {
+        await LoadSummaryAsync();
         await Cargar(CurrentPage);
     }
 }

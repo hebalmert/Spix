@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -6,15 +7,15 @@ namespace Spix.AppServiceX.InterfacesInven;
 
 public interface ISupplierServiceX
 {
-    Task<ActionResponse<IEnumerable<Supplier>>> ComboAsync(string email);
+    Task<ActionResponse<IEnumerable<Supplier>>> ComboAsync(string username);
 
-    Task<ActionResponse<IEnumerable<Supplier>>> GetAsync(PaginationDTO pagination, string email);
+    Task<ActionResponse<IEnumerable<SupplierListItemDto>>> GetAsync(PaginationDTO pagination, string username);
 
-    Task<ActionResponse<Supplier>> GetAsync(Guid id);
+    Task<ActionResponse<Supplier>> GetAsync(Guid id, string username);
 
-    Task<ActionResponse<Supplier>> UpdateAsync(Supplier modelo, string frontUrl);
+    Task<ActionResponse<Supplier>> UpdateAsync(Supplier modelo, string username);
 
-    Task<ActionResponse<Supplier>> AddAsync(Supplier modelo, string email, string frontUrl);
+    Task<ActionResponse<Supplier>> AddAsync(Supplier modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

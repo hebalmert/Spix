@@ -1,3 +1,4 @@
+﻿using Spix.DomainLogic.EntitiesInvenDTO;
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
@@ -24,14 +25,18 @@ public partial class IndexCargue
     private int CurrentPage = 1;
     private int TotalPages;
     private int PageSize = 15;
+    //Borrar sigue siendo del controlador de cargues; leer, del tablero
     private const string baseUrl = "api/v1/cargues";
+    private const string BoardUrl = "api/v1/cargueboard";
 
-    public List<Cargue>? Cargues { get; set; }
+    public List<CargueListItemDto>? Cargues { get; set; }
+    private CargueSummaryDto? Summary;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            await LoadSummaryAsync();
             await Cargar();
         }
     }
@@ -84,12 +89,12 @@ public partial class IndexCargue
 
     private async Task Cargar(int page = 1)
     {
-        var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}";
+        var url = $"{BoardUrl}?page={page}&recordsnumber={PageSize}";
         if (!string.IsNullOrWhiteSpace(Filter))
         {
             url += $"&filter={Filter}";
         }
-        var responseHttp = await _repository.GetAsync<List<Cargue>>(url);
+        var responseHttp = await _repository.GetAsync<List<CargueListItemDto>>(url);
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
@@ -126,5 +131,22 @@ public partial class IndexCargue
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar();
+        await LoadSummaryAsync();
     }
+
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<CargueSummaryDto>($"{BoardUrl}/summary");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Summary = responseHttp.Response;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    //Lo que falta y el porcentaje, para la barra de avance
+    private static int Missing(CargueListItemDto item) => Math.Max(0, (int)item.CantToUp - item.Uploaded);
+
+    private static int Percent(CargueListItemDto item) =>
+        item.CantToUp <= 0 ? 0 : Math.Min(100, (int)(item.Uploaded * 100 / item.CantToUp));
 }

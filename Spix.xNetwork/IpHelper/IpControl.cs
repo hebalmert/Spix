@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 using Spix.AppInfra;
-using Spix.Domain.EntitiesNet;
-using Spix.DomainLogic.ModelUtility;
 
 namespace Spix.xNetwork.IpHelper;
 
@@ -15,119 +12,41 @@ public class IpControl : IIpControl
         _context = context;
     }
 
-    public async Task<ActionResponse<IpNetwork>> SelectIpWhenAdd(Guid id, string description, IDbContextTransaction transaction)
+    public async Task<bool> AssignAsync(Guid ipNetworkId, Guid? previousIpNetworkId, string description, int corporationId)
     {
-        try
-        {
-            var ip = await _context.IpNetworks.FirstOrDefaultAsync(c => c.IpNetworkId == id);
-            if (ip == null)
-                return new ActionResponse<IpNetwork> { WasSuccess = false, Message = "IP no encontrada" };
+        var ip = await _context.IpNetworks.FirstOrDefaultAsync(x =>
+            x.IpNetworkId == ipNetworkId &&
+            x.CorporationId == corporationId);
+        if (ip == null) return false;
 
-            ip.Assigned = true;
+        //La misma IP de antes: solo se actualiza el nombre del equipo
+        if (ipNetworkId == previousIpNetworkId)
+        {
             ip.Description = description;
-
-            await _context.SaveChangesAsync();
-
-            return new ActionResponse<IpNetwork> { WasSuccess = true, Result = ip };
+            return true;
         }
-        catch (Exception ex)
+
+        //Una IP nueva tiene que estar libre para usarse
+        if (!ip.Active || ip.Excluded || ip.Assigned) return false;
+
+        if (previousIpNetworkId != null)
         {
-            await transaction.RollbackAsync();
-            return new ActionResponse<IpNetwork> { WasSuccess = false, Message = ex.Message };
+            await ReleaseAsync(previousIpNetworkId.Value, corporationId);
         }
+
+        ip.Assigned = true;
+        ip.Description = description;
+        return true;
     }
 
-    public async Task<ActionResponse<IpNetwork>> SelectIpWhenUpdate(Guid id, Guid entityId, string description, IDbContextTransaction transaction)
+    public async Task ReleaseAsync(Guid ipNetworkId, int corporationId)
     {
-        try
-        {
-            var node = await _context.Nodes.AsNoTracking().FirstOrDefaultAsync(x => x.NodeId == entityId);
-            if (node == null)
-                return new ActionResponse<IpNetwork> { WasSuccess = false, Message = "Nodo no encontrado" };
+        var ip = await _context.IpNetworks.FirstOrDefaultAsync(x =>
+            x.IpNetworkId == ipNetworkId &&
+            x.CorporationId == corporationId);
+        if (ip == null) return;
 
-            if (node.IpNetworkId != id)
-            {
-                var oldIp = await _context.IpNetworks.FindAsync(node.IpNetworkId);
-                if (oldIp != null)
-                {
-                    oldIp.Assigned = false;
-                    oldIp.Description = "";
-                }
-
-                var newIp = await _context.IpNetworks.FindAsync(id);
-                if (newIp != null)
-                {
-                    newIp.Assigned = true;
-                    newIp.Description = description;
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            return new ActionResponse<IpNetwork> { WasSuccess = true };
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return new ActionResponse<IpNetwork> { WasSuccess = false, Message = ex.Message };
-        }
-    }
-
-    public async Task<ActionResponse<IpNetwork>> SelectIpToDelete(Guid id, IDbContextTransaction transaction)
-    {
-        try
-        {
-            var ip = await _context.IpNetworks.FirstOrDefaultAsync(c => c.IpNetworkId == id);
-            if (ip == null)
-                return new ActionResponse<IpNetwork> { WasSuccess = false, Message = "IP no encontrada" };
-
-            ip.Assigned = false;
-            ip.Description = "";
-            await _context.SaveChangesAsync();
-
-            return new ActionResponse<IpNetwork> { WasSuccess = true, Result = ip };
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return new ActionResponse<IpNetwork> { WasSuccess = false, Message = ex.Message };
-        }
-    }
-
-
-    public async Task<ActionResponse<IpNetwork>> SelectIpWhenUpdateServer(Guid id, Guid IdServer, string Descrip, IDbContextTransaction transaction)
-    {
-        try
-        {
-            var server = await _context.Servers.AsNoTracking().FirstOrDefaultAsync(x => x.ServerId == IdServer);
-            if (server == null)
-                return new ActionResponse<IpNetwork> { WasSuccess = false, Message = "Servidor no encontrado" };
-
-            if (server.IpNetworkId != id)
-            {
-                var oldIp = await _context.IpNetworks.FindAsync(server.IpNetworkId);
-                if (oldIp != null)
-                {
-                    oldIp.Assigned = false;
-                    oldIp.Description = "";
-                }
-
-                var newIp = await _context.IpNetworks.FindAsync(id);
-                if (newIp != null)
-                {
-                    newIp.Assigned = true;
-                    newIp.Description = Descrip;
-                }
-            }
-            await _context.SaveChangesAsync();
-
-            return new ActionResponse<IpNetwork> { WasSuccess = true };
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return new ActionResponse<IpNetwork> { WasSuccess = false, Message = ex.Message };
-        }
-
+        ip.Assigned = false;
+        ip.Description = string.Empty;
     }
 }

@@ -1,13 +1,15 @@
 using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
+
 public partial class IndexPurchase
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
@@ -17,19 +19,21 @@ public partial class IndexPurchase
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
 
-    [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
+    private const string BaseUrl = "api/v1/purchases";
 
     private int CurrentPage = 1;
     private int TotalPages;
     private int PageSize = 15;
-    private const string baseUrl = "api/v1/purchases";
+    private string Filter { get; set; } = string.Empty;
 
     public List<Purchase>? Purchases { get; set; }
+    private PurchaseSummaryDto? Summary;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            await LoadSummaryAsync();
             await Cargar();
         }
     }
@@ -37,6 +41,7 @@ public partial class IndexPurchase
     private async Task SetFilterValue(string value)
     {
         Filter = value;
+        CurrentPage = 1;
         await Cargar();
     }
 
@@ -46,7 +51,35 @@ public partial class IndexPurchase
         await Cargar(page);
     }
 
-    private void ShowModalDetailsAsync(Guid? id = null)
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<PurchaseSummaryDto>($"{BaseUrl}/summary");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Summary = responseHttp.Response;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Cargar(int page = 1)
+    {
+        var url = $"{BaseUrl}?page={page}&recordsnumber={PageSize}";
+        if (!string.IsNullOrWhiteSpace(Filter))
+        {
+            url += $"&filter={Filter}";
+        }
+
+        var responseHttp = await _repository.GetAsync<List<Purchase>>(url);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Purchases = responseHttp.Response;
+        TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void ShowDetailsAsync(Guid id)
     {
         _navigationManager.NavigateTo($"/purchases/details/{id}");
     }
@@ -59,47 +92,27 @@ public partial class IndexPurchase
         {
             component = typeof(EditPurchases);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Purchase)]}"  }
-        };
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Purchase)]}" }
+            };
         }
         else
         {
             component = typeof(CreatePurchase);
             parameters = new Dictionary<string, object>
-        {
-            { "Title", $"{Localizer[nameof(Resource.Create_Purchase)]}"  }
-        };
+            {
+                { "Title", $"{Localizer[nameof(Resource.Create_Purchase)]}" }
+            };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
-            if (result.Succeeded)
-                await Cargar(CurrentPage);   //solo refresca si hubo cambios
+            if (!result.Succeeded) return;
+
+            await Cargar(CurrentPage);
+            await LoadSummaryAsync();
         });
-    }
-
-    private async Task Cargar(int page = 1)
-    {
-        var url = $"{baseUrl}?page={page}&recordsnumber={PageSize}";
-        if (!string.IsNullOrWhiteSpace(Filter))
-        {
-            url += $"&filter={Filter}";
-        }
-        var responseHttp = await _repository.GetAsync<List<Purchase>>(url);
-        // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
-        {
-            _navigationManager.NavigateTo("/");
-            return;
-        }
-
-        Purchases = responseHttp.Response;
-        TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
-
-        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteAsync(Guid id)
@@ -117,12 +130,12 @@ public partial class IndexPurchase
         if (result.IsDismissed || result.Value != "true")
             return;
 
-        var responseHttp = await _repository.DeleteAsync($"{baseUrl}/{id}");
-        var errorHandler = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandler)
+        var responseHttp = await _repository.DeleteAsync($"{BaseUrl}/{id}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
         await Cargar(CurrentPage);
+        await LoadSummaryAsync();
     }
 }

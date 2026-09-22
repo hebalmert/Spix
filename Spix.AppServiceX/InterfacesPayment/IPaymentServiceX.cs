@@ -24,6 +24,8 @@ public interface IPaymentServiceX
 
     Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username);
 
+    Task<ActionResponse<IEnumerable<PrePaymentServiceDto>>> GetPrePaymentServicesAsync(Guid contractClientId, Guid? prePaymentId, string username);
+
     Task<ActionResponse<PrePayment>> AddPrePaymentAsync(PrePayment model, string username);
 
     Task<ActionResponse<PrePayment>> UpdatePrePaymentAsync(PrePayment model, string username);

@@ -37,7 +37,7 @@
             <span class="input-group-text" style="width: 140px">
                 @Localizer[nameof(Resource.Assigned)]
                 <div class="d-flex align-items-center ps-4">
-                    <InputCheckbox @bind-Value="IpNetwork.Assigned" class="form-check-input" />
+                    <input type="checkbox" class="form-check-input" checked="@IpNetwork.Assigned" disabled title="@Localizer["Ip_AssignedBySystem"]" />
                 </div>
             </span>
         </div>

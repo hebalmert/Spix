@@ -9,15 +9,15 @@ public interface IPurchaseDetailsService
 {
     Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatus();
 
-    Task<ActionResponse<IEnumerable<PurchaseDetail>>> GetAsync(PaginationDTO pagination, string email);
+    Task<ActionResponse<IEnumerable<PurchaseDetail>>> GetAsync(PaginationDTO pagination, string username);
 
-    Task<ActionResponse<PurchaseDetail>> GetAsync(Guid id);
+    Task<ActionResponse<PurchaseDetail>> GetAsync(Guid id, string username);
 
-    Task<ActionResponse<PurchaseDetail>> UpdateAsync(PurchaseDetail modelo);
+    Task<ActionResponse<PurchaseDetail>> UpdateAsync(PurchaseDetail modelo, string username);
 
-    Task<ActionResponse<PurchaseDetail>> AddAsync(PurchaseDetail modelo, string email);
+    Task<ActionResponse<PurchaseDetail>> AddAsync(PurchaseDetail modelo, string username);
 
-    Task<ActionResponse<Purchase>> ClosePurchaseSync(Purchase modelo, string email);
+    Task<ActionResponse<Purchase>> ClosePurchaseSync(Purchase modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

@@ -41,6 +41,8 @@ public class PaymentServiceX : IPaymentServiceX
     public async Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username) =>
         await _paymentService.SearchContractsAsync(filter, username);
 
+    public async Task<ActionResponse<IEnumerable<PrePaymentServiceDto>>> GetPrePaymentServicesAsync(Guid contractClientId, Guid? prePaymentId, string username) => await _paymentService.GetPrePaymentServicesAsync(contractClientId, prePaymentId, username);
+
     public async Task<ActionResponse<PrePayment>> AddPrePaymentAsync(PrePayment model, string username) =>
         await _paymentService.AddPrePaymentAsync(model, username);
 

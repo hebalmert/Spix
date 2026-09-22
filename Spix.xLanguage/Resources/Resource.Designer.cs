@@ -574,6 +574,222 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string Cargue_Add {
+            get {
+                return ResourceManager.GetString("Cargue_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Available.
+        /// </summary>
+        public static string Cargue_Available {
+            get {
+                return ResourceManager.GetString("Cargue_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string Cargue_Back {
+            get {
+                return ResourceManager.GetString("Cargue_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Cargue_Close {
+            get {
+                return ResourceManager.GetString("Cargue_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Once closed, its serials can no longer be edited..
+        /// </summary>
+        public static string Cargue_CloseText {
+            get {
+                return ResourceManager.GetString("Cargue_CloseText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close upload?.
+        /// </summary>
+        public static string Cargue_CloseTitle {
+            get {
+                return ResourceManager.GetString("Cargue_CloseTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damaged.
+        /// </summary>
+        public static string Cargue_Damaged {
+            get {
+                return ResourceManager.GetString("Cargue_Damaged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string Cargue_Done {
+            get {
+                return ResourceManager.GetString("Cargue_Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string Cargue_Installed {
+            get {
+                return ResourceManager.GetString("Cargue_Installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed in.
+        /// </summary>
+        public static string Cargue_InstalledIn {
+            get {
+                return ResourceManager.GetString("Cargue_InstalledIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice.
+        /// </summary>
+        public static string Cargue_Invoice {
+            get {
+                return ResourceManager.GetString("Cargue_Invoice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MAC {0} added.
+        /// </summary>
+        public static string Cargue_MacAdded {
+            get {
+                return ResourceManager.GetString("Cargue_MacAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not a valid MAC. Example: 00:1A:2B:3C:4D:5E.
+        /// </summary>
+        public static string Cargue_MacFormat {
+            get {
+                return ResourceManager.GetString("Cargue_MacFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The MAC {0} is already in the inventory..
+        /// </summary>
+        public static string Cargue_MacRepeated {
+            get {
+                return ResourceManager.GetString("Cargue_MacRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing.
+        /// </summary>
+        public static string Cargue_Missing {
+            get {
+                return ResourceManager.GetString("Cargue_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to of.
+        /// </summary>
+        public static string Cargue_Of {
+            get {
+                return ResourceManager.GetString("Cargue_Of", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open uploads.
+        /// </summary>
+        public static string Cargue_Pending {
+            get {
+                return ResourceManager.GetString("Cargue_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string Cargue_PendingOne {
+            get {
+                return ResourceManager.GetString("Cargue_PendingOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product.
+        /// </summary>
+        public static string Cargue_Product {
+            get {
+                return ResourceManager.GetString("Cargue_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progress.
+        /// </summary>
+        public static string Cargue_Progress {
+            get {
+                return ResourceManager.GetString("Cargue_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan or type the MAC and press Enter.
+        /// </summary>
+        public static string Cargue_ScanHint {
+            get {
+                return ResourceManager.GetString("Cargue_ScanHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchased equipment entering the inventory, one MAC at a time.
+        /// </summary>
+        public static string Cargue_Subtitle {
+            get {
+                return ResourceManager.GetString("Cargue_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Serial uploads.
+        /// </summary>
+        public static string Cargue_Title {
+            get {
+                return ResourceManager.GetString("Cargue_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Serials to upload.
+        /// </summary>
+        public static string Cargue_ToUpload {
+            get {
+                return ResourceManager.GetString("Cargue_ToUpload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CargueNro.
         /// </summary>
         public static string CargueNro {
@@ -3418,6 +3634,177 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IP.
+        /// </summary>
+        public static string Ip_Address {
+            get {
+                return ResourceManager.GetString("Ip_Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assigned.
+        /// </summary>
+        public static string Ip_Assigned {
+            get {
+                return ResourceManager.GetString("Ip_Assigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set by the system when a contract, node or server uses the IP..
+        /// </summary>
+        public static string Ip_AssignedBySystem {
+            get {
+                return ResourceManager.GetString("Ip_AssignedBySystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string Ip_ColActive {
+            get {
+                return ResourceManager.GetString("Ip_ColActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assigned.
+        /// </summary>
+        public static string Ip_ColAssigned {
+            get {
+                return ResourceManager.GetString("Ip_ColAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Excluded.
+        /// </summary>
+        public static string Ip_ColExcluded {
+            get {
+                return ResourceManager.GetString("Ip_ColExcluded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} addresses.
+        /// </summary>
+        public static string Ip_CountMany {
+            get {
+                return ResourceManager.GetString("Ip_CountMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} address.
+        /// </summary>
+        public static string Ip_CountOne {
+            get {
+                return ResourceManager.GetString("Ip_CountOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Excluded.
+        /// </summary>
+        public static string Ip_Excluded {
+            get {
+                return ResourceManager.GetString("Ip_Excluded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Free.
+        /// </summary>
+        public static string Ip_Free {
+            get {
+                return ResourceManager.GetString("Ip_Free", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IP {0} is in use: its address cannot be changed. Release it first..
+        /// </summary>
+        public static string Ip_InUseChange {
+            get {
+                return ResourceManager.GetString("Ip_InUseChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IP {0} is in use and cannot be deleted. Release it first..
+        /// </summary>
+        public static string Ip_InUseDelete {
+            get {
+                return ResourceManager.GetString("Ip_InUseDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not a valid IPv4 address. Example: 192.168.0.10.
+        /// </summary>
+        public static string Ip_InvalidFormat {
+            get {
+                return ResourceManager.GetString("Ip_InvalidFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The pool base must have three parts. Example: 192.168.0.
+        /// </summary>
+        public static string Ip_InvalidPoolBase {
+            get {
+                return ResourceManager.GetString("Ip_InvalidPoolBase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The range must go from 0 to 255, and From cannot be greater than To..
+        /// </summary>
+        public static string Ip_InvalidPoolRange {
+            get {
+                return ResourceManager.GetString("Ip_InvalidPoolRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete pool.
+        /// </summary>
+        public static string Ip_PoolDelete {
+            get {
+                return ResourceManager.GetString("Ip_PoolDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New pool.
+        /// </summary>
+        public static string Ip_PoolNew {
+            get {
+                return ResourceManager.GetString("Ip_PoolNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IP {0} is already registered..
+        /// </summary>
+        public static string Ip_Repeated {
+            get {
+                return ResourceManager.GetString("Ip_Repeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total.
+        /// </summary>
+        public static string Ip_Total {
+            get {
+                return ResourceManager.GetString("Ip_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IP Address.
         /// </summary>
         public static string IPAddress {
@@ -3427,11 +3814,47 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IP addresses assigned to clients. You can load and delete them by pool..
+        /// </summary>
+        public static string IpNet_Subtitle {
+            get {
+                return ResourceManager.GetString("IpNet_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client IPs.
+        /// </summary>
+        public static string IpNet_Title {
+            get {
+                return ResourceManager.GetString("IpNet_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ip Network.
         /// </summary>
         public static string IpNetwork {
             get {
                 return ResourceManager.GetString("IpNetwork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network IP addresses: nodes, servers and equipment. You can load and delete them by pool..
+        /// </summary>
+        public static string IpNetwork_Subtitle {
+            get {
+                return ResourceManager.GetString("IpNetwork_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network IPs.
+        /// </summary>
+        public static string IpNetwork_Title {
+            get {
+                return ResourceManager.GetString("IpNetwork_Title", resourceCulture);
             }
         }
         
@@ -3531,6 +3954,87 @@ namespace Spix.xLanguage.Resources {
         public static string Manager {
             get {
                 return ResourceManager.GetString("Manager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coordinates.
+        /// </summary>
+        public static string Map_Coordinates {
+            get {
+                return ResourceManager.GetString("Map_Coordinates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distance.
+        /// </summary>
+        public static string Map_Distance {
+            get {
+                return ResourceManager.GetString("Map_Distance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit location.
+        /// </summary>
+        public static string Map_EditTitle {
+            get {
+                return ResourceManager.GetString("Map_EditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid format. Use: {0}.
+        /// </summary>
+        public static string Map_InvalidFormat {
+            get {
+                return ResourceManager.GetString("Map_InvalidFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map.
+        /// </summary>
+        public static string Map_Map {
+            get {
+                return ResourceManager.GetString("Map_Map", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no coordinates to show..
+        /// </summary>
+        public static string Map_NoCoordinates {
+            get {
+                return ResourceManager.GetString("Map_NoCoordinates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Node.
+        /// </summary>
+        public static string Map_Node {
+            get {
+                return ResourceManager.GetString("Map_Node", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This node has no coordinates..
+        /// </summary>
+        public static string Map_NodeNoCoordinates {
+            get {
+                return ResourceManager.GetString("Map_NodeNoCoordinates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client location.
+        /// </summary>
+        public static string Map_Title {
+            get {
+                return ResourceManager.GetString("Map_Title", resourceCulture);
             }
         }
         
@@ -4048,6 +4552,78 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string Net_Active {
+            get {
+                return ResourceManager.GetString("Net_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients.
+        /// </summary>
+        public static string Net_Clients {
+            get {
+                return ResourceManager.GetString("Net_Clients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inactive.
+        /// </summary>
+        public static string Net_Inactive {
+            get {
+                return ResourceManager.GetString("Net_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected IP is not available: it belongs to another piece of equipment, is inactive or excluded..
+        /// </summary>
+        public static string Net_IpNotAvailable {
+            get {
+                return ResourceManager.GetString("Net_IpNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave empty to keep the current one.
+        /// </summary>
+        public static string Net_KeepPassword {
+            get {
+                return ResourceManager.GetString("Net_KeepPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The password is required..
+        /// </summary>
+        public static string Net_PasswordRequired {
+            get {
+                return ResourceManager.GetString("Net_PasswordRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network diagnosis ({0}).
+        /// </summary>
+        public static string Net_PingTitle {
+            get {
+                return ResourceManager.GetString("Net_PingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total.
+        /// </summary>
+        public static string Net_Total {
+            get {
+                return ResourceManager.GetString("Net_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New.
         /// </summary>
         public static string New {
@@ -4080,6 +4656,276 @@ namespace Spix.xLanguage.Resources {
         public static string Node {
             get {
                 return ResourceManager.GetString("Node", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} nodes.
+        /// </summary>
+        public static string Node_CountMany {
+            get {
+                return ResourceManager.GetString("Node_CountMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} node.
+        /// </summary>
+        public static string Node_CountOne {
+            get {
+                return ResourceManager.GetString("Node_CountOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Node {0} has contracts and cannot be deleted. Deactivate it instead..
+        /// </summary>
+        public static string Node_InUse {
+            get {
+                return ResourceManager.GetString("Node_InUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SSID.
+        /// </summary>
+        public static string Node_Name {
+            get {
+                return ResourceManager.GetString("Node_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a node named {0} for this type..
+        /// </summary>
+        public static string Node_NameRepeated {
+            get {
+                return ResourceManager.GetString("Node_NameRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network access points, their zone, their IP and their location on the map..
+        /// </summary>
+        public static string Node_Subtitle {
+            get {
+                return ResourceManager.GetString("Node_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Access nodes.
+        /// </summary>
+        public static string Node_Title {
+            get {
+                return ResourceManager.GetString("Node_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direction (azimuth).
+        /// </summary>
+        public static string NodeMap_Azimuth {
+            get {
+                return ResourceManager.GetString("NodeMap_Azimuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose a node to see its clients on the map..
+        /// </summary>
+        public static string NodeMap_ChooseNode {
+            get {
+                return ResourceManager.GetString("NodeMap_ChooseNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients.
+        /// </summary>
+        public static string NodeMap_Clients {
+            get {
+                return ResourceManager.GetString("NodeMap_Clients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coverage.
+        /// </summary>
+        public static string NodeMap_Coverage {
+            get {
+                return ResourceManager.GetString("NodeMap_Coverage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Farthest.
+        /// </summary>
+        public static string NodeMap_Farthest {
+            get {
+                return ResourceManager.GetString("NodeMap_Farthest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract.
+        /// </summary>
+        public static string NodeMap_GoContract {
+            get {
+                return ResourceManager.GetString("NodeMap_GoContract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inside coverage.
+        /// </summary>
+        public static string NodeMap_Inside {
+            get {
+                return ResourceManager.GetString("NodeMap_Inside", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients with location.
+        /// </summary>
+        public static string NodeMap_Located {
+            get {
+                return ResourceManager.GetString("NodeMap_Located", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Node map.
+        /// </summary>
+        public static string NodeMap_Menu {
+            get {
+                return ResourceManager.GetString("NodeMap_Menu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Node.
+        /// </summary>
+        public static string NodeMap_Node {
+            get {
+                return ResourceManager.GetString("NodeMap_Node", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This node has no coordinates: its clients are shown, but distances cannot be measured. Load its location in Nodes..
+        /// </summary>
+        public static string NodeMap_NodeNoPoint {
+            get {
+                return ResourceManager.GetString("NodeMap_NodeNoPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Without location: {0}].
+        /// </summary>
+        public static string NodeMap_SelectUnlocated {
+            get {
+                return ResourceManager.GetString("NodeMap_SelectUnlocated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Each node with its clients and their distance to the AP..
+        /// </summary>
+        public static string NodeMap_Subtitle {
+            get {
+                return ResourceManager.GetString("NodeMap_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Node map.
+        /// </summary>
+        public static string NodeMap_Title {
+            get {
+                return ResourceManager.GetString("NodeMap_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients without location.
+        /// </summary>
+        public static string NodeMap_Unlocated {
+            get {
+                return ResourceManager.GetString("NodeMap_Unlocated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load its location in the contract to see it on the map..
+        /// </summary>
+        public static string NodeMap_UnlocatedHint {
+            get {
+                return ResourceManager.GetString("NodeMap_UnlocatedHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View.
+        /// </summary>
+        public static string NodeMap_View {
+            get {
+                return ResourceManager.GetString("NodeMap_View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 45 degrees.
+        /// </summary>
+        public static string NodeMapCoverageType_Deg45 {
+            get {
+                return ResourceManager.GetString("NodeMapCoverageType_Deg45", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 90 degrees.
+        /// </summary>
+        public static string NodeMapCoverageType_Deg90 {
+            get {
+                return ResourceManager.GetString("NodeMapCoverageType_Deg90", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No mask.
+        /// </summary>
+        public static string NodeMapCoverageType_None {
+            get {
+                return ResourceManager.GetString("NodeMapCoverageType_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lines.
+        /// </summary>
+        public static string NodeMapViewType_Lines {
+            get {
+                return ResourceManager.GetString("NodeMapViewType_Lines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lines with distance.
+        /// </summary>
+        public static string NodeMapViewType_LinesWithDistance {
+            get {
+                return ResourceManager.GetString("NodeMapViewType_LinesWithDistance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points only.
+        /// </summary>
+        public static string NodeMapViewType_Points {
+            get {
+                return ResourceManager.GetString("NodeMapViewType_Points", resourceCulture);
             }
         }
         
@@ -4498,6 +5344,60 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A billed advance payment cannot be deleted..
+        /// </summary>
+        public static string PrePayment_BilledNoDelete {
+            get {
+                return ResourceManager.GetString("PrePayment_BilledNoDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A billed advance payment cannot be edited..
+        /// </summary>
+        public static string PrePayment_BilledNoEdit {
+            get {
+                return ResourceManager.GetString("PrePayment_BilledNoEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose an active contract..
+        /// </summary>
+        public static string PrePayment_NeedActiveContract {
+            get {
+                return ResourceManager.GetString("PrePayment_NeedActiveContract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected contract has no plan configured..
+        /// </summary>
+        public static string PrePayment_NoPlan {
+            get {
+                return ResourceManager.GetString("PrePayment_NoPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already an advance payment for this contract, year and month..
+        /// </summary>
+        public static string PrePayment_Repeated {
+            get {
+                return ResourceManager.GetString("PrePayment_Repeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the chosen services is no longer available: it was billed or another advance payment took it..
+        /// </summary>
+        public static string PrePayment_ServiceNotAvailable {
+            get {
+                return ResourceManager.GetString("PrePayment_ServiceNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Price.
         /// </summary>
         public static string Price {
@@ -4548,6 +5448,249 @@ namespace Spix.xLanguage.Resources {
         public static string Purchase {
             get {
                 return ResourceManager.GetString("Purchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string Purchase_Back {
+            get {
+                return ResourceManager.GetString("Purchase_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Purchase_Close {
+            get {
+                return ResourceManager.GetString("Purchase_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchase closed.
+        /// </summary>
+        public static string Purchase_Closed {
+            get {
+                return ResourceManager.GetString("Purchase_Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stock was updated. Products with serials are waiting in Serial uploads..
+        /// </summary>
+        public static string Purchase_ClosedText {
+            get {
+                return ResourceManager.GetString("Purchase_ClosedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stock will be updated and the purchase can no longer be edited. Products with serials will open their serial upload..
+        /// </summary>
+        public static string Purchase_CloseText {
+            get {
+                return ResourceManager.GetString("Purchase_CloseText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close the purchase?.
+        /// </summary>
+        public static string Purchase_CloseTitle {
+            get {
+                return ResourceManager.GetString("Purchase_CloseTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The cost cannot be negative..
+        /// </summary>
+        public static string Purchase_CostInvalid {
+            get {
+                return ResourceManager.GetString("Purchase_CostInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Details.
+        /// </summary>
+        public static string Purchase_Details {
+            get {
+                return ResourceManager.GetString("Purchase_Details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchase #{0}.
+        /// </summary>
+        public static string Purchase_Header {
+            get {
+                return ResourceManager.GetString("Purchase_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The product is not valid..
+        /// </summary>
+        public static string Purchase_InvalidProduct {
+            get {
+                return ResourceManager.GetString("Purchase_InvalidProduct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The storage is not valid..
+        /// </summary>
+        public static string Purchase_InvalidStorage {
+            get {
+                return ResourceManager.GetString("Purchase_InvalidStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The supplier is not valid..
+        /// </summary>
+        public static string Purchase_InvalidSupplier {
+            get {
+                return ResourceManager.GetString("Purchase_InvalidSupplier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice {0} from this supplier is already registered..
+        /// </summary>
+        public static string Purchase_InvoiceRepeated {
+            get {
+                return ResourceManager.GetString("Purchase_InvoiceRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The invoice number is required..
+        /// </summary>
+        public static string Purchase_InvoiceRequired {
+            get {
+                return ResourceManager.GetString("Purchase_InvoiceRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchases this month.
+        /// </summary>
+        public static string Purchase_MonthCount {
+            get {
+                return ResourceManager.GetString("Purchase_MonthCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total this month.
+        /// </summary>
+        public static string Purchase_MonthTotal {
+            get {
+                return ResourceManager.GetString("Purchase_MonthTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The purchase has no products: add products or delete the purchase..
+        /// </summary>
+        public static string Purchase_NoItems {
+            get {
+                return ResourceManager.GetString("Purchase_NoItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The purchase is already closed and cannot be changed..
+        /// </summary>
+        public static string Purchase_NotPending {
+            get {
+                return ResourceManager.GetString("Purchase_NotPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open purchases.
+        /// </summary>
+        public static string Purchase_Open {
+            get {
+                return ResourceManager.GetString("Purchase_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is already in the purchase: edit its line..
+        /// </summary>
+        public static string Purchase_ProductRepeated {
+            get {
+                return ResourceManager.GetString("Purchase_ProductRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The quantity must be greater than zero..
+        /// </summary>
+        public static string Purchase_QuantityInvalid {
+            get {
+                return ResourceManager.GetString("Purchase_QuantityInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} uses serials: the quantity must be a whole number..
+        /// </summary>
+        public static string Purchase_QuantityWhole {
+            get {
+                return ResourceManager.GetString("Purchase_QuantityWhole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Serials.
+        /// </summary>
+        public static string Purchase_Serials {
+            get {
+                return ResourceManager.GetString("Purchase_Serials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This product uses serials: the quantity must be a whole number..
+        /// </summary>
+        public static string Purchase_SerialsHint {
+            get {
+                return ResourceManager.GetString("Purchase_SerialsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier invoices that enter the storage.
+        /// </summary>
+        public static string Purchase_Subtitle {
+            get {
+                return ResourceManager.GetString("Purchase_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tax %.
+        /// </summary>
+        public static string Purchase_TaxRate {
+            get {
+                return ResourceManager.GetString("Purchase_TaxRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchases.
+        /// </summary>
+        public static string Purchase_Title {
+            get {
+                return ResourceManager.GetString("Purchase_Title", resourceCulture);
             }
         }
         
@@ -5146,11 +6289,74 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} servers.
+        /// </summary>
+        public static string Server_CountMany {
+            get {
+                return ResourceManager.GetString("Server_CountMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} server.
+        /// </summary>
+        public static string Server_CountOne {
+            get {
+                return ResourceManager.GetString("Server_CountOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server {0} has contracts, queues or suspensions and cannot be deleted. Deactivate it instead..
+        /// </summary>
+        public static string Server_InUse {
+            get {
+                return ResourceManager.GetString("Server_InUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Server_Name {
+            get {
+                return ResourceManager.GetString("Server_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a server named {0}..
+        /// </summary>
+        public static string Server_NameRepeated {
+            get {
+                return ResourceManager.GetString("Server_NameRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server Not Founf.
         /// </summary>
         public static string Server_Not_Found {
             get {
                 return ResourceManager.GetString("Server_Not_Found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network servers, their zone and their IP. From here you can check them and ping them..
+        /// </summary>
+        public static string Server_Subtitle {
+            get {
+                return ResourceManager.GetString("Server_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Servers.
+        /// </summary>
+        public static string Server_Title {
+            get {
+                return ResourceManager.GetString("Server_Title", resourceCulture);
             }
         }
         
@@ -5425,6 +6631,78 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} storages.
+        /// </summary>
+        public static string Storage_CountMany {
+            get {
+                return ResourceManager.GetString("Storage_CountMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} storage.
+        /// </summary>
+        public static string Storage_CountOne {
+            get {
+                return ResourceManager.GetString("Storage_CountOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Storage {0} has stock or movements and cannot be deleted. Deactivate it instead..
+        /// </summary>
+        public static string Storage_InUse {
+            get {
+                return ResourceManager.GetString("Storage_InUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a storage named {0}..
+        /// </summary>
+        public static string Storage_NameRepeated {
+            get {
+                return ResourceManager.GetString("Storage_NameRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products.
+        /// </summary>
+        public static string Storage_Products {
+            get {
+                return ResourceManager.GetString("Storage_Products", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select storage].
+        /// </summary>
+        public static string Storage_Select {
+            get {
+                return ResourceManager.GetString("Storage_Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Where the stock is kept, and how much each storage holds today.
+        /// </summary>
+        public static string Storage_Subtitle {
+            get {
+                return ResourceManager.GetString("Storage_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units.
+        /// </summary>
+        public static string Storage_Units {
+            get {
+                return ResourceManager.GetString("Storage_Units", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sub total.
         /// </summary>
         public static string Subtotal {
@@ -5439,6 +6717,96 @@ namespace Spix.xLanguage.Resources {
         public static string Supplier {
             get {
                 return ResourceManager.GetString("Supplier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} suppliers.
+        /// </summary>
+        public static string Supplier_CountMany {
+            get {
+                return ResourceManager.GetString("Supplier_CountMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} supplier.
+        /// </summary>
+        public static string Supplier_CountOne {
+            get {
+                return ResourceManager.GetString("Supplier_CountOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a supplier with document {0}..
+        /// </summary>
+        public static string Supplier_DocumentRepeated {
+            get {
+                return ResourceManager.GetString("Supplier_DocumentRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier {0} has purchases and cannot be deleted. Deactivate it instead..
+        /// </summary>
+        public static string Supplier_InUse {
+            get {
+                return ResourceManager.GetString("Supplier_InUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last: {0}.
+        /// </summary>
+        public static string Supplier_LastPurchase {
+            get {
+                return ResourceManager.GetString("Supplier_LastPurchase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a supplier named {0}..
+        /// </summary>
+        public static string Supplier_NameRepeated {
+            get {
+                return ResourceManager.GetString("Supplier_NameRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No purchases.
+        /// </summary>
+        public static string Supplier_NoPurchases {
+            get {
+                return ResourceManager.GetString("Supplier_NoPurchases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchases.
+        /// </summary>
+        public static string Supplier_Purchases {
+            get {
+                return ResourceManager.GetString("Supplier_Purchases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select supplier].
+        /// </summary>
+        public static string Supplier_Select {
+            get {
+                return ResourceManager.GetString("Supplier_Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your suppliers, their contact details and their status.
+        /// </summary>
+        public static string Supplier_Subtitle {
+            get {
+                return ResourceManager.GetString("Supplier_Subtitle", resourceCulture);
             }
         }
         

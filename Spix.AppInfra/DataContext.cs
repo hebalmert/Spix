@@ -160,6 +160,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractorPayment> ContractorPayments => Set<ContractorPayment>();
     public DbSet<ContractorPaymentDetail> ContractorPaymentDetails => Set<ContractorPaymentDetail>();
     public DbSet<PrePayment> PrePayments => Set<PrePayment>();
+    public DbSet<PrePaymentDetail> PrePaymentDetails => Set<PrePaymentDetail>();
     public DbSet<ContractExonerated> ContractExonerateds => Set<ContractExonerated>();
 
     //EntitiesEmails

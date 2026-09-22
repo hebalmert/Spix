@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.Entities;
+using Spix.DomainLogic.ModelUtility;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,48 +21,8 @@ public class IpNetwork
         get => _ip;
         set
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                _ip = null;
-                return;
-            }
-
-            var cleaned = new string(value.Where(c => char.IsDigit(c) || c == '.').ToArray());
-
-            if (System.Net.IPAddress.TryParse(cleaned, out _))
-            {
-                _ip = cleaned;
-                return;
-            }
-
-            var digits = new string(cleaned.Where(char.IsDigit).ToArray());
-
-            if (digits.Length <= 12)
-            {
-                var segments = new List<string>();
-                int index = 0;
-
-                while (index < digits.Length && segments.Count < 4)
-                {
-                    int remaining = digits.Length - index;
-                    int take = Math.Min(3, remaining);
-                    segments.Add(digits.Substring(index, take));
-                    index += take;
-                }
-
-                if (segments.Count == 4)
-                {
-                    var candidate = string.Join(".", segments);
-
-                    if (System.Net.IPAddress.TryParse(candidate, out _))
-                    {
-                        _ip = candidate;
-                        return;
-                    }
-                }
-            }
-
-            _ip = value;
+            _ip = Normalize(value);
+            IpSort = IpSortKey.From(_ip);
         }
     }
 
@@ -79,6 +40,10 @@ public class IpNetwork
     [Display(Name = nameof(Resource.Excluded), ResourceType = typeof(Resource))]
     public bool Excluded { get; set; }
 
+    //Clave numerica de la IP para ordenar (10.0.0.2 antes que 10.0.0.10).
+    //Se calcula sola al asignar Ip y se guarda con indice: el listado no ordena toda la tabla.
+    public long? IpSort { get; private set; }
+
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
@@ -86,4 +51,47 @@ public class IpNetwork
     public ICollection<Node>? Nodes { get; set; }
     public ICollection<Server>? Servers { get; set; }
 
+    //Limpia lo que escribe el usuario: deja solo digitos y puntos, y si vienen solo digitos arma los cuatro octetos
+    private static string? Normalize(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var cleaned = new string(value.Where(c => char.IsDigit(c) || c == '.').ToArray());
+
+        if (System.Net.IPAddress.TryParse(cleaned, out _))
+        {
+            return cleaned;
+        }
+
+        var digits = new string(cleaned.Where(char.IsDigit).ToArray());
+
+        if (digits.Length <= 12)
+        {
+            var segments = new List<string>();
+            int index = 0;
+
+            while (index < digits.Length && segments.Count < 4)
+            {
+                int remaining = digits.Length - index;
+                int take = Math.Min(3, remaining);
+                segments.Add(digits.Substring(index, take));
+                index += take;
+            }
+
+            if (segments.Count == 4)
+            {
+                var candidate = string.Join(".", segments);
+
+                if (System.Net.IPAddress.TryParse(candidate, out _))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        return value;
+    }
 }

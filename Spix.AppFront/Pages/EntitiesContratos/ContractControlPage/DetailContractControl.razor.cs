@@ -238,7 +238,7 @@ public partial class DetailContractControl
         parameters = new Dictionary<string, object>
             {
                 { "Id", id! },
-                { "Title", "Client Map" }
+                { "Title", $"{Localizer["Map_Title"]}" }
             };
 
         await _modalService.ShowAsync(component, parameters, async result =>
@@ -262,7 +262,7 @@ public partial class DetailContractControl
         parameters = new Dictionary<string, object>
             {
                 { "Model", model },
-                { "Title", "Editar Client Map" }
+                { "Title", $"{Localizer["Map_EditTitle"]}" }
             };
 
         await _modalService.ShowAsync(component, parameters, async result =>
@@ -276,7 +276,7 @@ public partial class DetailContractControl
     {
         if (model is null || !model.Latitude.HasValue || !model.Longitude.HasValue)
         {
-            await _sweetAlert.FireAsync("Client Map", "No hay coordenadas para mostrar.", SweetAlertIcon.Warning);
+            await _sweetAlert.FireAsync(Localizer["Map_Title"], Localizer["Map_NoCoordinates"], SweetAlertIcon.Warning);
             return;
         }
 
@@ -288,15 +288,15 @@ public partial class DetailContractControl
             {
                 { "Latitude", model.Latitude },
                 { "Longitude", model.Longitude },
-                { "FirstLabel", "Cliente" },
-                { "Title", "Client Map" }
+                { "FirstLabel", $"{Localizer[nameof(Resource.Client)]}" },
+                { "Title", $"{Localizer["Map_Title"]}" }
             };
 
         if (ContractNode?.Node?.Latitude is not null && ContractNode.Node.Longitude is not null)
         {
             parameters.Add("SecondLatitude", ContractNode.Node.Latitude);
             parameters.Add("SecondLongitude", ContractNode.Node.Longitude);
-            parameters.Add("SecondLabel", ContractNode.Node.NodesName ?? "Nodo");
+            parameters.Add("SecondLabel", ContractNode.Node.NodesName ?? Localizer["Map_Node"]);
         }
 
         await _modalService.ShowAsync(component, parameters);

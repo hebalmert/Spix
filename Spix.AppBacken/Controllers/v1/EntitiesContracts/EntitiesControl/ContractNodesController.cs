@@ -28,7 +28,8 @@ public class ContractNodesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(Guid id)
     {
-        var response = await _serverUnitOfWork.GetAsync(id);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _serverUnitOfWork.GetAsync(id, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);

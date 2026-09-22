@@ -33,7 +33,10 @@ public class ContractBindService : IContractBindService
         _httpErrorHandler = httpErrorHandler;
     }
 
-    public async Task<ActionResponse<ContractBind>> GetAsync(Guid id)
+    //Lo que muestra Control de Contratos. Solo contratos de la corporacion del usuario,
+    //y sin la clave del equipo: la pantalla no la usa y las operaciones con el MikroTik
+    //la leen directo de la base.
+    public async Task<ActionResponse<ContractBind>> GetAsync(Guid id, string username)
     {
         if (id == Guid.Empty)
         {
@@ -46,12 +49,27 @@ public class ContractBindService : IContractBindService
 
         try
         {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
             var modelo = await _context.ContractBinds.AsNoTracking()
                 .Include(x => x.Server)
                 .Include(x => x.IpNet)
                 .Include(x => x.CargueDetail)
                 .Include(x => x.HotSpotType)
-                .FirstOrDefaultAsync(c => c.ContractClientId == id);
+                .FirstOrDefaultAsync(c => c.ContractClientId == id && c.ContractClient!.CorporationId == user.CorporationId);
+
+            if (modelo?.Server != null)
+            {
+                modelo.Server.Clave = string.Empty;
+            }
 
             return new ActionResponse<ContractBind>
             {

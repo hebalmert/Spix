@@ -70,6 +70,26 @@ public class PrePaymentsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    //Los servicios que puede adelantar un contrato: completados, sin facturar y libres
+    [HttpGet("services/{contractClientId}")]
+    public async Task<IActionResult> GetServicesAsync(Guid contractClientId, [FromQuery] Guid? prePaymentId = null)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _paymentService.GetPrePaymentServicesAsync(contractClientId, prePaymentId, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> PostAsync(PrePayment model)
     {

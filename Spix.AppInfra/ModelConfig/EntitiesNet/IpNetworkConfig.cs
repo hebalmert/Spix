@@ -11,5 +11,8 @@ public class IpNetworkConfig : IEntityTypeConfiguration<IpNetwork>
         builder.HasKey(e => e.IpNetworkId);
         builder.Property(x => x.IpNetworkId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.Ip, e.CorporationId }).IsUnique();
+
+        //Orden numerico de la IP: la clave la calcula la entidad y el indice sirve el listado paginado
+        builder.HasIndex(e => new { e.CorporationId, e.IpSort });
     }
 }

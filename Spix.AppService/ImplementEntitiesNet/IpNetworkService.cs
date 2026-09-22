@@ -6,9 +6,7 @@ using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
-using Spix.AppInfra.Validations;
 using Spix.AppService.InterfaceEntitiesNet;
-using Spix.Domain.Entities;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.DomainLogic.ModelUtility;
@@ -18,6 +16,10 @@ using System.Net;
 
 namespace Spix.AppService.ImplementEntitiesNet;
 
+//Las IP de la red: nodos, servidores y equipos.
+//Toda consulta va filtrada por la corporacion del usuario. "Assigned" es estado del sistema:
+//lo marcan los modulos que usan la IP, nunca el formulario. Una IP en uso no se borra ni
+//cambia de direccion.
 public class IpNetworkService : IIpNetworkService
 {
     private readonly DataContext _context;
@@ -27,8 +29,12 @@ public class IpNetworkService : IIpNetworkService
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
 
-    public IpNetworkService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, IUserHelper userHelper, HttpErrorHandler httpErrorHandler,
+    public IpNetworkService(
+        DataContext context,
+        IHttpContextAccessor httpContextAccessor,
+        ITransactionManager transactionManager,
+        IUserHelper userHelper,
+        HttpErrorHandler httpErrorHandler,
         IStringLocalizer localizer)
     {
         _context = context;
@@ -39,253 +45,224 @@ public class IpNetworkService : IIpNetworkService
         _localizer = localizer;
     }
 
-    //Combo para nuevo Nodo, donde todas las Ip Libres se deben Mostrar
+    //IP libres para elegir. Sin id: con el neutro traducido. Con id: incluye la IP que ya tiene
+    //el registro que se esta editando, para que el combo la muestre.
     public async Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string username, Guid? id = null)
     {
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<IEnumerable<IpNetwork>>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-                };
-            }
-            List<IpNetwork> IpList = new();
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<IpNetwork>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var list = await _context.IpNetworks
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId &&
+                            ((x.Active && !x.Assigned && !x.Excluded) || x.IpNetworkId == id))
+                .OrderBy(x => x.IpSort)
+                .ToListAsync();
+
             if (id == null)
             {
-                IpList = await _context.IpNetworks.AsNoTracking()
-                    .Where(x => x.Active && x.CorporationId == user.CorporationId && x.Assigned == false && x.Excluded == false)
-                    .ToListAsync();
-                IpList.Insert(0, new IpNetwork
+                list.Insert(0, new IpNetwork
                 {
                     IpNetworkId = Guid.Empty,
                     Ip = _localizer[nameof(Resource.Select_IP)]
                 });
             }
-            else
-            {
-                IpList = await _context.IpNetworks.AsNoTracking()
-                    .Where(x => x.Active && x.CorporationId == user.CorporationId && x.Assigned == false && x.Excluded == false || x.IpNetworkId == id)
-                    .ToListAsync();
-            }
 
-            return new ActionResponse<IEnumerable<IpNetwork>>
-            {
-                WasSuccess = true,
-                Result = IpList
-            };
+            return Success<IEnumerable<IpNetwork>>(list);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IpNetwork>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IpNetwork>>(ex);
         }
     }
 
+    //El tablero: cuantas hay, cuantas libres, asignadas y excluidas, sobre todo el listado
+    public async Task<ActionResponse<IpSummaryDto>> GetSummaryAsync(string username)
+    {
+        try
+        {
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IpSummaryDto>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            //Una sola pasada por el indice de la corporacion, con los cuatro conteos a la vez
+            var summary = await _context.IpNetworks
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId)
+                .GroupBy(x => 1)
+                .Select(g => new IpSummaryDto
+                {
+                    Total = g.Count(),
+                    Free = g.Count(x => x.Active && !x.Assigned && !x.Excluded),
+                    Assigned = g.Count(x => x.Assigned),
+                    Excluded = g.Count(x => x.Excluded)
+                })
+                .FirstOrDefaultAsync();
+
+            return Success(summary ?? new IpSummaryDto());
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IpSummaryDto>(ex);
+        }
+    }
+
+    //El listado va en orden numerico de la IP (10.0.0.2 antes que 10.0.0.10)
     public async Task<ActionResponse<IEnumerable<IpNetwork>>> GetAsync(PaginationDTO pagination, string username)
     {
         try
         {
-            User user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<IEnumerable<IpNetwork>>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-                };
-            }
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<IpNetwork>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            var queryable = _context.IpNetworks.Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.IpNetworks
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId);
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
-                queryable = queryable.Where(x => x.Ip!.ToLower().Contains(pagination.Filter.ToLower()));
+                var filter = pagination.Filter.Trim();
+                queryable = queryable.Where(x =>
+                    EF.Functions.Like(x.Ip!, $"%{filter}%") ||
+                    EF.Functions.Like(x.Description!, $"%{filter}%"));
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.Ip).Paginate(pagination).ToListAsync();
 
-            return new ActionResponse<IEnumerable<IpNetwork>>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            var list = await queryable
+                .OrderBy(x => x.IpSort)
+                .Paginate(pagination)
+                .ToListAsync();
+
+            return Success<IEnumerable<IpNetwork>>(list);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IpNetwork>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IpNetwork>>(ex);
         }
     }
 
-    public async Task<ActionResponse<IpNetwork>> GetAsync(Guid id)
+    public async Task<ActionResponse<IpNetwork>> GetAsync(Guid id, string username)
     {
-        if (id == Guid.Empty)
-        {
-            return new ActionResponse<IpNetwork>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidId)]
-            };
-        }
-
         try
         {
-            var modelo = await _context.IpNetworks.FindAsync(id);
-            if (modelo == null)
-            {
-                return new ActionResponse<IpNetwork>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-                };
-            }
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IpNetwork>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            return new ActionResponse<IpNetwork>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            var modelo = await _context.IpNetworks
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.IpNetworkId == id && x.CorporationId == corporationId);
+            if (modelo == null) return Fail<IpNetwork>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            return Success(modelo);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IpNetwork>(ex); // ✅ Manejo de errores automático
-        }
-    }
-
-    public async Task<ActionResponse<IpNetwork>> UpdateAsync(IpNetwork modelo)
-    {
-        if (modelo == null || modelo.IpNetworkId == Guid.Empty)
-        {
-            return new ActionResponse<IpNetwork>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidId)]
-            };
-        }
-
-        await _transactionManager.BeginTransactionAsync();
-
-        try
-        {
-            _context.IpNetworks.Update(modelo);
-
-            await _transactionManager.SaveChangesAsync();
-            await _transactionManager.CommitTransactionAsync();
-
-            return new ActionResponse<IpNetwork>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
-        }
-        catch (Exception ex)
-        {
-            await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<IpNetwork>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IpNetwork>(ex);
         }
     }
 
     public async Task<ActionResponse<IpNetwork>> AddAsync(IpNetwork modelo, string username)
     {
-        if (!ValidatorModel.IsValid(modelo, out var errores))
-        {
-            return new ActionResponse<IpNetwork>
-            {
-                WasSuccess = false,
-                Result = modelo,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<IpNetwork>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            if (!IsValidIp(modelo.Ip)) return await FailRollbackAsync<IpNetwork>(_localizer["Ip_InvalidFormat", modelo.Ip ?? string.Empty]);
+            if (await IpExistsAsync(modelo.Ip!, corporationId.Value, null)) return await FailRollbackAsync<IpNetwork>(_localizer["Ip_Repeated", modelo.Ip!]);
+
+            //Lo que decide el servidor: una IP nueva nunca nace asignada
+            var nuevo = new IpNetwork
             {
-                return new ActionResponse<IpNetwork>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_InvalidId)]
-                };
-            }
-            modelo.CorporationId = Convert.ToInt32(user.CorporationId);
-            _context.IpNetworks.Add(modelo);
+                Ip = modelo.Ip,
+                Description = modelo.Description,
+                Active = modelo.Active,
+                Assigned = false,
+                Excluded = modelo.Excluded,
+                CorporationId = corporationId.Value
+            };
+
+            //Persistencia
+            _context.IpNetworks.Add(nuevo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<IpNetwork>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            return Success(nuevo);
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<IpNetwork>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IpNetwork>(ex);
         }
     }
 
+    //Se editan la descripcion y los estados Activa/Excluida; la direccion, solo si la IP no esta en uso
+    public async Task<ActionResponse<IpNetwork>> UpdateAsync(IpNetwork modelo, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<IpNetwork>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var current = await _context.IpNetworks.FirstOrDefaultAsync(x =>
+                x.IpNetworkId == modelo.IpNetworkId &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<IpNetwork>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            if (!IsValidIp(modelo.Ip)) return await FailRollbackAsync<IpNetwork>(_localizer["Ip_InvalidFormat", modelo.Ip ?? string.Empty]);
+
+            if (modelo.Ip != current.Ip)
+            {
+                if (await IsInUseAsync(current)) return await FailRollbackAsync<IpNetwork>(_localizer["Ip_InUseChange", current.Ip ?? string.Empty]);
+                if (await IpExistsAsync(modelo.Ip!, corporationId.Value, current.IpNetworkId)) return await FailRollbackAsync<IpNetwork>(_localizer["Ip_Repeated", modelo.Ip!]);
+            }
+
+            //Mapeo campo por campo: Assigned no se toca, es estado del sistema
+            current.Ip = modelo.Ip;
+            current.Description = modelo.Description;
+            current.Active = modelo.Active;
+            current.Excluded = modelo.Excluded;
+
+            //Persistencia
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return Success(current);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<IpNetwork>(ex);
+        }
+    }
+
+    //Carga un rango base.desde..base.hasta; las que ya existen se saltan
     public async Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string username)
     {
-        if (!ValidatorModel.IsValid(modelo, out var errores))
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
-        var ipBase = modelo.IpAddress?.Trim();
-        if (string.IsNullOrWhiteSpace(ipBase) || !IPAddress.TryParse($"{ipBase}.0", out _))
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
-        if (modelo.Desde > modelo.Hasta)
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
-        var user = await _userHelper.GetUserByUserNameAsync(username);
-        if (user == null)
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-            };
-        }
-
-        var corporationId = Convert.ToInt32(user.CorporationId);
-        var requestedIps = Enumerable
-            .Range(modelo.Desde, modelo.Hasta - modelo.Desde + 1)
-            .Select(number => $"{ipBase}.{number}")
-            .ToList();
+        var poolError = ValidatePool(modelo);
+        if (poolError != null) return Fail<int>(poolError);
 
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var existingIps = await _context.IpNetworks
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<int>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var requestedIps = PoolIps(modelo);
+            var existing = await _context.IpNetworks
                 .Where(x => x.CorporationId == corporationId && requestedIps.Contains(x.Ip!))
                 .Select(x => x.Ip!)
                 .ToListAsync();
+            var existingSet = existing.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            var existingSet = existingIps.ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var ipNetworks = requestedIps
+            var nuevas = requestedIps
                 .Where(ip => !existingSet.Contains(ip))
                 .Select(ip => new IpNetwork
                 {
@@ -293,23 +270,19 @@ public class IpNetworkService : IIpNetworkService
                     Active = true,
                     Assigned = false,
                     Excluded = false,
-                    CorporationId = corporationId
+                    CorporationId = corporationId.Value
                 })
                 .ToList();
 
-            if (ipNetworks.Count > 0)
+            //Persistencia
+            if (nuevas.Count > 0)
             {
-                _context.IpNetworks.AddRange(ipNetworks);
+                _context.IpNetworks.AddRange(nuevas);
                 await _transactionManager.SaveChangesAsync();
             }
-
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<int>
-            {
-                WasSuccess = true,
-                Result = ipNetworks.Count
-            };
+            return Success(nuevas.Count);
         }
         catch (Exception ex)
         {
@@ -318,75 +291,37 @@ public class IpNetworkService : IIpNetworkService
         }
     }
 
+    //Borra el rango, pero solo las IP libres: las asignadas, excluidas o usadas se quedan
     public async Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string username)
     {
-        if (!ValidatorModel.IsValid(modelo, out var errores))
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
-        var ipBase = modelo.IpAddress?.Trim();
-        if (string.IsNullOrWhiteSpace(ipBase) || !IPAddress.TryParse($"{ipBase}.0", out _))
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
-        if (modelo.Desde > modelo.Hasta)
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
-        var user = await _userHelper.GetUserByUserNameAsync(username);
-        if (user == null)
-        {
-            return new ActionResponse<int>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-            };
-        }
-
-        var corporationId = Convert.ToInt32(user.CorporationId);
-        var requestedIps = Enumerable
-            .Range(modelo.Desde, modelo.Hasta - modelo.Desde + 1)
-            .Select(number => $"{ipBase}.{number}")
-            .ToList();
+        var poolError = ValidatePool(modelo);
+        if (poolError != null) return Fail<int>(poolError);
 
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var ipNetworks = await _context.IpNetworks
-                .Where(x => x.CorporationId == corporationId
-                    && requestedIps.Contains(x.Ip!)
-                    && !x.Assigned
-                    && !x.Excluded)
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<int>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var requestedIps = PoolIps(modelo);
+            var libres = await _context.IpNetworks
+                .Where(x => x.CorporationId == corporationId &&
+                            requestedIps.Contains(x.Ip!) &&
+                            !x.Assigned &&
+                            !x.Excluded &&
+                            !x.Nodes!.Any() && !x.Servers!.Any())
                 .ToListAsync();
 
-            if (ipNetworks.Count > 0)
+            //Persistencia
+            if (libres.Count > 0)
             {
-                _context.IpNetworks.RemoveRange(ipNetworks);
+                _context.IpNetworks.RemoveRange(libres);
                 await _transactionManager.SaveChangesAsync();
             }
-
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<int>
-            {
-                WasSuccess = true,
-                Result = ipNetworks.Count
-            };
+            return Success(libres.Count);
         }
         catch (Exception ex)
         {
@@ -395,36 +330,98 @@ public class IpNetworkService : IIpNetworkService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var DataRemove = await _context.IpNetworks.FindAsync(id);
-            if (DataRemove == null)
-            {
-                return new ActionResponse<bool>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
-                };
-            }
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            _context.IpNetworks.Remove(DataRemove);
+            var current = await _context.IpNetworks.FirstOrDefaultAsync(x =>
+                x.IpNetworkId == id &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
+            if (await IsInUseAsync(current)) return await FailRollbackAsync<bool>(_localizer["Ip_InUseDelete", current.Ip ?? string.Empty]);
+
+            //Persistencia
+            _context.IpNetworks.Remove(current);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<bool>
-            {
-                WasSuccess = true,
-                Result = true
-            };
+            return Success(true);
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
         }
     }
+
+    //En uso: marcada como asignada o referenciada por un nodo o un servidor
+    private async Task<bool> IsInUseAsync(IpNetwork ip)
+    {
+        if (ip.Assigned) return true;
+
+        return await _context.IpNetworks
+            .Where(x => x.IpNetworkId == ip.IpNetworkId)
+            .AnyAsync(x => !(!x.Nodes!.Any() && !x.Servers!.Any()));
+    }
+
+    private async Task<bool> IpExistsAsync(string ip, int corporationId, Guid? currentId)
+    {
+        return await _context.IpNetworks.AnyAsync(x =>
+            x.CorporationId == corporationId &&
+            x.Ip == ip &&
+            x.IpNetworkId != currentId);
+    }
+
+    //Solo IPv4 con sus cuatro partes: la entidad ya limpia lo que escribe el usuario
+    private static bool IsValidIp(string? ip)
+    {
+        return !string.IsNullOrWhiteSpace(ip) &&
+               ip.Split('.').Length == 4 &&
+               IPAddress.TryParse(ip, out var parsed) &&
+               parsed.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork;
+    }
+
+    //Base de tres partes y un rango dentro de 0..255
+    private string? ValidatePool(IpNetPoolCreateDTO modelo)
+    {
+        var ipBase = modelo.IpAddress?.Trim();
+        if (string.IsNullOrWhiteSpace(ipBase) || ipBase.Split('.').Length != 3 || !IsValidIp($"{ipBase}.0"))
+            return _localizer["Ip_InvalidPoolBase"];
+
+        if (modelo.Desde < 0 || modelo.Hasta > 255 || modelo.Desde > modelo.Hasta)
+            return _localizer["Ip_InvalidPoolRange"];
+
+        return null;
+    }
+
+    private static List<string> PoolIps(IpNetPoolCreateDTO modelo)
+    {
+        var ipBase = modelo.IpAddress!.Trim();
+        return Enumerable
+            .Range(modelo.Desde, modelo.Hasta - modelo.Desde + 1)
+            .Select(number => $"{ipBase}.{number}")
+            .ToList();
+    }
+
+    private async Task<int?> GetCorporationIdAsync(string username)
+    {
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        return user?.CorporationId;
+    }
+
+    private async Task<ActionResponse<T>> FailRollbackAsync<T>(string message)
+    {
+        await _transactionManager.RollbackTransactionAsync();
+        return Fail<T>(message);
+    }
+
+    private static ActionResponse<T> Success<T>(T result) => new() { WasSuccess = true, Result = result };
+
+    private static ActionResponse<T> Fail<T>(string message) => new() { WasSuccess = false, Message = message };
 }

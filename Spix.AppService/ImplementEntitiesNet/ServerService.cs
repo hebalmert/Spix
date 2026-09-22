@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
-using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
-using Spix.AppInfra.Validations;
 using Spix.AppService.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
@@ -17,71 +16,62 @@ using Spix.xNetwork.IpHelper;
 
 namespace Spix.AppService.ImplementEntitiesNet;
 
+//Los servidores (MikroTik) de la corporacion. Toda consulta va filtrada por la corporacion del usuario.
+//Usuario y clave solo los recibe el Administrator: ni el listado ni el combo los llevan.
+//Un servidor con contratos, colas o suspensiones no se borra: se inactiva.
 public class ServerService : IServerService
 {
     private readonly DataContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITransactionManager _transactionManager;
     private readonly IUserHelper _userHelper;
-    private readonly IMapperService _mapperService;
     private readonly IIpControl _ipControl;
     private readonly IStringLocalizer _localizer;
     private readonly HttpErrorHandler _httpErrorHandler;
 
-    public ServerService(DataContext context, IHttpContextAccessor httpContextAccessor,
-        ITransactionManager transactionManager, IUserHelper userHelper, HttpErrorHandler httpErrorHandler,
-        IMapperService mapperService, IIpControl ipControl, IStringLocalizer localizer)
+    public ServerService(
+        DataContext context,
+        IHttpContextAccessor httpContextAccessor,
+        ITransactionManager transactionManager,
+        IUserHelper userHelper,
+        HttpErrorHandler httpErrorHandler,
+        IIpControl ipControl,
+        IStringLocalizer localizer)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
         _transactionManager = transactionManager;
         _userHelper = userHelper;
-        _mapperService = mapperService;
         _ipControl = ipControl;
         _localizer = localizer;
         _httpErrorHandler = httpErrorHandler;
     }
 
+    //Servidores activos para elegir: solo id y nombre. Con id incluye el que ya tiene el contrato.
     public async Task<ActionResponse<IEnumerable<Server>>> ComboAsync(string username, Guid? id = null)
     {
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<IEnumerable<Server>>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-                };
-            }
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<Server>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            List<Server> servers;
+            var list = await _context.Servers
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId && (x.Active || x.ServerId == id))
+                .OrderBy(x => x.ServerName)
+                .Select(x => new Server { ServerId = x.ServerId, ServerName = x.ServerName })
+                .ToListAsync();
+
             if (id == null)
             {
-                servers = await _context.Servers.AsNoTracking()
-                    .Where(x => x.Active && x.CorporationId == user.CorporationId)
-                    .OrderBy(x => x.ServerName)
-                    .ToListAsync();
-                servers.Insert(0, new Server
+                list.Insert(0, new Server
                 {
                     ServerId = Guid.Empty,
                     ServerName = _localizer[nameof(Resource.Select_Server)]
                 });
             }
-            else
-            {
-                servers = await _context.Servers.AsNoTracking()
-                    .Where(x => x.Active && x.CorporationId == user.CorporationId || x.ServerId == id)
-                    .OrderBy(x => x.ServerName)
-                    .ToListAsync();
-            }
 
-            return new ActionResponse<IEnumerable<Server>>
-            {
-                WasSuccess = true,
-                Result = servers
-            };
+            return Success<IEnumerable<Server>>(list);
         }
         catch (Exception ex)
         {
@@ -89,234 +79,262 @@ public class ServerService : IServerService
         }
     }
 
-    public async Task<ActionResponse<IEnumerable<Server>>> GetAsync(PaginationDTO pagination, string username)
+    //El tablero: servidores activos e inactivos y cuantos contratos salen por ellos
+    public async Task<ActionResponse<NetSummaryDto>> GetSummaryAsync(string username)
     {
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<IEnumerable<Server>>
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<NetSummaryDto>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            //Una sola pasada por el indice de la corporacion para los tres conteos de equipos
+            var summary = await _context.Servers
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId)
+                .GroupBy(x => 1)
+                .Select(g => new NetSummaryDto
                 {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-                };
-            }
+                    Total = g.Count(),
+                    Active = g.Count(x => x.Active),
+                    Inactive = g.Count(x => !x.Active)
+                })
+                .FirstOrDefaultAsync() ?? new NetSummaryDto();
 
-            var queryable = _context.Servers.AsNoTracking()
-                .Include(x => x.IpNetwork)
-                .Include(x => x.Zone)
-                .Where(x => x.CorporationId == user.CorporationId)
-                .AsQueryable();
+            //Los clientes se cuentan por el indice del equipo en la tabla de contratos
+            summary.Clients = await _context.ContractServers.CountAsync(x => x.Server!.CorporationId == corporationId);
 
+            return Success(summary);
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<NetSummaryDto>(ex);
+        }
+    }
 
+    //El listado, sin credenciales
+    public async Task<ActionResponse<IEnumerable<ServerListItemDto>>> GetAsync(PaginationDTO pagination, string username)
+    {
+        try
+        {
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<ServerListItemDto>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var queryable = _context.Servers
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId);
+
+            //Se busca por nombre, zona o IP
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
-                queryable = queryable.Where(x => x.ServerName!.ToLower().Contains(pagination.Filter.ToLower()));
+                var filter = pagination.Filter.Trim();
+                queryable = queryable.Where(x =>
+                    EF.Functions.Like(x.ServerName, $"%{filter}%") ||
+                    EF.Functions.Like(x.Zone!.ZoneName, $"%{filter}%") ||
+                    EF.Functions.Like(x.IpNetwork!.Ip!, $"%{filter}%"));
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.ServerName).Paginate(pagination).ToListAsync();
 
-            return new ActionResponse<IEnumerable<Server>>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            var list = await queryable
+                .OrderBy(x => x.ServerName)
+                .Paginate(pagination)
+                .Select(x => new ServerListItemDto
+                {
+                    ServerId = x.ServerId,
+                    ServerName = x.ServerName,
+                    ZoneName = x.Zone!.ZoneName,
+                    Ip = x.IpNetwork!.Ip,
+                    Active = x.Active,
+                    Clients = _context.ContractServers.Count(c => c.ServerId == x.ServerId)
+                })
+                .ToListAsync();
+
+            return Success<IEnumerable<ServerListItemDto>>(list);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<Server>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ServerListItemDto>>(ex);
         }
     }
 
-    public async Task<ActionResponse<Server>> GetAsync(Guid id)
+    //Para editar. La clave solo va si quien pide es Administrator.
+    public async Task<ActionResponse<Server>> GetAsync(Guid id, string username, bool withCredentials)
     {
-        if (id == Guid.Empty)
-        {
-            return new ActionResponse<Server>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidId)]
-            };
-        }
-
         try
         {
-            var modelo = await _context.Servers.FindAsync(id);
-            var ZoneDetail = await _context.Zones.AsNoTracking().FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
-            modelo!.StateId = ZoneDetail!.StateId;
-            modelo.CityId = ZoneDetail.CityId;
-            if (modelo == null)
-            {
-                return new ActionResponse<Server>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_InvalidId)]
-                };
-            }
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<Server>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            return new ActionResponse<Server>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            var modelo = await _context.Servers
+                .AsNoTracking()
+                .Include(x => x.Zone)
+                .FirstOrDefaultAsync(x => x.ServerId == id && x.CorporationId == corporationId);
+            if (modelo == null) return Fail<Server>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            //El formulario elige departamento y ciudad a partir de la zona
+            modelo.StateId = modelo.Zone!.StateId;
+            modelo.CityId = modelo.Zone.CityId;
+            modelo.Zone = null;
+
+            if (!withCredentials) modelo.Clave = string.Empty;
+
+            return Success(modelo);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<Server>(ex); // ✅ Manejo de errores automático
-        }
-    }
-
-    public async Task<ActionResponse<Server>> UpdateAsync(Server modelo)
-    {
-        if (modelo == null || modelo.MarkId == Guid.Empty)
-        {
-            return new ActionResponse<Server>
-            {
-                WasSuccess = false,
-                Message = _localizer[nameof(Resource.Generic_InvalidId)]
-            };
-        }
-
-        await _transactionManager.BeginTransactionAsync();
-        var transaction = _transactionManager.GetCurrentTransaction();
-
-        try
-        {
-            //Implementando el Mapeo de Modelos con Mapster
-            Server NuevoModelo = _mapperService.Map<Server, Server>(modelo);
-
-            var resultIp = await _ipControl.SelectIpWhenUpdateServer(NuevoModelo.IpNetworkId, NuevoModelo.ServerId, NuevoModelo.ServerName, transaction!);
-            if (!resultIp.WasSuccess)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<Server>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_Error_Ip_Update)]
-                };
-            }
-
-            _context.Servers.Update(NuevoModelo);
-
-            await _transactionManager.SaveChangesAsync(); ;
-            await _transactionManager.CommitTransactionAsync();
-
-            return new ActionResponse<Server>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
-
-        }
-        catch (Exception ex)
-        {
-            await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<Server>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Server>(ex);
         }
     }
 
     public async Task<ActionResponse<Server>> AddAsync(Server modelo, string username)
     {
-        if (!ValidatorModel.IsValid(modelo, out var errores))
-        {
-            return new ActionResponse<Server>
-            {
-                WasSuccess = false,
-                Result = modelo,
-                Message = _localizer[nameof(Resource.Generic_InvalidModel)]
-            };
-        }
-
         await _transactionManager.BeginTransactionAsync();
-        var transaction = _transactionManager.GetCurrentTransaction();
-
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<Server>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
-                };
-            }
-            var resultIp = await _ipControl.SelectIpWhenAdd(modelo.IpNetworkId, modelo.ServerName, transaction!);
-            if (!resultIp.WasSuccess)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<Server>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_Error_Ip_Add)]
-                };
-            }
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<Server>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            modelo.CorporationId = Convert.ToInt32(user.CorporationId);
-            _context.Servers.Add(modelo);
+            if (string.IsNullOrWhiteSpace(modelo.Clave)) return await FailRollbackAsync<Server>(_localizer["Net_PasswordRequired"]);
 
+            var name = modelo.ServerName.Trim();
+            if (await NameExistsAsync(name, corporationId.Value, null)) return await FailRollbackAsync<Server>(_localizer["Server_NameRepeated", name]);
+
+            //La IP tiene que ser de la corporacion y estar libre
+            var ipOk = await _ipControl.AssignAsync(modelo.IpNetworkId, null, name, corporationId.Value);
+            if (!ipOk) return await FailRollbackAsync<Server>(_localizer["Net_IpNotAvailable"]);
+
+            //Lo que decide el servidor
+            var nuevo = new Server { CorporationId = corporationId.Value };
+            CopyFields(modelo, nuevo, true);
+
+            //Persistencia
+            _context.Servers.Add(nuevo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<Server>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            nuevo.Clave = string.Empty;
+            return Success(nuevo);
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<Server>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Server>(ex);
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    //La clave vacia deja la que ya tenia (el Auxiliar no la recibe, asi que no la manda)
+    public async Task<ActionResponse<Server>> UpdateAsync(Server modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
-        var transaction = _transactionManager.GetCurrentTransaction();
-
         try
         {
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<Server>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            var DataRemove = await _context.Servers.FindAsync(id);
-            if (DataRemove == null)
-            {
-                return new ActionResponse<bool>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
-                };
-            }
-            _context.Servers.Remove(DataRemove);
+            var current = await _context.Servers.FirstOrDefaultAsync(x =>
+                x.ServerId == modelo.ServerId &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<Server>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
-            var resultIp = await _ipControl.SelectIpToDelete(DataRemove.IpNetworkId, transaction!);
-            if (!resultIp.WasSuccess)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<bool>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_Error_Ip_Delete)]
-                };
-            }
+            var name = modelo.ServerName.Trim();
+            if (await NameExistsAsync(name, corporationId.Value, current.ServerId)) return await FailRollbackAsync<Server>(_localizer["Server_NameRepeated", name]);
 
+            //Si cambio la IP se suelta la anterior; si es la misma, solo se actualiza el nombre
+            var ipOk = await _ipControl.AssignAsync(modelo.IpNetworkId, current.IpNetworkId, name, corporationId.Value);
+            if (!ipOk) return await FailRollbackAsync<Server>(_localizer["Net_IpNotAvailable"]);
+
+            //Mapeo campo por campo
+            CopyFields(modelo, current, false);
+
+            //Persistencia
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<bool>
-            {
-                WasSuccess = true,
-                Result = true
-            };
-
+            return Success(new Server { ServerId = current.ServerId, ServerName = current.ServerName });
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<Server>(ex);
         }
     }
+
+    //Solo se borra un servidor que nadie usa; su IP queda libre
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var current = await _context.Servers.FirstOrDefaultAsync(x =>
+                x.ServerId == id &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            var inUse = await _context.ContractServers.AnyAsync(x => x.ServerId == id) ||
+                        await _context.ContractBinds.AnyAsync(x => x.ServerId == id) ||
+                        await _context.ContractQues.AnyAsync(x => x.ServerId == id) ||
+                        await _context.QueueParents.AnyAsync(x => x.ServerId == id) ||
+                        await _context.ContractSuspendeds.AnyAsync(x => x.ServerId == id);
+            if (inUse) return await FailRollbackAsync<bool>(_localizer["Server_InUse", current.ServerName]);
+
+            //Persistencia
+            await _ipControl.ReleaseAsync(current.IpNetworkId, corporationId.Value);
+            _context.Servers.Remove(current);
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return Success(true);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
+    //Los datos que el usuario puede cambiar. La clave vacia no pisa la guardada.
+    private static void CopyFields(Server from, Server to, bool isNew)
+    {
+        to.ServerName = from.ServerName.Trim();
+        to.IpNetworkId = from.IpNetworkId;
+        to.Usuario = from.Usuario;
+        to.WanName = from.WanName;
+        to.ApiPort = from.ApiPort;
+        to.MarkId = from.MarkId;
+        to.MarkModelId = from.MarkModelId;
+        to.ZoneId = from.ZoneId;
+        to.Active = from.Active;
+
+        if (isNew || !string.IsNullOrWhiteSpace(from.Clave)) to.Clave = from.Clave;
+    }
+
+    private async Task<bool> NameExistsAsync(string name, int corporationId, Guid? serverId)
+    {
+        return await _context.Servers.AnyAsync(x =>
+            x.CorporationId == corporationId &&
+            x.ServerName == name &&
+            x.ServerId != serverId);
+    }
+
+    private async Task<int?> GetCorporationIdAsync(string username)
+    {
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        return user?.CorporationId;
+    }
+
+    private async Task<ActionResponse<T>> FailRollbackAsync<T>(string message)
+    {
+        await _transactionManager.RollbackTransactionAsync();
+        return Fail<T>(message);
+    }
+
+    private static ActionResponse<T> Success<T>(T result) => new() { WasSuccess = true, Result = result };
+
+    private static ActionResponse<T> Fail<T>(string message) => new() { WasSuccess = false, Message = message };
 }

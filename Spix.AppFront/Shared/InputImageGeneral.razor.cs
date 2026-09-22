@@ -5,7 +5,7 @@ using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Shared;
 
-public partial class InputImageGeneral
+public partial class InputImageGeneral : IAsyncDisposable
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IJSRuntime JS { get; set; } = null!;
@@ -38,16 +38,20 @@ public partial class InputImageGeneral
         try
         {
             var base64 = await JS.InvokeAsync<string>("camaraInterop2.takePhoto");
+
+            //La camara se suelta apenas se toma la foto, ANTES de avisar al formulario:
+            //si el aviso tarda o falla, la camara no queda encendida.
+            await JS.InvokeVoidAsync("camaraInterop2.stopCamera");
+            ShowCamera = false;
+
             if (!string.IsNullOrWhiteSpace(base64))
             {
                 ImageBase64 = base64.Replace("data:image/jpeg;base64,", "");
-                await ImageSelected.InvokeAsync(ImageBase64);
-                await JS.InvokeVoidAsync("camaraInterop2.stopCamera");
-                ShowCamera = false;
-                ShowCamera = false;
                 ShowPreview = true;
                 ShowImageUrl = false;
                 StateHasChanged();
+
+                await ImageSelected.InvokeAsync(ImageBase64);
             }
         }
         catch (Exception ex)
@@ -94,6 +98,18 @@ public partial class InputImageGeneral
             ShowPreview = true;
             ShowImageUrl = false;
             StateHasChanged();
+        }
+    }
+
+    //Al cerrar el modal con la camara abierta, el navegador la seguia usando
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("camaraInterop2.stopCamera");
+        }
+        catch (JSDisconnectedException)
+        {
         }
     }
 }

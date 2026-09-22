@@ -39,7 +39,7 @@
     <div class="mb-2">
         <div class="input-group">
 
-            <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Date)]</span>
+            <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.InvoiceDate)]</span>
             <input type="date" class="form-control"
                    @bind="Purchase.FacuraDate"
                    @bind:format="yyyy-MM-dd"
@@ -52,7 +52,7 @@
     <div class="mb-2">
         <div class="input-group">
             <span class="input-group-text" style="width: 150px">
-                @Localizer[nameof(Resource.Purchase)]#
+                @Localizer[nameof(Resource.InvoiceNumber)]
             </span>
             <InputText class="form-control" @bind-Value="Purchase.NroFactura" />
         </div>

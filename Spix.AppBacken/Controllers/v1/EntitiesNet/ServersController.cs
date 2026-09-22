@@ -1,14 +1,14 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Spix.AppBack.Helper;
+using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.AppResponses;
 using Spix.DomainLogic.Pagination;
-using System.Security.Claims;
 
 namespace Spix.AppBack.Controllers.EntitiesNet;
 
@@ -18,96 +18,149 @@ namespace Spix.AppBack.Controllers.EntitiesNet;
 [ApiController]
 public class ServersController : ControllerBase
 {
-    private readonly IServerServiceX _serverUnitOfWork;
+    private readonly IServerServiceX _unitOfWork;
     private readonly IStringLocalizer _localizer;
 
-    public ServersController(IServerServiceX serverUnitOfWork, IStringLocalizer localizer)
+    public ServersController(
+        IServerServiceX unitOfWork,
+        IStringLocalizer localizer)
     {
-        _serverUnitOfWork = serverUnitOfWork;
+        _unitOfWork = unitOfWork;
         _localizer = localizer;
     }
 
     [HttpGet("loadCombo/{id?}")]
-    public async Task<ActionResult<IEnumerable<Server>>> GetComboAsync([FromRoute] Guid? id = null)
+    public async Task<IActionResult> GetComboAsync([FromRoute] Guid? id = null)
     {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        if (userClaimsInfo == null)
+        try
         {
-            return BadRequest("Erro en el sistema de Usuarios");
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.ComboAsync(userClaimsInfo.UserName, id);
+            return ResponseHelper.Format(response);
         }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
 
-        var response = await _serverUnitOfWork.ComboAsync(userClaimsInfo.UserName, id);
-        if (!response.WasSuccess)
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        try
         {
-            return BadRequest(response.Message);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetSummaryAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-        return Ok(response.Result);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Server>>> GetAll([FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
     {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        if (userClaimsInfo == null)
+        try
         {
-            return BadRequest("Erro en el sistema de Usuarios");
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-
-        var response = await _serverUnitOfWork.GetAsync(pagination, userClaimsInfo.UserName);
-        if (!response.WasSuccess)
+        catch (ApplicationException ex)
         {
-            return BadRequest(response.Message);
+            return BadRequest(ex.Message);
         }
-        return Ok(response.Result);
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
+    //Las credenciales solo se entregan al Administrator
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(Guid id)
     {
-        var response = await _serverUnitOfWork.GetAsync(id);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var withCredentials = User.IsInRole("Administrator");
+            var response = await _unitOfWork.GetAsync(id, userClaimsInfo.UserName, withCredentials);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpPut]
-    public async Task<ActionResult<Server>> PutAsync(Server modelo)
+    public async Task<IActionResult> PutAsync(Server modelo)
     {
-        var response = await _serverUnitOfWork.UpdateAsync(modelo);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.UpdateAsync(modelo, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpPost]
-    public async Task<ActionResult<Server>> PostAsync(Server modelo)
+    public async Task<IActionResult> PostAsync(Server modelo)
     {
-        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        if (userClaimsInfo == null)
+        try
         {
-            return BadRequest("Erro en el sistema de Usuarios");
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-
-        var response = await _serverUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
-        if (response.WasSuccess)
+        catch (ApplicationException ex)
         {
-            return Ok(response.Result);
+            return BadRequest(ex.Message);
         }
-        return NotFound(response.Message);
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<bool>> DeleteAsync(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        var response = await _serverUnitOfWork.DeleteAsync(id);
-        if (response.WasSuccess)
+        try
         {
-            return Ok(response.Result);
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
         }
-        return NotFound(response.Message);
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 }

@@ -16,19 +16,21 @@ public class IpNetworkServiceX : IIpNetworkServiceX
         _ipNetworkService = ipNetworkService;
     }
 
-    public async Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string email, Guid? id = null) => await _ipNetworkService.ComboAsync(email, id);
+    public async Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string username, Guid? id = null) => await _ipNetworkService.ComboAsync(username, id);
 
-    public async Task<ActionResponse<IEnumerable<IpNetwork>>> GetAsync(PaginationDTO pagination, string email) => await _ipNetworkService.GetAsync(pagination, email);
+    public async Task<ActionResponse<IpSummaryDto>> GetSummaryAsync(string username) => await _ipNetworkService.GetSummaryAsync(username);
 
-    public async Task<ActionResponse<IpNetwork>> GetAsync(Guid id) => await _ipNetworkService.GetAsync(id);
+    public async Task<ActionResponse<IEnumerable<IpNetwork>>> GetAsync(PaginationDTO pagination, string username) => await _ipNetworkService.GetAsync(pagination, username);
 
-    public async Task<ActionResponse<IpNetwork>> UpdateAsync(IpNetwork modelo) => await _ipNetworkService.UpdateAsync(modelo);
+    public async Task<ActionResponse<IpNetwork>> GetAsync(Guid id, string username) => await _ipNetworkService.GetAsync(id, username);
 
-    public async Task<ActionResponse<IpNetwork>> AddAsync(IpNetwork modelo, string email) => await _ipNetworkService.AddAsync(modelo, email);
+    public async Task<ActionResponse<IpNetwork>> UpdateAsync(IpNetwork modelo, string username) => await _ipNetworkService.UpdateAsync(modelo, username);
 
-    public async Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string email) => await _ipNetworkService.AddPoolAsync(modelo, email);
+    public async Task<ActionResponse<IpNetwork>> AddAsync(IpNetwork modelo, string username) => await _ipNetworkService.AddAsync(modelo, username);
 
-    public async Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string email) => await _ipNetworkService.DeletePoolAsync(modelo, email);
+    public async Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string username) => await _ipNetworkService.AddPoolAsync(modelo, username);
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _ipNetworkService.DeleteAsync(id);
+    public async Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string username) => await _ipNetworkService.DeletePoolAsync(modelo, username);
+
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username) => await _ipNetworkService.DeleteAsync(id, username);
 }

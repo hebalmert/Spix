@@ -2,29 +2,52 @@
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
         @* Encabezado: el unico titulo de la pantalla *@
         <div class="idx-head">
             <span class="idx-glifo"><i class="fa fa-project-diagram"></i></span>
             <div class="idx-head-text">
-                <h3>IP Address Red</h3>
-                <p>Direcciones IP de la red: nodos, servidores y equipos. Puede cargarlas y borrarlas por pool.</p>
+                <h3>@Localizer["IpNetwork_Title"]</h3>
+                <p>@Localizer["IpNetwork_Subtitle"]</p>
             </div>
 
             @if (TotalRecords > 0)
             {
                 <div class="idx-head-tools">
-                    <span class="idx-count">@TotalRecords.ToString("N0") direcciones</span>
+                    <span class="idx-count">@Localizer[TotalRecords == 1 ? "Ip_CountOne" : "Ip_CountMany", TotalRecords.ToString("N0")]</span>
                 </div>
             }
         </div>
 
+        @* El tablero: lo cuenta la base, sobre todas las direcciones *@
+        @if (Summary is not null)
+        {
+            <div class="ip-board">
+                <div class="ip-tile">
+                    <div class="ip-tile-label">@Localizer["Ip_Total"]</div>
+                    <div class="ip-tile-value">@Summary.Total.ToString("N0")</div>
+                </div>
+                <div class="ip-tile is-free">
+                    <div class="ip-tile-label">@Localizer["Ip_Free"]</div>
+                    <div class="ip-tile-value">@Summary.Free.ToString("N0")</div>
+                </div>
+                <div class="ip-tile is-used">
+                    <div class="ip-tile-label">@Localizer["Ip_Assigned"]</div>
+                    <div class="ip-tile-value">@Summary.Assigned.ToString("N0")</div>
+                </div>
+                <div class="ip-tile is-off">
+                    <div class="ip-tile-label">@Localizer["Ip_Excluded"]</div>
+                    <div class="ip-tile-value">@Summary.Excluded.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
         @* Acciones y buscador, fuera del panel de la tabla *@
         <div class="idx-bar">
             <ButtonFormNew OnClick="() => ShowModalAsync()" />
-            <ButtonFormDark OnClick="ShowPoolModalAsync" TooTip="Pool Nuevo" />
-            <ButtonFormRed OnClick="ShowDeletePoolModalAsync" TooTip="Borra Pool" />
+            <ButtonFormDark OnClick="ShowPoolModalAsync" TooTip="@Localizer["Ip_PoolNew"]" />
+            <ButtonFormRed OnClick="ShowDeletePoolModalAsync" TooTip="@Localizer["Ip_PoolDelete"]" />
 
             <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
@@ -39,12 +62,12 @@
                 <table class="idx-table">
                     <thead>
                         <tr>
-                            <th>Ip</th>
-                            <th>Descripcion</th>
-                            <th class="text-center">Activa</th>
-                            <th class="text-center">Asignada</th>
-                            <th class="text-center">Excluida</th>
-                            <th style="text-align:right">Acciones</th>
+                            <th>@Localizer["Ip_Address"]</th>
+                            <th>@Localizer[nameof(Resource.Description)]</th>
+                            <th class="text-center">@Localizer["Ip_ColActive"]</th>
+                            <th class="text-center">@Localizer["Ip_ColAssigned"]</th>
+                            <th class="text-center">@Localizer["Ip_ColExcluded"]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
                         </tr>
                     </thead>
                     <tbody>

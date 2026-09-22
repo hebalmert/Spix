@@ -85,6 +85,7 @@
                 </span>
                 <InputText class="form-control"
                            name="server_clave"
+                           placeholder="@(IsEditControl ? Localizer["Net_KeepPassword"] : null)"
                            autocomplete="new-password"
                            type="@(showClave ? "text" : "password")"
                            @bind-value="Server.Clave" />

@@ -1,150 +1,134 @@
-﻿@page "/purchases/details/{Id:guid}"
+@page "/purchases/details/{Id:guid}"
 @layout MainLayout
-@attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.EnumTypes
 
-@if (Purchase is null)
-{
-    <Loading />
-}
-else
-{
-    <div class="container pt-4">
-        <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-            <h3>Detalle de la Compra</h3>
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
 
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <table class="table table-borderless">
-                        <tr>
-                            <td><strong>Proveedor:</strong></td>
-                            <td class="text-end">@Purchase.Supplier!.Name</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Factura:</strong></td>
-                            <td class="text-end">@Purchase.NroFactura</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Fecha Fac:</strong></td>
-                            <td class="text-end">@Purchase.FacuraDate.ToString("dd/MM/yyyy")</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Bodega:</strong></td>
-                            <td class="text-end">@Purchase.ProductStorage!.StorageName</td>
-                        </tr>
-                    </table>
+        @if (Purchase is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            @* Encabezado: que compra es, de quien y a que bodega entra *@
+            <div class="idx-head">
+                <span class="idx-glifo"><i class="fa fa-file-invoice-dollar"></i></span>
+                <div class="idx-head-text">
+                    <h3>@Localizer["Purchase_Header", Purchase.NroPurchase] · @Purchase.Supplier?.Name</h3>
+                    <p>@Localizer[nameof(Resource.InvoiceNumber)] @Purchase.NroFactura · @Purchase.FacuraDate.ToString("dd/MM/yyyy") · @Localizer[nameof(Resource.Storage)] @Purchase.ProductStorage?.StorageName</p>
                 </div>
-
-                <div class="col-md-6">
-                    <table class="table table-borderless">
-                        <tr>
-                            <td><strong>Totales Factura:</strong></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Subtotal:</strong></td>
-                            <td class="text-end">@Purchase.SubTotalCompra.ToString("N2")</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Impuesto:</strong></td>
-                            <td class="text-end">@Purchase.ImpuestoTotalCompra.ToString("N2")</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Total:</strong></td>
-                            <td class="text-end">@Purchase.TotalCompra.ToString("N2")</td>
-                        </tr>
-                    </table>
+                <div class="idx-head-tools">
+                    <PurchaseStatusBadge Value="@Purchase.Status" />
                 </div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-md-9 d-flex gap-2">
-                    <a class="btn btn-secondary" style="width:150px" href="/purchases">
-                        <i class="bi bi-arrow-left"></i> Volver
-                    </a>
-
-                    @if (Purchase.Status == PurchaseStatus.Pendiente)
-                    {
-                        <button class="btn btn-dark" style="width:150px" @onclick="@(() => ShowModalAsync())">
-                            <i class="bi bi-plus-square"></i> Producto
-                        </button>
-
-                        <button class="btn btn-success" style="width:150px" @onclick="() => ClosePurchaseAsync(Purchase.PurchaseId)">
-                            <i class="bi bi-check-square"></i> Cerrar
-                        </button>
-                    }
+            @* Los totales de la factura *@
+            <div class="pu-totals">
+                <div class="pu-total">
+                    <div class="pu-tile-label">@Localizer[nameof(Resource.Subtotal)]</div>
+                    <div class="pu-total-value">@Purchase.SubTotalCompra.ToString("N2")</div>
+                </div>
+                <div class="pu-total">
+                    <div class="pu-tile-label">@Localizer[nameof(Resource.Tax)]</div>
+                    <div class="pu-total-value">@Purchase.ImpuestoTotalCompra.ToString("N2")</div>
+                </div>
+                <div class="pu-total is-main">
+                    <div class="pu-tile-label">@Localizer[nameof(Resource.Total)]</div>
+                    <div class="pu-total-value">@Purchase.TotalCompra.ToString("N2")</div>
                 </div>
             </div>
 
-            <hr class="my-4" />
+            @* Acciones: cerrar va aparte, a la derecha, para no pulsarlo por error *@
+            <div class="pu-actions">
+                <a class="btn pu-btn" href="/purchases">
+                    <i class="fa fa-arrow-left"></i> @Localizer["Purchase_Back"]
+                </a>
+                @if (IsOpen)
+                {
+                    <button class="btn pu-btn" @onclick="() => ShowModalAsync()">
+                        <i class="fa fa-plus"></i> @Localizer[nameof(Resource.Product)]
+                    </button>
+                    <button class="btn pu-btn pu-btn-close" @onclick="ClosePurchaseAsync">
+                        <i class="fa fa-lock"></i> @Localizer["Purchase_Close"]
+                    </button>
+                }
+            </div>
+        }
 
-            <div class="row">
-                <div class="col-md-12 table-responsive">
-                    @if (PurchaseDetails is null)
-                    {
-                        <Loading />
-                    }
-                    else
-                    {
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Product)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Quantity)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.UnitCost)]</th>
+                            <th style="text-align:right">@Localizer["Purchase_TaxRate"]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Subtotal)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Tax)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <GenericList MyList="PurchaseDetails">
+                            <Loading>
+                                <tr>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
                             <Body>
-                                <table class="table table-hover table-striped align-middle">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th>Impuesto</th>
-                                            <th>Unitario</th>
-                                            <th>Cantidad</th>
-                                            <th>SubTotal</th>
-                                            <th>Impuesto</th>
-                                            <th>Total</th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in PurchaseDetails!)
-                                        {
-                                            <tr>
-                                                <td>@item.Product!.ProductName</td>
-                                                <td>@item.RateTax</td>
-                                                <td>@item.UnitCost.ToString("N2")</td>
-                                                <td>@item.Quantity</td>
-                                                <td>@item.SubTotal.ToString("N2")</td>
-                                                <td>@item.Impuesto.ToString("N2")</td>
-                                                <td>@item.TotalGeneral.ToString("N2")</td>
-                                                <td style="width:1px;">
-                                                    @if (Purchase!.Status == PurchaseStatus.Pendiente)
-                                                    {
-                                                        <ButtonEdit OnClick="() => ShowModalAsync(item.PurchaseDetailId, true)" />
-                                                    }
-                                                </td>
-                                                <td style="width:1px;">
-                                                    @if (Purchase.Status == PurchaseStatus.Pendiente)
-                                                    {
-                                                        <ButtonDelete OnClick="() => DeleteAsync(item.PurchaseDetailId)" />
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                @foreach (var item in PurchaseDetails!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.NameProduct</div>
+                                            @* Al cerrar, este producto abre su cargue para subir las MAC *@
+                                            @if (item.Product?.WithSerials == true)
+                                            {
+                                                <span class="pu-tag"><i class="fa fa-barcode"></i> @Localizer["Purchase_Serials"]</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:right">@item.Quantity.ToString("#,0.##")</td>
+                                        <td style="text-align:right">@item.UnitCost.ToString("N2")</td>
+                                        <td style="text-align:right">@item.RateTax.ToString("N2")</td>
+                                        <td style="text-align:right">@item.SubTotal.ToString("N2")</td>
+                                        <td style="text-align:right">@item.Impuesto.ToString("N2")</td>
+                                        <td style="text-align:right"><strong>@item.TotalGeneral.ToString("N2")</strong></td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                @if (IsOpen)
+                                                {
+                                                    <ButtonEdit OnClick="() => ShowModalAsync(item.PurchaseDetailId, true)" />
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.PurchaseDetailId)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
                             </Body>
                         </GenericList>
-                    }
-                </div>
+                    </tbody>
+                </table>
             </div>
 
-            <hr class="my-4" />
-
-            @if (PurchaseDetails is null)
+            @if (PurchaseDetails is not null)
             {
-                <Loading />
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
             }
-            else
-            {
-                <Pagination CurrentPage="CurrentPage"
-                            SelectedPage="SelectedPage"
-                            TotalPages="TotalPages" />
-            }
-        </div>
+        </section>
     </div>
-}
+</div>

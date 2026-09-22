@@ -17,6 +17,7 @@ public partial class FormPrePayment
     [Parameter] public BillingContractDto? SelectedContract { get; set; }
     [Parameter] public EventCallback<BillingContractDto> SelectedContractChanged { get; set; }
     [Parameter] public bool IsSaving { get; set; }
+    [Parameter] public bool IsEditControl { get; set; }
 
     private string ContractFilter { get; set; } = string.Empty;
 

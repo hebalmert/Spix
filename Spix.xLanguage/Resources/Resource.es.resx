@@ -2032,4 +2032,460 @@
   <data name="Visit_NotStarted" xml:space="preserve">
     <value>Inicie la visita para cargar servicios y fotos.</value>
   </data>
+  <data name="Cargue_MacRepeated" xml:space="preserve">
+    <value>La MAC {0} ya esta en el inventario.</value>
+  </data>
+  <data name="Cargue_Title" xml:space="preserve">
+    <value>Cargue de seriales</value>
+  </data>
+  <data name="Cargue_Subtitle" xml:space="preserve">
+    <value>Equipos comprados que entran al inventario, MAC por MAC</value>
+  </data>
+  <data name="Cargue_Pending" xml:space="preserve">
+    <value>Cargues abiertos</value>
+  </data>
+  <data name="Cargue_ToUpload" xml:space="preserve">
+    <value>Seriales por subir</value>
+  </data>
+  <data name="Cargue_Available" xml:space="preserve">
+    <value>Disponibles</value>
+  </data>
+  <data name="Cargue_Installed" xml:space="preserve">
+    <value>Instalados</value>
+  </data>
+  <data name="Cargue_Damaged" xml:space="preserve">
+    <value>Averiados</value>
+  </data>
+  <data name="Cargue_Product" xml:space="preserve">
+    <value>Producto</value>
+  </data>
+  <data name="Cargue_Invoice" xml:space="preserve">
+    <value>Factura</value>
+  </data>
+  <data name="Cargue_Progress" xml:space="preserve">
+    <value>Avance</value>
+  </data>
+  <data name="Cargue_Of" xml:space="preserve">
+    <value>de</value>
+  </data>
+  <data name="Cargue_Missing" xml:space="preserve">
+    <value>Faltan</value>
+  </data>
+  <data name="Cargue_Done" xml:space="preserve">
+    <value>Completado</value>
+  </data>
+  <data name="Cargue_PendingOne" xml:space="preserve">
+    <value>Pendiente</value>
+  </data>
+  <data name="Cargue_Back" xml:space="preserve">
+    <value>Volver</value>
+  </data>
+  <data name="Cargue_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Cargue_Add" xml:space="preserve">
+    <value>Agregar</value>
+  </data>
+  <data name="Cargue_ScanHint" xml:space="preserve">
+    <value>Escanee o escriba la MAC y presione Enter</value>
+  </data>
+  <data name="Cargue_MacFormat" xml:space="preserve">
+    <value>{0} no es una MAC valida. Ejemplo: 00:1A:2B:3C:4D:5E</value>
+  </data>
+  <data name="Cargue_MacAdded" xml:space="preserve">
+    <value>MAC {0} agregada</value>
+  </data>
+  <data name="Cargue_InstalledIn" xml:space="preserve">
+    <value>Instalado en</value>
+  </data>
+  <data name="Cargue_CloseTitle" xml:space="preserve">
+    <value>Cerrar el cargue?</value>
+  </data>
+  <data name="Cargue_CloseText" xml:space="preserve">
+    <value>Al cerrarlo ya no se podran editar sus seriales.</value>
+  </data>
+  <data name="Map_Map" xml:space="preserve">
+    <value>Mapa</value>
+  </data>
+  <data name="Map_Title" xml:space="preserve">
+    <value>Ubicacion del cliente</value>
+  </data>
+  <data name="Map_EditTitle" xml:space="preserve">
+    <value>Editar ubicacion</value>
+  </data>
+  <data name="Map_Node" xml:space="preserve">
+    <value>Nodo</value>
+  </data>
+  <data name="Map_Distance" xml:space="preserve">
+    <value>Distancia</value>
+  </data>
+  <data name="Map_Coordinates" xml:space="preserve">
+    <value>Coordenadas</value>
+  </data>
+  <data name="Map_NoCoordinates" xml:space="preserve">
+    <value>No hay coordenadas para mostrar.</value>
+  </data>
+  <data name="Map_NodeNoCoordinates" xml:space="preserve">
+    <value>Este nodo no tiene coordenadas.</value>
+  </data>
+  <data name="Map_InvalidFormat" xml:space="preserve">
+    <value>Formato invalido. Use: {0}</value>
+  </data>
+  <data name="Purchase_NotPending" xml:space="preserve">
+    <value>La compra ya esta cerrada y no se puede modificar.</value>
+  </data>
+  <data name="Purchase_NoItems" xml:space="preserve">
+    <value>La compra no tiene productos: agregue productos o elimine la compra.</value>
+  </data>
+  <data name="Purchase_InvoiceRequired" xml:space="preserve">
+    <value>El numero de factura es obligatorio.</value>
+  </data>
+  <data name="Purchase_InvalidSupplier" xml:space="preserve">
+    <value>El proveedor no es valido.</value>
+  </data>
+  <data name="Purchase_InvalidStorage" xml:space="preserve">
+    <value>La bodega no es valida.</value>
+  </data>
+  <data name="Purchase_InvalidProduct" xml:space="preserve">
+    <value>El producto no es valido.</value>
+  </data>
+  <data name="Purchase_InvoiceRepeated" xml:space="preserve">
+    <value>La factura {0} de este proveedor ya esta registrada.</value>
+  </data>
+  <data name="Purchase_QuantityInvalid" xml:space="preserve">
+    <value>La cantidad debe ser mayor que cero.</value>
+  </data>
+  <data name="Purchase_CostInvalid" xml:space="preserve">
+    <value>El costo no puede ser negativo.</value>
+  </data>
+  <data name="Purchase_QuantityWhole" xml:space="preserve">
+    <value>{0} maneja seriales: la cantidad debe ser un numero entero.</value>
+  </data>
+  <data name="Purchase_ProductRepeated" xml:space="preserve">
+    <value>{0} ya esta en la compra: edite su renglon.</value>
+  </data>
+  <data name="Purchase_Title" xml:space="preserve">
+    <value>Compras</value>
+  </data>
+  <data name="Purchase_Subtitle" xml:space="preserve">
+    <value>Facturas de proveedor que entran a bodega</value>
+  </data>
+  <data name="Purchase_Open" xml:space="preserve">
+    <value>Compras abiertas</value>
+  </data>
+  <data name="Purchase_MonthCount" xml:space="preserve">
+    <value>Compras del mes</value>
+  </data>
+  <data name="Purchase_MonthTotal" xml:space="preserve">
+    <value>Total del mes</value>
+  </data>
+  <data name="Purchase_Details" xml:space="preserve">
+    <value>Detalle</value>
+  </data>
+  <data name="Purchase_Header" xml:space="preserve">
+    <value>Compra #{0}</value>
+  </data>
+  <data name="Purchase_TaxRate" xml:space="preserve">
+    <value>IVA %</value>
+  </data>
+  <data name="Purchase_Back" xml:space="preserve">
+    <value>Volver</value>
+  </data>
+  <data name="Purchase_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Purchase_CloseTitle" xml:space="preserve">
+    <value>Cerrar la compra?</value>
+  </data>
+  <data name="Purchase_CloseText" xml:space="preserve">
+    <value>Se actualizara el inventario y la compra ya no se podra editar. Los productos con seriales abriran su cargue.</value>
+  </data>
+  <data name="Purchase_Closed" xml:space="preserve">
+    <value>Compra cerrada</value>
+  </data>
+  <data name="Purchase_ClosedText" xml:space="preserve">
+    <value>El inventario fue actualizado. Los productos con seriales quedaron en Cargue de seriales.</value>
+  </data>
+  <data name="Purchase_Serials" xml:space="preserve">
+    <value>Seriales</value>
+  </data>
+  <data name="Purchase_SerialsHint" xml:space="preserve">
+    <value>Este producto maneja seriales: la cantidad debe ser entera.</value>
+  </data>
+  <data name="Storage_Select" xml:space="preserve">
+    <value>[Seleccione bodega]</value>
+  </data>
+  <data name="Supplier_Select" xml:space="preserve">
+    <value>[Seleccione proveedor]</value>
+  </data>
+  <data name="Storage_NameRepeated" xml:space="preserve">
+    <value>Ya existe una bodega llamada {0}.</value>
+  </data>
+  <data name="Storage_InUse" xml:space="preserve">
+    <value>La bodega {0} tiene inventario o movimientos: no se puede borrar. Inactivela.</value>
+  </data>
+  <data name="Supplier_NameRepeated" xml:space="preserve">
+    <value>Ya existe un proveedor llamado {0}.</value>
+  </data>
+  <data name="Supplier_DocumentRepeated" xml:space="preserve">
+    <value>Ya existe un proveedor con el documento {0}.</value>
+  </data>
+  <data name="Supplier_InUse" xml:space="preserve">
+    <value>El proveedor {0} tiene compras: no se puede borrar. Inactivelo.</value>
+  </data>
+  <data name="Storage_Subtitle" xml:space="preserve">
+    <value>Donde se guarda el inventario y cuanto tiene hoy cada bodega</value>
+  </data>
+  <data name="Storage_CountOne" xml:space="preserve">
+    <value>{0} bodega</value>
+  </data>
+  <data name="Storage_CountMany" xml:space="preserve">
+    <value>{0} bodegas</value>
+  </data>
+  <data name="Storage_Products" xml:space="preserve">
+    <value>Productos</value>
+  </data>
+  <data name="Storage_Units" xml:space="preserve">
+    <value>Unidades</value>
+  </data>
+  <data name="Supplier_Subtitle" xml:space="preserve">
+    <value>Sus proveedores, sus datos de contacto y su estado</value>
+  </data>
+  <data name="Supplier_CountOne" xml:space="preserve">
+    <value>{0} proveedor</value>
+  </data>
+  <data name="Supplier_CountMany" xml:space="preserve">
+    <value>{0} proveedores</value>
+  </data>
+  <data name="Supplier_Purchases" xml:space="preserve">
+    <value>Compras</value>
+  </data>
+  <data name="Supplier_LastPurchase" xml:space="preserve">
+    <value>Ultima: {0}</value>
+  </data>
+  <data name="Supplier_NoPurchases" xml:space="preserve">
+    <value>Sin compras</value>
+  </data>
+  <data name="IpNet_Title" xml:space="preserve">
+    <value>IP clientes</value>
+  </data>
+  <data name="IpNet_Subtitle" xml:space="preserve">
+    <value>Direcciones IP que se asignan a los clientes. Puede cargarlas y borrarlas por pool.</value>
+  </data>
+  <data name="IpNetwork_Title" xml:space="preserve">
+    <value>IP de red</value>
+  </data>
+  <data name="IpNetwork_Subtitle" xml:space="preserve">
+    <value>Direcciones IP de la red: nodos, servidores y equipos. Puede cargarlas y borrarlas por pool.</value>
+  </data>
+  <data name="Ip_CountOne" xml:space="preserve">
+    <value>{0} direccion</value>
+  </data>
+  <data name="Ip_CountMany" xml:space="preserve">
+    <value>{0} direcciones</value>
+  </data>
+  <data name="Ip_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Ip_Free" xml:space="preserve">
+    <value>Libres</value>
+  </data>
+  <data name="Ip_Assigned" xml:space="preserve">
+    <value>Asignadas</value>
+  </data>
+  <data name="Ip_Excluded" xml:space="preserve">
+    <value>Excluidas</value>
+  </data>
+  <data name="Ip_Address" xml:space="preserve">
+    <value>IP</value>
+  </data>
+  <data name="Ip_ColActive" xml:space="preserve">
+    <value>Activa</value>
+  </data>
+  <data name="Ip_ColAssigned" xml:space="preserve">
+    <value>Asignada</value>
+  </data>
+  <data name="Ip_ColExcluded" xml:space="preserve">
+    <value>Excluida</value>
+  </data>
+  <data name="Ip_PoolNew" xml:space="preserve">
+    <value>Pool nuevo</value>
+  </data>
+  <data name="Ip_PoolDelete" xml:space="preserve">
+    <value>Borrar pool</value>
+  </data>
+  <data name="Ip_InvalidFormat" xml:space="preserve">
+    <value>{0} no es una IP valida. Ejemplo: 192.168.0.10</value>
+  </data>
+  <data name="Ip_Repeated" xml:space="preserve">
+    <value>La IP {0} ya esta registrada.</value>
+  </data>
+  <data name="Ip_InUseChange" xml:space="preserve">
+    <value>La IP {0} esta en uso: no se puede cambiar su direccion. Liberela primero.</value>
+  </data>
+  <data name="Ip_InUseDelete" xml:space="preserve">
+    <value>La IP {0} esta en uso: no se puede borrar. Liberela primero.</value>
+  </data>
+  <data name="Ip_InvalidPoolBase" xml:space="preserve">
+    <value>La base del pool debe tener tres partes. Ejemplo: 192.168.0</value>
+  </data>
+  <data name="Ip_InvalidPoolRange" xml:space="preserve">
+    <value>El rango debe ir de 0 a 255, y Desde no puede ser mayor que Hasta.</value>
+  </data>
+  <data name="Ip_AssignedBySystem" xml:space="preserve">
+    <value>La marca el sistema cuando un contrato, nodo o servidor usa la IP.</value>
+  </data>
+  <data name="Net_PasswordRequired" xml:space="preserve">
+    <value>La clave es obligatoria.</value>
+  </data>
+  <data name="Net_IpNotAvailable" xml:space="preserve">
+    <value>La IP elegida no esta disponible: la usa otro equipo, esta inactiva o excluida.</value>
+  </data>
+  <data name="Node_NameRepeated" xml:space="preserve">
+    <value>Ya existe un nodo llamado {0} para ese tipo.</value>
+  </data>
+  <data name="Node_InUse" xml:space="preserve">
+    <value>El nodo {0} tiene contratos: no se puede borrar. Inactivelo.</value>
+  </data>
+  <data name="Server_NameRepeated" xml:space="preserve">
+    <value>Ya existe un servidor llamado {0}.</value>
+  </data>
+  <data name="Server_InUse" xml:space="preserve">
+    <value>El servidor {0} tiene contratos, colas o suspensiones: no se puede borrar. Inactivelo.</value>
+  </data>
+  <data name="Node_Title" xml:space="preserve">
+    <value>Nodos de acceso</value>
+  </data>
+  <data name="Node_Subtitle" xml:space="preserve">
+    <value>Puntos de acceso de la red, su zona, su IP y su ubicacion en el mapa.</value>
+  </data>
+  <data name="Node_CountOne" xml:space="preserve">
+    <value>{0} nodo</value>
+  </data>
+  <data name="Node_CountMany" xml:space="preserve">
+    <value>{0} nodos</value>
+  </data>
+  <data name="Node_Name" xml:space="preserve">
+    <value>SSID</value>
+  </data>
+  <data name="Server_Title" xml:space="preserve">
+    <value>Servidores</value>
+  </data>
+  <data name="Server_Subtitle" xml:space="preserve">
+    <value>Servidores de la red, su zona y su IP. Desde aqui puede consultarlos y hacerles ping.</value>
+  </data>
+  <data name="Server_CountOne" xml:space="preserve">
+    <value>{0} servidor</value>
+  </data>
+  <data name="Server_CountMany" xml:space="preserve">
+    <value>{0} servidores</value>
+  </data>
+  <data name="Server_Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="Net_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Net_Active" xml:space="preserve">
+    <value>Activos</value>
+  </data>
+  <data name="Net_Inactive" xml:space="preserve">
+    <value>Inactivos</value>
+  </data>
+  <data name="Net_Clients" xml:space="preserve">
+    <value>Clientes</value>
+  </data>
+  <data name="Net_KeepPassword" xml:space="preserve">
+    <value>Dejar vacia para no cambiarla</value>
+  </data>
+  <data name="Net_PingTitle" xml:space="preserve">
+    <value>Diagnostico de red ({0})</value>
+  </data>
+  <data name="NodeMap_Title" xml:space="preserve">
+    <value>Mapa de nodos</value>
+  </data>
+  <data name="NodeMap_Subtitle" xml:space="preserve">
+    <value>Cada nodo con sus clientes y la distancia al AP.</value>
+  </data>
+  <data name="NodeMap_Node" xml:space="preserve">
+    <value>Nodo</value>
+  </data>
+  <data name="NodeMap_Located" xml:space="preserve">
+    <value>Clientes con ubicacion</value>
+  </data>
+  <data name="NodeMap_Unlocated" xml:space="preserve">
+    <value>Clientes sin ubicacion</value>
+  </data>
+  <data name="NodeMap_SelectUnlocated" xml:space="preserve">
+    <value>[Sin ubicacion: {0}]</value>
+  </data>
+  <data name="NodeMap_Clients" xml:space="preserve">
+    <value>Clientes</value>
+  </data>
+  <data name="NodeMap_Farthest" xml:space="preserve">
+    <value>Mas lejano</value>
+  </data>
+  <data name="NodeMap_ChooseNode" xml:space="preserve">
+    <value>Elija un nodo para ver sus clientes en el mapa.</value>
+  </data>
+  <data name="NodeMap_NodeNoPoint" xml:space="preserve">
+    <value>Este nodo no tiene coordenadas: se ven sus clientes, pero no se puede medir la distancia. Cargue su ubicacion en Nodos.</value>
+  </data>
+  <data name="NodeMap_GoContract" xml:space="preserve">
+    <value>Contrato</value>
+  </data>
+  <data name="NodeMap_UnlocatedHint" xml:space="preserve">
+    <value>Cargue su ubicacion en el contrato para verlo en el mapa.</value>
+  </data>
+  <data name="NodeMap_Menu" xml:space="preserve">
+    <value>Mapa de nodos</value>
+  </data>
+  <data name="NodeMapViewType_Points" xml:space="preserve">
+    <value>Solo puntos</value>
+  </data>
+  <data name="NodeMapViewType_Lines" xml:space="preserve">
+    <value>Lineas</value>
+  </data>
+  <data name="NodeMapViewType_LinesWithDistance" xml:space="preserve">
+    <value>Lineas con distancia</value>
+  </data>
+  <data name="NodeMap_View" xml:space="preserve">
+    <value>Vista</value>
+  </data>
+  <data name="NodeMapCoverageType_None" xml:space="preserve">
+    <value>Sin mascara</value>
+  </data>
+  <data name="NodeMapCoverageType_Deg45" xml:space="preserve">
+    <value>45 grados</value>
+  </data>
+  <data name="NodeMapCoverageType_Deg90" xml:space="preserve">
+    <value>90 grados</value>
+  </data>
+  <data name="NodeMap_Coverage" xml:space="preserve">
+    <value>Cobertura</value>
+  </data>
+  <data name="NodeMap_Azimuth" xml:space="preserve">
+    <value>Direccion (azimut)</value>
+  </data>
+  <data name="NodeMap_Inside" xml:space="preserve">
+    <value>Dentro de cobertura</value>
+  </data>
+  <data name="PrePayment_NeedActiveContract" xml:space="preserve">
+    <value>Debe seleccionar un contrato activo.</value>
+  </data>
+  <data name="PrePayment_NoPlan" xml:space="preserve">
+    <value>El contrato seleccionado no tiene plan configurado.</value>
+  </data>
+  <data name="PrePayment_ServiceNotAvailable" xml:space="preserve">
+    <value>Alguno de los servicios elegidos ya no esta disponible: fue facturado o lo tomo otro pago adelantado.</value>
+  </data>
+  <data name="PrePayment_Repeated" xml:space="preserve">
+    <value>Ya existe un pago adelantado para este contrato, ano y mes.</value>
+  </data>
+  <data name="PrePayment_BilledNoEdit" xml:space="preserve">
+    <value>No se puede editar un pago adelantado facturado.</value>
+  </data>
+  <data name="PrePayment_BilledNoDelete" xml:space="preserve">
+    <value>No se puede eliminar un pago adelantado facturado.</value>
+  </data>
 </root>

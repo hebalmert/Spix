@@ -12,6 +12,7 @@ using Spix.AppService.InterfacesPayment;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesPayment;
+using Spix.Domain.EntitiesSchedule;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
@@ -375,6 +376,7 @@ public class PaymentService : IPaymentService
                 return AuthFail<PrePayment>();
 
             var model = await _context.PrePayments
+                .Include(x => x.PrePaymentDetails!)
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient!)
                     .ThenInclude(x => x.Zone!)
@@ -511,7 +513,7 @@ public class PaymentService : IPaymentService
                 return new ActionResponse<PrePayment>
                 {
                     WasSuccess = false,
-                    Message = "Ya existe un pago adelantado para este contrato, ano y mes."
+                    Message = _localizer["PrePayment_Repeated"]
                 };
             }
 
@@ -559,7 +561,7 @@ public class PaymentService : IPaymentService
                 return new ActionResponse<PrePayment>
                 {
                     WasSuccess = false,
-                    Message = "No se puede editar un pago adelantado facturado."
+                    Message = _localizer["PrePayment_BilledNoEdit"]
                 };
             }
 
@@ -568,6 +570,13 @@ public class PaymentService : IPaymentService
             current.ContractClientId = model.ContractClientId;
             current.YearNumber = model.YearNumber;
             current.MonthType = model.MonthType;
+
+            //Las lineas se arman de nuevo: se borran las anteriores y se liberan sus servicios
+            var oldLines = await _context.PrePaymentDetails
+                .Where(x => x.PrePaymentId == current.PrePaymentId)
+                .ToListAsync();
+            _context.PrePaymentDetails.RemoveRange(oldLines);
+            current.PrePaymentDetails = model.PrePaymentDetails;
 
             var response = await PreparePrePaymentAsync(current, user.CorporationId!.Value);
             if (!response.WasSuccess)
@@ -589,7 +598,7 @@ public class PaymentService : IPaymentService
                 return new ActionResponse<PrePayment>
                 {
                     WasSuccess = false,
-                    Message = "Ya existe un pago adelantado para este contrato, ano y mes."
+                    Message = _localizer["PrePayment_Repeated"]
                 };
             }
 
@@ -637,7 +646,7 @@ public class PaymentService : IPaymentService
                 return new ActionResponse<bool>
                 {
                     WasSuccess = false,
-                    Message = "No se puede eliminar un pago adelantado facturado."
+                    Message = _localizer["PrePayment_BilledNoDelete"]
                 };
             }
 
@@ -932,8 +941,12 @@ public class PaymentService : IPaymentService
         }
     }
 
+    //Arma el pago adelantado con sus lineas: el plan del contrato y los servicios que el usuario elija.
+    //Los precios SIEMPRE salen de la base, nunca del navegador, y quedan congelados: es plata recibida.
+    //Si el plan sube antes de facturar, la nota de cobro se queda con la diferencia como saldo.
     private async Task<ActionResponse<PrePayment>> PreparePrePaymentAsync(PrePayment model, int corporationId)
     {
+        //Validacion: el contrato tiene que estar activo
         var contract = await _context.ContractClients
             .Include(x => x.Client)
             .Include(x => x.Zone)
@@ -947,37 +960,143 @@ public class PaymentService : IPaymentService
 
         if (contract == null)
         {
-            return new ActionResponse<PrePayment>
-            {
-                WasSuccess = false,
-                Message = "Debe seleccionar un contrato activo."
-            };
+            return Fail<PrePayment>(_localizer["PrePayment_NeedActiveContract"]);
         }
 
         var contractPlan = contract.ContractPlans?.FirstOrDefault(x => x.Plan != null);
         if (contractPlan?.Plan == null)
         {
-            return new ActionResponse<PrePayment>
-            {
-                WasSuccess = false,
-                Message = "El contrato seleccionado no tiene plan configurado."
-            };
+            return Fail<PrePayment>(_localizer["PrePayment_NoPlan"]);
         }
 
         var plan = contractPlan.Plan;
-        var rate = plan.Tax?.Rate ?? 0;
+        var planRate = plan.Tax?.Rate ?? 0;
+        var planTax = CalculateTax(plan.Price, planRate);
 
+        //Los servicios que llegan del formulario: del cliente solo se toman los ids
+        var selectedDetailIds = (model.PrePaymentDetails ?? new List<PrePaymentDetail>())
+            .Where(x => x.ServiceRequestDetailId.HasValue)
+            .Select(x => x.ServiceRequestDetailId!.Value)
+            .Distinct()
+            .ToList();
+
+        var lines = new List<PrePaymentDetail>
+        {
+            new()
+            {
+                LineType = PrePaymentLineType.Plan,
+                Concept = $"Plan {plan.PlanName}",
+                PlanId = plan.PlanId,
+                TaxRate = planRate,
+                UnitPrice = plan.Price,
+                TaxAmount = planTax,
+                PriceWithTax = plan.Price + planTax,
+                CorporationId = corporationId
+            }
+        };
+
+        if (selectedDetailIds.Count > 0)
+        {
+            //Solo se aceptan servicios del mismo contrato, completados, sin facturar y libres
+            var available = await GetAvailableServicesAsync(model.ContractClientId, corporationId, model.PrePaymentId);
+            var byId = available.ToDictionary(x => x.ServiceRequestDetailId);
+
+            foreach (var detailId in selectedDetailIds)
+            {
+                if (!byId.TryGetValue(detailId, out var service))
+                {
+                    return Fail<PrePayment>(_localizer["PrePayment_ServiceNotAvailable"]);
+                }
+
+                lines.Add(new PrePaymentDetail
+                {
+                    LineType = PrePaymentLineType.Service,
+                    Concept = $"Solicitud #{service.RequestNumber} - {service.ServiceName}",
+                    ServiceRequestId = service.ServiceRequestId,
+                    ServiceRequestDetailId = service.ServiceRequestDetailId,
+                    TaxRate = service.TaxRate,
+                    UnitPrice = service.Price,
+                    TaxAmount = service.TaxAmount,
+                    PriceWithTax = service.Total,
+                    CorporationId = corporationId
+                });
+            }
+        }
+
+        //El encabezado es la suma de sus lineas
         model.ClientId = contract.ClientId;
         model.PlanId = plan.PlanId;
-        model.TaxRate = rate;
-        model.UnitPrice = plan.Price;
-        model.PriceWithTax = Math.Round(plan.Price + ((plan.Price * rate) / 100), 2);
+        model.TaxRate = planRate;
+        model.UnitPrice = lines.Sum(x => x.UnitPrice);
+        model.PriceWithTax = lines.Sum(x => x.PriceWithTax);
         model.Billed = false;
         model.DateBilled = null;
         model.CxCBillId = null;
+        model.PrePaymentDetails = lines;
 
         return new ActionResponse<PrePayment> { WasSuccess = true, Result = model };
     }
+
+    //Los servicios que se pueden adelantar de un contrato: completados, sin facturar, con valor
+    //mayor a cero y que no esten reservados en otro pago adelantado.
+    private async Task<List<PrePaymentServiceDto>> GetAvailableServicesAsync(Guid contractClientId, int corporationId, Guid? currentPrePaymentId)
+    {
+        //Los que ya estan reservados en otro pago adelantado sin facturar
+        var reserved = _context.PrePaymentDetails
+            .Where(x => x.CorporationId == corporationId &&
+                        x.ServiceRequestDetailId != null &&
+                        x.PrePaymentId != currentPrePaymentId &&
+                        !x.PrePayment!.Billed)
+            .Select(x => x.ServiceRequestDetailId!.Value);
+
+        return await _context.ServiceRequestDetails
+            .AsNoTracking()
+            .Where(x => x.ServiceRequest!.CorporationId == corporationId &&
+                        x.ServiceRequest.ContractClientId == contractClientId &&
+                        x.ServiceRequest.ScheduleStatus == ScheduleStatus.Completed &&
+                        !x.ServiceRequest.Billed &&
+                        x.Price > 0 &&
+                        !reserved.Contains(x.ServiceRequestDetailId))
+            .OrderBy(x => x.ServiceRequest!.RequestNumber)
+            .Select(x => new PrePaymentServiceDto
+            {
+                ServiceRequestId = x.ServiceRequestId,
+                ServiceRequestDetailId = x.ServiceRequestDetailId,
+                RequestNumber = x.ServiceRequest!.RequestNumber,
+                CompletedAtUtc = x.ServiceRequest.CompletedAtUtc,
+                ServiceName = x.ServiceClient!.ServiceName,
+                Detail = x.Detail,
+                TaxRate = x.TaxRate,
+                Price = x.Price,
+                TaxAmount = x.TaxAmount,
+                Total = x.Price + x.TaxAmount
+            })
+            .ToListAsync();
+    }
+
+    //Los servicios que puede adelantar un contrato, para el formulario
+    public async Task<ActionResponse<IEnumerable<PrePaymentServiceDto>>> GetPrePaymentServicesAsync(Guid contractClientId, Guid? prePaymentId, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<IEnumerable<PrePaymentServiceDto>>();
+
+            var list = await GetAvailableServicesAsync(contractClientId, user.CorporationId!.Value, prePaymentId);
+
+            return new ActionResponse<IEnumerable<PrePaymentServiceDto>> { WasSuccess = true, Result = list };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<PrePaymentServiceDto>>(ex);
+        }
+    }
+
+    private static decimal CalculateTax(decimal unitPrice, decimal taxRate) =>
+        Math.Round((unitPrice * taxRate) / 100, 2);
+
+    private ActionResponse<T> Fail<T>(string message) => new() { WasSuccess = false, Message = message };
 
     private async Task<ActionResponse<ContractExonerated>> PrepareContractExoneratedAsync(ContractExonerated model, int corporationId)
     {

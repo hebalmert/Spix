@@ -5,7 +5,7 @@ namespace Spix.AppService.InterfaceContratos.InterfaceContractControl;
 
 public interface IContractNodeService
 {
-    Task<ActionResponse<ContractNode>> GetAsync(Guid id);
+    Task<ActionResponse<ContractNode>> GetAsync(Guid id, string username);
 
     Task<ActionResponse<ContractNode>> AddAsync(ContractNode modelo, string username);
 

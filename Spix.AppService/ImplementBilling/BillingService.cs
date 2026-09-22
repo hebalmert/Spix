@@ -713,7 +713,24 @@ public class BillingService : IBillingService
             CorporationId = corporationId
         });
 
-        var serviceRequests = await GetPendingServiceRequestsAsync(contract.ContractClientId, corporationId, yearNumber, monthType);
+        //El pago adelantado del mes se busca antes: si reservo solicitudes, esas entran en ESTA nota
+        //aunque su fecha quede fuera del corte. El cliente ya las pago.
+        var prePayment = await _context.PrePayments
+            .Include(x => x.PrePaymentDetails!)
+            .FirstOrDefaultAsync(x =>
+                x.CorporationId == corporationId &&
+                x.ContractClientId == contract.ContractClientId &&
+                x.YearNumber == yearNumber &&
+                x.MonthType == monthType &&
+                !x.Billed);
+
+        var reservedRequestIds = prePayment?.PrePaymentDetails?
+            .Where(x => x.ServiceRequestId.HasValue)
+            .Select(x => x.ServiceRequestId!.Value)
+            .Distinct()
+            .ToList() ?? new List<Guid>();
+
+        var serviceRequests = await GetPendingServiceRequestsAsync(contract.ContractClientId, corporationId, yearNumber, monthType, reservedRequestIds);
         foreach (var request in serviceRequests)
         {
             foreach (var detail in request.ServiceRequestDetails ?? Enumerable.Empty<ServiceRequestDetail>())
@@ -748,13 +765,6 @@ public class BillingService : IBillingService
 
         var total = sell.SellDetails.Sum(x => x.TotalPrice);
         var preExonerated = await _context.ContractExonerateds.FirstOrDefaultAsync(x =>
-            x.CorporationId == corporationId &&
-            x.ContractClientId == contract.ContractClientId &&
-            x.YearNumber == yearNumber &&
-            x.MonthType == monthType &&
-            !x.Billed);
-
-        var prePayment = await _context.PrePayments.FirstOrDefaultAsync(x =>
             x.CorporationId == corporationId &&
             x.ContractClientId == contract.ContractClientId &&
             x.YearNumber == yearNumber &&
@@ -832,7 +842,9 @@ public class BillingService : IBillingService
         return new ActionResponse<bool> { WasSuccess = true, Result = true };
     }
 
-    private async Task<List<ServiceRequest>> GetPendingServiceRequestsAsync(Guid contractClientId, int corporationId, int yearNumber, MonthType monthType)
+    //Las solicitudes que entran en la nota: las completadas sin facturar hasta el corte del mes,
+    //mas las que un pago adelantado ya reservo (el cliente las pago, se cierran en esta nota).
+    private async Task<List<ServiceRequest>> GetPendingServiceRequestsAsync(Guid contractClientId, int corporationId, int yearNumber, MonthType monthType, List<Guid> reservedRequestIds)
     {
         var lastDate = new DateTime(yearNumber, (int)monthType, 1).AddMonths(1).AddTicks(-1);
         return await _context.ServiceRequests
@@ -842,8 +854,8 @@ public class BillingService : IBillingService
                         x.ContractClientId == contractClientId &&
                         x.ScheduleStatus == ScheduleStatus.Completed &&
                         !x.Billed &&
-                        x.CompletedAtUtc != null &&
-                        x.CompletedAtUtc <= lastDate)
+                        ((x.CompletedAtUtc != null && x.CompletedAtUtc <= lastDate) ||
+                         reservedRequestIds.Contains(x.ServiceRequestId)))
             .ToListAsync();
     }
 

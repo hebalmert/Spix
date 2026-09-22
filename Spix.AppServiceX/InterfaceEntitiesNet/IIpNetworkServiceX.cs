@@ -7,19 +7,21 @@ namespace Spix.AppServiceX.InterfaceEntitiesNet;
 
 public interface IIpNetworkServiceX
 {
-    Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string email, Guid? id = null);
+    Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string username, Guid? id = null);
 
-    Task<ActionResponse<IEnumerable<IpNetwork>>> GetAsync(PaginationDTO pagination, string email);
+    Task<ActionResponse<IpSummaryDto>> GetSummaryAsync(string username);
 
-    Task<ActionResponse<IpNetwork>> GetAsync(Guid id);
+    Task<ActionResponse<IEnumerable<IpNetwork>>> GetAsync(PaginationDTO pagination, string username);
 
-    Task<ActionResponse<IpNetwork>> UpdateAsync(IpNetwork modelo);
+    Task<ActionResponse<IpNetwork>> GetAsync(Guid id, string username);
 
-    Task<ActionResponse<IpNetwork>> AddAsync(IpNetwork modelo, string email);
+    Task<ActionResponse<IpNetwork>> UpdateAsync(IpNetwork modelo, string username);
 
-    Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string email);
+    Task<ActionResponse<IpNetwork>> AddAsync(IpNetwork modelo, string username);
 
-    Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string email);
+    Task<ActionResponse<int>> AddPoolAsync(IpNetPoolCreateDTO modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<int>> DeletePoolAsync(IpNetPoolCreateDTO modelo, string username);
+
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

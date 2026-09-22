@@ -1,162 +1,139 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
-using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesInven;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using Spix.xLanguage.Resources;
 
 namespace Spix.Services.ImplementInven;
 
+//Las bodegas de la corporacion. Toda consulta va filtrada por la corporacion del usuario,
+//y una bodega con inventario o movimientos no se borra: se inactiva.
 public class ProductStorageService : IProductStorageService
 {
     private readonly DataContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IMapperService _mapperService;
     private readonly ITransactionManager _transactionManager;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IUserHelper _userHelper;
+    private readonly IStringLocalizer _localizer;
 
-    public ProductStorageService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
-        ITransactionManager transactionManager, IMemoryCache cache,
-        IUserHelper userHelper, HttpErrorHandler httpErrorHandle)
+    public ProductStorageService(
+        DataContext context,
+        IHttpContextAccessor httpContextAccessor,
+        ITransactionManager transactionManager,
+        IUserHelper userHelper,
+        HttpErrorHandler httpErrorHandler,
+        IStringLocalizer localizer)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
-        _mapperService = mapperService;
         _transactionManager = transactionManager;
         _userHelper = userHelper;
-        _httpErrorHandler = httpErrorHandle;
+        _httpErrorHandler = httpErrorHandler;
+        _localizer = localizer;
     }
 
+    //Bodegas activas, con el neutro traducido en la posicion 0
     public async Task<ActionResponse<IEnumerable<ProductStorage>>> ComboAsync(string username)
     {
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<IEnumerable<ProductStorage>>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
-                };
-            }
-            var ListModel = await _context.ProductStorages.AsNoTracking()
-                .Where(x => x.Active && x.CorporationId == user.CorporationId)
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<ProductStorage>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var list = await _context.ProductStorages
+                .AsNoTracking()
+                .Where(x => x.Active && x.CorporationId == corporationId)
+                .OrderBy(x => x.StorageName)
                 .ToListAsync();
 
-            return new ActionResponse<IEnumerable<ProductStorage>>
+            list.Insert(0, new ProductStorage
             {
-                WasSuccess = true,
-                Result = ListModel
-            };
+                ProductStorageId = Guid.Empty,
+                StorageName = _localizer["Storage_Select"]
+            });
+
+            return Success<IEnumerable<ProductStorage>>(list);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ProductStorage>>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ProductStorage>>(ex);
         }
     }
 
-    public async Task<ActionResponse<IEnumerable<ProductStorage>>> GetAsync(PaginationDTO pagination, string username)
+    //El listado: cada bodega con sus existencias contadas en SQL
+    public async Task<ActionResponse<IEnumerable<StorageListItemDto>>> GetAsync(PaginationDTO pagination, string username)
     {
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
-            {
-                return new ActionResponse<IEnumerable<ProductStorage>>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
-                };
-            }
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<StorageListItemDto>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            //Se incluye directamente lo que muestra la tabla (departamento y ciudad). Antes se cargaba
-            //State con TODAS sus ciudades y la ciudad de la bodega aparecia solo por el enlace automatico
-            //de EF; con AsNoTracking ese enlace no existe y City llegaba en null.
-            var queryable = _context.ProductStorages.AsNoTracking()
-                .Include(x => x.State)
-                .Include(x => x.City)
-                .Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            var queryable = _context.ProductStorages
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId);
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
-                queryable = queryable.Where(x => x.StorageName!.ToLower().Contains(pagination.Filter.ToLower()));
+                var filter = pagination.Filter.Trim();
+                queryable = queryable.Where(x =>
+                    EF.Functions.Like(x.StorageName, $"%{filter}%") ||
+                    EF.Functions.Like(x.City!.Name, $"%{filter}%"));
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.StorageName).Paginate(pagination).ToListAsync();
 
-            return new ActionResponse<IEnumerable<ProductStorage>>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
-        }
-        catch (Exception ex)
-        {
-            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ProductStorage>>(ex); // ✅ Manejo de errores automático
-        }
-    }
-
-    public async Task<ActionResponse<ProductStorage>> GetAsync(Guid id)
-    {
-        try
-        {
-            var modelo = await _context.ProductStorages.AsNoTracking()
-                .Include(x => x.State).ThenInclude(x => x!.Cities)
-                .FirstOrDefaultAsync(x => x.ProductStorageId == id);
-            if (modelo == null)
-            {
-                return new ActionResponse<ProductStorage>
+            var list = await queryable
+                .OrderBy(x => x.StorageName)
+                .Paginate(pagination)
+                .Select(x => new StorageListItemDto
                 {
-                    WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
-                };
-            }
+                    ProductStorageId = x.ProductStorageId,
+                    StorageName = x.StorageName,
+                    StateName = x.State!.Name,
+                    CityName = x.City!.Name,
+                    Active = x.Active,
+                    Products = x.ProductStocks!.Count(s => s.Stock > 0),
+                    Units = x.ProductStocks!.Where(s => s.Stock > 0).Sum(s => (decimal?)s.Stock) ?? 0
+                })
+                .ToListAsync();
 
-            return new ActionResponse<ProductStorage>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            return Success<IEnumerable<StorageListItemDto>>(list);
         }
         catch (Exception ex)
         {
-            return await _httpErrorHandler.HandleErrorAsync<ProductStorage>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<StorageListItemDto>>(ex);
         }
     }
 
-    public async Task<ActionResponse<ProductStorage>> UpdateAsync(ProductStorage modelo)
+    public async Task<ActionResponse<ProductStorage>> GetAsync(Guid id, string username)
     {
-        await _transactionManager.BeginTransactionAsync();
-
         try
         {
-            ProductStorage NewModelo = _mapperService.Map<ProductStorage, ProductStorage>(modelo);
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<ProductStorage>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            _context.ProductStorages.Update(NewModelo);
-            await _transactionManager.SaveChangesAsync();
+            var modelo = await _context.ProductStorages
+                .AsNoTracking()
+                .Include(x => x.State)
+                .ThenInclude(x => x!.Cities)
+                .FirstOrDefaultAsync(x => x.ProductStorageId == id && x.CorporationId == corporationId);
+            if (modelo == null) return Fail<ProductStorage>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
-            await _transactionManager.CommitTransactionAsync();
-
-            return new ActionResponse<ProductStorage>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            return Success(modelo);
         }
         catch (Exception ex)
         {
-            await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<ProductStorage>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<ProductStorage>(ex);
         }
     }
 
@@ -165,65 +142,128 @@ public class ProductStorageService : IProductStorageService
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var user = await _userHelper.GetUserByUserNameAsync(username);
-            if (user == null)
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<ProductStorage>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var name = modelo.StorageName.Trim();
+            if (await NameExistsAsync(name, corporationId.Value, null)) return await FailRollbackAsync<ProductStorage>(_localizer["Storage_NameRepeated", name]);
+
+            //Lo que decide el servidor
+            var nuevo = new ProductStorage
             {
-                return new ActionResponse<ProductStorage>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas de Validacion de Usuario"
-                };
-            }
+                StorageName = name,
+                StateId = modelo.StateId,
+                CityId = modelo.CityId,
+                Active = modelo.Active,
+                CorporationId = corporationId.Value
+            };
 
-            modelo.CorporationId = Convert.ToInt32(user.CorporationId);
-
-            _context.ProductStorages.Add(modelo);
+            //Persistencia
+            _context.ProductStorages.Add(nuevo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<ProductStorage>
-            {
-                WasSuccess = true,
-                Result = modelo
-            };
+            return Success(nuevo);
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<ProductStorage>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<ProductStorage>(ex);
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<ProductStorage>> UpdateAsync(ProductStorage modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var DataRemove = await _context.ProductStorages.FindAsync(id);
-            if (DataRemove == null)
-            {
-                return new ActionResponse<bool>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas para Enconstrar el Registro Indicado"
-                };
-            }
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<ProductStorage>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
 
-            _context.ProductStorages.Remove(DataRemove);
+            var current = await _context.ProductStorages.FirstOrDefaultAsync(x =>
+                x.ProductStorageId == modelo.ProductStorageId &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<ProductStorage>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
+            var name = modelo.StorageName.Trim();
+            if (await NameExistsAsync(name, corporationId.Value, current.ProductStorageId)) return await FailRollbackAsync<ProductStorage>(_localizer["Storage_NameRepeated", name]);
+
+            //Mapeo campo por campo
+            current.StorageName = name;
+            current.StateId = modelo.StateId;
+            current.CityId = modelo.CityId;
+            current.Active = modelo.Active;
+
+            //Persistencia
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
-            return new ActionResponse<bool>
-            {
-                WasSuccess = true,
-                Result = true
-            };
+            return Success(current);
         }
         catch (Exception ex)
         {
             await _transactionManager.RollbackTransactionAsync();
-            return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
+            return await _httpErrorHandler.HandleErrorAsync<ProductStorage>(ex);
         }
     }
+
+    //Solo se borra una bodega que nunca se uso: sin existencias, compras ni traslados
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            //Validacion
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            var current = await _context.ProductStorages.FirstOrDefaultAsync(x =>
+                x.ProductStorageId == id &&
+                x.CorporationId == corporationId);
+            if (current == null) return await FailRollbackAsync<bool>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            var inUse = await _context.ProductStocks.AnyAsync(x => x.ProductStorageId == id) ||
+                        await _context.Purchases.AnyAsync(x => x.ProductStorageId == id) ||
+                        await _context.Transfers.AnyAsync(x => x.FromProductStorageId == id || x.ToProductStorageId == id);
+            if (inUse) return await FailRollbackAsync<bool>(_localizer["Storage_InUse", current.StorageName]);
+
+            //Persistencia
+            _context.ProductStorages.Remove(current);
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return Success(true);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
+    private async Task<bool> NameExistsAsync(string name, int corporationId, Guid? productStorageId)
+    {
+        return await _context.ProductStorages.AnyAsync(x =>
+            x.CorporationId == corporationId &&
+            x.StorageName == name &&
+            x.ProductStorageId != productStorageId);
+    }
+
+    private async Task<int?> GetCorporationIdAsync(string username)
+    {
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        return user?.CorporationId;
+    }
+
+    private async Task<ActionResponse<T>> FailRollbackAsync<T>(string message)
+    {
+        await _transactionManager.RollbackTransactionAsync();
+        return Fail<T>(message);
+    }
+
+    private static ActionResponse<T> Success<T>(T result) => new() { WasSuccess = true, Result = result };
+
+    private static ActionResponse<T> Fail<T>(string message) => new() { WasSuccess = false, Message = message };
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -26,7 +26,7 @@ public partial class IndexSupplier
     private int PageSize = 15;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/suppliers";
-    public List<Supplier>? Suppliers { get; set; }
+    public List<SupplierListItemDto>? Suppliers { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -84,14 +84,10 @@ public partial class IndexSupplier
         {
             url += $"&filter={Filter}";
         }
-        var responseHttp = await _repository.GetAsync<List<Supplier>>(url);
+        var responseHttp = await _repository.GetAsync<List<SupplierListItemDto>>(url);
         // Centralizamos el manejo de errores
-        bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
-        if (errorHandled)
-        {
-            _navigationManager.NavigateTo("/dashboard");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
-        }
 
         Suppliers = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);

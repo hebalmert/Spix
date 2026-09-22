@@ -1,0 +1,155 @@
+@page "/nodemap"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.ModelUtility
+@using Spix.DomainLogic.ItemsGeneric
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-map-location-dot"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["NodeMap_Title"]</h3>
+                <p>@Localizer["NodeMap_Subtitle"]</p>
+            </div>
+        </div>
+
+        @* Los tres selectores: las listas llegan armadas del backend, con su neutro *@
+        <div class="nm-filters">
+            <div class="nm-filter">
+                <label>@Localizer["NodeMap_Node"]</label>
+                <GenericSelectWrapper Tmodel="GuidNameModel" Items="Nodes">
+                    <Body>
+                        <select class="form-select" value="@SelectedNodeId" @onchange="NodeChanged">
+                            @foreach (var item in Nodes!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+
+            @* Como se ve: solo puntos, lineas al AP, o lineas con la distancia *@
+            <div class="nm-filter">
+                <label>@Localizer["NodeMap_View"]</label>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="Views">
+                    <Body>
+                        <select class="form-select" value="@SelectedView" @onchange="ViewChanged" disabled="@(Map is null)">
+                            @foreach (var item in Views!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+
+            @* La mascara del transmisor: su ancho y hacia donde apunta *@
+            <div class="nm-filter">
+                <label>@Localizer["NodeMap_Coverage"]</label>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="Coverages">
+                    <Body>
+                        <select class="form-select" value="@SelectedCoverage" @onchange="CoverageChanged" disabled="@(Map is null)">
+                            @foreach (var item in Coverages!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+
+            @if (SelectedCoverage > 0)
+            {
+                <div class="nm-filter">
+                    <label>@Localizer["NodeMap_Azimuth"]: @Azimuth°</label>
+                    @* Los botones mueven de a un grado: con el mouse cuesta afinar *@
+                    <div class="nm-range-row">
+                        <button type="button" class="nm-step" @onclick="() => StepAzimuthAsync(-1)" title="-1°">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <input type="range" class="form-range nm-range" min="0" max="359" step="1"
+                               value="@Azimuth" @oninput="AzimuthChanged" />
+                        <button type="button" class="nm-step" @onclick="() => StepAzimuthAsync(1)" title="+1°">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+
+            <div class="nm-filter">
+                <label>@Localizer["NodeMap_Unlocated"]</label>
+                <div class="nm-inline">
+                    <select class="form-select" value="@SelectedUnlocatedId" @onchange="UnlocatedChanged" disabled="@(Map is null)">
+                        @foreach (var item in Map?.UnlocatedOptions ?? new())
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                    @* El detalle del contrato es del Administrator: alli se carga la ubicacion *@
+                    @if (SelectedUnlocatedId != Guid.Empty)
+                    {
+                        <AuthorizeView Roles="Administrator">
+                            <a class="btn nm-btn" href="/detailscontractcontrol/@SelectedUnlocatedId">
+                                <i class="fa fa-file-contract"></i> @Localizer["NodeMap_GoContract"]
+                            </a>
+                        </AuthorizeView>
+                    }
+                </div>
+                @if (SelectedUnlocatedId != Guid.Empty)
+                {
+                    <div class="nm-hint">@Localizer["NodeMap_UnlocatedHint"]</div>
+                }
+            </div>
+        </div>
+
+        @if (Map is null)
+        {
+            <div class="nm-empty">
+                <i class="fa fa-tower-broadcast"></i> @Localizer["NodeMap_ChooseNode"]
+            </div>
+        }
+        else
+        {
+            @* El tablero del nodo elegido *@
+            <div class="nm-board">
+                <div class="nm-tile">
+                    <div class="nm-tile-label">@Localizer["NodeMap_Clients"]</div>
+                    <div class="nm-tile-value">@Map.Clients.ToString("N0")</div>
+                </div>
+                <div class="nm-tile is-on">
+                    <div class="nm-tile-label">@Localizer["NodeMap_Located"]</div>
+                    <div class="nm-tile-value">@Map.WithLocation.ToString("N0")</div>
+                </div>
+                <div class="nm-tile is-off">
+                    <div class="nm-tile-label">@Localizer["NodeMap_Unlocated"]</div>
+                    <div class="nm-tile-value">@Map.WithoutLocation.ToString("N0")</div>
+                </div>
+                @if (SelectedCoverage > 0)
+                {
+                    <div class="nm-tile is-cover">
+                        <div class="nm-tile-label">@Localizer["NodeMap_Inside"]</div>
+                        <div class="nm-tile-value">@InsideCoverage.ToString("N0")</div>
+                    </div>
+                }
+                <div class="nm-tile is-far">
+                    <div class="nm-tile-label">@Localizer["NodeMap_Farthest"]</div>
+                    <div class="nm-tile-value">@(Map.FarthestKm.HasValue ? $"{Map.FarthestKm.Value:N2} Km" : "—")</div>
+                </div>
+            </div>
+
+            @if (Map.Latitude is null || Map.Longitude is null)
+            {
+                <div class="nm-warning">
+                    <i class="fa fa-triangle-exclamation"></i> @Localizer["NodeMap_NodeNoPoint"]
+                </div>
+            }
+        }
+
+        @* El div del mapa existe siempre: Leaflet pinta sobre el cuando se elige un nodo *@
+        <div id="@MapId" class="nm-map @(Map is null ? "is-idle" : null)"></div>
+    </div>
+</div>

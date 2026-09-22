@@ -14,7 +14,7 @@ public class ContractBindServiceX : IContractBindServiceX
         _contractService = contractService;
     }
 
-    public async Task<ActionResponse<ContractBind>> GetAsync(Guid id) => await _contractService.GetAsync(id);
+    public async Task<ActionResponse<ContractBind>> GetAsync(Guid id, string username) => await _contractService.GetAsync(id, username);
 
     public async Task<ActionResponse<ContractBind>> AddAsync(ContractBind modelo, string username) => await _contractService.AddAsync(modelo, username);
 

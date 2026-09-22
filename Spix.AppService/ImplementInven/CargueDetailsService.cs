@@ -306,7 +306,32 @@ public class CargueDetailsService : ICargueDetailsService
                 };
             }
 
+            //La MAC no se repite en toda la corporacion: el indice unico la rechazaria igual,
+            //pero con un error de base de datos que no dice nada.
+            var macRepetida = await _context.CargueDetails.AnyAsync(x =>
+                x.CorporationId == user.CorporationId &&
+                x.MacWlan == modelo.MacWlan);
+            if (macRepetida)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<CargueDetail>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Cargue_MacRepeated", modelo.MacWlan ?? string.Empty]
+                };
+            }
+
+            //Un serial que entra al inventario siempre nace disponible: pasa a operativo
+            //cuando se instala en un contrato, no porque alguien lo marque al subirlo.
+            modelo.Status = SerialStateType.Disponible;
+
             _context.CargueDetails.Add(modelo);
+
+            //Con el ultimo serial de la compra, el cargue se cierra solo
+            if (totalSeriales + 1 >= cargue.CantToUp)
+            {
+                cargue.Status = CargueType.Completado;
+            }
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

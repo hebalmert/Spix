@@ -81,4 +81,7 @@ public class PrePayment
     public Plan? Plan { get; set; }
 
     public CxCBill? CxCBill { get; set; }
+
+    //De que se compone el pago: el plan del mes y los servicios que se adelantaron
+    public ICollection<PrePaymentDetail>? PrePaymentDetails { get; set; }
 }

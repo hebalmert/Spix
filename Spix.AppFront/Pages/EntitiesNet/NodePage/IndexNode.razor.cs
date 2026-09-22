@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.AppFront.Pages.EntitiesContratos.ContractControlPage.ContractMapPage;
-using Spix.Domain.EntitiesNet;
+using Spix.DomainLogic.EntitiesNetDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -27,13 +27,14 @@ public partial class IndexNode
     private int PageSize = 15;  //Cantidad de registros por pagina
 
     private const string baseUrl = "api/v1/nodes";
-    public List<Node>? Nodes { get; set; }
+    public List<NodeListItemDto>? Nodes { get; set; }
+    private NetSummaryDto? Summary;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await Cargar();
+            await ReloadAsync();
         }
     }
 
@@ -56,7 +57,7 @@ public partial class IndexNode
         {
             url += $"&filter={Filter}";
         }
-        var responseHttp = await _repository.GetAsync<List<Node>>(url);
+        var responseHttp = await _repository.GetAsync<List<NodeListItemDto>>(url);
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
@@ -105,7 +106,7 @@ public partial class IndexNode
         {
             if (result.Succeeded)
             {
-                await Cargar(CurrentPage);   // refresca la tabla
+                await ReloadAsync();   // refresca la tabla
                 await _sweetAlert.FireAsync(
                     Localizer[nameof(Resource.msg_SuccessTitle)],
                     Localizer[nameof(Resource.msg_SuccessMessage)],
@@ -115,11 +116,11 @@ public partial class IndexNode
         });
     }
 
-    private async Task ShowMapAsync(Node node)
+    private async Task ShowMapAsync(NodeListItemDto node)
     {
         if (!node.Latitude.HasValue || !node.Longitude.HasValue)
         {
-            await _sweetAlert.FireAsync("Mapa", "Este nodo no tiene coordenadas.", SweetAlertIcon.Warning);
+            await _sweetAlert.FireAsync(Localizer["Map_Map"], Localizer["Map_NodeNoCoordinates"], SweetAlertIcon.Warning);
             return;
         }
 
@@ -131,7 +132,7 @@ public partial class IndexNode
             {
                 { "Latitude", node.Latitude },
                 { "Longitude", node.Longitude },
-                { "Title", node.NodesName ?? "Mapa" }
+                { "Title", node.NodesName ?? Localizer["Map_Map"] }
             };
 
         await _modalService.ShowAsync(component, parameters);
@@ -158,6 +159,23 @@ public partial class IndexNode
             return;
 
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await ReloadAsync();
+    }
+
+    //El tablero se cuenta sobre todos los equipos, no solo la pagina visible
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<NetSummaryDto>($"{baseUrl}/summary");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Summary = responseHttp.Response;
+    }
+
+    //Despues de crear, editar o borrar: tabla y tablero. Paginar y buscar solo recargan la tabla.
+    private async Task ReloadAsync()
+    {
+        await LoadSummaryAsync();
         await Cargar(CurrentPage);
     }
 }
