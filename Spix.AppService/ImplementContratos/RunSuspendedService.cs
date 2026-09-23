@@ -255,6 +255,53 @@ public class RunSuspendedService : IRunSuspendedService
         }
     }
 
+    //El tablero de la pantalla de cortes: cuatro numeros, todos contados por la base
+    public async Task<ActionResponse<CorteSummaryDto>> GetSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return AuthFail<CorteSummaryDto>();
+            }
+
+            var corporationId = Convert.ToInt32(user.CorporationId);
+            var summary = new CorteSummaryDto();
+
+            //Los que estan suspendidos hoy
+            summary.Suspended = await _context.ContractSuspendeds
+                .AsNoTracking()
+                .CountAsync(x => x.CorporationId == corporationId && x.DateReactivated == null);
+
+            //Los que deben y cuanto suman, en una sola pasada
+            var deuda = await _context.CxCBills
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId && !x.Cancelled && x.Balance > 0)
+                .GroupBy(x => 1)
+                .Select(g => new
+                {
+                    Contracts = g.Select(x => x.ContractClientId).Distinct().Count(),
+                    Total = g.Sum(x => x.Balance)
+                })
+                .FirstOrDefaultAsync();
+
+            summary.Debtors = deuda?.Contracts ?? 0;
+            summary.DebtTotal = deuda?.Total ?? 0;
+
+            //Los cortes creados que faltan por ejecutar
+            summary.Pending = await _context.RunSuspendeds
+                .AsNoTracking()
+                .CountAsync(x => x.CorporationId == corporationId && !x.Executed);
+
+            return new ActionResponse<CorteSummaryDto> { WasSuccess = true, Result = summary };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<CorteSummaryDto>(ex);
+        }
+    }
+
     //Revision previa: cuantos deben, a cuantos se les corta y como quedan repartidos por
     //equipo. Los numeros los cuenta la base: aqui NO se traen los contratos, porque con
     //mil clientes seria cargar mil filas para mostrar cuatro numeros.

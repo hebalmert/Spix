@@ -17,6 +17,11 @@ public class PaymentServiceX : IPaymentServiceX
         _paymentService = paymentService;
     }
 
+    public async Task<ActionResponse<CxCBillSummaryDto>> GetCxCBillSummaryAsync(string username)
+    {
+        return await _paymentService.GetCxCBillSummaryAsync(username);
+    }
+
     public async Task<ActionResponse<IEnumerable<CxCBill>>> GetCxCBillsAsync(PaginationDTO pagination, string username) =>
         await _paymentService.GetCxCBillsAsync(pagination, username);
 
@@ -40,6 +45,11 @@ public class PaymentServiceX : IPaymentServiceX
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboMonthsAsync(string username) =>
         await _paymentService.ComboMonthsAsync(username);
 
+    public async Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchCxCContractsAsync(string filter, string username)
+    {
+        return await _paymentService.SearchCxCContractsAsync(filter, username);
+    }
+
     public async Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username) =>
         await _paymentService.SearchContractsAsync(filter, username);
 
@@ -53,6 +63,11 @@ public class PaymentServiceX : IPaymentServiceX
 
     public async Task<ActionResponse<bool>> DeletePrePaymentAsync(Guid id, string username) =>
         await _paymentService.DeletePrePaymentAsync(id, username);
+
+    public async Task<ActionResponse<ExoneratedSummaryDto>> GetExoneratedSummaryAsync(string username)
+    {
+        return await _paymentService.GetExoneratedSummaryAsync(username);
+    }
 
     public async Task<ActionResponse<IEnumerable<ContractExonerated>>> GetContractExoneratedsAsync(PaginationDTO pagination, string username) =>
         await _paymentService.GetContractExoneratedsAsync(pagination, username);

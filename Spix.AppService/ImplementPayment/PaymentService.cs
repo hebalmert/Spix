@@ -48,6 +48,58 @@ public class PaymentService : IPaymentService
         _contractorPaymentService = contractorPaymentService;
     }
 
+    //El tablero de cuentas por cobrar: lo vivo y lo que entro en el mes. Solo agregados.
+    public async Task<ActionResponse<CxCBillSummaryDto>> GetCxCBillSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<CxCBillSummaryDto>();
+
+            //Las notas que siguen abiertas, en una sola pasada
+            var abiertas = await _context.CxCBills
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            !x.Cancelled &&
+                            !x.Paid &&
+                            x.Balance > 0)
+                .GroupBy(x => 1)
+                .Select(g => new
+                {
+                    Notes = g.Count(),
+                    Balance = g.Sum(x => x.Balance),
+                    Debtors = g.Select(x => x.ContractClientId).Distinct().Count()
+                })
+                .FirstOrDefaultAsync();
+
+            var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var nextMonth = monthStart.AddMonths(1);
+
+            //Lo recaudado en el mes sale de los abonos, que es donde entra la plata
+            var recaudado = await _context.CxCBillDetails
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            x.DatePayment >= monthStart &&
+                            x.DatePayment < nextMonth)
+                .SumAsync(x => (decimal?)x.Payment) ?? 0;
+
+            var summary = new CxCBillSummaryDto
+            {
+                OpenNotes = abiertas?.Notes ?? 0,
+                OpenBalance = abiertas?.Balance ?? 0,
+                Debtors = abiertas?.Debtors ?? 0,
+                CollectedMonth = recaudado
+            };
+
+            return new ActionResponse<CxCBillSummaryDto> { WasSuccess = true, Result = summary };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<CxCBillSummaryDto>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<CxCBill>>> GetCxCBillsAsync(PaginationDTO pagination, string username)
     {
         try
@@ -194,6 +246,22 @@ public class PaymentService : IPaymentService
                 .ExecuteUpdateAsync(s => s
                     .SetProperty(x => x.Paid, isPaid)
                     .SetProperty(x => x.DatePaid, isPaid ? today : (DateTime?)null));
+
+            //Si estaba cortado por falta de pago, queda marcado para la reactivacion.
+            //Aqui NO se toca la Mikrotik: el equipo se toca una sola vez, desde el modulo
+            //de reactivacion, por servidor.
+            if (isPaid)
+            {
+                await _context.ContractSuspendeds
+                    .Where(x => x.ContractClientId == bill.ContractClientId &&
+                                x.CorporationId == bill.CorporationId &&
+                                x.DateReactivated == null &&
+                                x.Origin == SuspendedOrigin.Corte &&
+                                !x.PaymentReceived)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(x => x.PaymentReceived, true)
+                        .SetProperty(x => x.DatePaymentReceived, today));
+            }
 
             //El renglon del recaudo. El id se fija aqui porque la cuenta por pagar del
             //contratista lo necesita antes de guardar.
@@ -552,6 +620,51 @@ public class PaymentService : IPaymentService
         }
     }
 
+    //El buscador de Cuentas por Cobrar: busca entre los contratos QUE TIENEN NOTA, sin
+    //importar el estado. El que debe casi siempre esta suspendido, y es al que hay que
+    //poder encontrar para cobrarle.
+    public async Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchCxCContractsAsync(string filter, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<IEnumerable<BillingContractDto>>();
+
+            filter = filter?.Trim() ?? string.Empty;
+            if (filter.Length < 2)
+                return new ActionResponse<IEnumerable<BillingContractDto>> { WasSuccess = true, Result = Enumerable.Empty<BillingContractDto>() };
+
+            //Sin Includes y solo las columnas que pinta la lista
+            var contracts = await _context.CxCBills
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            !x.Cancelled &&
+                            (EF.Functions.Like(x.Client!.FirstName, $"%{filter}%") ||
+                             EF.Functions.Like(x.Client!.LastName, $"%{filter}%") ||
+                             EF.Functions.Like(x.Client!.FirstName + " " + x.Client!.LastName, $"%{filter}%") ||
+                             EF.Functions.Like(x.ContractClient!.ControlContrato.ToString(), $"%{filter}%")))
+                .Select(x => new BillingContractDto
+                {
+                    ContractClientId = x.ContractClientId,
+                    ClientId = x.ClientId,
+                    ControlContrato = x.ContractClient!.ControlContrato,
+                    ClientFullName = x.Client!.FirstName + " " + x.Client.LastName,
+                    ZoneName = x.ContractClient.Zone!.ZoneName
+                })
+                .Distinct()
+                .OrderBy(x => x.ClientFullName)
+                .Take(20)
+                .ToListAsync();
+
+            return new ActionResponse<IEnumerable<BillingContractDto>> { WasSuccess = true, Result = contracts };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<BillingContractDto>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username)
     {
         try
@@ -564,13 +677,11 @@ public class PaymentService : IPaymentService
             if (filter.Length < 2)
                 return new ActionResponse<IEnumerable<BillingContractDto>> { WasSuccess = true, Result = Enumerable.Empty<BillingContractDto>() };
 
+            //Sin Includes: se arma el DTO en la consulta. Traer el contrato completo con
+            //su cliente, su zona, su ciudad y su plan hace que el servidor cancele la
+            //consulta por costo cuando hay muchos contratos.
             var contracts = await _context.ContractClients
-                .Include(x => x.Client)
-                .Include(x => x.Zone!)
-                    .ThenInclude(x => x.City)
-                .Include(x => x.ContractPlans!)
-                    .ThenInclude(x => x.Plan!)
-                        .ThenInclude(x => x.Tax)
+                .AsNoTracking()
                 .Where(x => x.CorporationId == user.CorporationId &&
                             x.ContractState == ContractState.Active &&
                             (EF.Functions.Like(x.Client!.FirstName, $"%{filter}%") ||
@@ -801,6 +912,52 @@ public class PaymentService : IPaymentService
         {
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
+    //El tablero de exoneraciones: lo programado que aun no se cruza con una nota, y lo
+    //que se cruzo en el mes en curso. Todo contado por la base.
+    public async Task<ActionResponse<ExoneratedSummaryDto>> GetExoneratedSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<ExoneratedSummaryDto>();
+
+            var pendientes = _context.ContractExonerateds
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId && !x.Billed);
+
+            //Una sola pasada para los tres numeros de lo pendiente
+            var summary = await pendientes
+                .GroupBy(x => 1)
+                .Select(g => new ExoneratedSummaryDto
+                {
+                    Pending = g.Count(),
+                    PendingTotal = g.Sum(x => x.PriceWithTax),
+                    Contracts = g.Select(x => x.ContractClientId).Distinct().Count()
+                })
+                .FirstOrDefaultAsync() ?? new ExoneratedSummaryDto();
+
+            var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var nextMonth = monthStart.AddMonths(1);
+
+            var delMes = _context.ContractExonerateds
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            x.Billed &&
+                            x.DateBilled >= monthStart &&
+                            x.DateBilled < nextMonth);
+
+            summary.BilledMonth = await delMes.CountAsync();
+            summary.BilledMonthTotal = await delMes.SumAsync(x => (decimal?)x.PriceWithTax) ?? 0;
+
+            return new ActionResponse<ExoneratedSummaryDto> { WasSuccess = true, Result = summary };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<ExoneratedSummaryDto>(ex);
         }
     }
 

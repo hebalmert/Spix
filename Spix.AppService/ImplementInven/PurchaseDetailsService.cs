@@ -5,6 +5,7 @@ using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.Extensions;
+using Spix.AppInfra.Sequences;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesInven;
@@ -267,13 +268,6 @@ public class PurchaseDetailsService : IPurchaseDetailsService
                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, PurchaseStatus.Completado));
             if (claimed == 0) return await FailRollbackAsync<Purchase>(_localizer["Purchase_NotPending"]);
 
-            var register = await _context.Registers.FirstOrDefaultAsync(x => x.CorporationId == corporationId);
-            if (register == null)
-            {
-                register = new Register { CorporationId = corporationId.Value };
-                _context.Registers.Add(register);
-            }
-
             foreach (var item in details)
             {
                 //Stock en la bodega de la compra
@@ -302,11 +296,12 @@ public class PurchaseDetailsService : IPurchaseDetailsService
                 //Un producto con seriales abre su cargue para subir las MAC
                 if (item.Product.WithSerials)
                 {
-                    register.Cargue += 1;
+                    //El consecutivo del cargue lo entrega la base
+                    var nroCargue = await NumberSequence.NextAsync(_context, corporationId.Value, NumberKind.Cargue);
                     _context.Cargues.Add(new Cargue
                     {
                         DateCargue = DateTime.UtcNow,
-                        ControlCargue = Convert.ToString(register.Cargue),
+                        ControlCargue = Convert.ToString(nroCargue),
                         PurchaseDetailId = item.PurchaseDetailId,
                         ProductId = item.ProductId,
                         CantToUp = item.Quantity,

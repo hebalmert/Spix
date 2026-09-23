@@ -46,12 +46,30 @@ public class CxCBillsController : ControllerBase
         }
     }
 
+    //Los numeros del tablero
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.GetCxCBillSummaryAsync(userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     //Los meses traducidos, para mostrar el periodo de la nota
     [HttpGet("combomonths")]
     public async Task<IActionResult> ComboMonthsAsync()
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _paymentService.ComboMonthsAsync(userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Busca entre los clientes que tienen nota, sin importar el estado del contrato
+    [HttpGet("searchclients")]
+    public async Task<IActionResult> SearchClientsAsync([FromQuery] string filter)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.SearchCxCContractsAsync(filter, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
@@ -63,7 +81,7 @@ public class CxCBillsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);

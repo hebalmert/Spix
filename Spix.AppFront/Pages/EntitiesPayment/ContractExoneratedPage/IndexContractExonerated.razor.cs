@@ -28,11 +28,15 @@ public partial class IndexContractExonerated
     private List<ContractExonerated>? ContractExonerateds { get; set; }
     private List<IntItemModel> Months { get; set; } = new();
 
+    //Los numeros del tablero: se piden una sola vez al abrir
+    private ExoneratedSummaryDto? Summary { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await LoadMonthsAsync();
+            await LoadSummaryAsync();
             await LoadAsync();
         }
     }
@@ -42,6 +46,13 @@ public partial class IndexContractExonerated
         var responseHttp = await _repository.GetAsync<List<IntItemModel>>($"{BaseUrl}/combomonths");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
             Months = responseHttp.Response ?? new();
+    }
+
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<ExoneratedSummaryDto>($"{BaseUrl}/summary");
+        if (!await _responseHandler.HandleErrorAsync(responseHttp))
+            Summary = responseHttp.Response;
     }
 
     private string GetMonthName(MonthType monthType) =>
@@ -87,6 +98,7 @@ public partial class IndexContractExonerated
         await _modalService.ShowAsync(typeof(CreateContractExonerated), parameters, async result =>
         {
             if (result.Succeeded)
+                await LoadSummaryAsync();
                 await LoadAsync(CurrentPage);
         });
     }
@@ -102,6 +114,7 @@ public partial class IndexContractExonerated
         await _modalService.ShowAsync(typeof(EditContractExonerated), parameters, async result =>
         {
             if (result.Succeeded)
+                await LoadSummaryAsync();
                 await LoadAsync(CurrentPage);
         });
     }
@@ -126,6 +139,7 @@ public partial class IndexContractExonerated
             return;
 
         await _sweetAlert.FireAsync("Eliminado", "Registro eliminado correctamente.", SweetAlertIcon.Success);
+        await LoadSummaryAsync();
         await LoadAsync(CurrentPage);
     }
 

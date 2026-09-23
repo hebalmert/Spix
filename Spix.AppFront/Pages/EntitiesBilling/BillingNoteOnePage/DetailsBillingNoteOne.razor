@@ -1,5 +1,7 @@
 @inherits ComponentBase
 
+@using Spix.Domain.EntitiesBilling
+
 <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content modal-create-shadow p-3 position-relative">
@@ -23,19 +25,96 @@
                                     Contracts="Contracts"
                                     SelectedContract="SelectedContract"
                                     SearchContracts="SearchContracts"
+                                    ShowCreated="true"
                                     IsReadOnly="true"
                                     ShowButtons="false"
                                     OnSubmit="Return"
                                     ReturnAction="Return" />
 
-                <hr />
+                @* Lo que se le va a cobrar a este cliente, antes de lanzar *@
+                @if (Check is not null && !Model.Created)
+                {
+                    <div class="bo-head">
+                        <b><i class="fa fa-receipt"></i> @Localizer["BillingOne_WhatIsCharged"]</b>
+                        @if (Blocks.Count > 0)
+                        {
+                            <span class="bo-tags">
+                                @foreach (var falta in Blocks)
+                                {
+                                    <span class="bo-tag">@falta</span>
+                                }
+                            </span>
+                        }
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer["Sell_Concept"]</th>
+                                    <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!string.IsNullOrWhiteSpace(Check.PlanName))
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@Check.PlanName</div>
+                                            <div class="idx-meta">@Localizer[nameof(Resource.Plan)]</div>
+                                        </td>
+                                        <td style="text-align:right">@Check.PlanPrice.ToString("N2")</td>
+                                    </tr>
+                                }
+                                @foreach (var item in Check.Services)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.Concept</div>
+                                            <div class="idx-meta">@Localizer["Sell_OriginService"]</div>
+                                        </td>
+                                        <td style="text-align:right">@item.Price.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bo-cross">
+                        <div class="bo-tile">
+                            <div class="bo-tile-label">@Localizer[nameof(Resource.Total)]</div>
+                            <div class="bo-tile-value">@Check.Total.ToString("N2")</div>
+                        </div>
+                        <div class="bo-tile is-paid">
+                            <div class="bo-tile-label">@Localizer["CxC_PrePayment"]</div>
+                            <div class="bo-tile-value">@Check.PrePayment.ToString("N2")</div>
+                        </div>
+                        <div class="bo-tile is-discount">
+                            <div class="bo-tile-label">@Localizer["CxC_Discount"]</div>
+                            <div class="bo-tile-value">@Check.Exonerated.ToString("N2")</div>
+                        </div>
+                        <div class="bo-tile is-balance">
+                            <div class="bo-tile-label">@Localizer["CxC_Balance"]</div>
+                            <div class="bo-tile-value">@Check.Balance.ToString("N2")</div>
+                        </div>
+                    </div>
+
+                    @if (Blocks.Count > 0)
+                    {
+                        <div class="bo-warn">
+                            <i class="fa fa-triangle-exclamation"></i> @Localizer["BillingOne_Blocked"]
+                        </div>
+                    }
+                }
 
                 <div class="d-flex justify-content-center gap-3 mt-4">
-                    @if (!Model.Created)
+                    @if (!Model.Created && Check is not null && Blocks.Count == 0)
                     {
                         <ButtonFormSaveOnClick OnClick="LaunchNotes"
-                                               TooTip="Lanzar"
+                                               TooTip="@Localizer["BillingOne_Title"]"
+                                               ProgressText="@Localizer["BillingOne_Title"]"
                                                Icon="fa fa-list-check"
+                                               IsSaving="IsLaunching"
                                                Style="width:160px" />
                     }
                     <ButtonFormBack OnClick="Return" />

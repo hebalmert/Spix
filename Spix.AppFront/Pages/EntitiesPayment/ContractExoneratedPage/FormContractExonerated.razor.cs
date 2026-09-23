@@ -18,6 +18,9 @@ public partial class FormContractExonerated
     [Parameter] public EventCallback<BillingContractDto> SelectedContractChanged { get; set; }
     [Parameter] public bool IsSaving { get; set; }
 
+    //Solo la edicion muestra si ya se cruzo con una nota de cobro
+    [Parameter] public bool ShowBilled { get; set; }
+
     private string ContractFilter { get; set; } = string.Empty;
 
     protected override void OnParametersSet()

@@ -17,7 +17,7 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/saasdashboard">
-                        <span class="bi bi-house-door-fill-nav-menu"></span> Home
+                        <span class="bi bi-house-door-fill-nav-menu"></span> @Localizer["Menu_Home"]
                     </NavLink>
                 </div>
             </Authorized>
@@ -27,7 +27,7 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/dashboard">
-                        <span class="bi bi-house-door-fill-nav-menu"></span> Home
+                        <span class="bi bi-house-door-fill-nav-menu"></span> @Localizer["Menu_Home"]
                     </NavLink>
                 </div>
             </Authorized>
@@ -38,7 +38,7 @@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link d-flex align-items-center gap-2" href="/subscription">
                         <span class="fa fa-credit-card"></span>
-                        <span>Mi suscripcion</span>
+                        <span>@Localizer["Menu_Subscription"]</span>
                     </NavLink>
                 </div>
             </Authorized>
@@ -48,17 +48,17 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/client-dashboard">
-                        <span class="bi bi-house-door-fill-nav-menu"></span> Portal Cliente
+                        <span class="bi bi-house-door-fill-nav-menu"></span> @Localizer["Menu_ClientPortal"]
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/my-signatures">
-                        <span class="fa fa-file-signature"></span> Mis documentos
+                        <span class="fa fa-file-signature"></span> @Localizer["Menu_MyDocuments"]
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/my-servicerequests">
-                        <span class="fa fa-tools"></span> Mis solicitudes
+                        <span class="fa fa-tools"></span> @Localizer["Menu_MyRequests"]
                     </NavLink>
                 </div>
             </Authorized>
@@ -68,322 +68,346 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/tech-dashboard">
-                        <span class="bi bi-house-door-fill-nav-menu"></span> Portal Tecnico
+                        <span class="bi bi-house-door-fill-nav-menu"></span> @Localizer["Menu_TechPortal"]
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/schedule">
-                        <span class="fa fa-calendar-days"></span> Schedule
+                        <span class="fa fa-calendar-days"></span> @Localizer["Menu_Schedule"]
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/servicerequests">
-                        <span class="fa fa-clipboard-list"></span> Solicitud Servicio
+                        <span class="fa fa-clipboard-list"></span> @Localizer["Menu_ServiceRequests"]
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/cxcbills">
-                        <span class="fa fa-cash-register"></span> Cuentas por Cobrar
+                        <span class="fa fa-cash-register"></span> @Localizer["Menu_CxCBills"]
                     </NavLink>
                 </div>
             </Authorized>
         </AuthorizeView>
 
-        <!-- PLATFORM SETUP -->
+        <!-- PLATAFORMA (Admin del SaaS) -->
         <AuthorizeView Roles="Admin">
             <Authorized>
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
-                            @onclick="submenu1">
+                            @onclick="() => Toggle(1)">
                         <span class="fa fa-th-large"></span>
                         @Localizer[nameof(Resource.PlatForm_Setup)]
-                        <span class="ms-auto fa @(expandSubMenu1 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                        <span class="ms-auto fa @(Expanded == 1 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
-                    @if (expandSubMenu1)
+                    @if (Expanded == 1)
                     {
                         <NavLink class="nav-link text-white nav-subitem" href="/payment-settings">
-                            <span class="fa fa-dot nav-subicon me-2"></span> Payment settings
+                            <span class="fa fa-credit-card nav-subicon me-2"></span> @Localizer["Menu_PaymentSettings"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/systemsettings">
-                            <span class="fa fa-dot nav-subicon me-2"></span> System settings
+                            <span class="fa fa-sliders nav-subicon me-2"></span> @Localizer["Menu_SystemSettings"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         <NavLink class="nav-link text-white nav-subitem" href="/softplans">
-                            <span class="fa fa-dot nav-subicon me-2"></span> Sofplans
+                            <span class="fa fa-layer-group nav-subicon me-2"></span> @Localizer["Menu_SoftPlans"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/corporations">
-                            <span class="fa fa-dot nav-subicon me-2"></span> Corporation
+                            <span class="fa fa-building nav-subicon me-2"></span> @Localizer["Menu_Corporations"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/managers">
-                            <span class="fa fa-dot nav-subicon me-2"></span> Manager
+                            <span class="fa fa-user-shield nav-subicon me-2"></span> @Localizer["Menu_Managers"]
                         </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
 
-        <!-- OPERATIONAL SETUP -->
+        <!-- CONFIGURACION: lo que se define una vez y casi no se toca -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
-                            @onclick="submenu3">
+                            @onclick="() => Toggle(2)">
                         <span class="fa fa-cogs"></span>
                         @Localizer[nameof(Resource.Menu_Setup)]
-                        <span class="ms-auto fa @(expandSubMenu3 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                        <span class="ms-auto fa @(Expanded == 2 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
-                    @if (expandSubMenu3)
+                    @if (Expanded == 2)
                     {
                         <NavLink class="nav-link text-white nav-subitem" href="/zones">
-                            <span class="fa fa-map-marker-alt nav-subicon me-2"></span> Zonas
+                            <span class="fa fa-map-marker-alt nav-subicon me-2"></span> @Localizer["Menu_Zones"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/documenttypes">
-                            <span class="fa fa-file nav-subicon me-2"></span> Tipo Documento
+                            <span class="fa fa-file nav-subicon me-2"></span> @Localizer["Menu_DocumentTypes"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/taxes">
-                            <span class="fa fa-percent nav-subicon me-2"></span> Impuestos
+                            <span class="fa fa-percent nav-subicon me-2"></span> @Localizer["Menu_Taxes"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/estratossociales">
                             <span class="fa fa-layer-group nav-subicon me-2"></span> @Localizer[nameof(Resource.EstratosSociales)]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/registers">
-                            <span class="fa fa-book nav-subicon me-2"></span> Registros
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractdocumenttemplates">
-                            <span class="fa fa-file-signature nav-subicon me-2"></span> Plantillas PDF
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/emailproviders">
-                            <span class="fa fa-envelope nav-subicon me-2"></span> Setup Emails
-                        </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/servicecategories">
-                            <span class="fa fa-concierge-bell nav-subicon me-2"></span> Categoria/Servicios
+                        <NavLink class="nav-link text-white nav-subitem" href="/registers">
+                            <span class="fa fa-book nav-subicon me-2"></span> @Localizer["Menu_Registers"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/plancategories">
-                            <span class="fa fa-sitemap nav-subicon me-2"></span> Categoria/Planes
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractdocumenttemplates">
+                            <span class="fa fa-file-signature nav-subicon me-2"></span> @Localizer["Menu_PdfTemplates"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/emailproviders">
+                            <span class="fa fa-envelope nav-subicon me-2"></span> @Localizer["Menu_EmailSetup"]
                         </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
 
-        <!-- PRODUCTS & STOCK -->
+        <!-- CATALOGO: de que se compone lo que se vende y lo que se instala -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
-                            @onclick="submenu5">
-                        <span class="fa fa-boxes"></span>
-                        @Localizer[nameof(Resource.Menu_Inventory)]
-                        <span class="ms-auto fa @(expandSubMenu5 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                            @onclick="() => Toggle(3)">
+                        <span class="fa fa-list-check"></span>
+                        @Localizer["Menu_Catalog"]
+                        <span class="ms-auto fa @(Expanded == 3 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
-                    @if (expandSubMenu5)
+                    @if (Expanded == 3)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/productcategories">
-                            <span class="fa fa-boxes nav-subicon me-2"></span> Categoria/Productos
+                        <NavLink class="nav-link text-white nav-subitem" href="/plancategories">
+                            <span class="fa fa-sitemap nav-subicon me-2"></span> @Localizer["Menu_PlanCategories"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/marks/detailed">
-                            <span class="fa fa-tags nav-subicon me-2"></span> Marca/Modelo
+                        <NavLink class="nav-link text-white nav-subitem" href="/servicecategories">
+                            <span class="fa fa-concierge-bell nav-subicon me-2"></span> @Localizer["Menu_ServiceCategories"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
+                        <NavLink class="nav-link text-white nav-subitem" href="/productcategories">
+                            <span class="fa fa-boxes nav-subicon me-2"></span> @Localizer["Menu_ProductCategories"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/marks/detailed">
+                            <span class="fa fa-tags nav-subicon me-2"></span> @Localizer["Menu_Marks"]
+                        </NavLink>
+                    }
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <!-- INVENTARIO: de donde sale y como entra el equipo -->
+        <AuthorizeView Roles="Administrator">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="() => Toggle(4)">
+                        <span class="fa fa-boxes-packing"></span>
+                        @Localizer[nameof(Resource.Menu_Inventory)]
+                        <span class="ms-auto fa @(Expanded == 4 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                    </button>
+
+                    @if (Expanded == 4)
+                    {
                         <NavLink class="nav-link text-white nav-subitem" href="/suppliers">
-                            <span class="fa fa-truck nav-subicon me-2"></span> Proveedores
+                            <span class="fa fa-truck nav-subicon me-2"></span> @Localizer["Menu_Suppliers"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/productstorages">
-                            <span class="fa fa-warehouse nav-subicon me-2"></span> Bodegas
+                            <span class="fa fa-warehouse nav-subicon me-2"></span> @Localizer["Menu_Storages"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         <NavLink class="nav-link text-white nav-subitem" href="/purchases">
-                            <span class="fa fa-shopping-cart nav-subicon me-2"></span> Compras
+                            <span class="fa fa-shopping-cart nav-subicon me-2"></span> @Localizer["Menu_Purchases"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/cargues">
-                            <span class="fa fa-barcode nav-subicon me-2"></span> Cargue Serials
+                            <span class="fa fa-barcode nav-subicon me-2"></span> @Localizer["Menu_SerialLoad"]
                         </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
 
-        <!-- NETWORK MANAGEMENT -->
+        <!-- RED: direccionamiento, equipos y control del servicio -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
-                            @onclick="submenu4">
-                        <span class="fa fa-network-wired"></span>
+                            @onclick="() => Toggle(5)">
+                        <span class="fa fa-sitemap"></span>
                         @Localizer[nameof(Resource.Menu_Network)]
-                        <span class="ms-auto fa @(expandSubMenu4 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                        <span class="ms-auto fa @(Expanded == 5 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
-                    @if (expandSubMenu4)
+                    @if (Expanded == 5)
                     {
                         <NavLink class="nav-link text-white nav-subitem" href="/ipnets">
-                            <span class="fa fa-laptop nav-subicon me-2"></span> Ip Clientes
+                            <span class="fa fa-laptop nav-subicon me-2"></span> @Localizer["Menu_IpClients"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/ipnetworks">
-                            <span class="fa fa-project-diagram nav-subicon me-2"></span> Ip Red
+                            <span class="fa fa-project-diagram nav-subicon me-2"></span> @Localizer["Menu_IpNetworks"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         <NavLink class="nav-link text-white nav-subitem" href="/connectionmikrotikcontrols">
-                            <span class="fa fa-network-wired nav-subicon me-2"></span> Control Mikrotik
+                            <span class="fa fa-network-wired nav-subicon me-2"></span> @Localizer["Menu_MikrotikControl"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/queuetypes">
-                            <span class="fa fa-sliders-h nav-subicon me-2"></span> Queue Types
+                            <span class="fa fa-sliders-h nav-subicon me-2"></span> @Localizer["Menu_QueueTypes"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
+                        <NavLink class="nav-link text-white nav-subitem" href="/servers">
+                            <span class="fa fa-database nav-subicon me-2"></span> @Localizer["Menu_Servers"]
+                        </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/nodes">
-                            <span class="fa fa-server nav-subicon me-2"></span> Nodos
+                            <span class="fa fa-server nav-subicon me-2"></span> @Localizer["Menu_Nodes"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/nodemap">
                             <span class="fa fa-map-location-dot nav-subicon me-2"></span> @Localizer["NodeMap_Menu"]
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/servers">
-                            <span class="fa fa-database nav-subicon me-2"></span> Servidores
                         </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
 
-        <!-- OPERATIONS -->
+        <!-- OPERACIONES: el dia a dia del cliente y su contrato -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
-                            @onclick="submenu6">
+                            @onclick="() => Toggle(6)">
                         <span class="fa fa-briefcase"></span>
                         @Localizer[nameof(Resource.Menu_Operation)]
-                        <span class="ms-auto fa @(expandSubMenu6 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                        <span class="ms-auto fa @(Expanded == 6 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
-                    @if (expandSubMenu6)
+                    @if (Expanded == 6)
                     {
                         <NavLink class="nav-link text-white nav-subitem" href="/clients">
-                            <span class="fa fa-users nav-subicon me-2"></span> Clientes
+                            <span class="fa fa-users nav-subicon me-2"></span> @Localizer["Menu_Clients"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/contractclients">
-                            <span class="fa fa-users nav-subicon me-2"></span> Contract Clients
+                            <span class="fa fa-file-contract nav-subicon me-2"></span> @Localizer["Menu_Contracts"]
                         </NavLink>
-                        <hr class="border-top border-light opacity-50 my-2" />
                         <NavLink class="nav-link text-white nav-subitem" href="/contractcontrol">
-                            <span class="fa fa-users nav-subicon me-2"></span> Contract Control
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractsuspended">
-                            <span class="fa fa-ban nav-subicon me-2"></span> Contratos Suspendidos
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractexempt">
-                            <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> Exonerados Fijos
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractexonerateds">
-                            <span class="fa fa-percent nav-subicon me-2"></span> Exoneraciones por Mes
-                        </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractsuspendedaudits">
-                            <span class="fa fa-clipboard-check nav-subicon me-2"></span> Auditoria Activaciones
-                        </NavLink>
-
-                        <hr class="border-top border-light opacity-50 my-2" />
-
-                        <NavLink class="nav-link text-white nav-subitem" href="/runsuspended">
-                            <span class="fa fa-ban nav-subicon me-2"></span> Corte General
+                            <span class="fa fa-user-gear nav-subicon me-2"></span> @Localizer["Menu_ContractControl"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         <NavLink class="nav-link text-white nav-subitem" href="/servicerequests">
-                            <span class="fa fa-tools nav-subicon me-2"></span> Solicitud Servicio
+                            <span class="fa fa-tools nav-subicon me-2"></span> @Localizer["Menu_ServiceRequests"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/schedule">
-                            <span class="fa fa-calendar-days nav-subicon me-2"></span> Schedule
+                            <span class="fa fa-calendar-days nav-subicon me-2"></span> @Localizer["Menu_Schedule"]
+                        </NavLink>
+
+                        <hr class="border-top border-light opacity-50 my-2" />
+
+                        @* Seguimiento: lo que ya paso, para consultar *@
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractsuspended">
+                            <span class="fa fa-ban nav-subicon me-2"></span> @Localizer["Menu_SuspendedContracts"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/runactivation">
+                            <span class="fa fa-plug-circle-check nav-subicon me-2"></span> @Localizer["Menu_Activation"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractsuspendedaudits">
+                            <span class="fa fa-clipboard-check nav-subicon me-2"></span> @Localizer["Menu_ActivationAudit"]
                         </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
 
-        <!-- BILLING & PAYMENTS -->
+        <!-- FINANZAS: el ciclo completo del dinero, en el orden en que ocurre -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
-                            @onclick="submenu7">
+                            @onclick="() => Toggle(7)">
                         <span class="fa fa-file-invoice-dollar"></span>
-                        Finanzas
-                        <span class="ms-auto fa @(expandSubMenu7 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                        @Localizer["Menu_Finance"]
+                        <span class="ms-auto fa @(Expanded == 7 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
-                    @if (expandSubMenu7)
+                    @if (Expanded == 7)
                     {
                         <NavLink class="nav-link text-white nav-subitem" href="/billingnotes">
-                            <span class="fa fa-calendar-alt nav-subicon me-2"></span> Billing Notes
+                            <span class="fa fa-calendar-alt nav-subicon me-2"></span> @Localizer["Menu_BillingNotes"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/billingnoteones">
-                            <span class="fa fa-user-clock nav-subicon me-2"></span> Billing Note One
+                            <span class="fa fa-user-clock nav-subicon me-2"></span> @Localizer["Menu_BillingNoteOne"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         <NavLink class="nav-link text-white nav-subitem" href="/prepayments">
-                            <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> Pagos Adelantados
+                            <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> @Localizer["Menu_PrePayments"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractexempt">
+                            <span class="fa fa-user-shield nav-subicon me-2"></span> @Localizer["Menu_ExemptFixed"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractexonerateds">
+                            <span class="fa fa-percent nav-subicon me-2"></span> @Localizer["Menu_ExoneratedMonth"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         <NavLink class="nav-link text-white nav-subitem" href="/sells">
-                            <span class="fa fa-file-invoice nav-subicon me-2"></span> Facturas
+                            <span class="fa fa-file-invoice nav-subicon me-2"></span> @Localizer["Menu_Sells"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/cxcbills">
-                            <span class="fa fa-cash-register nav-subicon me-2"></span> Cuentas por Cobrar
+                            <span class="fa fa-cash-register nav-subicon me-2"></span> @Localizer["Menu_CxCBills"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/technician-collections">
+                            <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> @Localizer["Menu_TechnicianCollections"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/runsuspended">
+                            <span class="fa fa-ban nav-subicon me-2"></span> @Localizer["Corte_Title"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractor-payments">
-                            <span class="fa fa-money-bill-transfer nav-subicon me-2"></span> Pagos Contratistas
+                        <NavLink class="nav-link text-white nav-subitem" href="/contractor-cxc">
+                            <span class="fa fa-money-bill-transfer nav-subicon me-2"></span> @Localizer["Menu_ContractorPayments"]
                         </NavLink>
                     }
                 </div>
             </Authorized>
         </AuthorizeView>
 
-        <!-- SYSTEM SETTINGS -->
+        <!-- SISTEMA: quien entra y quien trabaja -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
                 <div class="nav-item px-3">
                     <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
-                            @onclick="submenu2">
+                            @onclick="() => Toggle(8)">
                         <span class="fa fa-gears"></span>
-                        System Setting
-                        <span class="ms-auto fa @(expandSubMenu2 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                        @Localizer["Menu_System"]
+                        <span class="ms-auto fa @(Expanded == 8 ? "fa-chevron-up" : "fa-chevron-down")"></span>
                     </button>
 
-                    @if (expandSubMenu2)
+                    @if (Expanded == 8)
                     {
                         <NavLink class="nav-link text-white nav-subitem" href="/usuarios">
-                            <span class="fa fa-user nav-subicon me-2"></span> User
+                            <span class="fa fa-user nav-subicon me-2"></span> @Localizer["Menu_Users"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         <NavLink class="nav-link text-white nav-subitem" href="/contractors">
-                            <span class="fa fa-user-tie nav-subicon me-2"></span> Contratistas
+                            <span class="fa fa-user-tie nav-subicon me-2"></span> @Localizer["Menu_Contractors"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/technitians">
-                            <span class="fa fa-user-tie nav-subicon me-2"></span> Tecnicos
+                            <span class="fa fa-screwdriver-wrench nav-subicon me-2"></span> @Localizer["Menu_Technicians"]
                         </NavLink>
                     }
                 </div>
@@ -392,97 +416,3 @@
 
     </nav>
 </div>
-
-
-@code {
-
-    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
-
-    private bool collapseNavMenu = true;
-
-    private bool expandSubMenu1;
-    private bool expandSubMenu2;
-    private bool expandSubMenu3;
-    private bool expandSubMenu4;
-    private bool expandSubMenu5;
-    private bool expandSubMenu6;
-    private bool expandSubMenu7;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-    private void submenu1()
-    {
-        expandSubMenu1 = !expandSubMenu1;
-        expandSubMenu2 = false;
-        expandSubMenu3 = false;
-        expandSubMenu4 = false;
-        expandSubMenu5 = false;
-        expandSubMenu6 = false;
-        expandSubMenu7 = false;
-    }
-
-    private void submenu2()
-    {
-        expandSubMenu2 = !expandSubMenu2;
-        expandSubMenu1 = false;
-        expandSubMenu3 = false;
-        expandSubMenu4 = false;
-        expandSubMenu5 = false;
-        expandSubMenu6 = false;
-        expandSubMenu7 = false;
-    }
-    private void submenu3()
-    {
-        expandSubMenu3 = !expandSubMenu3;
-        expandSubMenu1 = false;
-        expandSubMenu2 = false;
-        expandSubMenu4 = false;
-        expandSubMenu5 = false;
-        expandSubMenu6 = false;
-        expandSubMenu7 = false;
-    }
-    private void submenu4()
-    {
-        expandSubMenu4 = !expandSubMenu4;
-        expandSubMenu1 = false;
-        expandSubMenu2 = false;
-        expandSubMenu3 = false;
-        expandSubMenu5 = false;
-        expandSubMenu6 = false;
-        expandSubMenu7 = false;
-    }
-    private void submenu5()
-    {
-        expandSubMenu5 = !expandSubMenu5;
-        expandSubMenu1 = false;
-        expandSubMenu2 = false;
-        expandSubMenu3 = false;
-        expandSubMenu4 = false;
-        expandSubMenu6 = false;
-        expandSubMenu7 = false;
-    }
-    private void submenu6()
-    {
-        expandSubMenu6 = !expandSubMenu6;
-        expandSubMenu1 = false;
-        expandSubMenu2 = false;
-        expandSubMenu3 = false;
-        expandSubMenu4 = false;
-        expandSubMenu5 = false;
-        expandSubMenu7 = false;
-    }
-    private void submenu7()
-    {
-        expandSubMenu7 = !expandSubMenu7;
-        expandSubMenu1 = false;
-        expandSubMenu2 = false;
-        expandSubMenu3 = false;
-        expandSubMenu4 = false;
-        expandSubMenu5 = false;
-        expandSubMenu6 = false;
-    }
-}

@@ -17,6 +17,8 @@ public interface IRunSuspendedServiceX
 
     Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 
+    Task<ActionResponse<CorteSummaryDto>> GetSummaryAsync(string username);
+
     //El corte se hace en tres pasos: se revisa, se corta por lotes y se cierra
     Task<ActionResponse<CorteCheckDto>> CheckAsync(Guid id, string username);
 

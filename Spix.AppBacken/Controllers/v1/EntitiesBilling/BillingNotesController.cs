@@ -46,6 +46,15 @@ public class BillingNotesController : ControllerBase
         }
     }
 
+    //Los numeros del tablero
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _billingService.GetBillingNoteSummaryAsync(userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     [HttpGet("combomonths")]
     public async Task<IActionResult> ComboMonthsAsync()
     {
@@ -54,7 +63,7 @@ public class BillingNotesController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -71,7 +80,7 @@ public class BillingNotesController : ControllerBase
     }
 
     //Revision previa: que contratos activos estan incompletos antes de lanzar
-    [HttpGet("{id}/check")]
+    [HttpGet("{id:guid}/check")]
     public async Task<IActionResult> CheckAsync(Guid id)
     {
         try
@@ -96,7 +105,7 @@ public class BillingNotesController : ControllerBase
     }
 
     //Un lote de contratos: el front lo llama tantas veces como haga falta y va mostrando el avance
-    [HttpPost("{id}/launch/batch")]
+    [HttpPost("{id:guid}/launch/batch")]
     public async Task<IActionResult> LaunchBatchAsync(Guid id, [FromBody] List<Guid> contractClientIds)
     {
         try
@@ -116,7 +125,7 @@ public class BillingNotesController : ControllerBase
     }
 
     //Cierra la nota cuando ya se recorrieron todos los lotes
-    [HttpPost("{id}/launch/finish")]
+    [HttpPost("{id:guid}/launch/finish")]
     public async Task<IActionResult> FinishLaunchAsync(Guid id)
     {
         try
@@ -135,7 +144,7 @@ public class BillingNotesController : ControllerBase
         }
     }
 
-    [HttpPost("{id}/launch")]
+    [HttpPost("{id:guid}/launch")]
     public async Task<IActionResult> LaunchAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -151,7 +160,7 @@ public class BillingNotesController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);

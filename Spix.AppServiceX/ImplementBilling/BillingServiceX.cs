@@ -17,6 +17,9 @@ public class BillingServiceX : IBillingServiceX
         _billingService = billingService;
     }
 
+    public async Task<ActionResponse<BillingNoteSummaryDto>> GetBillingNoteSummaryAsync(string username) =>
+        await _billingService.GetBillingNoteSummaryAsync(username);
+
     public async Task<ActionResponse<IEnumerable<BillingNote>>> GetBillingNotesAsync(PaginationDTO pagination, string username) =>
         await _billingService.GetBillingNotesAsync(pagination, username);
 
@@ -44,6 +47,9 @@ public class BillingServiceX : IBillingServiceX
     public async Task<ActionResponse<BillingLaunchResultDto>> LaunchBillingNoteAsync(Guid id, string username) =>
         await _billingService.LaunchBillingNoteAsync(id, username);
 
+    public async Task<ActionResponse<BillingNoteSummaryDto>> GetBillingNoteOneSummaryAsync(string username) =>
+        await _billingService.GetBillingNoteOneSummaryAsync(username);
+
     public async Task<ActionResponse<IEnumerable<BillingNoteOne>>> GetBillingNoteOnesAsync(PaginationDTO pagination, string username) =>
         await _billingService.GetBillingNoteOnesAsync(pagination, username);
 
@@ -58,6 +64,9 @@ public class BillingServiceX : IBillingServiceX
 
     public async Task<ActionResponse<bool>> DeleteBillingNoteOneAsync(Guid id, string username) =>
         await _billingService.DeleteBillingNoteOneAsync(id, username);
+
+    public async Task<ActionResponse<BillingOneCheckDto>> CheckBillingNoteOneAsync(Guid id, string username) =>
+        await _billingService.CheckBillingNoteOneAsync(id, username);
 
     public async Task<ActionResponse<BillingNoteOne>> LaunchBillingNoteOneAsync(Guid id, string username) =>
         await _billingService.LaunchBillingNoteOneAsync(id, username);

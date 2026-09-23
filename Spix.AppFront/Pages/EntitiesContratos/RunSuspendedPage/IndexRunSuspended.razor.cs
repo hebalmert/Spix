@@ -18,7 +18,7 @@ public partial class IndexRunSuspended
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
-    [Inject] private IStringLocalizer<Resource> _localizer { get; set; } = null!;
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
 
     private const string BaseUrl = "api/v1/runsuspended";
     private int CurrentPage = 1;
@@ -28,6 +28,9 @@ public partial class IndexRunSuspended
     private List<RunSuspended>? Runs { get; set; }
     private List<IntItemModel> Months { get; set; } = new();
 
+    //Los numeros del tablero: se piden una sola vez al abrir
+    private CorteSummaryDto? Summary { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
@@ -36,6 +39,7 @@ public partial class IndexRunSuspended
         }
 
         await LoadMonthsAsync();
+        await LoadSummaryAsync();
         await LoadAsync();
     }
 
@@ -45,6 +49,15 @@ public partial class IndexRunSuspended
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
         {
             Months = responseHttp.Response ?? new();
+        }
+    }
+
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<CorteSummaryDto>($"{BaseUrl}/summary");
+        if (!await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            Summary = responseHttp.Response;
         }
     }
 
@@ -69,13 +82,14 @@ public partial class IndexRunSuspended
     {
         var parameters = new Dictionary<string, object>
         {
-            { "Title", "Nuevo Corte General" }
+            { "Title", Localizer["Corte_New"].Value }
         };
 
         await _modalService.ShowAsync(typeof(CreateRunSuspended), parameters, async result =>
         {
             if (result.Succeeded)
             {
+                await LoadSummaryAsync();
                 await LoadAsync(CurrentPage);
             }
         });
@@ -86,13 +100,14 @@ public partial class IndexRunSuspended
         var parameters = new Dictionary<string, object>
         {
             { "Id", id },
-            { "Title", "Detalle Corte General" }
+            { "Title", Localizer["Corte_Details"].Value }
         };
 
         await _modalService.ShowAsync(typeof(DetailsRunSuspended), parameters, async result =>
         {
             if (result.Succeeded)
             {
+                await LoadSummaryAsync();
                 await LoadAsync(CurrentPage);
             }
         });
@@ -103,13 +118,14 @@ public partial class IndexRunSuspended
         var parameters = new Dictionary<string, object>
         {
             { "Id", id },
-            { "Title", "Editar Corte General" }
+            { "Title", Localizer["Corte_Edit"].Value }
         };
 
         await _modalService.ShowAsync(typeof(EditRunSuspended), parameters, async result =>
         {
             if (result.Succeeded)
             {
+                await LoadSummaryAsync();
                 await LoadAsync(CurrentPage);
             }
         });
@@ -119,12 +135,12 @@ public partial class IndexRunSuspended
     {
         var confirmation = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = _localizer[nameof(Resource.msg_DeleteTitle)],
-            Text = _localizer[nameof(Resource.msg_DeleteMessage)],
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer[nameof(Resource.msg_DeleteMessage)],
             Icon = SweetAlertIcon.Question,
             ShowCancelButton = true,
-            ConfirmButtonText = _localizer[nameof(Resource.msg_DeleteConfirmButton)],
-            CancelButtonText = _localizer[nameof(Resource.ButtonCancel)]
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
         if (confirmation.IsDismissed || confirmation.Value != "true")
@@ -139,8 +155,8 @@ public partial class IndexRunSuspended
         }
 
         await _sweetAlert.FireAsync(
-            _localizer[nameof(Resource.msg_DeleteConfirmationTitle)],
-            _localizer[nameof(Resource.msg_DeleteConfirmationText)],
+            Localizer[nameof(Resource.msg_DeleteConfirmationTitle)],
+            Localizer[nameof(Resource.msg_DeleteConfirmationText)],
             SweetAlertIcon.Success);
         await LoadAsync(CurrentPage);
     }

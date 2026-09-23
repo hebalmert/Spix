@@ -15,6 +15,10 @@ public class ContractSuspendedConfig : IEntityTypeConfiguration<ContractSuspende
         builder.HasIndex(e => new { e.ContractClientId, e.DateReactivated });
         builder.HasIndex(e => new { e.CorporationId, e.DateSuspended });
 
+        //Los que ya pagaron y esperan reactivacion: es la consulta del modulo
+        builder.HasIndex(e => new { e.CorporationId, e.PaymentReceived, e.DateReactivated });
+        builder.Property(e => e.DatePaymentReceived).HasColumnType("date");
+
         builder.HasOne(e => e.Corporation)
             .WithMany()
             .HasForeignKey(e => e.CorporationId)

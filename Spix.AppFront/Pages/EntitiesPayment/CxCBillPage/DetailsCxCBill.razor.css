@@ -1,4 +1,4 @@
-/* Encabezado de la nota */
+﻿/* Encabezado de la nota */
 .cx-head {
     display: flex;
     flex-wrap: wrap;
@@ -73,3 +73,15 @@
     font-size: 20px;
     font-weight: 700;
 }
+
+/* Cada bloque del detalle */
+.cx-subtitle {
+    color: #16305e;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 18px 0 8px;
+}
+
+    .cx-subtitle i {
+        margin-right: 6px;
+    }

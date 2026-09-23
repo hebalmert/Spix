@@ -1,0 +1,154 @@
+@page "/runactivation"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-plug-circle-check"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Activation_Title"]</h3>
+                <p>@Localizer["Activation_Subtitle"]</p>
+            </div>
+        </div>
+
+        @* El tablero: lo cuenta la base *@
+        @if (Check is not null)
+        {
+            <div class="ac-board">
+                <div class="ac-tile">
+                    <div class="ac-tile-label">@Localizer["Activation_Ready"]</div>
+                    <div class="ac-tile-value">@Check.Ready.ToString("N0")</div>
+                </div>
+                <div class="ac-tile is-go">
+                    <div class="ac-tile-label">@Localizer["Activation_ToActivate"]</div>
+                    <div class="ac-tile-value">@Check.ToActivate.ToString("N0")</div>
+                </div>
+                <div class="ac-tile is-bad">
+                    <div class="ac-tile-label">@Localizer["Activation_NoBinding"]</div>
+                    <div class="ac-tile-value">@Check.NoBinding.ToString("N0")</div>
+                </div>
+                <div class="ac-tile is-bad">
+                    <div class="ac-tile-label">@Localizer["Activation_NoQueue"]</div>
+                    <div class="ac-tile-value">@Check.NoQueue.ToString("N0")</div>
+                </div>
+            </div>
+
+            @* La reactivacion va equipo por equipo: aqui se ve como quedan repartidos *@
+            @if (Check.Servers.Count > 0)
+            {
+                <div class="ac-servers">
+                    @foreach (var server in Check.Servers)
+                    {
+                        <span class="ac-server">
+                            <i class="fa fa-server"></i> @server.ServerName
+                            <b>@server.Contracts</b>
+                        </span>
+                    }
+                </div>
+            }
+
+            @if (Check.NoBinding > 0 || Check.NoQueue > 0)
+            {
+                <div class="ac-warn">
+                    <i class="fa fa-triangle-exclamation"></i> @Localizer["Activation_Blocked"]
+                </div>
+            }
+        }
+
+        @* El avance real: cada equipo que termina mueve la barra *@
+        @if (IsRunning || Processed > 0)
+        {
+            <div class="ac-progress">
+                <div class="ac-progress-text">
+                    <span>@(CurrentServer ?? string.Empty)</span>
+                    <span>@Processed / @ToProcess &middot; @Percent%</span>
+                </div>
+                <div class="ac-bar">
+                    <div class="ac-bar-fill" style="width:@Percent%"></div>
+                </div>
+            </div>
+        }
+
+        <div class="idx-bar">
+            @if (Check is not null && Check.ToActivate > 0)
+            {
+                <ButtonFormSaveOnClick OnClick="RunAsync"
+                                       TooTip="@Localizer["Activation_Run"]"
+                                       ProgressText="@Localizer["Activation_Run"]"
+                                       Icon="fa fa-plug-circle-check"
+                                       CssClass="btn btn-success btn-bor"
+                                       IsSaving="IsRunning"
+                                       Style="width:190px" />
+            }
+        </div>
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer["Corte_Server"]</th>
+                            <th>@Localizer["Activation_Suspended"]</th>
+                            <th>@Localizer["Activation_PaidOn"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Pending">
+                            <Loading>
+                                <tr>
+                                    <td colspan="4" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="4" class="idx-meta" style="text-align:center">@Localizer["Activation_Nothing"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Pending!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">#@item.ControlContrato @item.ClientFullName</div>
+                                            <div class="idx-meta">
+                                                @item.ZoneName
+                                                @if (!item.HasBinding)
+                                                {
+                                                    <span class="ac-tag">IpBinding</span>
+                                                }
+                                                @if (!item.HasQueue)
+                                                {
+                                                    <span class="ac-tag">Queue</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>@item.ServerName</td>
+                                        <td>@item.DateSuspended.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.DatePaymentReceived?.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Pending is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
+    </div>
+</div>

@@ -5,120 +5,167 @@
 @using Spix.Domain.EntitiesPayment
 @using Spix.Domain.EntitiesBilling
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Cuentas por Cobrar</h3>
 
-        <div class="row g-2 align-items-start mb-3">
-            <div class="col-12 col-md-8">
-                <div class="input-group position-relative">
-                    <span class="input-group-text" style="width:125px">Cliente</span>
-                    <input class="form-control"
-                           placeholder="Buscar Cliente..."
-                           value="@ContractFilter"
-                           @oninput="FilterContractsChanged" />
-
-                    @if (Contracts.Count > 0)
-                    {
-                        <ul class="list-group position-absolute w-100 shadow-sm"
-                            style="top:100%; left:0; z-index:2000; max-height:240px; overflow-y:auto;">
-                            @foreach (var contract in Contracts)
-                            {
-                                <li class="list-group-item list-group-item-action"
-                                    @onclick="() => SelectContract(contract)">
-                                    @contract.ClientFullName - Contrato @contract.ControlContrato - @contract.ZoneName
-                                </li>
-                            }
-                        </ul>
-                    }
-                </div>
-            </div>
-            <div class="col-12 col-md-4 d-flex justify-content-end">
-                <ButtonGeneric OnClick="ClearContractAsync"
-                               Icon="fa fa-rotate"
-                               TooTip="Limpiar"
-                               CssClass="btn-mini"
-                               Style="font-size:17px;" />
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-cash-register"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["CxC_Title"]</h3>
+                <p>@Localizer["CxC_Subtitle"]</p>
             </div>
         </div>
 
-        <hr />
-        <GenericList MyList="CxCBills">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Fecha</th>
-                                <th># Contrato</th>
-                                <th>Nombre</th>
-                                <th class="text-end">Total</th>
-                                <th class="text-end">Abono</th>
-                                <th class="text-end">Descuento</th>
-                                <th class="text-end">Saldo</th>
-                                <th>Estado</th>
-                                <th colspan="3" class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in CxCBills!)
-                            {
+        @* El tablero: lo cuenta la base *@
+        @if (Summary is not null)
+        {
+            <div class="cx-board">
+                <div class="cx-btile is-open">
+                    <div class="cx-btile-label">@Localizer["CxC_OpenNotes"]</div>
+                    <div class="cx-btile-value">@Summary.OpenNotes.ToString("N0")</div>
+                </div>
+                <div class="cx-btile is-debt">
+                    <div class="cx-btile-label">@Localizer["CxC_OpenBalance"]</div>
+                    <div class="cx-btile-value">@Summary.OpenBalance.ToString("N2")</div>
+                </div>
+                <div class="cx-btile">
+                    <div class="cx-btile-label">@Localizer["CxC_Debtors"]</div>
+                    <div class="cx-btile-value">@Summary.Debtors.ToString("N0")</div>
+                </div>
+                <div class="cx-btile is-money">
+                    <div class="cx-btile-label">@Localizer["CxC_CollectedMonth"]</div>
+                    <div class="cx-btile-value">@Summary.CollectedMonth.ToString("N2")</div>
+                </div>
+            </div>
+        }
+
+        @* El buscador de cliente, con su lista de sugerencias *@
+        <div class="idx-bar">
+            <div class="cx-search position-relative">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa fa-magnifying-glass"></i></span>
+                    <input class="form-control"
+                           placeholder="@Localizer["CxC_SearchClient"]" autocomplete="off"
+                           value="@ContractFilter"
+                           @oninput="FilterContractsChanged" />
+                    <ButtonGeneric OnClick="ClearContractAsync"
+                                   Icon="fa fa-rotate"
+                                   TooTip="@Localizer["Filter_Clear"]" />
+                </div>
+
+                @if (Contracts.Count > 0)
+                {
+                    <ul class="cx-suggest">
+                        @foreach (var contract in Contracts)
+                        {
+                            <li @onclick="() => SelectContract(contract)">
+                                <span class="idx-name">@contract.ClientFullName</span>
+                                <span class="idx-meta">@Localizer[nameof(Resource.Contract)] #@contract.ControlContrato · @contract.ZoneName</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                            <th style="text-align:right">@Localizer["CxC_Payment"]</th>
+                            <th style="text-align:right">@Localizer["CxC_Discount"]</th>
+                            <th style="text-align:right">@Localizer["CxC_Balance"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="CxCBills">
+                            <Loading>
                                 <tr>
-                                    <td>@item.DateNote.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.ContractClient?.ControlContrato</td>
-                                    <td>@($"{item.Client?.FirstName} {item.Client?.LastName}")</td>
-                                    <td class="text-end">@item.Total.ToString("N2")</td>
-                                    <td class="text-end">@item.TotalPayment.ToString("N2")</td>
-                                    <td class="text-end">@item.TotalDiscount.ToString("N2")</td>
-                                    <td class="text-end">@item.Balance.ToString("N2")</td>
-                                    <td>
-                                        @if (item.Cancelled)
-                                        {
-                                            <span class="text-danger fw-bold">@CancelledText</span>
-                                        }
-                                        else if (item.Paid)
-                                        {
-                                            <span class="text-success fw-bold">@PaidText</span>
-                                        }
-                                    </td>
-                                    <td style="width:1px;">
-                                        @* Que se le esta cobrando: plan y servicios del periodo *@
-                                        <ButtonGeneric OnClick="() => ShowDetailsAsync(item)"
-                                                       Icon="fa fa-receipt"
-                                                       TooTip="Detalle"
-                                                       CssClass="btn-mini"
-                                                       Style="font-size:17px;" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        @if (!item.Paid && !item.Cancelled && item.Balance > 0)
-                                        {
-                                            <ButtonGeneric OnClick="() => ShowPayAsync(item.CxCBillId)"
-                                                           Icon="fa fa-building-columns"
-                                                           TooTip="Pagar"
-                                                           CssClass="btn-mini"
-                                                           Style="font-size:17px;color:#198754;" />
-                                        }
-                                    </td>
-                                    <td style="width:1px;">
-                                        <AuthorizeView Roles="Administrator, Auxiliar">
-                                            <Authorized>
-                                                @if (!item.Paid && !item.Cancelled)
-                                                {
-                                                    <ButtonDelete OnClick="() => CancelAsync(item.CxCBillId)" />
-                                                }
-                                            </Authorized>
-                                        </AuthorizeView>
+                                    <td colspan="7" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="7" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in CxCBills!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.Client?.FirstName @item.Client?.LastName</div>
+                                            <div class="idx-meta">
+                                                @item.CollectionNote ·
+                                                @Localizer[nameof(Resource.Contract)] #@item.ContractClient?.ControlContrato ·
+                                                @item.DateNote.ToString("dd/MM/yyyy")
+                                            </div>
+                                        </td>
+                                        <td style="text-align:right">@item.Total.ToString("N2")</td>
+                                        <td style="text-align:right">@item.TotalPayment.ToString("N2")</td>
+                                        <td style="text-align:right">@item.TotalDiscount.ToString("N2")</td>
+                                        <td style="text-align:right"><strong>@item.Balance.ToString("N2")</strong></td>
+                                        <td>
+                                            @if (item.Cancelled)
+                                            {
+                                                <span class="idx-pill is-danger">@Localizer["CxC_CancelledState"]</span>
+                                            }
+                                            else if (item.Paid)
+                                            {
+                                                <span class="idx-pill is-on">@Localizer["CxC_PaidState"]</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="idx-pill is-off">@Localizer["CxC_Pending"]</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                @* Que se le esta cobrando: plan y servicios del periodo *@
+                                                <ButtonGeneric OnClick="() => ShowDetailsAsync(item)"
+                                                               TooTip="@Localizer["CxC_Details"]"
+                                                               Icon="fa fa-receipt" />
+                                                @if (!item.Paid && !item.Cancelled && item.Balance > 0)
+                                                {
+                                                    <ButtonGeneric OnClick="() => ShowPayAsync(item.CxCBillId)"
+                                                                   TooTip="@Localizer["Pay_Title"]"
+                                                                   Icon="fa fa-building-columns"
+                                                                   Style="color:#198754;" />
+                                                }
+                                                <AuthorizeView Roles="Administrator, Auxiliar">
+                                                    <Authorized>
+                                                        @if (!item.Paid && !item.Cancelled)
+                                                        {
+                                                            <ButtonDelete OnClick="() => CancelAsync(item.CxCBillId)" />
+                                                        }
+                                                    </Authorized>
+                                                </AuthorizeView>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (CxCBills is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            }
+        </section>
     </div>
 </div>

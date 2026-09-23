@@ -1,0 +1,135 @@
+@page "/technician-collections"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+@using Spix.Domain.EntitiesPayment
+@using Spix.DomainLogic.ItemsGeneric
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-hand-holding-dollar"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Collection_Title"]</h3>
+                <p>@Localizer["Collection_Subtitle"]</p>
+            </div>
+        </div>
+
+        @* Quien recogio y entre que fechas *@
+        <div class="tc-filters">
+            <div class="tc-field">
+                <div class="tc-label">@Localizer["Collection_Collector"]</div>
+                <GenericSelectWrapper Tmodel="GuidItemModel" Items="Collectors">
+                    <Body>
+                        <select class="form-select" value="@UserId" @onchange="CollectorChanged">
+                            @foreach (var item in Collectors!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+            <div class="tc-field is-date">
+                <div class="tc-label">@Localizer["Collection_From"]</div>
+                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+            </div>
+            <div class="tc-field is-date">
+                <div class="tc-label">@Localizer["Collection_To"]</div>
+                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+            </div>
+            <div class="tc-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
+
+        @* Lo que hay que recibirle *@
+        @if (Summary is not null)
+        {
+            <div class="tc-board">
+                <div class="tc-tile">
+                    <div class="tc-tile-label">@Localizer["Collection_Count"]</div>
+                    <div class="tc-tile-value">@Summary.Collections.ToString("N0")</div>
+                </div>
+                <div class="tc-tile is-total">
+                    <div class="tc-tile-label">@Localizer["Collection_Total"]</div>
+                    <div class="tc-tile-value">@Summary.Total.ToString("N2")</div>
+                </div>
+                <div class="tc-tile is-cash">
+                    <div class="tc-tile-label">@Localizer["Pay_Cash"]</div>
+                    <div class="tc-tile-value">@Summary.Cash.ToString("N2")</div>
+                </div>
+                <div class="tc-tile is-bank">
+                    <div class="tc-tile-label">@Localizer["Collection_Bank"]</div>
+                    <div class="tc-tile-value">@((Summary.Card + Summary.Transfer).ToString("N2"))</div>
+                </div>
+            </div>
+        }
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Date)]</th>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer["Pay_Mode"]</th>
+                            <th style="text-align:right">@Localizer["CxC_Discount"]</th>
+                            <th style="text-align:right">@Localizer["CxC_Payment"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Collections">
+                            <Loading>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">@Localizer["Collection_Empty"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Collections!)
+                                {
+                                    <tr>
+                                        <td>@item.DatePayment.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <div class="idx-name">@item.ClientFullName</div>
+                                            <div class="idx-meta">
+                                                @item.CollectionNote ·
+                                                @Localizer[nameof(Resource.Contract)] #@item.ControlContrato
+                                            </div>
+                                        </td>
+                                        <td>@ModeName(item.PaymentMode)</td>
+                                        <td style="text-align:right">@item.Discount.ToString("N2")</td>
+                                        <td style="text-align:right"><strong>@item.Payment.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (TotalPages > 0)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
+    </div>
+</div>

@@ -10,6 +10,8 @@ public class CxCBillDetailConfig : IEntityTypeConfiguration<CxCBillDetail>
     {
         builder.HasKey(e => e.CxCBillDetailId);
         builder.Property(e => e.CxCBillDetailId).HasDefaultValueSql("NEWSEQUENTIALID()");
+        //El cruce con el tecnico entra por aqui: corporacion, quien recibio y el periodo
+        builder.HasIndex(e => new { e.CorporationId, e.UserId, e.DatePayment });
         builder.Property(e => e.DatePayment).HasColumnType("date");
         builder.Property(e => e.Debt).HasPrecision(18, 2);
         builder.Property(e => e.Payment).HasPrecision(18, 2);

@@ -8,6 +8,8 @@ namespace Spix.AppService.InterfacesPayment;
 
 public interface IPaymentService
 {
+    Task<ActionResponse<CxCBillSummaryDto>> GetCxCBillSummaryAsync(string username);
+
     Task<ActionResponse<IEnumerable<CxCBill>>> GetCxCBillsAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<CxCBill>> GetCxCBillAsync(Guid id, string username);
@@ -24,6 +26,8 @@ public interface IPaymentService
 
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboMonthsAsync(string username);
 
+    Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchCxCContractsAsync(string filter, string username);
+
     Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username);
 
     Task<ActionResponse<IEnumerable<PrePaymentServiceDto>>> GetPrePaymentServicesAsync(Guid contractClientId, Guid? prePaymentId, string username);
@@ -33,6 +37,8 @@ public interface IPaymentService
     Task<ActionResponse<PrePayment>> UpdatePrePaymentAsync(PrePayment model, string username);
 
     Task<ActionResponse<bool>> DeletePrePaymentAsync(Guid id, string username);
+
+    Task<ActionResponse<ExoneratedSummaryDto>> GetExoneratedSummaryAsync(string username);
 
     Task<ActionResponse<IEnumerable<ContractExonerated>>> GetContractExoneratedsAsync(PaginationDTO pagination, string username);
 

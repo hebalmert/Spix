@@ -32,6 +32,9 @@ public class ContractorAccountPayable
 
     public DateTime? DatePaid { get; set; }
 
+    //Mientras este vacio, la comision esta pendiente de agrupar
+    public Guid? CxCContractorId { get; set; }
+
     public int CorporationId { get; set; }
 
     [MaxLength(150)]
@@ -46,6 +49,8 @@ public class ContractorAccountPayable
     public CxCBill? CxCBill { get; set; }
 
     public CxCBillDetail? CxCBillDetail { get; set; }
+
+    public CxCContractor? CxCContractor { get; set; }
 
     public Corporation? Corporation { get; set; }
 

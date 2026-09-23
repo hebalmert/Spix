@@ -1,0 +1,89 @@
+@inherits ComponentBase
+
+@using Spix.Domain.EntitiesPayment
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (IsLoading || Model is null)
+            {
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
+            }
+            else
+            {
+                <div class="cc-headnote">
+                    <div>
+                        <div class="cc-name">@Model.Contractor?.FirstName @Model.Contractor?.LastName</div>
+                        <div class="idx-meta">@Model.DateNote.ToString("dd/MM/yyyy")</div>
+                    </div>
+                    <div class="cc-note">@Model.NoteNumber</div>
+                </div>
+
+                <div class="cc-cross">
+                    <div class="cc-tile">
+                        <div class="cc-tile-label">@Localizer[nameof(Resource.Total)]</div>
+                        <div class="cc-tile-value">@Model.Total.ToString("N2")</div>
+                    </div>
+                    <div class="cc-tile is-money">
+                        <div class="cc-tile-label">@Localizer["CxCContractor_PaidAmount"]</div>
+                        <div class="cc-tile-value">@Paid.ToString("N2")</div>
+                    </div>
+                    <div class="cc-tile is-debt">
+                        <div class="cc-tile-label">@Localizer["CxC_Balance"]</div>
+                        <div class="cc-tile-value">@Model.Balance.ToString("N2")</div>
+                    </div>
+                </div>
+
+                @* Lo que se le ha ido pagando, del mas reciente al mas viejo *@
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer[nameof(Resource.Date)]</th>
+                                <th>@Localizer["Pay_Mode"]</th>
+                                <th>@Localizer["CxCContractor_Reference"]</th>
+                                <th style="text-align:right">@Localizer["CxCContractor_Amount"]</th>
+                                <th style="text-align:right">@Localizer["CxC_Balance"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Payments)
+                            {
+                                <tr>
+                                    <td>
+                                        <div>@item.DatePayment.ToString("dd/MM/yyyy")</div>
+                                        <div class="idx-meta">@item.UsuarioOwner</div>
+                                    </td>
+                                    <td>@ModeName(item.PaymentMode)</td>
+                                    <td>
+                                        <div>@item.Reference</div>
+                                        <div class="idx-meta">@item.Detail</div>
+                                    </td>
+                                    <td style="text-align:right"><strong>@item.Payment.ToString("N2")</strong></td>
+                                    <td style="text-align:right">@item.Balance.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+
+                <div class="d-flex justify-content-center mt-4">
+                    <ButtonFormBack OnClick="Return" />
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,102 @@
+@inherits ComponentBase
+
+@using Spix.Domain.EntitiesPayment
+@using Spix.DomainLogic.ItemsGeneric
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @* El contratista: la lista la arma el backend, con los que tienen pendientes *@
+            <div class="input-group mb-3">
+                <span class="input-group-text" style="width:140px">@Localizer["CxCContractor_Contractor"]</span>
+                <GenericSelectWrapper Tmodel="GuidItemModel" Items="Contractors">
+                    <Body>
+                        <select class="form-select" value="@ContractorId" @onchange="ContractorChanged">
+                            @foreach (var item in Contractors!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+
+            @if (IsLoading)
+            {
+                <div class="loading-overlay">
+                    <Loading />
+                </div>
+            }
+            else if (Pending.Count > 0)
+            {
+                <div class="cc-tools">
+                    <button type="button" class="cc-chip @(AllSelected ? "is-on" : "")" @onclick="ToggleAll">
+                        <i class="fa fa-list-check"></i> @Localizer["CxCContractor_SelectAll"]
+                    </button>
+                    <span class="cc-count">@Localizer["CxCContractor_Selected", Selected.Count]</span>
+                    <span class="cc-total">@Total.ToString("N2")</span>
+                </div>
+
+                <div class="table-responsive cc-list">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th style="width:1px;"></th>
+                                <th>@Localizer[nameof(Resource.Client)]</th>
+                                <th>@Localizer["CxC_Details"]</th>
+                                <th style="text-align:right">@Localizer["CxCContractor_Base"]</th>
+                                <th style="text-align:right">%</th>
+                                <th style="text-align:right">@Localizer["CxCContractor_Commission"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Pending)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               checked="@Selected.Contains(item.ContractorAccountPayableId)"
+                                               @onchange="args => ToggleOne(item, args)" />
+                                    </td>
+                                    <td>
+                                        <div class="idx-name">@item.ClientFullName</div>
+                                        <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato</div>
+                                    </td>
+                                    <td>
+                                        <div>@item.CollectionNote</div>
+                                        <div class="idx-meta">@item.DateCreated.ToString("dd/MM/yyyy")</div>
+                                    </td>
+                                    <td style="text-align:right">@item.BaseAmount.ToString("N2")</td>
+                                    <td style="text-align:right">@item.Rate.ToString("N2")%</td>
+                                    <td style="text-align:right"><strong>@item.Total.ToString("N2")</strong></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (ContractorId != Guid.Empty)
+            {
+                <div class="cc-warn">
+                    <i class="fa fa-circle-info"></i> @Localizer["Contractor_NothingPending"]
+                </div>
+            }
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                @if (Selected.Count > 0)
+                {
+                    <ButtonFormSaveOnClick OnClick="CreateAsync" IsSaving="IsSaving" />
+                }
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

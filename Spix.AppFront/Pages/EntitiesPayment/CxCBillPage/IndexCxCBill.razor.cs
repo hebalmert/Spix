@@ -1,16 +1,19 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesPayment;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 using System.Globalization;
 
 namespace Spix.AppFront.Pages.EntitiesPayment.CxCBillPage;
 
 public partial class IndexCxCBill
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
@@ -26,13 +29,26 @@ public partial class IndexCxCBill
     private Guid? SelectedContractId { get; set; }
     private List<CxCBill>? CxCBills { get; set; }
     private List<BillingContractDto> Contracts { get; set; } = new();
+
+    //Los numeros del tablero: se piden una sola vez al abrir
+    private CxCBillSummaryDto? Summary { get; set; }
     private string PaidText => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "Pagado" : "Paid";
     private string CancelledText => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "Anulado" : "Cancelled";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
+            await LoadSummaryAsync();
             await LoadAsync();
+        }
+    }
+
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<CxCBillSummaryDto>($"{BaseUrl}/summary");
+        if (!await _responseHandler.HandleErrorAsync(responseHttp))
+            Summary = responseHttp.Response;
     }
 
     private async Task SetFilterValue(string value)
@@ -53,7 +69,7 @@ public partial class IndexCxCBill
             return;
         }
 
-        var responseHttp = await _repository.GetAsync<List<BillingContractDto>>($"{BaseUrl}/searchcontracts?filter={Uri.EscapeDataString(ContractFilter)}");
+        var responseHttp = await _repository.GetAsync<List<BillingContractDto>>($"{BaseUrl}/searchclients?filter={Uri.EscapeDataString(ContractFilter)}");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
             Contracts = responseHttp.Response ?? new();
     }
@@ -125,7 +141,10 @@ public partial class IndexCxCBill
         await _modalService.ShowAsync(typeof(PayCxCBill), parameters, async result =>
         {
             if (result.Succeeded)
+            {
+                await LoadSummaryAsync();
                 await LoadAsync(CurrentPage);
+            }
         });
     }
 
@@ -140,7 +159,10 @@ public partial class IndexCxCBill
         await _modalService.ShowAsync(typeof(CancelCxCBill), parameters, async result =>
         {
             if (result.Succeeded)
+            {
+                await LoadSummaryAsync();
                 await LoadAsync(CurrentPage);
+            }
         });
     }
 }

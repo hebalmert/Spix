@@ -4,69 +4,119 @@
 
 @using Spix.Domain.EntitiesBilling
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Billing Notes</h3>
 
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <ButtonFormNew OnClick="ShowModalAsync" TooTip="Nuevo" />
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-calendar-alt"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["BillingNote_Title"]</h3>
+                <p>@Localizer["BillingNote_Subtitle"]</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+        </div>
+
+        @* El tablero: lo cuenta la base *@
+        @if (Summary is not null)
+        {
+            <div class="bn-board">
+                <div class="bn-tile">
+                    <div class="bn-tile-label">@Localizer["BillingNote_Year", Summary.YearNumber]</div>
+                    <div class="bn-tile-value">@Summary.Notes.ToString("N0")</div>
+                </div>
+                <div class="bn-tile is-done">
+                    <div class="bn-tile-label">@Localizer["BillingNote_Launched"]</div>
+                    <div class="bn-tile-value">@Summary.Launched.ToString("N0")</div>
+                </div>
+                <div class="bn-tile is-open">
+                    <div class="bn-tile-label">@Localizer["BillingNote_PendingNotes"]</div>
+                    <div class="bn-tile-value">@Summary.Pending.ToString("N0")</div>
+                </div>
+                <div class="bn-tile is-client">
+                    <div class="bn-tile-label">@Localizer["BillingNote_ActiveContracts"]</div>
+                    <div class="bn-tile-value">@Summary.ActiveContracts.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="ShowModalAsync" />
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr />
-        <GenericList MyList="BillingNotes">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Año</th>
-                                <th>Mes</th>
-                                <th class="text-center">Creado</th>
-                                <th>Fecha Creado</th>
-                                <th colspan="3" class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in BillingNotes!)
-                            {
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["BillingNote_Period"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="BillingNotes">
+                            <Loading>
                                 <tr>
-                                    <td>@item.DateBill.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.YearNumber</td>
-                                    <td>@GetMonthName(item.MonthType)</td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" checked="@item.Created" disabled />
-                                    </td>
-                                    <td>@item.DateCreated?.ToString("dd/MM/yyyy")</td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowDetailsAsync(item.BillingNoteId)"
-                                                       TooTip="Detalle"
-                                                       Icon="fa fa-list-alt" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        <ButtonEdit OnClick="() => ShowEditAsync(item.BillingNoteId)" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        @if (!item.Created)
-                                        {
-                                            <ButtonDelete OnClick="() => DeleteAsync(item.BillingNoteId)" />
-                                        }
+                                    <td colspan="3" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="3" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in BillingNotes!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@GetMonthName(item.MonthType) @item.YearNumber</div>
+                                            <div class="idx-meta">@item.DateBill.ToString("dd/MM/yyyy")</div>
+                                        </td>
+                                        <td>
+                                            @if (item.Created)
+                                            {
+                                                <span class="idx-pill is-on">@Localizer["BillingNote_Launched"]</span>
+                                                <div class="idx-meta">@item.DateCreated?.ToString("dd/MM/yyyy")</div>
+                                            }
+                                            else
+                                            {
+                                                <span class="idx-pill is-off">@Localizer["BillingNote_Pending"]</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowDetailsAsync(item.BillingNoteId)"
+                                                               TooTip="@Localizer["CxC_Details"]"
+                                                               Icon="fa fa-list-alt" />
+                                                @if (!item.Created)
+                                                {
+                                                    <ButtonEdit OnClick="() => ShowEditAsync(item.BillingNoteId)" />
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.BillingNoteId)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (BillingNotes is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            }
+        </section>
     </div>
 </div>

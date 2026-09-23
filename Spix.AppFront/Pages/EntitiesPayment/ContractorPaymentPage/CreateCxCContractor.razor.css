@@ -1,0 +1,166 @@
+/* El tablero de cuentas por pagar a contratistas */
+.cc-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.cc-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .cc-tile.is-open {
+        border-left-color: #f59f00;
+    }
+
+    .cc-tile.is-money {
+        border-left-color: #198754;
+    }
+
+    .cc-tile.is-debt {
+        border-left-color: #dc3545;
+    }
+
+.cc-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.cc-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* A quien se le paga y por cual cuenta */
+.cc-headnote {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #f7f9fd;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.cc-name {
+    color: #152238;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.cc-note {
+    color: #16305e;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.cc-subtitle {
+    color: #16305e;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 16px 0 8px;
+}
+
+    .cc-subtitle i {
+        margin-right: 6px;
+    }
+
+.cc-list {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+/* Lo que se elige al armar la cuenta */
+.cc-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.cc-count {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.cc-total {
+    margin-left: auto;
+    color: #152238;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.cc-field {
+    margin-bottom: 14px;
+}
+
+.cc-label {
+    color: #6b7690;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    margin-bottom: 6px;
+}
+
+.cc-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* La opcion elegida se pinta; las demas quedan en blanco */
+.cc-chip {
+    border: 1px solid #dfe6f3;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #44507a;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 16px;
+    transition: all .15s ease;
+}
+
+    .cc-chip:hover {
+        border-color: #16305e;
+        color: #16305e;
+    }
+
+    .cc-chip.is-on {
+        border-color: #16305e;
+        background: #16305e;
+        color: #ffffff;
+    }
+
+    .cc-chip i {
+        margin-right: 6px;
+    }
+
+/* El cruce de la cuenta */
+.cc-cross {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+}
+
+.cc-warn {
+    border-left: 4px solid #f59f00;
+    border-radius: 8px;
+    background: #fff8e8;
+    color: #7a5200;
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+}

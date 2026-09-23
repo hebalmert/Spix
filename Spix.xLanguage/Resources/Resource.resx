@@ -2806,4 +2806,541 @@
   <data name="Corte_AlreadySuspended" xml:space="preserve">
     <value>Already suspended</value>
   </data>
+  <data name="BillingOne_AlreadyLaunched" xml:space="preserve">
+    <value>This individual note was already launched.</value>
+  </data>
+  <data name="BillingOne_ContractNotActive" xml:space="preserve">
+    <value>You must select an active contract.</value>
+  </data>
+  <data name="BillingOne_AlreadyBilled" xml:space="preserve">
+    <value>Contract {0} already has an invoice or a collection note for the selected period.</value>
+  </data>
+  <data name="BillingOne_Title" xml:space="preserve">
+    <value>Launch note</value>
+  </data>
+  <data name="BillingOne_WhatIsCharged" xml:space="preserve">
+    <value>What is being charged</value>
+  </data>
+  <data name="BillingOne_Confirm" xml:space="preserve">
+    <value>A collection note will be generated for {0} with a balance of {1}.</value>
+  </data>
+  <data name="BillingOne_Blocked" xml:space="preserve">
+    <value>This note cannot be launched yet.</value>
+  </data>
+  <data name="BillingOne_NotActive" xml:space="preserve">
+    <value>The contract is not active.</value>
+  </data>
+  <data name="BillingOne_Both" xml:space="preserve">
+    <value>The same month has an exemption and an advance payment.</value>
+  </data>
+  <data name="BillingOne_Launched" xml:space="preserve">
+    <value>Note generated.</value>
+  </data>
+  <data name="BillingOne_PeriodTaken" xml:space="preserve">
+    <value>The contract already has an invoice or a live collection note for the selected period.</value>
+  </data>
+  <data name="BillingOne_LaunchedNoEdit" xml:space="preserve">
+    <value>The individual note was already launched and cannot be modified.</value>
+  </data>
+  <data name="BillingOne_DateRequired" xml:space="preserve">
+    <value>You must select the date.</value>
+  </data>
+  <data name="Corte_IndexSubtitle" xml:space="preserve">
+    <value>Suspends the contracts that owe, device by device.</value>
+  </data>
+  <data name="Corte_SuspendedNow" xml:space="preserve">
+    <value>Suspended today</value>
+  </data>
+  <data name="Corte_PendingRuns" xml:space="preserve">
+    <value>Cut-offs to run</value>
+  </data>
+  <data name="Corte_Executed" xml:space="preserve">
+    <value>Executed</value>
+  </data>
+  <data name="Corte_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Corte_ExecutedBy" xml:space="preserve">
+    <value>Executed by</value>
+  </data>
+  <data name="Corte_Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="Corte_New" xml:space="preserve">
+    <value>New cut-off</value>
+  </data>
+  <data name="Corte_Edit" xml:space="preserve">
+    <value>Edit cut-off</value>
+  </data>
+  <data name="Corte_Details" xml:space="preserve">
+    <value>Cut-off detail</value>
+  </data>
+  <data name="Exonerated_Title" xml:space="preserve">
+    <value>Scheduled exemptions</value>
+  </data>
+  <data name="Exonerated_Subtitle" xml:space="preserve">
+    <value>What is forgiven to a client in a month, applied when the collection note is launched.</value>
+  </data>
+  <data name="Exonerated_Pending" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="Exonerated_PendingTotal" xml:space="preserve">
+    <value>Scheduled amount</value>
+  </data>
+  <data name="Exonerated_Contracts" xml:space="preserve">
+    <value>Contracts</value>
+  </data>
+  <data name="Exonerated_BilledMonth" xml:space="preserve">
+    <value>Applied this month</value>
+  </data>
+  <data name="Exonerated_Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="Exonerated_Amount" xml:space="preserve">
+    <value>Exempted</value>
+  </data>
+  <data name="Exonerated_Applied" xml:space="preserve">
+    <value>Applied</value>
+  </data>
+  <data name="Exonerated_Scheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="Menu_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Menu_Subscription" xml:space="preserve">
+    <value>My subscription</value>
+  </data>
+  <data name="Menu_ClientPortal" xml:space="preserve">
+    <value>Client portal</value>
+  </data>
+  <data name="Menu_MyDocuments" xml:space="preserve">
+    <value>My documents</value>
+  </data>
+  <data name="Menu_MyRequests" xml:space="preserve">
+    <value>My requests</value>
+  </data>
+  <data name="Menu_TechPortal" xml:space="preserve">
+    <value>Technician portal</value>
+  </data>
+  <data name="Menu_Catalog" xml:space="preserve">
+    <value>Catalog</value>
+  </data>
+  <data name="Menu_Finance" xml:space="preserve">
+    <value>Finance</value>
+  </data>
+  <data name="Menu_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Menu_PaymentSettings" xml:space="preserve">
+    <value>Payment gateway</value>
+  </data>
+  <data name="Menu_SystemSettings" xml:space="preserve">
+    <value>System settings</value>
+  </data>
+  <data name="Menu_SoftPlans" xml:space="preserve">
+    <value>Software plans</value>
+  </data>
+  <data name="Menu_Corporations" xml:space="preserve">
+    <value>Corporations</value>
+  </data>
+  <data name="Menu_Managers" xml:space="preserve">
+    <value>Managers</value>
+  </data>
+  <data name="Menu_Zones" xml:space="preserve">
+    <value>Zones</value>
+  </data>
+  <data name="Menu_DocumentTypes" xml:space="preserve">
+    <value>Document types</value>
+  </data>
+  <data name="Menu_Taxes" xml:space="preserve">
+    <value>Taxes</value>
+  </data>
+  <data name="Menu_Registers" xml:space="preserve">
+    <value>Number series</value>
+  </data>
+  <data name="Menu_PdfTemplates" xml:space="preserve">
+    <value>PDF templates</value>
+  </data>
+  <data name="Menu_EmailSetup" xml:space="preserve">
+    <value>Outgoing email</value>
+  </data>
+  <data name="Menu_PlanCategories" xml:space="preserve">
+    <value>Plan categories</value>
+  </data>
+  <data name="Menu_ServiceCategories" xml:space="preserve">
+    <value>Service categories</value>
+  </data>
+  <data name="Menu_ProductCategories" xml:space="preserve">
+    <value>Product categories</value>
+  </data>
+  <data name="Menu_Marks" xml:space="preserve">
+    <value>Brands and models</value>
+  </data>
+  <data name="Menu_Suppliers" xml:space="preserve">
+    <value>Suppliers</value>
+  </data>
+  <data name="Menu_Storages" xml:space="preserve">
+    <value>Warehouses</value>
+  </data>
+  <data name="Menu_Purchases" xml:space="preserve">
+    <value>Purchases</value>
+  </data>
+  <data name="Menu_SerialLoad" xml:space="preserve">
+    <value>Serial load</value>
+  </data>
+  <data name="Menu_IpClients" xml:space="preserve">
+    <value>Client IPs</value>
+  </data>
+  <data name="Menu_IpNetworks" xml:space="preserve">
+    <value>Network IPs</value>
+  </data>
+  <data name="Menu_MikrotikControl" xml:space="preserve">
+    <value>Mikrotik control</value>
+  </data>
+  <data name="Menu_QueueTypes" xml:space="preserve">
+    <value>Queue Types</value>
+  </data>
+  <data name="Menu_Servers" xml:space="preserve">
+    <value>Servers</value>
+  </data>
+  <data name="Menu_Nodes" xml:space="preserve">
+    <value>Nodes</value>
+  </data>
+  <data name="Menu_Clients" xml:space="preserve">
+    <value>Clients</value>
+  </data>
+  <data name="Menu_Contracts" xml:space="preserve">
+    <value>Contracts</value>
+  </data>
+  <data name="Menu_ContractControl" xml:space="preserve">
+    <value>Contract control</value>
+  </data>
+  <data name="Menu_ServiceRequests" xml:space="preserve">
+    <value>Service requests</value>
+  </data>
+  <data name="Menu_Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="Menu_SuspendedContracts" xml:space="preserve">
+    <value>Suspended contracts</value>
+  </data>
+  <data name="Menu_ActivationAudit" xml:space="preserve">
+    <value>Activation audit</value>
+  </data>
+  <data name="Menu_BillingNotes" xml:space="preserve">
+    <value>Collection notes</value>
+  </data>
+  <data name="Menu_BillingNoteOne" xml:space="preserve">
+    <value>Single note</value>
+  </data>
+  <data name="Menu_PrePayments" xml:space="preserve">
+    <value>Advance payments</value>
+  </data>
+  <data name="Menu_ExemptFixed" xml:space="preserve">
+    <value>Fixed exemptions</value>
+  </data>
+  <data name="Menu_ExoneratedMonth" xml:space="preserve">
+    <value>Monthly exemptions</value>
+  </data>
+  <data name="Menu_Sells" xml:space="preserve">
+    <value>Invoices</value>
+  </data>
+  <data name="Menu_CxCBills" xml:space="preserve">
+    <value>Accounts receivable</value>
+  </data>
+  <data name="Menu_ContractorPayments" xml:space="preserve">
+    <value>Contractor payments</value>
+  </data>
+  <data name="Menu_Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Menu_Contractors" xml:space="preserve">
+    <value>Contractors</value>
+  </data>
+  <data name="Menu_Technicians" xml:space="preserve">
+    <value>Technicians</value>
+  </data>
+  <data name="Contractor_SelectOne" xml:space="preserve">
+    <value>[Select a contractor]</value>
+  </data>
+  <data name="Contractor_NothingPending" xml:space="preserve">
+    <value>That contractor has no pending commissions.</value>
+  </data>
+  <data name="Contractor_NoteCancelled" xml:space="preserve">
+    <value>This payable account is cancelled.</value>
+  </data>
+  <data name="Contractor_NotePaid" xml:space="preserve">
+    <value>This payable account is already paid.</value>
+  </data>
+  <data name="Contractor_NoteChanged" xml:space="preserve">
+    <value>The balance changed while you were paying. Open it again.</value>
+  </data>
+  <data name="Contractor_NoteWithPayments" xml:space="preserve">
+    <value>This account already has payments and cannot be cancelled.</value>
+  </data>
+  <data name="Contractor_CancelReason" xml:space="preserve">
+    <value>You must state the reason for the cancellation.</value>
+  </data>
+  <data name="Contractor_PaymentInvalid" xml:space="preserve">
+    <value>The amount must be greater than zero.</value>
+  </data>
+  <data name="Contractor_PaymentOverBalance" xml:space="preserve">
+    <value>The amount cannot be greater than the balance.</value>
+  </data>
+  <data name="CxCContractor_Title" xml:space="preserve">
+    <value>Contractor payments</value>
+  </data>
+  <data name="CxCContractor_Subtitle" xml:space="preserve">
+    <value>What is owed to each contractor for the payments they collected.</value>
+  </data>
+  <data name="CxCContractor_Pending" xml:space="preserve">
+    <value>Pending commissions</value>
+  </data>
+  <data name="CxCContractor_PendingTotal" xml:space="preserve">
+    <value>Pending amount</value>
+  </data>
+  <data name="CxCContractor_OpenNotes" xml:space="preserve">
+    <value>Open accounts</value>
+  </data>
+  <data name="CxCContractor_OpenBalance" xml:space="preserve">
+    <value>Balance owed</value>
+  </data>
+  <data name="CxCContractor_New" xml:space="preserve">
+    <value>New payable account</value>
+  </data>
+  <data name="CxCContractor_Note" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="CxCContractor_Contractor" xml:space="preserve">
+    <value>Contractor</value>
+  </data>
+  <data name="CxCContractor_Commissions" xml:space="preserve">
+    <value>Commissions</value>
+  </data>
+  <data name="CxCContractor_Payments" xml:space="preserve">
+    <value>Payments</value>
+  </data>
+  <data name="CxCContractor_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CxCContractor_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="CxCContractor_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="CxCContractor_SelectAll" xml:space="preserve">
+    <value>Add all pending</value>
+  </data>
+  <data name="CxCContractor_Selected" xml:space="preserve">
+    <value>{0} selected</value>
+  </data>
+  <data name="CxCContractor_Pay" xml:space="preserve">
+    <value>Record payment</value>
+  </data>
+  <data name="CxCContractor_Amount" xml:space="preserve">
+    <value>Amount to pay</value>
+  </data>
+  <data name="CxCContractor_All" xml:space="preserve">
+    <value>Full balance</value>
+  </data>
+  <data name="CxCContractor_Reference" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="CxCContractor_Base" xml:space="preserve">
+    <value>Collected base</value>
+  </data>
+  <data name="CxCContractor_Commission" xml:space="preserve">
+    <value>Commission</value>
+  </data>
+  <data name="CxCContractor_Created" xml:space="preserve">
+    <value>Account created.</value>
+  </data>
+  <data name="CxCContractor_PaidOk" xml:space="preserve">
+    <value>Payment recorded.</value>
+  </data>
+  <data name="CxCContractor_CancelTitle" xml:space="preserve">
+    <value>Cancel account</value>
+  </data>
+  <data name="CxCContractor_CancelHint" xml:space="preserve">
+    <value>When you cancel it, its commissions go back to pending and can be grouped again.</value>
+  </data>
+  <data name="CxCContractor_CommissionsTitle" xml:space="preserve">
+    <value>Commissions of the account</value>
+  </data>
+  <data name="CxCContractor_PaymentsTitle" xml:space="preserve">
+    <value>Payments of the account</value>
+  </data>
+  <data name="CxCContractor_PaidAmount" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CxC_Title" xml:space="preserve">
+    <value>Accounts receivable</value>
+  </data>
+  <data name="CxC_Subtitle" xml:space="preserve">
+    <value>What each client owes and what has been collected from them.</value>
+  </data>
+  <data name="CxC_OpenNotes" xml:space="preserve">
+    <value>Open notes</value>
+  </data>
+  <data name="CxC_OpenBalance" xml:space="preserve">
+    <value>Balance to collect</value>
+  </data>
+  <data name="CxC_Debtors" xml:space="preserve">
+    <value>Clients with debt</value>
+  </data>
+  <data name="CxC_CollectedMonth" xml:space="preserve">
+    <value>Collected this month</value>
+  </data>
+  <data name="CxC_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="CxC_PaidState" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CxC_CancelledState" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="CxC_Payment" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="Filter_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="CxC_SearchClient" xml:space="preserve">
+    <value>Client name or contract number (2 letters)...</value>
+  </data>
+  <data name="BillingNote_Title" xml:space="preserve">
+    <value>Collection notes</value>
+  </data>
+  <data name="BillingNote_Subtitle" xml:space="preserve">
+    <value>One note per period: inside it the notes are launched for every active contract.</value>
+  </data>
+  <data name="BillingNote_Year" xml:space="preserve">
+    <value>Notes of {0}</value>
+  </data>
+  <data name="BillingNote_Launched" xml:space="preserve">
+    <value>Launched</value>
+  </data>
+  <data name="BillingNote_PendingNotes" xml:space="preserve">
+    <value>To launch</value>
+  </data>
+  <data name="BillingNote_ActiveContracts" xml:space="preserve">
+    <value>Active contracts</value>
+  </data>
+  <data name="BillingNote_Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="BillingNote_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="BillingNoteOne_Title" xml:space="preserve">
+    <value>Single collection note</value>
+  </data>
+  <data name="BillingNoteOne_Subtitle" xml:space="preserve">
+    <value>For the client who is left out of the general run: installed after the cut-off, or a period that has to be charged apart.</value>
+  </data>
+  <data name="BillingNoteOne_Billed" xml:space="preserve">
+    <value>Billed in {0}</value>
+  </data>
+  <data name="CxC_PaymentsMade" xml:space="preserve">
+    <value>Payments received</value>
+  </data>
+  <data name="CxC_ReceivedBy" xml:space="preserve">
+    <value>Received by</value>
+  </data>
+  <data name="Activation_Title" xml:space="preserve">
+    <value>Reactivation</value>
+  </data>
+  <data name="Activation_Subtitle" xml:space="preserve">
+    <value>Gives the service back to those who were cut off and already paid, device by device.</value>
+  </data>
+  <data name="Activation_Ready" xml:space="preserve">
+    <value>Paid and waiting</value>
+  </data>
+  <data name="Activation_ToActivate" xml:space="preserve">
+    <value>Ready to activate</value>
+  </data>
+  <data name="Activation_NoBinding" xml:space="preserve">
+    <value>Without IpBinding</value>
+  </data>
+  <data name="Activation_NoQueue" xml:space="preserve">
+    <value>Without Queue</value>
+  </data>
+  <data name="Activation_Blocked" xml:space="preserve">
+    <value>Some cannot be reactivated until their IpBinding or Queue is completed.</value>
+  </data>
+  <data name="Activation_Run" xml:space="preserve">
+    <value>Reactivate</value>
+  </data>
+  <data name="Activation_ConfirmText" xml:space="preserve">
+    <value>{0} contract(s) will get their service back.</value>
+  </data>
+  <data name="Activation_Nothing" xml:space="preserve">
+    <value>There is nobody waiting for reactivation.</value>
+  </data>
+  <data name="Activation_Suspended" xml:space="preserve">
+    <value>Cut off on</value>
+  </data>
+  <data name="Activation_PaidOn" xml:space="preserve">
+    <value>Paid on</value>
+  </data>
+  <data name="Activation_Done" xml:space="preserve">
+    <value>Reactivation done</value>
+  </data>
+  <data name="Activation_ResultOk" xml:space="preserve">
+    <value>Reactivated: {0}</value>
+  </data>
+  <data name="Activation_Interrupted" xml:space="preserve">
+    <value>The reactivation was interrupted. What was reactivated stays reactivated: run it again to continue.</value>
+  </data>
+  <data name="Menu_Activation" xml:space="preserve">
+    <value>Reactivation</value>
+  </data>
+  <data name="Activation_NoBypassed" xml:space="preserve">
+    <value>There is no active HotSpot type with the value bypassed.</value>
+  </data>
+  <data name="Activation_BindingIncomplete" xml:space="preserve">
+    <value>Its IpBinding does not have what the device needs.</value>
+  </data>
+  <data name="Activation_DeviceFailed" xml:space="preserve">
+    <value>The device did not accept the change: reactivate it from Suspended contracts.</value>
+  </data>
+  <data name="Collection_Title" xml:space="preserve">
+    <value>Technician collections</value>
+  </data>
+  <data name="Collection_Subtitle" xml:space="preserve">
+    <value>What each person collected between two dates: it is what has to be received from them.</value>
+  </data>
+  <data name="Collection_Collector" xml:space="preserve">
+    <value>Collected by</value>
+  </data>
+  <data name="Collection_SelectOne" xml:space="preserve">
+    <value>[Select who collected]</value>
+  </data>
+  <data name="Collection_From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Collection_To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Collection_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Collection_Count" xml:space="preserve">
+    <value>Collections</value>
+  </data>
+  <data name="Collection_Total" xml:space="preserve">
+    <value>Total collected</value>
+  </data>
+  <data name="Collection_Bank" xml:space="preserve">
+    <value>Card and transfer</value>
+  </data>
+  <data name="Menu_TechnicianCollections" xml:space="preserve">
+    <value>Technician collections</value>
+  </data>
+  <data name="Collection_Empty" xml:space="preserve">
+    <value>Choose a technician and a period, then press Search.</value>
+  </data>
 </root>

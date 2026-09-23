@@ -13,6 +13,9 @@ public class ContractorAccountPayableConfig : IEntityTypeConfiguration<Contracto
         builder.HasIndex(e => new { e.CorporationId, e.CxCBillDetailId }).IsUnique();
         //El listado va por corporacion, primero lo pendiente y luego por fecha
         builder.HasIndex(e => new { e.CorporationId, e.Paid, e.DateCreated });
+
+        //Lo que mas se consulta: las comisiones que todavia no estan en ninguna cuenta
+        builder.HasIndex(e => new { e.CorporationId, e.ContractorId, e.CxCContractorId });
         builder.Property(e => e.DateCreated).HasColumnType("date");
         builder.Property(e => e.DatePaid).HasColumnType("date");
         builder.Property(e => e.Rate).HasPrecision(5, 2);
@@ -38,6 +41,11 @@ public class ContractorAccountPayableConfig : IEntityTypeConfiguration<Contracto
         builder.HasOne(e => e.CxCBillDetail)
             .WithMany(e => e.ContractorAccountPayables)
             .HasForeignKey(e => e.CxCBillDetailId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(e => e.CxCContractor)
+            .WithMany(e => e.ContractorAccountPayables)
+            .HasForeignKey(e => e.CxCContractorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(e => e.Corporation)

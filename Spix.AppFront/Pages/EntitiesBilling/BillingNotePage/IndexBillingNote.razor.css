@@ -1,0 +1,39 @@
+/* El tablero de notas de cobro generales */
+.bn-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.bn-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .bn-tile.is-done {
+        border-left-color: #198754;
+    }
+
+    .bn-tile.is-open {
+        border-left-color: #f59f00;
+    }
+
+    .bn-tile.is-client {
+        border-left-color: #2c5fad;
+    }
+
+.bn-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.bn-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}

@@ -46,6 +46,15 @@ public class ContractExoneratedsController : ControllerBase
         }
     }
 
+    //Los numeros del tablero
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.GetExoneratedSummaryAsync(userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     [HttpGet("combomonths")]
     public async Task<IActionResult> ComboMonthsAsync()
     {
@@ -62,7 +71,7 @@ public class ContractExoneratedsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -86,7 +95,7 @@ public class ContractExoneratedsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);

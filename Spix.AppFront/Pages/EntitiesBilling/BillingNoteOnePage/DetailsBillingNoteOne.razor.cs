@@ -1,16 +1,20 @@
-using Microsoft.AspNetCore.Components;
 using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesBilling;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
-using System.Net;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesBilling.BillingNoteOnePage;
 
+//La nota de cobro de un solo cliente: primero se ve que se le va a cobrar y que le falta
+//al contrato, y solo despues se lanza.
 public partial class DetailsBillingNoteOne
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
@@ -19,18 +23,30 @@ public partial class DetailsBillingNoteOne
     [Parameter] public Guid Id { get; set; }
     [Parameter] public string? Title { get; set; }
 
+    private const string BaseUrl = "api/v1/billingnoteones";
+
     private BillingNoteOne? Model;
+    private BillingOneCheckDto? Check;
     private BillingContractDto? SelectedContract;
     private List<BillingContractDto> Contracts = new();
     private List<IntItemModel>? Months;
     private bool isLoading;
-    private const string BaseUrl = "api/v1/billingnoteones";
+    private bool IsLaunching;
+
+    //Todo lo que impide lanzar la nota. Si esta vacio, el boton se habilita.
+    private List<string> Blocks => BuildBlocks();
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
         await LoadMonthsAsync();
         await LoadModelAsync();
+
+        if (Model is not null && !Model.Created)
+        {
+            await LoadCheckAsync();
+        }
+
         isLoading = false;
     }
 
@@ -54,42 +70,63 @@ public partial class DetailsBillingNoteOne
         SelectedContract = BuildContractDto(Model);
     }
 
+    private async Task LoadCheckAsync()
+    {
+        var responseHttp = await _repository.GetAsync<BillingOneCheckDto>($"{BaseUrl}/{Id}/check");
+        if (!await _responseHandler.HandleErrorAsync(responseHttp))
+            Check = responseHttp.Response;
+    }
+
+    //Lo que le falta al contrato y lo que ya no deja lanzar
+    private List<string> BuildBlocks()
+    {
+        var blocks = new List<string>();
+        if (Check is null)
+            return blocks;
+
+        if (!Check.IsActive) blocks.Add(Localizer["BillingOne_NotActive"]);
+        if (Check.AlreadyBilled) blocks.Add(Localizer["BillingOne_AlreadyBilled", Check.ControlContrato]);
+        if (Check.PrePaymentAndExonerated) blocks.Add(Localizer["BillingOne_Both"]);
+
+        if (!Check.HasPlan) blocks.Add("Plan");
+        if (!Check.HasIp) blocks.Add("IP");
+        if (!Check.HasMac) blocks.Add("MAC");
+        if (!Check.HasServer) blocks.Add("Servidor");
+        if (!Check.HasNode) blocks.Add("Nodo");
+        if (!Check.HasQueue) blocks.Add("Queue");
+        if (!Check.HasBinding) blocks.Add("IpBinding");
+
+        return blocks;
+    }
+
     private Task SearchContracts(string filter) => Task.CompletedTask;
 
     private async Task LaunchNotes()
     {
-        var result = await _sweetAlert.FireAsync(new SweetAlertOptions
-        {
-            Title = "Lanzar",
-            Text = "Desea lanzar esta nota individual?",
-            Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true,
-            ConfirmButtonText = "Lanzar",
-            CancelButtonText = "Cancelar"
-        });
-
-        if (result.IsDismissed || result.Value != "true")
+        if (Check is null || IsLaunching)
             return;
 
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Id}/launch", new { });
-
-        if (responseHttp.HttpResponseMessage?.StatusCode == HttpStatusCode.BadRequest)
+        var confirm = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            var errorMessage = await responseHttp.GetErrorMessageAsync();
-            if (errorMessage?.Contains("ya tiene una factura o una cuenta por cobrar", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                await _sweetAlert.FireAsync(
-                    "No se pudo generar la nota de cobro",
-                    "El contrato ya tiene una factura o una cuenta por cobrar vigente para el periodo seleccionado.",
-                    SweetAlertIcon.Warning);
-                return;
-            }
-        }
+            Title = Localizer["BillingOne_Title"],
+            Text = Localizer["BillingOne_Confirm", Check.ClientFullName, Check.Balance.ToString("N2")].Value,
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = Localizer["BillingOne_Title"],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
+        });
+
+        if (confirm.IsDismissed || confirm.Value != "true")
+            return;
+
+        IsLaunching = true;
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{Id}/launch", new { });
+        IsLaunching = false;
 
         if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 
-        await _sweetAlert.FireAsync("Lanzado", "Nota generada correctamente.", SweetAlertIcon.Success);
+        await _sweetAlert.FireAsync(Localizer["BillingOne_Title"], Localizer["BillingOne_Launched"], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());
     }
 

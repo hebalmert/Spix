@@ -1,0 +1,39 @@
+/* El tablero de cortes */
+.rs-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.rs-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .rs-tile.is-cut {
+        border-left-color: #dc3545;
+    }
+
+    .rs-tile.is-money {
+        border-left-color: #198754;
+    }
+
+    .rs-tile.is-open {
+        border-left-color: #f59f00;
+    }
+
+.rs-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.rs-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}

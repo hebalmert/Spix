@@ -26,6 +26,11 @@ public class ContractSuspended
     //Nulo = el contrato sigue suspendido
     public DateTime? DateReactivated { get; set; }
 
+    //Se le recibio el pago estando suspendido: queda listo para la reactivacion general
+    public bool PaymentReceived { get; set; }
+
+    public DateTime? DatePaymentReceived { get; set; }
+
     public SuspendedOrigin Origin { get; set; }
 
     //Corte que la genero, cuando viene de RunSuspended

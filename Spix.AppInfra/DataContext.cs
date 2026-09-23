@@ -67,6 +67,10 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<PlanCategory> PlanCategories => Set<PlanCategory>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
+    public DbSet<CxCContractor> CxCContractors => Set<CxCContractor>();
+
+    public DbSet<CxCContractorDetail> CxCContractorDetails => Set<CxCContractorDetail>();
+
     public DbSet<Register> Registers => Set<Register>();
     public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
     public DbSet<ServiceClient> ServiceClients => Set<ServiceClient>();

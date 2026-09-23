@@ -8,6 +8,8 @@ namespace Spix.AppServiceX.InterfacesBilling;
 
 public interface IBillingServiceX
 {
+    Task<ActionResponse<BillingNoteSummaryDto>> GetBillingNoteSummaryAsync(string username);
+
     Task<ActionResponse<IEnumerable<BillingNote>>> GetBillingNotesAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboMonthsAsync(string username);
@@ -28,6 +30,8 @@ public interface IBillingServiceX
 
     Task<ActionResponse<BillingLaunchResultDto>> LaunchBillingNoteAsync(Guid id, string username);
 
+    Task<ActionResponse<BillingNoteSummaryDto>> GetBillingNoteOneSummaryAsync(string username);
+
     Task<ActionResponse<IEnumerable<BillingNoteOne>>> GetBillingNoteOnesAsync(PaginationDTO pagination, string username);
 
     Task<ActionResponse<BillingNoteOne>> GetBillingNoteOneAsync(Guid id, string username);
@@ -37,6 +41,8 @@ public interface IBillingServiceX
     Task<ActionResponse<BillingNoteOne>> UpdateBillingNoteOneAsync(BillingNoteOne model, string username);
 
     Task<ActionResponse<bool>> DeleteBillingNoteOneAsync(Guid id, string username);
+
+    Task<ActionResponse<BillingOneCheckDto>> CheckBillingNoteOneAsync(Guid id, string username);
 
     Task<ActionResponse<BillingNoteOne>> LaunchBillingNoteOneAsync(Guid id, string username);
 

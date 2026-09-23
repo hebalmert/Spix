@@ -4,73 +4,120 @@
 
 @using Spix.Domain.EntitiesContratos
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Corte General</h3>
 
-        <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <ButtonFormNew OnClick="ShowCreateAsync" TooTip="Nuevo" />
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-ban"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Corte_Title"]</h3>
+                <p>@Localizer["Corte_IndexSubtitle"]</p>
             </div>
-            <div class="col-md-9 d-flex justify-content-end">
+        </div>
+
+        @* El tablero: lo cuenta la base *@
+        @if (Summary is not null)
+        {
+            <div class="rs-board">
+                <div class="rs-tile is-cut">
+                    <div class="rs-tile-label">@Localizer["Corte_SuspendedNow"]</div>
+                    <div class="rs-tile-value">@Summary.Suspended.ToString("N0")</div>
+                </div>
+                <div class="rs-tile">
+                    <div class="rs-tile-label">@Localizer["Corte_Debtors"]</div>
+                    <div class="rs-tile-value">@Summary.Debtors.ToString("N0")</div>
+                </div>
+                <div class="rs-tile is-money">
+                    <div class="rs-tile-label">@Localizer["Corte_DebtTotal"]</div>
+                    <div class="rs-tile-value">@Summary.DebtTotal.ToString("N2")</div>
+                </div>
+                <div class="rs-tile is-open">
+                    <div class="rs-tile-label">@Localizer["Corte_PendingRuns"]</div>
+                    <div class="rs-tile-value">@Summary.Pending.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="ShowCreateAsync" />
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr />
-
-        <GenericList MyList="Runs">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Ano</th>
-                                <th>Mes</th>
-                                <th class="text-center">Ejecutado</th>
-                                <th>Ejecutado por</th>
-                                <th colspan="3" class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Runs!)
-                            {
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Corte_Period"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th>@Localizer["Corte_ExecutedBy"]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Runs">
+                            <Loading>
                                 <tr>
-                                    <td>@item.YearNumber</td>
-                                    <td>@GetMonthName(item.MonthType)</td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" checked="@item.Executed" disabled />
-                                    </td>
-                                    <td>@item.UserByName</td>
-                                    <td style="width:1px;">
-                                        <ButtonGeneric OnClick="() => ShowDetailsAsync(item.RunSuspendedId)"
-                                                       TooTip="Detalle"
-                                                       Icon="fa fa-list-alt" />
-                                    </td>
-                                    <td style="width:1px;">
-                                        @if (!item.Executed)
-                                        {
-                                            <ButtonEdit OnClick="() => ShowEditAsync(item.RunSuspendedId)" />
-                                        }
-                                    </td>
-                                    <td style="width:1px;">
-                                        @if (!item.Executed)
-                                        {
-                                            <ButtonDelete OnClick="() => DeleteAsync(item.RunSuspendedId)" />
-                                        }
+                                    <td colspan="4" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="4" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Runs!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@GetMonthName(item.MonthType) @item.YearNumber</div>
+                                            <div class="idx-meta">@item.DateUtc?.ToString("dd/MM/yyyy")</div>
+                                        </td>
+                                        <td>
+                                            @if (item.Executed)
+                                            {
+                                                <span class="idx-pill is-danger">@Localizer["Corte_Executed"]</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="idx-pill is-off">@Localizer["Corte_Pending"]</span>
+                                            }
+                                        </td>
+                                        <td>@item.UserByName</td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowDetailsAsync(item.RunSuspendedId)"
+                                                               TooTip="@Localizer["Corte_Details"]"
+                                                               Icon="fa fa-list-alt" />
+                                                @if (!item.Executed)
+                                                {
+                                                    <ButtonEdit OnClick="() => ShowEditAsync(item.RunSuspendedId)" />
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.RunSuspendedId)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Runs is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
-
-        <hr />
-
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            }
+        </section>
     </div>
 </div>

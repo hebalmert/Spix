@@ -17,6 +17,9 @@ public partial class FormBillingNoteOne
     [Parameter] public EventCallback<BillingContractDto> SelectedContractChanged { get; set; }
     [Parameter] public bool IsSaving { get; set; }
     [Parameter] public bool IsReadOnly { get; set; }
+
+    //Solo el detalle y la edicion muestran si ya se lanzo
+    [Parameter] public bool ShowCreated { get; set; }
     [Parameter] public bool ShowButtons { get; set; } = true;
 
     private string ContractFilter { get; set; } = string.Empty;

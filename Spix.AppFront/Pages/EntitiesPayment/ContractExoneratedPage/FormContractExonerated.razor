@@ -131,24 +131,28 @@
         </div>
     </div>
 
-    <hr />
+    @* Facturado y su fecha solo se muestran cuando la exoneracion ya existe *@
+    @if (ShowBilled)
+    {
+        <hr />
 
-    <div class="row g-2 mb-2">
-        <div class="col-12 col-md-5">
-            <div class="input-group">
-                <span class="input-group-text" style="width:125px">Facturado</span>
-                <div class="form-control d-flex align-items-center">
-                    <input class="form-check-input" type="checkbox" checked="@ContractExonerated.Billed" disabled />
+        <div class="row g-2 mb-2">
+            <div class="col-12 col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:125px">Facturado</span>
+                    <div class="form-control d-flex align-items-center">
+                        <input class="form-check-input" type="checkbox" checked="@ContractExonerated.Billed" disabled />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:125px">Fecha</span>
+                    <input class="form-control" value="@ContractExonerated.DateBilled?.ToString("dd/MM/yyyy")" disabled />
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-7">
-            <div class="input-group">
-                <span class="input-group-text" style="width:125px">Fecha</span>
-                <input class="form-control" value="@ContractExonerated.DateBilled?.ToString("dd/MM/yyyy")" disabled />
-            </div>
-        </div>
-    </div>
+    }
 
     <hr />
     <div class="d-flex justify-content-center gap-3 mt-4">

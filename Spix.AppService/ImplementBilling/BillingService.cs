@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.Sequences;
 using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
@@ -68,6 +69,50 @@ public class BillingService : IBillingService
         }
     }
 
+    //El tablero de notas generales: como va el ano y cuantos contratos entrarian hoy
+    public async Task<ActionResponse<BillingNoteSummaryDto>> GetBillingNoteSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<BillingNoteSummaryDto>();
+
+            var year = DateTime.Today.Year;
+
+            //Las notas del ano, contadas de una sola pasada
+            var notas = await _context.BillingNotes
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId && x.YearNumber == year)
+                .GroupBy(x => 1)
+                .Select(g => new
+                {
+                    Notes = g.Count(),
+                    Launched = g.Count(x => x.Created)
+                })
+                .FirstOrDefaultAsync();
+
+            var summary = new BillingNoteSummaryDto
+            {
+                YearNumber = year,
+                Notes = notas?.Notes ?? 0,
+                Launched = notas?.Launched ?? 0,
+                ActiveContracts = await _context.ContractClients
+                    .AsNoTracking()
+                    .CountAsync(x => x.CorporationId == user.CorporationId &&
+                                     x.ContractState == ContractState.Active)
+            };
+
+            summary.Pending = summary.Notes - summary.Launched;
+
+            return new ActionResponse<BillingNoteSummaryDto> { WasSuccess = true, Result = summary };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<BillingNoteSummaryDto>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<BillingNote>>> GetBillingNotesAsync(PaginationDTO pagination, string username)
     {
         try
@@ -100,6 +145,54 @@ public class BillingService : IBillingService
         catch (Exception ex)
         {
             return await _httpErrorHandler.HandleErrorAsync<IEnumerable<BillingNote>>(ex);
+        }
+    }
+
+    //El tablero de notas individuales: como va el ano y cuanto se ha facturado por ellas
+    public async Task<ActionResponse<BillingNoteSummaryDto>> GetBillingNoteOneSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<BillingNoteSummaryDto>();
+
+            var year = DateTime.Today.Year;
+
+            var notas = await _context.BillingNoteOnes
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId && x.YearNumber == year)
+                .GroupBy(x => 1)
+                .Select(g => new
+                {
+                    Notes = g.Count(),
+                    Launched = g.Count(x => x.Created)
+                })
+                .FirstOrDefaultAsync();
+
+            var summary = new BillingNoteSummaryDto
+            {
+                YearNumber = year,
+                Notes = notas?.Notes ?? 0,
+                Launched = notas?.Launched ?? 0,
+
+                //Lo facturado por notas individuales, por el indice del periodo
+                Billed = await _context.CxCBills
+                    .AsNoTracking()
+                    .Where(x => x.CorporationId == user.CorporationId &&
+                                x.YearNumber == year &&
+                                !x.Cancelled &&
+                                x.BillingNoteOneId != null)
+                    .SumAsync(x => (decimal?)x.Total) ?? 0
+            };
+
+            summary.Pending = summary.Notes - summary.Launched;
+
+            return new ActionResponse<BillingNoteSummaryDto> { WasSuccess = true, Result = summary };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<BillingNoteSummaryDto>(ex);
         }
     }
 
@@ -320,7 +413,7 @@ public class BillingService : IBillingService
                 return AuthFail<BillingNoteOne>();
 
             if (model.ContractClientId == Guid.Empty)
-                return Fail<BillingNoteOne>("Debe seleccionar un contrato activo.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_ContractNotActive"]);
 
             var contract = await _context.ContractClients
                 .Include(x => x.Client)
@@ -329,7 +422,7 @@ public class BillingService : IBillingService
                                           x.ContractState == ContractState.Active);
 
             if (contract == null)
-                return Fail<BillingNoteOne>("Debe seleccionar un contrato activo.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_ContractNotActive"]);
 
             model.ClientId = contract.ClientId;
             if (model.YearNumber <= 0)
@@ -349,7 +442,7 @@ public class BillingService : IBillingService
                 model.YearNumber,
                 model.MonthType))
             {
-                return Fail<BillingNoteOne>("El contrato ya tiene una factura o una cuenta por cobrar activa para el mes y año seleccionados.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_PeriodTaken"]);
             }
 
             _context.BillingNoteOnes.Add(model);
@@ -379,10 +472,10 @@ public class BillingService : IBillingService
                 return Fail<BillingNoteOne>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
             if (current.Created)
-                return Fail<BillingNoteOne>("La nota individual ya fue lanzada y no puede modificarse.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_LaunchedNoEdit"]);
 
             if (model.ContractClientId == Guid.Empty)
-                return Fail<BillingNoteOne>("Debe seleccionar un contrato activo.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_ContractNotActive"]);
 
             var contract = await _context.ContractClients
                 .Include(x => x.Client)
@@ -391,10 +484,10 @@ public class BillingService : IBillingService
                                           x.ContractState == ContractState.Active);
 
             if (contract == null)
-                return Fail<BillingNoteOne>("Debe seleccionar un contrato activo.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_ContractNotActive"]);
 
             if (model.DateBill == default)
-                return Fail<BillingNoteOne>("Debe seleccionar la fecha.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_DateRequired"]);
 
             if (model.YearNumber <= 0)
                 model.YearNumber = model.DateBill.Year;
@@ -408,7 +501,7 @@ public class BillingService : IBillingService
                 model.YearNumber,
                 model.MonthType))
             {
-                return Fail<BillingNoteOne>("El contrato ya tiene una factura o una cuenta por cobrar activa para el mes y año seleccionados.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_PeriodTaken"]);
             }
 
             current.DateBill = model.DateBill;
@@ -551,7 +644,6 @@ public class BillingService : IBillingService
             //Lo ya facturado del periodo, en UNA consulta: antes se preguntaba contrato por contrato
             var yaFacturados = await BilledContractsForPeriodAsync(corporationId, note.YearNumber, note.MonthType);
 
-            var register = await GetOrCreateRegisterAsync(corporationId);
             var result = new BillingLaunchResultDto { Contracts = contracts.Count };
 
             foreach (var contract in contracts)
@@ -562,7 +654,7 @@ public class BillingService : IBillingService
                     continue;
                 }
 
-                var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, register, user.Id, $"{user.FirstName} {user.LastName}");
+                var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, user.Id, $"{user.FirstName} {user.LastName}");
                 if (!response.WasSuccess)
                 {
                     //Se anota y se sigue: el lote no se detiene por un contrato incompleto
@@ -632,7 +724,6 @@ public class BillingService : IBillingService
             //Un contrato activo debe estar completo: plan, IP, MAC, servidor, nodo, queue e
             //ipbinding. Si le falta algo no se le cobra: se reporta para que lo completen.
             var incompletos = await IncompleteContractsAsync(corporationId, contractClientIds);
-            var register = await GetOrCreateRegisterAsync(corporationId);
 
             foreach (var contract in contracts)
             {
@@ -654,7 +745,7 @@ public class BillingService : IBillingService
                     continue;
                 }
 
-                var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, register, user.Id, $"{user.FirstName} {user.LastName}");
+                var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, user.Id, $"{user.FirstName} {user.LastName}");
                 if (!response.WasSuccess)
                 {
                     //Un contrato incompleto no detiene el lote: se anota y se sigue
@@ -772,6 +863,133 @@ public class BillingService : IBillingService
         return ids.ToHashSet();
     }
 
+    //Revision de la nota individual: que se le va a cobrar a ese cliente y que le falta al
+    //contrato. Es un solo contrato, asi que se mira de frente por su id.
+    public async Task<ActionResponse<BillingOneCheckDto>> CheckBillingNoteOneAsync(Guid id, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<BillingOneCheckDto>();
+
+            var corporationId = Convert.ToInt32(user.CorporationId);
+            var note = await _context.BillingNoteOnes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.BillingNoteOneId == id && x.CorporationId == corporationId);
+
+            if (note == null)
+                return Fail<BillingOneCheckDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            //Todo lo del contrato en una sola consulta: el estado y lo que tiene configurado
+            var datos = await _context.ContractClients
+                .AsNoTracking()
+                .Where(x => x.ContractClientId == note.ContractClientId && x.CorporationId == corporationId)
+                .Select(x => new
+                {
+                    x.ControlContrato,
+                    ClientFullName = x.Client!.FirstName + " " + x.Client.LastName,
+                    ZoneName = x.Zone!.ZoneName,
+                    IsActive = x.ContractState == ContractState.Active,
+                    AppliesTax = x.EstratoSocial == null || x.EstratoSocial.ApplyTax,
+                    HasPlan = x.ContractPlans!.Any(),
+                    HasIp = x.ContractIps!.Any(),
+                    HasMac = x.ContractMacs!.Any(),
+                    HasServer = x.ContractServers!.Any(),
+                    HasNode = x.ContractNodes!.Any(),
+                    HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId),
+                    HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId)
+                })
+                .FirstOrDefaultAsync();
+
+            if (datos == null)
+                return Fail<BillingOneCheckDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            var dto = new BillingOneCheckDto
+            {
+                ControlContrato = datos.ControlContrato,
+                ClientFullName = datos.ClientFullName,
+                ZoneName = datos.ZoneName,
+                IsActive = datos.IsActive,
+                HasPlan = datos.HasPlan,
+                HasIp = datos.HasIp,
+                HasMac = datos.HasMac,
+                HasServer = datos.HasServer,
+                HasNode = datos.HasNode,
+                HasQueue = datos.HasQueue,
+                HasBinding = datos.HasBinding,
+                AlreadyBilled = await HasBillingForPeriodAsync(note.ContractClientId, corporationId, note.YearNumber, note.MonthType)
+            };
+
+            //El plan del mes, con su impuesto si el estrato lo paga
+            var plan = await _context.ContractPlans
+                .AsNoTracking()
+                .Where(x => x.ContractClientId == note.ContractClientId)
+                .Select(x => new { x.Plan!.PlanName, x.Plan.Price, TaxRate = x.Plan.Tax == null ? 0 : x.Plan.Tax.Rate })
+                .FirstOrDefaultAsync();
+
+            if (plan != null)
+            {
+                var taxRate = datos.AppliesTax ? plan.TaxRate : 0;
+                dto.PlanName = plan.PlanName;
+                dto.PlanPrice = plan.Price + CalculateTax(plan.Price, taxRate);
+            }
+
+            //El adelanto del mes: si reservo solicitudes, esas entran en esta nota
+            var prePayment = await _context.PrePayments
+                .AsNoTracking()
+                .Include(x => x.PrePaymentDetails!)
+                .FirstOrDefaultAsync(x => x.CorporationId == corporationId &&
+                                          x.ContractClientId == note.ContractClientId &&
+                                          x.YearNumber == note.YearNumber &&
+                                          x.MonthType == note.MonthType &&
+                                          !x.Billed);
+
+            var reservedRequestIds = prePayment?.PrePaymentDetails?
+                .Where(x => x.ServiceRequestId.HasValue)
+                .Select(x => x.ServiceRequestId!.Value)
+                .Distinct()
+                .ToList() ?? new List<Guid>();
+
+            //Las solicitudes de servicio que se le van a cobrar en esta nota
+            var serviceRequests = await GetPendingServiceRequestsAsync(note.ContractClientId, corporationId,
+                note.YearNumber, note.MonthType, reservedRequestIds);
+
+            foreach (var request in serviceRequests)
+            {
+                foreach (var detail in request.ServiceRequestDetails ?? Enumerable.Empty<ServiceRequestDetail>())
+                {
+                    dto.Services.Add(new BillingOneLineDto
+                    {
+                        Concept = BuildServiceConcept(request, detail),
+                        Price = datos.AppliesTax ? detail.Total : detail.Price
+                    });
+                }
+            }
+
+            var exonerated = await _context.ContractExonerateds
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.CorporationId == corporationId &&
+                                          x.ContractClientId == note.ContractClientId &&
+                                          x.YearNumber == note.YearNumber &&
+                                          x.MonthType == note.MonthType &&
+                                          !x.Billed);
+
+            dto.ServicesTotal = dto.Services.Sum(x => x.Price);
+            dto.Total = dto.PlanPrice + dto.ServicesTotal;
+            dto.PrePayment = prePayment?.PriceWithTax ?? 0;
+            dto.Exonerated = exonerated?.PriceWithTax ?? 0;
+            dto.Balance = dto.Total - dto.PrePayment - dto.Exonerated;
+            dto.PrePaymentAndExonerated = prePayment != null && exonerated != null;
+
+            return new ActionResponse<BillingOneCheckDto> { WasSuccess = true, Result = dto };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<BillingOneCheckDto>(ex);
+        }
+    }
+
     public async Task<ActionResponse<BillingNoteOne>> LaunchBillingNoteOneAsync(Guid id, string username)
     {
         await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -789,31 +1007,48 @@ public class BillingService : IBillingService
                 return Fail<BillingNoteOne>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
             if (note.Created)
-                return Fail<BillingNoteOne>("La nota individual ya fue lanzada.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_AlreadyLaunched"]);
 
             var contract = await GetBillableContractsQuery(corporationId)
                 .FirstOrDefaultAsync(x => x.ContractClientId == note.ContractClientId);
 
             if (contract == null)
-                return Fail<BillingNoteOne>("Debe seleccionar un contrato activo.");
+                return Fail<BillingNoteOne>(_localizer["BillingOne_ContractNotActive"]);
 
             if (await HasBillingForPeriodAsync(contract.ContractClientId, corporationId, note.YearNumber, note.MonthType))
+                return Fail<BillingNoteOne>(_localizer["BillingOne_AlreadyBilled", contract.ControlContrato]);
+
+            //Un contrato activo debe estar completo para poder cobrarle
+            var incompletos = await IncompleteContractsAsync(corporationId, new List<Guid> { contract.ContractClientId });
+            if (incompletos.TryGetValue(contract.ContractClientId, out var falta))
+                return Fail<BillingNoteOne>($"{_localizer["Billing_Incomplete"]}: {falta}");
+
+            //Se reclama la nota: si otro usuario la lanzo primero, aqui salen cero filas
+            var claimed = await _context.BillingNoteOnes
+                .Where(x => x.BillingNoteOneId == note.BillingNoteOneId && !x.Created)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Created, true)
+                    .SetProperty(x => x.DateCreated, DateTime.UtcNow.Date));
+
+            if (claimed == 0)
             {
-                return Fail<BillingNoteOne>($"El contrato {contract.ControlContrato} ya tiene una factura o una cuenta por cobrar para el mes y a\u00f1o seleccionados.");
+                await transaction.RollbackAsync();
+                return Fail<BillingNoteOne>(_localizer["BillingOne_AlreadyLaunched"]);
             }
 
-            var register = await GetOrCreateRegisterAsync(corporationId);
-            var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, null, note.BillingNoteOneId, register, user.Id, $"{user.FirstName} {user.LastName}");
+            var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, null, note.BillingNoteOneId, user.Id, $"{user.FirstName} {user.LastName}");
             if (!response.WasSuccess)
             {
                 await transaction.RollbackAsync();
                 return Fail<BillingNoteOne>(response.Message!);
             }
 
-            note.Created = true;
-            note.DateCreated = DateTime.UtcNow.Date;
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
+
+            //Lo que se devuelve refleja lo que quedo en la base
+            note.Created = true;
+            note.DateCreated = DateTime.UtcNow.Date;
 
             return new ActionResponse<BillingNoteOne> { WasSuccess = true, Result = note };
         }
@@ -930,7 +1165,6 @@ public class BillingService : IBillingService
         MonthType monthType,
         Guid? billingNoteId,
         Guid? billingNoteOneId,
-        Register register,
         string userId,
         string usuarioOwner)
     {
@@ -947,8 +1181,9 @@ public class BillingService : IBillingService
         var planPrice = plan.Price + planTaxAmount;
         var corporationId = contract.CorporationId;
         var utcNow = DateTime.UtcNow;
-        var invoiceNumber = NextFormattedNumber(register, NumberKind.Invoice);
-        var collectionNote = NextFormattedNumber(register, NumberKind.CollectionNote);
+        //Los consecutivos los entrega la base: dos usuarios nunca se llevan el mismo
+        var invoiceNumber = $"FA-{await NumberSequence.NextAsync(_context, corporationId, NumberKind.Invoice):0000000}";
+        var collectionNote = $"NC-{await NumberSequence.NextAsync(_context, corporationId, NumberKind.CollectionNote):0000000}";
 
         var sell = new Sell
         {
@@ -1163,27 +1398,6 @@ public class BillingService : IBillingService
             .ToListAsync();
     }
 
-    private async Task<Register> GetOrCreateRegisterAsync(int corporationId)
-    {
-        var register = await _context.Registers.FirstOrDefaultAsync(x => x.CorporationId == corporationId);
-        if (register != null)
-            return register;
-
-        register = new Register { RegisterId = Guid.NewGuid(), CorporationId = corporationId };
-        _context.Registers.Add(register);
-        return register;
-    }
-
-    private static string NextFormattedNumber(Register register, NumberKind kind)
-    {
-        return kind switch
-        {
-            NumberKind.Invoice => $"FA-{++register.Factura:0000000}",
-            NumberKind.CollectionNote => $"NC-{++register.NotaCobro:0000000}",
-            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
-        };
-    }
-
     private static decimal CalculateTax(decimal unitPrice, decimal taxRate) =>
         Math.Round((unitPrice * taxRate) / 100, 2);
 
@@ -1204,12 +1418,6 @@ public class BillingService : IBillingService
             return $"Deuda generada con pago adelantado aplicado para {monthType} {yearNumber}.";
 
         return $"Deuda generada para {monthType} {yearNumber}.";
-    }
-
-    private enum NumberKind
-    {
-        Invoice,
-        CollectionNote
     }
 
     //El tablero de facturas: solo el mes en curso, para no recorrer el historico

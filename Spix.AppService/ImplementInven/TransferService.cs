@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Spix.AppInfra;
+using Spix.AppInfra.Sequences;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Mappings;
@@ -175,23 +176,8 @@ public class TransferService : ITransferService
             modelo.FromStorageName = Bodegas.Where(x => x.ProductStorageId == modelo.FromProductStorageId).Select(x => x.StorageName).FirstOrDefault();
             modelo.ToStorageName = Bodegas.Where(x => x.ProductStorageId == modelo.ToProductStorageId).Select(x => x.StorageName).FirstOrDefault();
             modelo.Status = TransferType.Pendiente;
-            //Para LLevar el control de Consecutivos de Compra
-            int ControlTranfer = 0;
-            var CheckRegister = await _context.Registers.FirstOrDefaultAsync(x => x.CorporationId == modelo.CorporationId);
-            if (CheckRegister == null)
-            {
-                return new ActionResponse<Transfer>
-                {
-                    WasSuccess = false,
-                    Message = "Problemas para Correlativo de Transferencia"
-                };
-            }
-
-            CheckRegister.RegTransfer += 1;
-            ControlTranfer = CheckRegister.RegTransfer;
-            _context.Registers.Update(CheckRegister);
-
-            //Fin...
+            //El consecutivo de la transferencia lo entrega la base, no la memoria
+            var ControlTranfer = await NumberSequence.NextAsync(_context, modelo.CorporationId, NumberKind.Transfer);
             modelo.NroTransfer = ControlTranfer;
             _context.Transfers.Add(modelo);
 

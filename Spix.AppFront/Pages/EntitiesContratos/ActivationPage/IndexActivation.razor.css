@@ -1,0 +1,111 @@
+/* El tablero de la reactivacion */
+.ac-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.ac-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .ac-tile.is-go {
+        border-left-color: #198754;
+    }
+
+    .ac-tile.is-bad {
+        border-left-color: #dc3545;
+    }
+
+.ac-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.ac-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Como quedan repartidos por equipo */
+.ac-servers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.ac-server {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid #dfe6f3;
+    border-radius: 999px;
+    background: #f7f9fd;
+    color: #16305e;
+    font-size: 12px;
+    padding: 5px 13px;
+}
+
+    .ac-server b {
+        border-radius: 999px;
+        background: #198754;
+        color: #ffffff;
+        font-size: 11px;
+        padding: 1px 8px;
+    }
+
+/* Lo que le falta a un contrato para poder reactivarlo */
+.ac-tag {
+    display: inline-block;
+    border-radius: 999px;
+    background: #fdeff1;
+    color: #a01d2b;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 9px;
+    margin-left: 6px;
+}
+
+.ac-warn {
+    border-left: 4px solid #f59f00;
+    border-radius: 8px;
+    background: #fff8e8;
+    color: #7a5200;
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+}
+
+/* El avance de la reactivacion */
+.ac-progress {
+    margin-bottom: 16px;
+}
+
+.ac-progress-text {
+    display: flex;
+    justify-content: space-between;
+    color: #6b7690;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.ac-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: #e3e9f4;
+    overflow: hidden;
+}
+
+.ac-bar-fill {
+    height: 100%;
+    background: #198754;
+    transition: width .3s ease;
+}

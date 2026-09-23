@@ -1,0 +1,50 @@
+/* El tablero de exoneraciones */
+.ex-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.ex-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .ex-tile.is-open {
+        border-left-color: #f59f00;
+    }
+
+    .ex-tile.is-money {
+        border-left-color: #6f42c1;
+    }
+
+    .ex-tile.is-billed {
+        border-left-color: #198754;
+    }
+
+.ex-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.ex-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* El mes y ano que cubre la exoneracion */
+.ex-period {
+    display: inline-block;
+    border-radius: 999px;
+    background: #eef2fb;
+    color: #16305e;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 11px;
+}

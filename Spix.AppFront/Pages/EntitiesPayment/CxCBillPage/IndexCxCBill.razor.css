@@ -1,0 +1,73 @@
+/* El tablero de cuentas por cobrar */
+.cx-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.cx-btile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .cx-btile.is-open {
+        border-left-color: #f59f00;
+    }
+
+    .cx-btile.is-debt {
+        border-left-color: #dc3545;
+    }
+
+    .cx-btile.is-money {
+        border-left-color: #198754;
+    }
+
+.cx-btile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.cx-btile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* El buscador de cliente ocupa la barra completa */
+.cx-search {
+    flex: 1 1 100%;
+}
+
+/* Las sugerencias, encima de la tabla */
+.cx-suggest {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 2000;
+    width: 100%;
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid #e6ecf6;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(21, 34, 56, .14);
+}
+
+    .cx-suggest li {
+        display: flex;
+        flex-direction: column;
+        padding: 8px 14px;
+        cursor: pointer;
+    }
+
+        .cx-suggest li:hover {
+            background: #f2f6fd;
+        }

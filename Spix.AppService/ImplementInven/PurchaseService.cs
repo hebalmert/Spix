@@ -5,6 +5,7 @@ using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.Extensions;
+using Spix.AppInfra.Sequences;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesInven;
@@ -211,19 +212,13 @@ public class PurchaseService : IPurchaseService
             var error = await ValidateHeaderAsync(modelo, corporationId.Value, null);
             if (error != null) return await FailRollbackAsync<Purchase>(error);
 
-            //Consecutivo de compra de la corporacion
-            var register = await _context.Registers.FirstOrDefaultAsync(x => x.CorporationId == corporationId);
-            if (register == null)
-            {
-                register = new Register { CorporationId = corporationId.Value };
-                _context.Registers.Add(register);
-            }
-            register.RegPurchase += 1;
+            //Consecutivo de compra: lo entrega la base, no la memoria
+            var nroPurchase = await NumberSequence.NextAsync(_context, corporationId.Value, NumberKind.Purchase);
 
             //Lo que decide el servidor, no el cliente
             modelo.PurchaseId = Guid.Empty;
             modelo.CorporationId = corporationId.Value;
-            modelo.NroPurchase = register.RegPurchase;
+            modelo.NroPurchase = nroPurchase;
             modelo.Status = PurchaseStatus.Pendiente;
             modelo.NroFactura = modelo.NroFactura.Trim();
             modelo.Supplier = null;

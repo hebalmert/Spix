@@ -41,6 +41,11 @@ public class RunSuspendedServiceX : IRunSuspendedServiceX
         return await _runSuspendedService.DeleteAsync(id, username);
     }
 
+    public async Task<ActionResponse<CorteSummaryDto>> GetSummaryAsync(string username)
+    {
+        return await _runSuspendedService.GetSummaryAsync(username);
+    }
+
     public async Task<ActionResponse<CorteCheckDto>> CheckAsync(Guid id, string username)
     {
         return await _runSuspendedService.CheckAsync(id, username);

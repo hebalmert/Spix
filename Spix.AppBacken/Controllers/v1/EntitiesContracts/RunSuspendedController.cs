@@ -45,7 +45,7 @@ public class RunSuspendedController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -61,8 +61,17 @@ public class RunSuspendedController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    //Los numeros del tablero
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _runSuspendedService.GetSummaryAsync(userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     //Revision previa: a quien se le va a cortar y por cuanto
-    [HttpGet("{id}/check")]
+    [HttpGet("{id:guid}/check")]
     public async Task<IActionResult> CheckAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -71,7 +80,7 @@ public class RunSuspendedController : ControllerBase
     }
 
     //Lo que quedo cortado, paginado
-    [HttpGet("{id}/details")]
+    [HttpGet("{id:guid}/details")]
     public async Task<IActionResult> GetDetailsAsync(Guid id, [FromQuery] PaginationDTO pagination)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -80,7 +89,7 @@ public class RunSuspendedController : ControllerBase
     }
 
     //El corte va equipo por equipo: una conexion Mikrotik por servidor, y se confirma sola
-    [HttpPost("{id}/run/server/{serverId}")]
+    [HttpPost("{id:guid}/run/server/{serverId:guid}")]
     public async Task<IActionResult> RunServerAsync(Guid id, Guid serverId)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -89,7 +98,7 @@ public class RunSuspendedController : ControllerBase
     }
 
     //Cierra el corte cuando ya pasaron todos los lotes
-    [HttpPost("{id}/run/finish")]
+    [HttpPost("{id:guid}/run/finish")]
     public async Task<IActionResult> FinishRunAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
@@ -105,7 +114,7 @@ public class RunSuspendedController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);

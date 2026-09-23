@@ -203,6 +203,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IContractSuspendedAuditService, ContractSuspendedAuditService>();
             services.AddScoped<IRunSuspendedServiceX, RunSuspendedServiceX>();
             services.AddScoped<IRunSuspendedService, RunSuspendedService>();
+            services.AddScoped<IActivationServiceX, ActivationServiceX>();
+            services.AddScoped<IActivationService, ActivationService>();
             services.AddScoped<IContractIDPicServiceX, ContractIDPicServiceX>();
             services.AddScoped<IContractIDPicService, ContractIDPicService>();
 
@@ -237,6 +239,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<Spix.AppService.InterfacesBilling.IBillingService, Spix.AppService.ImplementBilling.BillingService>();
 
             //Payment
+            services.AddScoped<Spix.AppServiceX.InterfacesPayment.ITechnicianCollectionServiceX, Spix.AppServiceX.ImplementPayment.TechnicianCollectionServiceX>();
+            services.AddScoped<Spix.AppService.InterfacesPayment.ITechnicianCollectionService, Spix.AppService.ImplementPayment.TechnicianCollectionService>();
             services.AddScoped<Spix.AppServiceX.InterfacesPayment.IPaymentServiceX, Spix.AppServiceX.ImplementPayment.PaymentServiceX>();
             services.AddScoped<Spix.AppService.InterfacesPayment.IPaymentService, Spix.AppService.ImplementPayment.PaymentService>();
             services.AddScoped<Spix.AppServiceX.InterfacesPayment.IContractorPaymentServiceX, Spix.AppServiceX.ImplementPayment.ContractorPaymentServiceX>();

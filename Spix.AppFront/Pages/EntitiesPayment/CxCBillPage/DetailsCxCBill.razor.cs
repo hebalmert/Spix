@@ -62,6 +62,16 @@ public partial class DetailsCxCBill
         Model = responseHttp.Response;
     }
 
+    //El modo de pago, en palabras
+    private string ModeName(string? mode) => mode switch
+    {
+        "Cash" => Localizer["Pay_Cash"],
+        "Card" => Localizer["Pay_Card"],
+        "Transfer" => Localizer["Pay_Transfer"],
+        "PrePayment" => Localizer["CxC_PrePayment"],
+        _ => mode ?? string.Empty
+    };
+
     //De donde sale el renglon, en palabras
     private string OriginName(string? origin) => origin switch
     {

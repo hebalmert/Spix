@@ -169,6 +169,168 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Its IpBinding does not have what the device needs..
+        /// </summary>
+        public static string Activation_BindingIncomplete {
+            get {
+                return ResourceManager.GetString("Activation_BindingIncomplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some cannot be reactivated until their IpBinding or Queue is completed..
+        /// </summary>
+        public static string Activation_Blocked {
+            get {
+                return ResourceManager.GetString("Activation_Blocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} contract(s) will get their service back..
+        /// </summary>
+        public static string Activation_ConfirmText {
+            get {
+                return ResourceManager.GetString("Activation_ConfirmText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The device did not accept the change: reactivate it from Suspended contracts..
+        /// </summary>
+        public static string Activation_DeviceFailed {
+            get {
+                return ResourceManager.GetString("Activation_DeviceFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reactivation done.
+        /// </summary>
+        public static string Activation_Done {
+            get {
+                return ResourceManager.GetString("Activation_Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The reactivation was interrupted. What was reactivated stays reactivated: run it again to continue..
+        /// </summary>
+        public static string Activation_Interrupted {
+            get {
+                return ResourceManager.GetString("Activation_Interrupted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without IpBinding.
+        /// </summary>
+        public static string Activation_NoBinding {
+            get {
+                return ResourceManager.GetString("Activation_NoBinding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no active HotSpot type with the value bypassed..
+        /// </summary>
+        public static string Activation_NoBypassed {
+            get {
+                return ResourceManager.GetString("Activation_NoBypassed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without Queue.
+        /// </summary>
+        public static string Activation_NoQueue {
+            get {
+                return ResourceManager.GetString("Activation_NoQueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is nobody waiting for reactivation..
+        /// </summary>
+        public static string Activation_Nothing {
+            get {
+                return ResourceManager.GetString("Activation_Nothing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paid on.
+        /// </summary>
+        public static string Activation_PaidOn {
+            get {
+                return ResourceManager.GetString("Activation_PaidOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paid and waiting.
+        /// </summary>
+        public static string Activation_Ready {
+            get {
+                return ResourceManager.GetString("Activation_Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reactivated: {0}.
+        /// </summary>
+        public static string Activation_ResultOk {
+            get {
+                return ResourceManager.GetString("Activation_ResultOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reactivate.
+        /// </summary>
+        public static string Activation_Run {
+            get {
+                return ResourceManager.GetString("Activation_Run", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gives the service back to those who were cut off and already paid, device by device..
+        /// </summary>
+        public static string Activation_Subtitle {
+            get {
+                return ResourceManager.GetString("Activation_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cut off on.
+        /// </summary>
+        public static string Activation_Suspended {
+            get {
+                return ResourceManager.GetString("Activation_Suspended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reactivation.
+        /// </summary>
+        public static string Activation_Title {
+            get {
+                return ResourceManager.GetString("Activation_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready to activate.
+        /// </summary>
+        public static string Activation_ToActivate {
+            get {
+                return ResourceManager.GetString("Activation_ToActivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
         public static string Active {
@@ -561,6 +723,222 @@ namespace Spix.xLanguage.Resources {
         public static string Billing_ResultSkipped {
             get {
                 return ResourceManager.GetString("Billing_ResultSkipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active contracts.
+        /// </summary>
+        public static string BillingNote_ActiveContracts {
+            get {
+                return ResourceManager.GetString("BillingNote_ActiveContracts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Launched.
+        /// </summary>
+        public static string BillingNote_Launched {
+            get {
+                return ResourceManager.GetString("BillingNote_Launched", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string BillingNote_Pending {
+            get {
+                return ResourceManager.GetString("BillingNote_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To launch.
+        /// </summary>
+        public static string BillingNote_PendingNotes {
+            get {
+                return ResourceManager.GetString("BillingNote_PendingNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Period.
+        /// </summary>
+        public static string BillingNote_Period {
+            get {
+                return ResourceManager.GetString("BillingNote_Period", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One note per period: inside it the notes are launched for every active contract..
+        /// </summary>
+        public static string BillingNote_Subtitle {
+            get {
+                return ResourceManager.GetString("BillingNote_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection notes.
+        /// </summary>
+        public static string BillingNote_Title {
+            get {
+                return ResourceManager.GetString("BillingNote_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notes of {0}.
+        /// </summary>
+        public static string BillingNote_Year {
+            get {
+                return ResourceManager.GetString("BillingNote_Year", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Billed in {0}.
+        /// </summary>
+        public static string BillingNoteOne_Billed {
+            get {
+                return ResourceManager.GetString("BillingNoteOne_Billed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For the client who is left out of the general run: installed after the cut-off, or a period that has to be charged apart..
+        /// </summary>
+        public static string BillingNoteOne_Subtitle {
+            get {
+                return ResourceManager.GetString("BillingNoteOne_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single collection note.
+        /// </summary>
+        public static string BillingNoteOne_Title {
+            get {
+                return ResourceManager.GetString("BillingNoteOne_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract {0} already has an invoice or a collection note for the selected period..
+        /// </summary>
+        public static string BillingOne_AlreadyBilled {
+            get {
+                return ResourceManager.GetString("BillingOne_AlreadyBilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This individual note was already launched..
+        /// </summary>
+        public static string BillingOne_AlreadyLaunched {
+            get {
+                return ResourceManager.GetString("BillingOne_AlreadyLaunched", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This note cannot be launched yet..
+        /// </summary>
+        public static string BillingOne_Blocked {
+            get {
+                return ResourceManager.GetString("BillingOne_Blocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The same month has an exemption and an advance payment..
+        /// </summary>
+        public static string BillingOne_Both {
+            get {
+                return ResourceManager.GetString("BillingOne_Both", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A collection note will be generated for {0} with a balance of {1}..
+        /// </summary>
+        public static string BillingOne_Confirm {
+            get {
+                return ResourceManager.GetString("BillingOne_Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select an active contract..
+        /// </summary>
+        public static string BillingOne_ContractNotActive {
+            get {
+                return ResourceManager.GetString("BillingOne_ContractNotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select the date..
+        /// </summary>
+        public static string BillingOne_DateRequired {
+            get {
+                return ResourceManager.GetString("BillingOne_DateRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Note generated..
+        /// </summary>
+        public static string BillingOne_Launched {
+            get {
+                return ResourceManager.GetString("BillingOne_Launched", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The individual note was already launched and cannot be modified..
+        /// </summary>
+        public static string BillingOne_LaunchedNoEdit {
+            get {
+                return ResourceManager.GetString("BillingOne_LaunchedNoEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract is not active..
+        /// </summary>
+        public static string BillingOne_NotActive {
+            get {
+                return ResourceManager.GetString("BillingOne_NotActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract already has an invoice or a live collection note for the selected period..
+        /// </summary>
+        public static string BillingOne_PeriodTaken {
+            get {
+                return ResourceManager.GetString("BillingOne_PeriodTaken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Launch note.
+        /// </summary>
+        public static string BillingOne_Title {
+            get {
+                return ResourceManager.GetString("BillingOne_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is being charged.
+        /// </summary>
+        public static string BillingOne_WhatIsCharged {
+            get {
+                return ResourceManager.GetString("BillingOne_WhatIsCharged", resourceCulture);
             }
         }
         
@@ -1141,6 +1519,105 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Card and transfer.
+        /// </summary>
+        public static string Collection_Bank {
+            get {
+                return ResourceManager.GetString("Collection_Bank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collected by.
+        /// </summary>
+        public static string Collection_Collector {
+            get {
+                return ResourceManager.GetString("Collection_Collector", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collections.
+        /// </summary>
+        public static string Collection_Count {
+            get {
+                return ResourceManager.GetString("Collection_Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose a technician and a period, then press Search..
+        /// </summary>
+        public static string Collection_Empty {
+            get {
+                return ResourceManager.GetString("Collection_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From.
+        /// </summary>
+        public static string Collection_From {
+            get {
+                return ResourceManager.GetString("Collection_From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Collection_Search {
+            get {
+                return ResourceManager.GetString("Collection_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select who collected].
+        /// </summary>
+        public static string Collection_SelectOne {
+            get {
+                return ResourceManager.GetString("Collection_SelectOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What each person collected between two dates: it is what has to be received from them..
+        /// </summary>
+        public static string Collection_Subtitle {
+            get {
+                return ResourceManager.GetString("Collection_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technician collections.
+        /// </summary>
+        public static string Collection_Title {
+            get {
+                return ResourceManager.GetString("Collection_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To.
+        /// </summary>
+        public static string Collection_To {
+            get {
+                return ResourceManager.GetString("Collection_To", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total collected.
+        /// </summary>
+        public static string Collection_Total {
+            get {
+                return ResourceManager.GetString("Collection_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Comment.
         /// </summary>
         public static string Comment {
@@ -1474,6 +1951,60 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You must state the reason for the cancellation..
+        /// </summary>
+        public static string Contractor_CancelReason {
+            get {
+                return ResourceManager.GetString("Contractor_CancelReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This payable account is cancelled..
+        /// </summary>
+        public static string Contractor_NoteCancelled {
+            get {
+                return ResourceManager.GetString("Contractor_NoteCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The balance changed while you were paying. Open it again..
+        /// </summary>
+        public static string Contractor_NoteChanged {
+            get {
+                return ResourceManager.GetString("Contractor_NoteChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This payable account is already paid..
+        /// </summary>
+        public static string Contractor_NotePaid {
+            get {
+                return ResourceManager.GetString("Contractor_NotePaid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This account already has payments and cannot be cancelled..
+        /// </summary>
+        public static string Contractor_NoteWithPayments {
+            get {
+                return ResourceManager.GetString("Contractor_NoteWithPayments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to That contractor has no pending commissions..
+        /// </summary>
+        public static string Contractor_NothingPending {
+            get {
+                return ResourceManager.GetString("Contractor_NothingPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to One or more accounts payable do not belong to the selected contractor..
         /// </summary>
         public static string Contractor_PayablesMismatch {
@@ -1488,6 +2019,33 @@ namespace Spix.xLanguage.Resources {
         public static string Contractor_PayablesSettled {
             get {
                 return ResourceManager.GetString("Contractor_PayablesSettled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount must be greater than zero..
+        /// </summary>
+        public static string Contractor_PaymentInvalid {
+            get {
+                return ResourceManager.GetString("Contractor_PaymentInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount cannot be greater than the balance..
+        /// </summary>
+        public static string Contractor_PaymentOverBalance {
+            get {
+                return ResourceManager.GetString("Contractor_PaymentOverBalance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select a contractor].
+        /// </summary>
+        public static string Contractor_SelectOne {
+            get {
+                return ResourceManager.GetString("Contractor_SelectOne", resourceCulture);
             }
         }
         
@@ -1816,11 +2374,47 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cut-off detail.
+        /// </summary>
+        public static string Corte_Details {
+            get {
+                return ResourceManager.GetString("Corte_Details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cut-off executed.
         /// </summary>
         public static string Corte_Done {
             get {
                 return ResourceManager.GetString("Corte_Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit cut-off.
+        /// </summary>
+        public static string Corte_Edit {
+            get {
+                return ResourceManager.GetString("Corte_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executed.
+        /// </summary>
+        public static string Corte_Executed {
+            get {
+                return ResourceManager.GetString("Corte_Executed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executed by.
+        /// </summary>
+        public static string Corte_ExecutedBy {
+            get {
+                return ResourceManager.GetString("Corte_ExecutedBy", resourceCulture);
             }
         }
         
@@ -1843,11 +2437,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Suspends the contracts that owe, device by device..
+        /// </summary>
+        public static string Corte_IndexSubtitle {
+            get {
+                return ResourceManager.GetString("Corte_IndexSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The cut-off was interrupted. What was cut stays cut and the cut-off is still open: run it again to continue..
         /// </summary>
         public static string Corte_Interrupted {
             get {
                 return ResourceManager.GetString("Corte_Interrupted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New cut-off.
+        /// </summary>
+        public static string Corte_New {
+            get {
+                return ResourceManager.GetString("Corte_New", resourceCulture);
             }
         }
         
@@ -1893,6 +2505,33 @@ namespace Spix.xLanguage.Resources {
         public static string Corte_OldestNote {
             get {
                 return ResourceManager.GetString("Corte_OldestNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string Corte_Pending {
+            get {
+                return ResourceManager.GetString("Corte_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cut-offs to run.
+        /// </summary>
+        public static string Corte_PendingRuns {
+            get {
+                return ResourceManager.GetString("Corte_PendingRuns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Period.
+        /// </summary>
+        public static string Corte_Period {
+            get {
+                return ResourceManager.GetString("Corte_Period", resourceCulture);
             }
         }
         
@@ -1983,6 +2622,15 @@ namespace Spix.xLanguage.Resources {
         public static string Corte_Subtitle {
             get {
                 return ResourceManager.GetString("Corte_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspended today.
+        /// </summary>
+        public static string Corte_SuspendedNow {
+            get {
+                return ResourceManager.GetString("Corte_SuspendedNow", resourceCulture);
             }
         }
         
@@ -2437,11 +3085,38 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        public static string CxC_CancelledState {
+            get {
+                return ResourceManager.GetString("CxC_CancelledState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collected this month.
+        /// </summary>
+        public static string CxC_CollectedMonth {
+            get {
+                return ResourceManager.GetString("CxC_CollectedMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Debt.
         /// </summary>
         public static string CxC_Debt {
             get {
                 return ResourceManager.GetString("CxC_Debt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients with debt.
+        /// </summary>
+        public static string CxC_Debtors {
+            get {
+                return ResourceManager.GetString("CxC_Debtors", resourceCulture);
             }
         }
         
@@ -2464,11 +3139,362 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Balance to collect.
+        /// </summary>
+        public static string CxC_OpenBalance {
+            get {
+                return ResourceManager.GetString("CxC_OpenBalance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open notes.
+        /// </summary>
+        public static string CxC_OpenNotes {
+            get {
+                return ResourceManager.GetString("CxC_OpenNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paid.
+        /// </summary>
+        public static string CxC_PaidState {
+            get {
+                return ResourceManager.GetString("CxC_PaidState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payment.
+        /// </summary>
+        public static string CxC_Payment {
+            get {
+                return ResourceManager.GetString("CxC_Payment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payments received.
+        /// </summary>
+        public static string CxC_PaymentsMade {
+            get {
+                return ResourceManager.GetString("CxC_PaymentsMade", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string CxC_Pending {
+            get {
+                return ResourceManager.GetString("CxC_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advance payment.
         /// </summary>
         public static string CxC_PrePayment {
             get {
                 return ResourceManager.GetString("CxC_PrePayment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Received by.
+        /// </summary>
+        public static string CxC_ReceivedBy {
+            get {
+                return ResourceManager.GetString("CxC_ReceivedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client name or contract number (2 letters)....
+        /// </summary>
+        public static string CxC_SearchClient {
+            get {
+                return ResourceManager.GetString("CxC_SearchClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What each client owes and what has been collected from them..
+        /// </summary>
+        public static string CxC_Subtitle {
+            get {
+                return ResourceManager.GetString("CxC_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts receivable.
+        /// </summary>
+        public static string CxC_Title {
+            get {
+                return ResourceManager.GetString("CxC_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full balance.
+        /// </summary>
+        public static string CxCContractor_All {
+            get {
+                return ResourceManager.GetString("CxCContractor_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amount to pay.
+        /// </summary>
+        public static string CxCContractor_Amount {
+            get {
+                return ResourceManager.GetString("CxCContractor_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collected base.
+        /// </summary>
+        public static string CxCContractor_Base {
+            get {
+                return ResourceManager.GetString("CxCContractor_Base", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When you cancel it, its commissions go back to pending and can be grouped again..
+        /// </summary>
+        public static string CxCContractor_CancelHint {
+            get {
+                return ResourceManager.GetString("CxCContractor_CancelHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        public static string CxCContractor_Cancelled {
+            get {
+                return ResourceManager.GetString("CxCContractor_Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel account.
+        /// </summary>
+        public static string CxCContractor_CancelTitle {
+            get {
+                return ResourceManager.GetString("CxCContractor_CancelTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commission.
+        /// </summary>
+        public static string CxCContractor_Commission {
+            get {
+                return ResourceManager.GetString("CxCContractor_Commission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commissions.
+        /// </summary>
+        public static string CxCContractor_Commissions {
+            get {
+                return ResourceManager.GetString("CxCContractor_Commissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commissions of the account.
+        /// </summary>
+        public static string CxCContractor_CommissionsTitle {
+            get {
+                return ResourceManager.GetString("CxCContractor_CommissionsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contractor.
+        /// </summary>
+        public static string CxCContractor_Contractor {
+            get {
+                return ResourceManager.GetString("CxCContractor_Contractor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account created..
+        /// </summary>
+        public static string CxCContractor_Created {
+            get {
+                return ResourceManager.GetString("CxCContractor_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New payable account.
+        /// </summary>
+        public static string CxCContractor_New {
+            get {
+                return ResourceManager.GetString("CxCContractor_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account.
+        /// </summary>
+        public static string CxCContractor_Note {
+            get {
+                return ResourceManager.GetString("CxCContractor_Note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string CxCContractor_Open {
+            get {
+                return ResourceManager.GetString("CxCContractor_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balance owed.
+        /// </summary>
+        public static string CxCContractor_OpenBalance {
+            get {
+                return ResourceManager.GetString("CxCContractor_OpenBalance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open accounts.
+        /// </summary>
+        public static string CxCContractor_OpenNotes {
+            get {
+                return ResourceManager.GetString("CxCContractor_OpenNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paid.
+        /// </summary>
+        public static string CxCContractor_Paid {
+            get {
+                return ResourceManager.GetString("CxCContractor_Paid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paid.
+        /// </summary>
+        public static string CxCContractor_PaidAmount {
+            get {
+                return ResourceManager.GetString("CxCContractor_PaidAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payment recorded..
+        /// </summary>
+        public static string CxCContractor_PaidOk {
+            get {
+                return ResourceManager.GetString("CxCContractor_PaidOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Record payment.
+        /// </summary>
+        public static string CxCContractor_Pay {
+            get {
+                return ResourceManager.GetString("CxCContractor_Pay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payments.
+        /// </summary>
+        public static string CxCContractor_Payments {
+            get {
+                return ResourceManager.GetString("CxCContractor_Payments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payments of the account.
+        /// </summary>
+        public static string CxCContractor_PaymentsTitle {
+            get {
+                return ResourceManager.GetString("CxCContractor_PaymentsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending commissions.
+        /// </summary>
+        public static string CxCContractor_Pending {
+            get {
+                return ResourceManager.GetString("CxCContractor_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending amount.
+        /// </summary>
+        public static string CxCContractor_PendingTotal {
+            get {
+                return ResourceManager.GetString("CxCContractor_PendingTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference.
+        /// </summary>
+        public static string CxCContractor_Reference {
+            get {
+                return ResourceManager.GetString("CxCContractor_Reference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add all pending.
+        /// </summary>
+        public static string CxCContractor_SelectAll {
+            get {
+                return ResourceManager.GetString("CxCContractor_SelectAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} selected.
+        /// </summary>
+        public static string CxCContractor_Selected {
+            get {
+                return ResourceManager.GetString("CxCContractor_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is owed to each contractor for the payments they collected..
+        /// </summary>
+        public static string CxCContractor_Subtitle {
+            get {
+                return ResourceManager.GetString("CxCContractor_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contractor payments.
+        /// </summary>
+        public static string CxCContractor_Title {
+            get {
+                return ResourceManager.GetString("CxCContractor_Title", resourceCulture);
             }
         }
         
@@ -3400,6 +4426,96 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exempted.
+        /// </summary>
+        public static string Exonerated_Amount {
+            get {
+                return ResourceManager.GetString("Exonerated_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applied.
+        /// </summary>
+        public static string Exonerated_Applied {
+            get {
+                return ResourceManager.GetString("Exonerated_Applied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applied this month.
+        /// </summary>
+        public static string Exonerated_BilledMonth {
+            get {
+                return ResourceManager.GetString("Exonerated_BilledMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts.
+        /// </summary>
+        public static string Exonerated_Contracts {
+            get {
+                return ResourceManager.GetString("Exonerated_Contracts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scheduled.
+        /// </summary>
+        public static string Exonerated_Pending {
+            get {
+                return ResourceManager.GetString("Exonerated_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scheduled amount.
+        /// </summary>
+        public static string Exonerated_PendingTotal {
+            get {
+                return ResourceManager.GetString("Exonerated_PendingTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Period.
+        /// </summary>
+        public static string Exonerated_Period {
+            get {
+                return ResourceManager.GetString("Exonerated_Period", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scheduled.
+        /// </summary>
+        public static string Exonerated_Scheduled {
+            get {
+                return ResourceManager.GetString("Exonerated_Scheduled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What is forgiven to a client in a month, applied when the collection note is launched..
+        /// </summary>
+        public static string Exonerated_Subtitle {
+            get {
+                return ResourceManager.GetString("Exonerated_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scheduled exemptions.
+        /// </summary>
+        public static string Exonerated_Title {
+            get {
+                return ResourceManager.GetString("Exonerated_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fax Number.
         /// </summary>
         public static string Fax_Number {
@@ -3441,6 +4557,15 @@ namespace Spix.xLanguage.Resources {
         public static string Filter_AllStatus {
             get {
                 return ResourceManager.GetString("Filter_AllStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string Filter_Clear {
+            get {
+                return ResourceManager.GetString("Filter_Clear", resourceCulture);
             }
         }
         
@@ -4579,11 +5704,245 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reactivation.
+        /// </summary>
+        public static string Menu_Activation {
+            get {
+                return ResourceManager.GetString("Menu_Activation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activation audit.
+        /// </summary>
+        public static string Menu_ActivationAudit {
+            get {
+                return ResourceManager.GetString("Menu_ActivationAudit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single note.
+        /// </summary>
+        public static string Menu_BillingNoteOne {
+            get {
+                return ResourceManager.GetString("Menu_BillingNoteOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection notes.
+        /// </summary>
+        public static string Menu_BillingNotes {
+            get {
+                return ResourceManager.GetString("Menu_BillingNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Catalog.
+        /// </summary>
+        public static string Menu_Catalog {
+            get {
+                return ResourceManager.GetString("Menu_Catalog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client portal.
+        /// </summary>
+        public static string Menu_ClientPortal {
+            get {
+                return ResourceManager.GetString("Menu_ClientPortal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients.
+        /// </summary>
+        public static string Menu_Clients {
+            get {
+                return ResourceManager.GetString("Menu_Clients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract control.
+        /// </summary>
+        public static string Menu_ContractControl {
+            get {
+                return ResourceManager.GetString("Menu_ContractControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contractor payments.
+        /// </summary>
+        public static string Menu_ContractorPayments {
+            get {
+                return ResourceManager.GetString("Menu_ContractorPayments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contractors.
+        /// </summary>
+        public static string Menu_Contractors {
+            get {
+                return ResourceManager.GetString("Menu_Contractors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts.
+        /// </summary>
+        public static string Menu_Contracts {
+            get {
+                return ResourceManager.GetString("Menu_Contracts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Corporations.
+        /// </summary>
+        public static string Menu_Corporations {
+            get {
+                return ResourceManager.GetString("Menu_Corporations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts receivable.
+        /// </summary>
+        public static string Menu_CxCBills {
+            get {
+                return ResourceManager.GetString("Menu_CxCBills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document types.
+        /// </summary>
+        public static string Menu_DocumentTypes {
+            get {
+                return ResourceManager.GetString("Menu_DocumentTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outgoing email.
+        /// </summary>
+        public static string Menu_EmailSetup {
+            get {
+                return ResourceManager.GetString("Menu_EmailSetup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fixed exemptions.
+        /// </summary>
+        public static string Menu_ExemptFixed {
+            get {
+                return ResourceManager.GetString("Menu_ExemptFixed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monthly exemptions.
+        /// </summary>
+        public static string Menu_ExoneratedMonth {
+            get {
+                return ResourceManager.GetString("Menu_ExoneratedMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finance.
+        /// </summary>
+        public static string Menu_Finance {
+            get {
+                return ResourceManager.GetString("Menu_Finance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Home.
+        /// </summary>
+        public static string Menu_Home {
+            get {
+                return ResourceManager.GetString("Menu_Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Inventory.
         /// </summary>
         public static string Menu_Inventory {
             get {
                 return ResourceManager.GetString("Menu_Inventory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client IPs.
+        /// </summary>
+        public static string Menu_IpClients {
+            get {
+                return ResourceManager.GetString("Menu_IpClients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network IPs.
+        /// </summary>
+        public static string Menu_IpNetworks {
+            get {
+                return ResourceManager.GetString("Menu_IpNetworks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Managers.
+        /// </summary>
+        public static string Menu_Managers {
+            get {
+                return ResourceManager.GetString("Menu_Managers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brands and models.
+        /// </summary>
+        public static string Menu_Marks {
+            get {
+                return ResourceManager.GetString("Menu_Marks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mikrotik control.
+        /// </summary>
+        public static string Menu_MikrotikControl {
+            get {
+                return ResourceManager.GetString("Menu_MikrotikControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My documents.
+        /// </summary>
+        public static string Menu_MyDocuments {
+            get {
+                return ResourceManager.GetString("Menu_MyDocuments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My requests.
+        /// </summary>
+        public static string Menu_MyRequests {
+            get {
+                return ResourceManager.GetString("Menu_MyRequests", resourceCulture);
             }
         }
         
@@ -4597,6 +5956,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nodes.
+        /// </summary>
+        public static string Menu_Nodes {
+            get {
+                return ResourceManager.GetString("Menu_Nodes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operations.
         /// </summary>
         public static string Menu_Operation {
@@ -4606,11 +5974,254 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Payment gateway.
+        /// </summary>
+        public static string Menu_PaymentSettings {
+            get {
+                return ResourceManager.GetString("Menu_PaymentSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PDF templates.
+        /// </summary>
+        public static string Menu_PdfTemplates {
+            get {
+                return ResourceManager.GetString("Menu_PdfTemplates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plan categories.
+        /// </summary>
+        public static string Menu_PlanCategories {
+            get {
+                return ResourceManager.GetString("Menu_PlanCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advance payments.
+        /// </summary>
+        public static string Menu_PrePayments {
+            get {
+                return ResourceManager.GetString("Menu_PrePayments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product categories.
+        /// </summary>
+        public static string Menu_ProductCategories {
+            get {
+                return ResourceManager.GetString("Menu_ProductCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purchases.
+        /// </summary>
+        public static string Menu_Purchases {
+            get {
+                return ResourceManager.GetString("Menu_Purchases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queue Types.
+        /// </summary>
+        public static string Menu_QueueTypes {
+            get {
+                return ResourceManager.GetString("Menu_QueueTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number series.
+        /// </summary>
+        public static string Menu_Registers {
+            get {
+                return ResourceManager.GetString("Menu_Registers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schedule.
+        /// </summary>
+        public static string Menu_Schedule {
+            get {
+                return ResourceManager.GetString("Menu_Schedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invoices.
+        /// </summary>
+        public static string Menu_Sells {
+            get {
+                return ResourceManager.GetString("Menu_Sells", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Serial load.
+        /// </summary>
+        public static string Menu_SerialLoad {
+            get {
+                return ResourceManager.GetString("Menu_SerialLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Servers.
+        /// </summary>
+        public static string Menu_Servers {
+            get {
+                return ResourceManager.GetString("Menu_Servers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service categories.
+        /// </summary>
+        public static string Menu_ServiceCategories {
+            get {
+                return ResourceManager.GetString("Menu_ServiceCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service requests.
+        /// </summary>
+        public static string Menu_ServiceRequests {
+            get {
+                return ResourceManager.GetString("Menu_ServiceRequests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setup.
         /// </summary>
         public static string Menu_Setup {
             get {
                 return ResourceManager.GetString("Menu_Setup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software plans.
+        /// </summary>
+        public static string Menu_SoftPlans {
+            get {
+                return ResourceManager.GetString("Menu_SoftPlans", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warehouses.
+        /// </summary>
+        public static string Menu_Storages {
+            get {
+                return ResourceManager.GetString("Menu_Storages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My subscription.
+        /// </summary>
+        public static string Menu_Subscription {
+            get {
+                return ResourceManager.GetString("Menu_Subscription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suppliers.
+        /// </summary>
+        public static string Menu_Suppliers {
+            get {
+                return ResourceManager.GetString("Menu_Suppliers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspended contracts.
+        /// </summary>
+        public static string Menu_SuspendedContracts {
+            get {
+                return ResourceManager.GetString("Menu_SuspendedContracts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System.
+        /// </summary>
+        public static string Menu_System {
+            get {
+                return ResourceManager.GetString("Menu_System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System settings.
+        /// </summary>
+        public static string Menu_SystemSettings {
+            get {
+                return ResourceManager.GetString("Menu_SystemSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Taxes.
+        /// </summary>
+        public static string Menu_Taxes {
+            get {
+                return ResourceManager.GetString("Menu_Taxes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technician collections.
+        /// </summary>
+        public static string Menu_TechnicianCollections {
+            get {
+                return ResourceManager.GetString("Menu_TechnicianCollections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technicians.
+        /// </summary>
+        public static string Menu_Technicians {
+            get {
+                return ResourceManager.GetString("Menu_Technicians", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Technician portal.
+        /// </summary>
+        public static string Menu_TechPortal {
+            get {
+                return ResourceManager.GetString("Menu_TechPortal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Users.
+        /// </summary>
+        public static string Menu_Users {
+            get {
+                return ResourceManager.GetString("Menu_Users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zones.
+        /// </summary>
+        public static string Menu_Zones {
+            get {
+                return ResourceManager.GetString("Menu_Zones", resourceCulture);
             }
         }
         

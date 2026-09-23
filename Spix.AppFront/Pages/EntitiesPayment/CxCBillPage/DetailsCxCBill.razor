@@ -59,6 +59,46 @@
                     </table>
                 </div>
 
+                @* Quien recibio el pago y cuando: es lo primero que se pregunta en una caja *@
+                @if (Model.CxCBillDetails?.Count > 0)
+                {
+                    <div class="cx-subtitle"><i class="fa fa-money-bill-wave"></i> @Localizer["CxC_PaymentsMade"]</div>
+                    <div class="table-responsive">
+                        <table class="idx-table">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer[nameof(Resource.Date)]</th>
+                                    <th>@Localizer["Pay_Mode"]</th>
+                                    <th>@Localizer["CxC_ReceivedBy"]</th>
+                                    <th style="text-align:right">@Localizer["CxC_Payment"]</th>
+                                    <th style="text-align:right">@Localizer["CxC_Balance"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CxCBillDetails.OrderBy(x => x.DatePayment))
+                                {
+                                    <tr>
+                                        <td>@item.DatePayment.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <div>@ModeName(item.PaymentMode)</div>
+                                            @if (!string.IsNullOrWhiteSpace(item.DiscountRate))
+                                            {
+                                                <div class="idx-meta">@Localizer["CxC_Discount"] @item.DiscountRate</div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="idx-name">@item.UsuarioOwner</div>
+                                            <div class="idx-meta">@item.Detail</div>
+                                        </td>
+                                        <td style="text-align:right"><strong>@item.Payment.ToString("N2")</strong></td>
+                                        <td style="text-align:right">@item.Balance.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
                 @* El cruce: lo que debia, lo que ya habia pagado adelantado y lo exonerado *@
                 <div class="cx-cross">
                     <div class="cx-tile">
