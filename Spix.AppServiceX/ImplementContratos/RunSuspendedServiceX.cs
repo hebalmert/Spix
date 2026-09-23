@@ -41,9 +41,24 @@ public class RunSuspendedServiceX : IRunSuspendedServiceX
         return await _runSuspendedService.DeleteAsync(id, username);
     }
 
-    public async Task<ActionResponse<RunSuspended>> RunAsync(Guid id, string username)
+    public async Task<ActionResponse<CorteCheckDto>> CheckAsync(Guid id, string username)
     {
-        return await _runSuspendedService.RunAsync(id, username);
+        return await _runSuspendedService.CheckAsync(id, username);
+    }
+
+    public async Task<ActionResponse<IEnumerable<CorteDetailDto>>> GetDetailsAsync(Guid id, PaginationDTO pagination, string username)
+    {
+        return await _runSuspendedService.GetDetailsAsync(id, pagination, username);
+    }
+
+    public async Task<ActionResponse<CorteRunResultDto>> RunServerAsync(Guid id, Guid serverId, string username)
+    {
+        return await _runSuspendedService.RunServerAsync(id, serverId, username);
+    }
+
+    public async Task<ActionResponse<RunSuspended>> FinishRunAsync(Guid id, string username)
+    {
+        return await _runSuspendedService.FinishRunAsync(id, username);
     }
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboMonthsAsync(string username)

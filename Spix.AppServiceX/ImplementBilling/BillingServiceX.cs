@@ -1,6 +1,7 @@
 using Spix.AppService.InterfacesBilling;
 using Spix.AppServiceX.InterfacesBilling;
 using Spix.Domain.EntitiesBilling;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
@@ -34,7 +35,13 @@ public class BillingServiceX : IBillingServiceX
     public async Task<ActionResponse<bool>> DeleteBillingNoteAsync(Guid id, string username) =>
         await _billingService.DeleteBillingNoteAsync(id, username);
 
-    public async Task<ActionResponse<BillingNote>> LaunchBillingNoteAsync(Guid id, string username) =>
+    public async Task<ActionResponse<IEnumerable<BillingCheckDto>>> CheckContractsAsync(int yearNumber, MonthType monthType, string username) => await _billingService.CheckContractsAsync(yearNumber, monthType, username);
+
+    public async Task<ActionResponse<BillingLaunchResultDto>> LaunchBatchAsync(Guid id, List<Guid> contractClientIds, string username) => await _billingService.LaunchBatchAsync(id, contractClientIds, username);
+
+    public async Task<ActionResponse<BillingNote>> FinishLaunchAsync(Guid id, string username) => await _billingService.FinishLaunchAsync(id, username);
+
+    public async Task<ActionResponse<BillingLaunchResultDto>> LaunchBillingNoteAsync(Guid id, string username) =>
         await _billingService.LaunchBillingNoteAsync(id, username);
 
     public async Task<ActionResponse<IEnumerable<BillingNoteOne>>> GetBillingNoteOnesAsync(PaginationDTO pagination, string username) =>
@@ -57,6 +64,9 @@ public class BillingServiceX : IBillingServiceX
 
     public async Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username) =>
         await _billingService.SearchContractsAsync(filter, username);
+
+    public async Task<ActionResponse<SellSummaryDto>> GetSellSummaryAsync(string username) =>
+        await _billingService.GetSellSummaryAsync(username);
 
     public async Task<ActionResponse<IEnumerable<Sell>>> GetSellsAsync(PaginationDTO pagination, string username) =>
         await _billingService.GetSellsAsync(pagination, username);

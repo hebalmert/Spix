@@ -81,6 +81,97 @@ public static class ContractSuspendedRegistry
         });
     }
 
+    //La version por lote del corte: los mismos datos, pero en cuatro consultas para TODOS
+    //los contratos del lote y no cuatro por cada uno.
+    public static async Task OpenManyAsync(DataContext context, List<ContractClient> contracts, SuspendedOrigin origin,
+        string? motivo, Guid? runSuspendedId, string? userName, Guid? userId)
+    {
+        if (contracts.Count == 0)
+            return;
+
+        var ids = contracts.Select(x => x.ContractClientId).ToList();
+
+        //Los que ya tienen una suspension abierta no se vuelven a abrir
+        var yaAbiertas = (await context.ContractSuspendeds
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.ContractClientId) && x.DateReactivated == null)
+            .Select(x => x.ContractClientId)
+            .ToListAsync()).ToHashSet();
+
+        //Foto del plan al momento de suspender
+        var planes = (await context.ContractPlans
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.ContractClientId))
+            .Select(x => new { x.ContractClientId, x.Plan!.PlanName, x.Plan.Price })
+            .ToListAsync())
+            .GroupBy(x => x.ContractClientId)
+            .ToDictionary(x => x.Key, x => x.First());
+
+        //Los datos del contrato y del cliente, tal como estan hoy
+        var datos = (await context.ContractClients
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.ContractClientId))
+            .Select(x => new
+            {
+                x.ContractClientId,
+                x.ControlContrato,
+                x.Address,
+                x.PhoneNumber,
+                ClientName = x.Client!.FirstName + " " + x.Client.LastName,
+                x.Client.Document,
+                CityName = x.Zone!.City!.Name,
+                x.Zone.ZoneName
+            })
+            .ToListAsync())
+            .ToDictionary(x => x.ContractClientId);
+
+        //Con que editar el registro en el equipo cuando haya que devolver el acceso
+        var binds = (await context.ContractBinds
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.ContractClientId))
+            .Select(x => new { x.ContractClientId, x.MikrotikId, x.ServerId })
+            .ToListAsync())
+            .GroupBy(x => x.ContractClientId)
+            .ToDictionary(x => x.Key, x => x.First());
+
+        var utcNow = DateTime.UtcNow;
+
+        foreach (var contract in contracts)
+        {
+            if (yaAbiertas.Contains(contract.ContractClientId))
+                continue;
+
+            planes.TryGetValue(contract.ContractClientId, out var plan);
+            datos.TryGetValue(contract.ContractClientId, out var dato);
+            binds.TryGetValue(contract.ContractClientId, out var bind);
+
+            context.ContractSuspendeds.Add(new ContractSuspended
+            {
+                MkIndex = bind?.MikrotikId,
+                ServerId = bind?.ServerId,
+                ContractSuspendedId = Guid.NewGuid(),
+                ContractClientId = contract.ContractClientId,
+                ClientId = contract.ClientId,
+                DateSuspended = utcNow,
+                Origin = origin,
+                RunSuspendedId = runSuspendedId,
+                Motivo = motivo,
+                ControlContrato = dato?.ControlContrato ?? contract.ControlContrato,
+                ClientName = dato?.ClientName,
+                ClientDocument = dato?.Document,
+                ContractAddress = dato?.Address,
+                ContractPhone = dato?.PhoneNumber,
+                CityName = dato?.CityName,
+                ZoneName = dato?.ZoneName,
+                PlanName = plan?.PlanName,
+                PlanAmount = plan?.Price ?? 0,
+                UserByName = userName,
+                UserId = userId,
+                CorporationId = contract.CorporationId
+            });
+        }
+    }
+
     //Cierra la suspension abierta del contrato, si la hay.
     public static async Task CloseAsync(DataContext context, Guid contractClientId, string? userName, Guid? userId)
     {

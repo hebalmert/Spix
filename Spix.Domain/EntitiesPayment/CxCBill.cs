@@ -2,6 +2,7 @@
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesOper;
+using Spix.DomainLogic.EnumTypes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Spix.Domain.EntitiesPayment;
@@ -12,6 +13,13 @@ public class CxCBill
     public Guid CxCBillId { get; set; }
 
     public DateTime DateNote { get; set; }
+
+    //El periodo que cobra esta nota. Se guarda aqui (no solo en la nota general) para que la
+    //base pueda impedir que un contrato quede facturado dos veces el mismo mes, aunque el
+    //lanzamiento por lotes se caiga a mitad y se reintente.
+    public int YearNumber { get; set; }
+
+    public MonthType MonthType { get; set; }
 
     [MaxLength(25)]
     public string? CollectionNote { get; set; }

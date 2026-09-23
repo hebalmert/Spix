@@ -1,0 +1,112 @@
+﻿/* Revision previa al lanzamiento */
+.bn-check {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    margin-top: 16px;
+}
+
+.bn-check-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #edf1f7;
+    background: #f7f9fd;
+    padding: 8px 14px;
+}
+
+    .bn-check-head b {
+        color: #16305e;
+        font-size: 14px;
+    }
+
+    .bn-check-head b i {
+        margin-right: 6px;
+    }
+
+.bn-meta {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.bn-name {
+    color: #152238;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.bn-check-list {
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.bn-check-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #f1f4fa;
+    padding: 8px 14px;
+}
+
+    .bn-check-row:last-child {
+        border-bottom: 0;
+    }
+
+.bn-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Lo que falta: ambar avisa, rojo impide cobrar */
+.bn-tag {
+    border-radius: 999px;
+    background: #faeeda;
+    color: #854f0b;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+}
+
+    .bn-tag.is-bad {
+        background: #fbe7e7;
+        color: #a32626;
+    }
+
+.bn-ok {
+    color: #1f6b3a;
+    font-size: 13px;
+    padding: 10px 14px;
+}
+
+/* El avance del lanzamiento */
+.bn-progress {
+    margin-top: 14px;
+}
+
+.bn-progress-text {
+    display: flex;
+    justify-content: space-between;
+    color: #6b7690;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.bn-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: #e3e9f4;
+    overflow: hidden;
+}
+
+.bn-bar-fill {
+    height: 100%;
+    background: #16305e;
+    transition: width .3s ease;
+}

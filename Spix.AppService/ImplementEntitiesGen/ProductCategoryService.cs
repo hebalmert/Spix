@@ -94,7 +94,7 @@ public class ProductCategoryService : IProductCategoryService
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.Name).Paginate(pagination).ToListAsync();
+            var modelo = await queryable.OrderBy(x => x.Name).Paginate(pagination).AsSplitQuery().ToListAsync();
 
             return new ActionResponse<IEnumerable<ProductCategory>>
             {

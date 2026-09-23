@@ -9,6 +9,7 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesPayment;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesPayment;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
@@ -92,6 +93,22 @@ public class ContractorPaymentService : IContractorPaymentService
         };
 
         _context.ContractorAccountPayables.Add(accountPayable);
+
+        //Bitacora del dinero: la comision que se le causa al contratista por ese recaudo
+        PaymentAuditLog.Add(
+            _context,
+            cxCBill.CorporationId,
+            PaymentEventType.ContractorAccrued,
+            cxCBill.ContractClientId,
+            cxCBill.ClientId,
+            accountPayable.ContractorAccountPayableId,
+            nameof(ContractorAccountPayable),
+            total,
+            0,
+            total,
+            $"{contractor.FirstName} {contractor.LastName} - {contractor.Rate:N2}% de {cxCBillDetail.Payment:N2} - {cxCBill.CollectionNote}",
+            cxCBillDetail.UsuarioOwner,
+            cxCBillDetail.UserId);
     }
 
     public async Task<ActionResponse<IEnumerable<ContractorAccountPayable>>> GetAccountPayablesAsync(PaginationDTO pagination, string username)
@@ -140,6 +157,8 @@ public class ContractorPaymentService : IContractorPaymentService
         }
     }
 
+    //La liquidacion de lo que se le debe al contratista. Es plata que sale: las cuentas se
+    //reclaman de forma atomica para que dos usuarios no las paguen dos veces.
     public async Task<ActionResponse<ContractorPayment>> PayAsync(ContractorPaymentCreateDto model, string username)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -159,48 +178,56 @@ public class ContractorPaymentService : IContractorPaymentService
                 .ToList();
 
             if (model.ContractorId == Guid.Empty || payableIds.Count == 0)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return Fail<ContractorPayment>("Debe seleccionar al menos una cuenta por pagar del contratista.");
-            }
+                return await FailRollbackAsync<ContractorPayment>(_localizer["Contractor_SelectPayables"]);
 
-            var contractor = await _context.Contractors.FirstOrDefaultAsync(x =>
-                x.ContractorId == model.ContractorId &&
-                x.CorporationId == corporationId &&
-                x.Active);
+            var contractor = await _context.Contractors
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ContractorId == model.ContractorId &&
+                                          x.CorporationId == corporationId &&
+                                          x.Active);
 
             if (contractor == null)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return Fail<ContractorPayment>(_localizer[nameof(Resource.Generic_IdNotFound)]);
-            }
+                return await FailRollbackAsync<ContractorPayment>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
+            //Solo las cuentas de ese contratista
             var accountPayables = await _context.ContractorAccountPayables
+                .AsNoTracking()
                 .Where(x => payableIds.Contains(x.ContractorAccountPayableId) &&
                             x.ContractorId == contractor.ContractorId &&
                             x.CorporationId == corporationId)
                 .ToListAsync();
 
             if (accountPayables.Count != payableIds.Count)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return Fail<ContractorPayment>("Una o mas cuentas por pagar no pertenecen al contratista seleccionado.");
-            }
+                return await FailRollbackAsync<ContractorPayment>(_localizer["Contractor_PayablesMismatch"]);
 
             if (accountPayables.Any(x => x.Paid || x.Balance <= 0))
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return Fail<ContractorPayment>("Una o mas cuentas por pagar ya fueron liquidadas.");
-            }
+                return await FailRollbackAsync<ContractorPayment>(_localizer["Contractor_PayablesSettled"]);
 
             var total = accountPayables.Sum(x => x.Balance);
+            var today = DateTime.UtcNow.Date;
+
+            //Se reclaman las cuentas. Si otro usuario liquido alguna primero, no salen todas
+            var claimed = await _context.ContractorAccountPayables
+                .Where(x => payableIds.Contains(x.ContractorAccountPayableId) &&
+                            x.ContractorId == contractor.ContractorId &&
+                            x.CorporationId == corporationId &&
+                            !x.Paid &&
+                            x.Balance > 0)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Balance, 0m)
+                    .SetProperty(x => x.Paid, true)
+                    .SetProperty(x => x.DatePaid, today));
+
+            if (claimed != accountPayables.Count)
+                return await FailRollbackAsync<ContractorPayment>(_localizer["Contractor_PayablesSettled"]);
+
             var register = await GetOrCreateRegisterAsync(corporationId);
             var paymentNumber = $"PC-{++register.PagoContratista:0000000}";
 
             var contractorPayment = new ContractorPayment
             {
                 ContractorPaymentId = Guid.NewGuid(),
-                DatePayment = DateTime.UtcNow.Date,
+                DatePayment = today,
                 PaymentNumber = paymentNumber,
                 ContractorId = contractor.ContractorId,
                 PaymentMode = model.PaymentMode.Trim(),
@@ -215,21 +242,36 @@ public class ContractorPaymentService : IContractorPaymentService
 
             foreach (var accountPayable in accountPayables)
             {
-                var payment = accountPayable.Balance;
-                accountPayable.Balance = 0;
-                accountPayable.Paid = true;
-                accountPayable.DatePaid = contractorPayment.DatePayment;
-
                 contractorPayment.ContractorPaymentDetails.Add(new ContractorPaymentDetail
                 {
                     ContractorPaymentDetailId = Guid.NewGuid(),
                     ContractorPaymentId = contractorPayment.ContractorPaymentId,
                     ContractorAccountPayableId = accountPayable.ContractorAccountPayableId,
-                    Payment = payment
+                    Payment = accountPayable.Balance
                 });
             }
 
             _context.ContractorPayments.Add(contractorPayment);
+
+            //Bitacora del dinero: cuanto se le pago al contratista y con cuantas cuentas
+            var request = _httpContextAccessor.HttpContext?.Request;
+            PaymentAuditLog.Add(
+                _context,
+                corporationId,
+                PaymentEventType.ContractorPaid,
+                null,
+                null,
+                contractorPayment.ContractorPaymentId,
+                nameof(ContractorPayment),
+                total,
+                0,
+                total,
+                $"{paymentNumber} - {contractor.FirstName} {contractor.LastName} - {accountPayables.Count} cuenta(s) - {contractorPayment.PaymentMode}",
+                contractorPayment.UsuarioOwner,
+                contractorPayment.UserId,
+                request?.HttpContext.Connection.RemoteIpAddress?.ToString(),
+                request?.Headers["User-Agent"].ToString());
+
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
@@ -244,6 +286,13 @@ public class ContractorPaymentService : IContractorPaymentService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<ContractorPayment>(ex);
         }
+    }
+
+    //Deshace la transaccion y devuelve el motivo
+    private async Task<ActionResponse<T>> FailRollbackAsync<T>(string message)
+    {
+        await _transactionManager.RollbackTransactionAsync();
+        return new ActionResponse<T> { WasSuccess = false, Message = message };
     }
 
     private async Task<Register> GetOrCreateRegisterAsync(int corporationId)

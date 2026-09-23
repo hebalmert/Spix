@@ -21,83 +21,73 @@
                 <EditForm Model="Payment" OnValidSubmit="PayAsync">
                     <DataAnnotationsValidator />
 
-                    <div class="row g-2 mb-2">
-                        <div class="col-12 col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width:125px">Cliente</span>
-                                <input class="form-control" value="@($"{Model.Client?.FirstName} {Model.Client?.LastName}")" disabled />
+                    @* A quien se le cobra y por cual nota *@
+                    <div class="pay-head">
+                        <div>
+                            <div class="pay-name">@Model.Client?.FirstName @Model.Client?.LastName</div>
+                            <div class="pay-meta">
+                                @Localizer[nameof(Resource.Contract)] #@Model.ContractClient?.ControlContrato ·
+                                @Model.DateNote.ToString("dd/MM/yyyy")
                             </div>
                         </div>
-                        <div class="col-12 col-md-3">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width:110px">Contrato</span>
-                                <input class="form-control" value="@Model.ContractClient?.ControlContrato" disabled />
-                            </div>
+                        <div class="pay-note">@Model.CollectionNote</div>
+                    </div>
+
+                    @* Las cuentas del recaudo, que se mueven con el descuento *@
+                    <div class="pay-board">
+                        <div class="pay-tile">
+                            <div class="pay-tile-label">@Localizer["Pay_Debt"]</div>
+                            <div class="pay-tile-value">@Debt.ToString("N2")</div>
                         </div>
-                        <div class="col-12 col-md-3">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width:90px">Nota</span>
-                                <input class="form-control" value="@Model.CollectionNote" disabled />
-                            </div>
+                        <div class="pay-tile is-discount">
+                            <div class="pay-tile-label">@Localizer["Pay_Discount"]</div>
+                            <div class="pay-tile-value">@DiscountAmount.ToString("N2")</div>
+                        </div>
+                        <div class="pay-tile is-money">
+                            <div class="pay-tile-label">@Localizer["Pay_Receive"]</div>
+                            <div class="pay-tile-value">@PaymentAmount.ToString("N2")</div>
+                        </div>
+                        <div class="pay-tile is-balance">
+                            <div class="pay-tile-label">@Localizer["Pay_Balance"]</div>
+                            <div class="pay-tile-value">@Balance.ToString("N2")</div>
                         </div>
                     </div>
 
-                    <hr />
-
-                    <div class="row g-2 mb-2">
-                        <div class="col-12 col-md-3">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width:105px">Deuda</span>
-                                <input class="form-control text-end" value="@Debt.ToString("N2")" disabled />
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width:105px">Abono</span>
-                                <input class="form-control text-end" value="@PaymentAmount.ToString("N2")" disabled />
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width:105px">Descuento</span>
-                                <input class="form-control text-end" value="@DiscountAmount.ToString("N2")" disabled />
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width:105px">Saldo</span>
-                                <input class="form-control text-end" value="@Balance.ToString("N2")" disabled />
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr />
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" style="width:125px">Modo Pago</span>
-                        <div class="form-control d-flex flex-wrap gap-3">
-                            <label><input type="radio" name="paymentMode" value="Cash" checked="@(Payment.PaymentMode == "Cash")" @onchange="PaymentModeChanged" /> Efectivo</label>
-                            <label><input type="radio" name="paymentMode" value="Card" checked="@(Payment.PaymentMode == "Card")" @onchange="PaymentModeChanged" /> Tarjeta</label>
-                            <label><input type="radio" name="paymentMode" value="Transfer" checked="@(Payment.PaymentMode == "Transfer")" @onchange="PaymentModeChanged" /> Transferencia</label>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" style="width:125px">Descuento</span>
-                        <div class="form-control d-flex flex-wrap gap-3">
-                            @foreach (var item in DiscountOptions)
+                    @* Modo de pago: una tarjeta por modo, se elige con un click *@
+                    <div class="pay-field">
+                        <div class="pay-label">@Localizer["Pay_Mode"]</div>
+                        <div class="pay-options">
+                            @foreach (var mode in PaymentModes)
                             {
-                                <label><input type="radio" name="discount" value="@item" checked="@(Payment.DiscountPercent == item)" @onchange="DiscountChanged" /> @(item == 0 ? "Ninguno" : $"{item}%")</label>
+                                <button type="button"
+                                        class="pay-chip @(Payment.PaymentMode == mode.Key ? "is-on" : "")"
+                                        @onclick="() => SetPaymentMode(mode.Key)">
+                                    <i class="@mode.Icon"></i> @Localizer[mode.Label]
+                                </button>
                             }
                         </div>
                     </div>
 
-                    <div class="input-group">
-                        <span class="input-group-text" style="width:125px">Detalle</span>
-                        <textarea class="form-control" rows="3" @bind="Payment.Detail"></textarea>
+                    @* Descuento: cambia lo que se recibe, por eso pide motivo *@
+                    <div class="pay-field">
+                        <div class="pay-label">@Localizer["Pay_Discount"]</div>
+                        <div class="pay-options">
+                            @foreach (var item in DiscountOptions)
+                            {
+                                <button type="button"
+                                        class="pay-chip @(Payment.DiscountPercent == item ? "is-warn" : "")"
+                                        @onclick="() => SetDiscount(item)">
+                                    @(item == 0 ? Localizer["Pay_NoDiscount"] : $"{item}%")
+                                </button>
+                            }
+                        </div>
                     </div>
 
-                    <hr />
+                    <div class="pay-field">
+                        <div class="pay-label">@Localizer["Pay_Detail"]</div>
+                        <textarea class="form-control" rows="2" placeholder="@Localizer["Pay_DetailHint"]" @bind="Payment.Detail"></textarea>
+                    </div>
+
                     <div class="d-flex justify-content-center gap-3 mt-4">
                         <ButtonFormSave IsSaving="IsSaving" />
                         <ButtonFormBack OnClick="Return" />

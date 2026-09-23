@@ -46,6 +46,15 @@ public class CxCBillsController : ControllerBase
         }
     }
 
+    //Los meses traducidos, para mostrar el periodo de la nota
+    [HttpGet("combomonths")]
+    public async Task<IActionResult> ComboMonthsAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.ComboMonthsAsync(userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     [HttpGet("searchcontracts")]
     public async Task<IActionResult> SearchContractsAsync([FromQuery] string filter)
     {

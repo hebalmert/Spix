@@ -15,6 +15,9 @@ public partial class FormBillingNote
     [Parameter] public bool IsReadOnly { get; set; }
     [Parameter] public bool ShowButtons { get; set; } = true;
 
+    //Solo al editar o ver: al crear, lanzada y su fecha van vacias
+    [Parameter] public bool ShowCreated { get; set; }
+
     private void DateChanged(ChangeEventArgs e)
     {
         if (!DateTime.TryParse(e.Value?.ToString(), out var date))

@@ -43,24 +43,28 @@
         </div>
     </div>
 
-    <hr />
+    @* Lanzada y su fecha: al crear siempre estan vacias, asi que no se muestran *@
+    @if (ShowCreated)
+    {
+        <hr />
 
-    <div class="row mb-3">
-        <div class="col-12 col-md-6 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:120px">Creado</span>
-                <div class="d-flex align-items-center ps-3">
-                    <InputCheckbox @bind-Value="BillingNote.Created" class="form-check-input me-2" disabled />
+        <div class="row mb-3">
+            <div class="col-12 col-md-6 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:120px">Creado</span>
+                    <div class="d-flex align-items-center ps-3">
+                        <InputCheckbox @bind-Value="BillingNote.Created" class="form-check-input me-2" disabled />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text" style="width:120px">Fecha</span>
+                    <input class="form-control" value="@BillingNote.DateCreated?.ToString("dd/MM/yyyy")" disabled />
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-6 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:120px">Fecha</span>
-                <input class="form-control" value="@BillingNote.DateCreated?.ToString("dd/MM/yyyy")" disabled />
-            </div>
-        </div>
-    </div>
+    }
 
     @if (ShowButtons)
     {

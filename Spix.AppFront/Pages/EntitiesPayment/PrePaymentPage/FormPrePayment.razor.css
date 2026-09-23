@@ -1,0 +1,94 @@
+/* Los servicios que se pueden adelantar */
+.pp-services {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    margin-bottom: 14px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.pp-services-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    border-bottom: 1px solid #edf1f7;
+    background: #f7f9fd;
+    padding: 8px 14px;
+}
+
+    .pp-services-head b {
+        color: #16305e;
+        font-size: 14px;
+    }
+
+    .pp-services-head b i {
+        margin-right: 6px;
+    }
+
+.pp-meta {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+/* Cada servicio: casilla, concepto y su valor */
+.pp-service {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #f1f4fa;
+    padding: 8px 14px;
+    cursor: pointer;
+    margin: 0;
+}
+
+    .pp-service:last-child {
+        border-bottom: 0;
+    }
+
+    .pp-service:hover {
+        background: #f7f9fd;
+    }
+
+.pp-service-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.pp-service-name {
+    color: #152238;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pp-service-amount {
+    color: #152238;
+    font-weight: 700;
+}
+
+/* Lo que se recibe */
+.pp-totals {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 18px;
+    border-top: 1px solid #e6ecf6;
+    padding-top: 10px;
+    margin-bottom: 8px;
+    color: #6b7690;
+    font-size: 13px;
+}
+
+    .pp-totals b {
+        color: #152238;
+        font-size: 15px;
+    }
+
+    .pp-totals .is-main b {
+        color: #16305e;
+        font-size: 18px;
+    }

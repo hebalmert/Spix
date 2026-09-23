@@ -11,6 +11,9 @@ public class SellConfig : IEntityTypeConfiguration<Sell>
         builder.HasKey(e => e.SellId);
         builder.Property(e => e.SellId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.InvoiceNumber }).IsUnique();
+        //El listado y el tablero siempre van por corporacion y fecha: sin este indice
+        //la consulta recorre toda la tabla y el servidor la cancela por costo.
+        builder.HasIndex(e => new { e.CorporationId, e.DateSell });
         builder.Property(e => e.DateSell).HasColumnType("date");
         builder.Property(e => e.DateCancelled).HasColumnType("date");
         builder.Property(e => e.DatePaid).HasColumnType("date");

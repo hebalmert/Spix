@@ -79,7 +79,7 @@ public class FrecuencyTypeService : IFrecuencyTypeService
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.TypeName).Paginate(pagination).ToListAsync();
+            var modelo = await queryable.OrderBy(x => x.TypeName).Paginate(pagination).AsSplitQuery().ToListAsync();
 
             return new ActionResponse<IEnumerable<FrecuencyType>>
             {

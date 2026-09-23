@@ -1,4 +1,5 @@
 using Spix.Domain.EntitiesBilling;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
@@ -19,7 +20,13 @@ public interface IBillingService
 
     Task<ActionResponse<bool>> DeleteBillingNoteAsync(Guid id, string username);
 
-    Task<ActionResponse<BillingNote>> LaunchBillingNoteAsync(Guid id, string username);
+    Task<ActionResponse<IEnumerable<BillingCheckDto>>> CheckContractsAsync(int yearNumber, MonthType monthType, string username);
+
+    Task<ActionResponse<BillingLaunchResultDto>> LaunchBatchAsync(Guid id, List<Guid> contractClientIds, string username);
+
+    Task<ActionResponse<BillingNote>> FinishLaunchAsync(Guid id, string username);
+
+    Task<ActionResponse<BillingLaunchResultDto>> LaunchBillingNoteAsync(Guid id, string username);
 
     Task<ActionResponse<IEnumerable<BillingNoteOne>>> GetBillingNoteOnesAsync(PaginationDTO pagination, string username);
 
@@ -34,6 +41,8 @@ public interface IBillingService
     Task<ActionResponse<BillingNoteOne>> LaunchBillingNoteOneAsync(Guid id, string username);
 
     Task<ActionResponse<IEnumerable<BillingContractDto>>> SearchContractsAsync(string filter, string username);
+
+    Task<ActionResponse<SellSummaryDto>> GetSellSummaryAsync(string username);
 
     Task<ActionResponse<IEnumerable<Sell>>> GetSellsAsync(PaginationDTO pagination, string username);
 }

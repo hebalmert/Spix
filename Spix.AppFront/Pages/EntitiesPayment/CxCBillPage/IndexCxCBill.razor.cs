@@ -102,6 +102,18 @@ public partial class IndexCxCBill
         await InvokeAsync(StateHasChanged);
     }
 
+    //El detalle de que se le esta cobrando al cliente en esta cuenta
+    private async Task ShowDetailsAsync(CxCBill item)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Id", item.CxCBillId },
+            { "Title", $"Detalle {item.CollectionNote}" }
+        };
+
+        await _modalService.ShowAsync(typeof(DetailsCxCBill), parameters);
+    }
+
     private async Task ShowPayAsync(Guid id)
     {
         var parameters = new Dictionary<string, object>

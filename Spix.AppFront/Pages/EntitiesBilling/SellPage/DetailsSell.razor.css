@@ -1,0 +1,58 @@
+/* Encabezado del detalle */
+.sd-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #f7f9fd;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.sd-name {
+    color: #152238;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.sd-meta {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.sd-invoice {
+    color: #16305e;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.sd-line {
+    color: #152238;
+    font-size: 14px;
+}
+
+/* Los totales de la factura */
+.sd-totals {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 18px;
+    border-top: 1px solid #e6ecf6;
+    padding-top: 10px;
+    margin-top: 10px;
+    color: #6b7690;
+    font-size: 13px;
+}
+
+    .sd-totals b {
+        color: #152238;
+        font-size: 15px;
+    }
+
+    .sd-totals .is-main b {
+        color: #16305e;
+        font-size: 18px;
+    }

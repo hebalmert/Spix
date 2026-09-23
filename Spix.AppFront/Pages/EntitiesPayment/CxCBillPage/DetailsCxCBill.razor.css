@@ -1,0 +1,75 @@
+/* Encabezado de la nota */
+.cx-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #f7f9fd;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.cx-name {
+    color: #152238;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.cx-meta {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.cx-note {
+    color: #16305e;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.cx-line {
+    color: #152238;
+    font-size: 14px;
+}
+
+/* El cruce: deuda, adelanto, exoneracion y saldo */
+.cx-cross {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.cx-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .cx-tile.is-paid {
+        border-left-color: #198754;
+    }
+
+    .cx-tile.is-discount {
+        border-left-color: #6f42c1;
+    }
+
+    .cx-tile.is-balance {
+        border-left-color: #f59f00;
+    }
+
+.cx-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.cx-tile-value {
+    color: #152238;
+    font-size: 20px;
+    font-weight: 700;
+}

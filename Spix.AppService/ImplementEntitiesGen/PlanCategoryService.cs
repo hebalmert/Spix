@@ -95,7 +95,7 @@ public class PlanCategoryService : IPlanCategoryService
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.PlanCategoryName).Paginate(pagination).ToListAsync();
+            var modelo = await queryable.OrderBy(x => x.PlanCategoryName).Paginate(pagination).AsSplitQuery().ToListAsync();
 
             return new ActionResponse<IEnumerable<PlanCategory>>
             {

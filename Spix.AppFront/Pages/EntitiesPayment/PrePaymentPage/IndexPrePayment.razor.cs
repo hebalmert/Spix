@@ -1,28 +1,34 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesPayment;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesPayment.PrePaymentPage;
 
+//Pagos recibidos por adelantado que aun no se cruzan con una nota de cobro
 public partial class IndexPrePayment
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
-    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
 
+    private const string BaseUrl = "api/v1/prepayments";
+
     private int CurrentPage = 1;
     private int TotalPages;
     private int PageSize = 15;
-    private const string BaseUrl = "api/v1/prepayments";
     private string Filter { get; set; } = string.Empty;
+
     private List<PrePayment>? PrePayments { get; set; }
+    private PrePaymentSummaryDto? Summary;
     private List<IntItemModel> Months { get; set; } = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -30,7 +36,7 @@ public partial class IndexPrePayment
         if (firstRender)
         {
             await LoadMonthsAsync();
-            await LoadAsync();
+            await ReloadAsync();
         }
     }
 
@@ -41,12 +47,34 @@ public partial class IndexPrePayment
             Months = responseHttp.Response ?? new();
     }
 
+    //El tablero se cuenta sobre todo lo pendiente, no solo la pagina visible
+    private async Task LoadSummaryAsync()
+    {
+        var responseHttp = await _repository.GetAsync<PrePaymentSummaryDto>($"{BaseUrl}/summary");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Summary = responseHttp.Response;
+    }
+
+    //Despues de crear, editar o borrar: tabla y tablero. Paginar y buscar solo recargan la tabla.
+    private async Task ReloadAsync()
+    {
+        await LoadSummaryAsync();
+        await LoadAsync(CurrentPage);
+    }
+
     private string GetMonthName(MonthType monthType) =>
         Months.FirstOrDefault(x => x.Value == (int)monthType)?.Name ?? monthType.ToString();
+
+    //Cuantos servicios tecnicos trae el adelanto, ademas del plan
+    private static int ServiceLines(PrePayment item) =>
+        item.PrePaymentDetails?.Count(x => x.ServiceRequestDetailId.HasValue) ?? 0;
 
     private async Task SetFilterValue(string value)
     {
         Filter = value;
+        CurrentPage = 1;
         await LoadAsync();
     }
 
@@ -64,13 +92,11 @@ public partial class IndexPrePayment
 
         var responseHttp = await _repository.GetAsync<List<PrePayment>>(url);
         if (await _responseHandler.HandleErrorAsync(responseHttp))
-        {
-            _navigationManager.NavigateTo("/");
             return;
-        }
 
         PrePayments = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+
         await InvokeAsync(StateHasChanged);
     }
 
@@ -78,13 +104,13 @@ public partial class IndexPrePayment
     {
         var parameters = new Dictionary<string, object>
         {
-            { "Title", "Nuevo Pago Adelantado" }
+            { "Title", $"{Localizer["PrePayment_New"]}" }
         };
 
         await _modalService.ShowAsync(typeof(CreatePrePayment), parameters, async result =>
         {
             if (result.Succeeded)
-                await LoadAsync(CurrentPage);
+                await ReloadAsync();
         });
     }
 
@@ -93,13 +119,13 @@ public partial class IndexPrePayment
         var parameters = new Dictionary<string, object>
         {
             { "Id", id },
-            { "Title", "Editar Pago Adelantado" }
+            { "Title", $"{Localizer["PrePayment_Edit"]}" }
         };
 
         await _modalService.ShowAsync(typeof(EditPrePayment), parameters, async result =>
         {
             if (result.Succeeded)
-                await LoadAsync(CurrentPage);
+                await ReloadAsync();
         });
     }
 
@@ -107,12 +133,12 @@ public partial class IndexPrePayment
     {
         var result = await _sweetAlert.FireAsync(new SweetAlertOptions
         {
-            Title = "Eliminar",
-            Text = "Desea eliminar este pago adelantado?",
+            Title = Localizer[nameof(Resource.msg_DeleteTitle)],
+            Text = Localizer["PrePayment_DeleteMessage"],
             Icon = SweetAlertIcon.Question,
             ShowCancelButton = true,
-            ConfirmButtonText = "Eliminar",
-            CancelButtonText = "Cancelar"
+            ConfirmButtonText = Localizer[nameof(Resource.msg_DeleteConfirmButton)],
+            CancelButtonText = Localizer[nameof(Resource.ButtonCancel)]
         });
 
         if (result.IsDismissed || result.Value != "true")
@@ -122,7 +148,7 @@ public partial class IndexPrePayment
         if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 
-        await _sweetAlert.FireAsync("Eliminado", "Registro eliminado correctamente.", SweetAlertIcon.Success);
-        await LoadAsync(CurrentPage);
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_DeleteConfirmationTitle)], Localizer[nameof(Resource.msg_DeleteConfirmationText)], SweetAlertIcon.Success);
+        await ReloadAsync();
     }
 }

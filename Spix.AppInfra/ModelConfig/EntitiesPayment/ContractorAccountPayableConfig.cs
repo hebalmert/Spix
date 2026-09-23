@@ -11,6 +11,8 @@ public class ContractorAccountPayableConfig : IEntityTypeConfiguration<Contracto
         builder.HasKey(e => e.ContractorAccountPayableId);
         builder.Property(e => e.ContractorAccountPayableId).HasDefaultValueSql("NEWSEQUENTIALID()");
         builder.HasIndex(e => new { e.CorporationId, e.CxCBillDetailId }).IsUnique();
+        //El listado va por corporacion, primero lo pendiente y luego por fecha
+        builder.HasIndex(e => new { e.CorporationId, e.Paid, e.DateCreated });
         builder.Property(e => e.DateCreated).HasColumnType("date");
         builder.Property(e => e.DatePaid).HasColumnType("date");
         builder.Property(e => e.Rate).HasPrecision(5, 2);

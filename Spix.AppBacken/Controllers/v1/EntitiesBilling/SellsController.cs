@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +40,25 @@ public class SellsController : ControllerBase
             return BadRequest(ex.Message);
         }
         catch (Exception ex)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+    //Los numeros del mes para el tablero
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummaryAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _billingService.GetSellSummaryAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
         {
             return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }

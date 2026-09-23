@@ -172,10 +172,17 @@ public class ServiceRequestService : IServiceRequestService
                 };
             }
 
-            //Se buscan TODOS los contratos, no solo los activos: un cortado o un exonerado
-            //tambien puede necesitar una visita.
-            var contracts = await ContractQuery()
+            //Solo los contratos que pueden recibir una visita: activo, exonerado o suspendido.
+            //Un borrador, uno en aprobacion, uno en configuracion tecnica, uno anulado o uno
+            //retirado no se le hace visita, asi que no se ofrecen.
+            //
+            //Se proyecta en SQL y NO se usa ContractQuery(): traer el contrato con sus seis
+            //colecciones multiplica las filas y dispara el costo estimado de la consulta
+            //(el hosting cancela lo que pasa de su limite). El autocompletar solo pinta estos datos.
+            var contracts = await _context.ContractClients
+                .AsNoTracking()
                 .Where(x => x.CorporationId == user.CorporationId &&
+                            VisitableStates.Contains(x.ContractState) &&
                             (EF.Functions.Like(x.Client!.FirstName, $"%{filter}%") ||
                              EF.Functions.Like(x.Client!.LastName, $"%{filter}%") ||
                              EF.Functions.Like(x.Client!.FirstName + " " + x.Client!.LastName, $"%{filter}%") ||
@@ -184,12 +191,31 @@ public class ServiceRequestService : IServiceRequestService
                 .OrderBy(x => x.Client!.FirstName)
                 .ThenBy(x => x.Client!.LastName)
                 .Take(20)
+                .Select(x => new ServiceRequestContractDto
+                {
+                    ContractClientId = x.ContractClientId,
+                    ControlContrato = x.ControlContrato,
+                    ClientFullName = x.Client!.FirstName + " " + x.Client.LastName,
+                    PhoneNumber = x.PhoneNumber,
+                    Address = x.Address,
+                    CityName = x.Zone!.City!.Name,
+                    ZoneName = x.Zone.ZoneName,
+                    ServerName = x.ContractServers!.Select(s => s.Server!.ServerName).FirstOrDefault(),
+                    IpServer = x.ContractServers!.Select(s => s.Server!.IpNetwork!.Ip).FirstOrDefault(),
+                    IpCliente = x.ContractIps!.Select(i => i.IpNet!.Ip).FirstOrDefault(),
+                    MacCliente = x.ContractMacs!.Select(m => m.CargueDetail!.MacWlan).FirstOrDefault(),
+                    PlanName = x.ContractPlans!.Select(p => p.Plan!.PlanName).FirstOrDefault(),
+                    PlanSpeed = x.ContractPlans!.Select(p => p.Plan!.VelocidadTotal).FirstOrDefault(),
+                    NodeName = x.ContractNodes!.Select(n => n.Node!.NodesName).FirstOrDefault(),
+                    NodeIp = x.ContractNodes!.Select(n => n.Node!.IpNetwork!.Ip).FirstOrDefault(),
+                    ContractState = x.ContractState
+                })
                 .ToListAsync();
 
             return new ActionResponse<IEnumerable<ServiceRequestContractDto>>
             {
                 WasSuccess = true,
-                Result = contracts.Select(ToContractDto).ToList()
+                Result = contracts
             };
         }
         catch (Exception ex)
@@ -261,8 +287,6 @@ public class ServiceRequestService : IServiceRequestService
                 return AuthFail<ServiceRequestDto>();
             }
 
-            //El estado del contrato no limita la visita: un cortado puede necesitarla para
-            //volver a activarse y un exonerado tambien pide servicio.
             var contract = await ContractQuery()
                 .FirstOrDefaultAsync(x => x.ContractClientId == dto.ContractClientId &&
                                           x.CorporationId == user.CorporationId);
@@ -270,6 +294,14 @@ public class ServiceRequestService : IServiceRequestService
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return Fail<ServiceRequestDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+            }
+
+            //Solo se atiende lo que esta en servicio: activo, exonerado o suspendido.
+            //Un cortado puede necesitar la visita para volver a activarse; un borrador no.
+            if (!VisitableStates.Contains(contract.ContractState))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>(_localizer["Request_ContractStateNotAllowed"]);
             }
 
             //La solicitud la levanta la oficina o el cliente desde su portal; el tecnico
@@ -750,6 +782,14 @@ public class ServiceRequestService : IServiceRequestService
 
         return await _fileStorage.GetBlobSasUrlAsync(photo, _imgOption.RequiereServicePicture, TimeSpan.FromMinutes(5));
     }
+
+    //Los estados de contrato a los que se les hace visita tecnica
+    private static readonly ContractState[] VisitableStates =
+    [
+        ContractState.Active,
+        ContractState.Exempt,
+        ContractState.Suspended
+    ];
 
     private IQueryable<ContractClient> ContractQuery()
     {

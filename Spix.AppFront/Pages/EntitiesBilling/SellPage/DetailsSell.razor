@@ -1,0 +1,61 @@
+@inherits ComponentBase
+@using Spix.Domain.EntitiesBilling
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Title</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @* De que se compone la factura: el plan del mes y los servicios que se le hicieron *@
+            <div class="sd-head">
+                <div>
+                    <div class="sd-name">@Sell.ClientFullName</div>
+                    <div class="sd-meta">@Localizer[nameof(Resource.Contract)] #@Sell.ControlContrato · @Sell.DateSell.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="sd-invoice">@Sell.InvoiceNumber</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Sell_Concept"]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Subtotal)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Tax)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Sell.SellDetails ?? new List<SellDetail>())
+                        {
+                            <tr>
+                                <td>
+                                    <div class="sd-line">@item.Concept</div>
+                                    <div class="sd-meta">@OriginName(item.Origin)</div>
+                                </td>
+                                <td style="text-align:right">@item.UnitPrice.ToString("N2")</td>
+                                <td style="text-align:right">@item.TaxAmount.ToString("N2")</td>
+                                <td style="text-align:right"><strong>@item.Price.ToString("N2")</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sd-totals">
+                <span>@Localizer[nameof(Resource.Subtotal)] <b>@Sell.SubTotal.ToString("N2")</b></span>
+                <span>@Localizer[nameof(Resource.Tax)] <b>@Sell.TotalTax.ToString("N2")</b></span>
+                <span class="is-main">@Localizer[nameof(Resource.Total)] <b>@Sell.Total.ToString("N2")</b></span>
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

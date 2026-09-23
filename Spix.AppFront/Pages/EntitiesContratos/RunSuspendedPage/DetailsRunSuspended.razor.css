@@ -1,0 +1,136 @@
+/* Lo que encontro la revision del corte */
+.cs-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.cs-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .cs-tile.is-cut {
+        border-left-color: #dc3545;
+    }
+
+    .cs-tile.is-ok {
+        border-left-color: #198754;
+    }
+
+    .cs-tile.is-money {
+        border-left-color: #f59f00;
+    }
+
+.cs-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.cs-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Como quedan repartidos los cortes por equipo */
+.cs-servers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.cs-server {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid #dfe6f3;
+    border-radius: 999px;
+    background: #f7f9fd;
+    color: #16305e;
+    font-size: 12px;
+    padding: 5px 13px;
+}
+
+    .cs-server b {
+        border-radius: 999px;
+        background: #16305e;
+        color: #ffffff;
+        font-size: 11px;
+        padding: 1px 8px;
+    }
+
+    /* Los que no viven en ningun equipo */
+    .cs-server.is-bad {
+        border-color: #f3c9ce;
+        background: #fdeff1;
+        color: #a01d2b;
+    }
+
+        .cs-server.is-bad b {
+            background: #dc3545;
+        }
+
+.cs-list {
+    margin-top: 16px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+/* Lo que le falta a un contrato para poder cortarlo */
+.cs-tag {
+    display: inline-block;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 9px;
+    margin-left: 6px;
+}
+
+    .cs-tag.is-bad {
+        background: #fdeff1;
+        color: #a01d2b;
+    }
+
+/* El avance del corte */
+.cs-progress {
+    margin-top: 16px;
+}
+
+.cs-progress-text {
+    display: flex;
+    justify-content: space-between;
+    color: #6b7690;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.cs-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: #e3e9f4;
+    overflow: hidden;
+}
+
+.cs-bar-fill {
+    height: 100%;
+    background: #dc3545;
+    transition: width .3s ease;
+}
+
+/* Aviso de los que no se van a poder cortar */
+.cs-warn {
+    margin-top: 12px;
+    border-left: 4px solid #f59f00;
+    border-radius: 8px;
+    background: #fff8e8;
+    color: #7a5200;
+    font-size: 13px;
+    padding: 8px 12px;
+}

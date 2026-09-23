@@ -9,6 +9,8 @@ using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesPayment.CxCBillPage;
 
+//El recaudo de una nota de cobro: se ve la deuda, el descuento que se aplica y
+//lo que se recibe antes de guardar.
 public partial class PayCxCBill
 {
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
@@ -26,6 +28,14 @@ public partial class PayCxCBill
     private bool IsSaving;
     private const string BaseUrl = "api/v1/cxcbills";
     private static readonly int[] DiscountOptions = [0, 25, 50, 75, 100];
+
+    //Los modos que acepta el backend, con su icono
+    private static readonly (string Key, string Icon, string Label)[] PaymentModes =
+    [
+        ("Cash", "fa fa-money-bill-wave", "Pay_Cash"),
+        ("Card", "fa fa-credit-card", "Pay_Card"),
+        ("Transfer", "fa fa-building-columns", "Pay_Transfer")
+    ];
 
     private decimal Debt => Model?.Balance ?? 0;
     private decimal DiscountAmount => Math.Round((Debt * Payment.DiscountPercent) / 100, 2);
@@ -54,22 +64,22 @@ public partial class PayCxCBill
         Model = responseHttp.Response;
     }
 
-    private void PaymentModeChanged(ChangeEventArgs e)
+    private void SetPaymentMode(string mode)
     {
-        Payment.PaymentMode = e.Value?.ToString() ?? "Cash";
+        Payment.PaymentMode = mode;
     }
 
-    private void DiscountChanged(ChangeEventArgs e)
+    private void SetDiscount(int percent)
     {
-        if (int.TryParse(e.Value?.ToString(), out var value))
-            Payment.DiscountPercent = value;
+        Payment.DiscountPercent = percent;
     }
 
     private async Task PayAsync()
     {
+        //Un descuento sin motivo no se guarda: despues nadie sabe por que se rebajo
         if (Payment.DiscountPercent > 0 && string.IsNullOrWhiteSpace(Payment.Detail))
         {
-            await _sweetAlert.FireAsync("Validacion", "Debe especificar la razon del descuento.", SweetAlertIcon.Warning);
+            await _sweetAlert.FireAsync(Localizer["Pay_Title"], Localizer["Pay_DiscountReason"], SweetAlertIcon.Warning);
             return;
         }
 
@@ -80,7 +90,7 @@ public partial class PayCxCBill
         if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;
 
-        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], "Pago registrado correctamente.", SweetAlertIcon.Success);
+        await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer["Pay_Success"], SweetAlertIcon.Success);
         await _modalService.CloseAsync(ModalResult.Ok());
     }
 

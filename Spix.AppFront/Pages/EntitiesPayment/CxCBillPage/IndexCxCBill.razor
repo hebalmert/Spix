@@ -57,7 +57,7 @@
                                 <th class="text-end">Descuento</th>
                                 <th class="text-end">Saldo</th>
                                 <th>Estado</th>
-                                <th colspan="2" class="text-center">Acciones</th>
+                                <th colspan="3" class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,6 +80,14 @@
                                         {
                                             <span class="text-success fw-bold">@PaidText</span>
                                         }
+                                    </td>
+                                    <td style="width:1px;">
+                                        @* Que se le esta cobrando: plan y servicios del periodo *@
+                                        <ButtonGeneric OnClick="() => ShowDetailsAsync(item)"
+                                                       Icon="fa fa-receipt"
+                                                       TooTip="Detalle"
+                                                       CssClass="btn-mini"
+                                                       Style="font-size:17px;" />
                                     </td>
                                     <td style="width:1px;">
                                         @if (!item.Paid && !item.Cancelled && item.Balance > 0)

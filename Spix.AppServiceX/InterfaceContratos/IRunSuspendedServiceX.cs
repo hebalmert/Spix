@@ -17,7 +17,14 @@ public interface IRunSuspendedServiceX
 
     Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 
-    Task<ActionResponse<RunSuspended>> RunAsync(Guid id, string username);
+    //El corte se hace en tres pasos: se revisa, se corta por lotes y se cierra
+    Task<ActionResponse<CorteCheckDto>> CheckAsync(Guid id, string username);
+
+    Task<ActionResponse<IEnumerable<CorteDetailDto>>> GetDetailsAsync(Guid id, PaginationDTO pagination, string username);
+
+    Task<ActionResponse<CorteRunResultDto>> RunServerAsync(Guid id, Guid serverId, string username);
+
+    Task<ActionResponse<RunSuspended>> FinishRunAsync(Guid id, string username);
 
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboMonthsAsync(string username);
 }

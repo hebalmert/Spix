@@ -29,6 +29,8 @@ public class PaymentServiceX : IPaymentServiceX
     public async Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username) =>
         await _paymentService.CancelCxCBillAsync(model, username);
 
+    public async Task<ActionResponse<PrePaymentSummaryDto>> GetPrePaymentSummaryAsync(string username) => await _paymentService.GetPrePaymentSummaryAsync(username);
+
     public async Task<ActionResponse<IEnumerable<PrePayment>>> GetPrePaymentsAsync(PaginationDTO pagination, string username) =>
         await _paymentService.GetPrePaymentsAsync(pagination, username);
 

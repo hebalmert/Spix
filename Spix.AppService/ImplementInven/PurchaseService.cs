@@ -84,6 +84,7 @@ public class PurchaseService : IPurchaseService
                 .Include(x => x.Supplier)
                 .Include(x => x.ProductStorage)
                 .Include(x => x.PurchaseDetails)
+                .AsSplitQuery()
                 .ToListAsync();
 
             return Success<IEnumerable<Purchase>>(list);
@@ -164,6 +165,7 @@ public class PurchaseService : IPurchaseService
             var list = await queryable
                 .OrderByDescending(x => x.NroPurchase)
                 .Paginate(pagination)
+                .AsSplitQuery()
                 .ToListAsync();
 
             return Success<IEnumerable<Purchase>>(list);

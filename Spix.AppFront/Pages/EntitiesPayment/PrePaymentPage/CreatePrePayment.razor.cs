@@ -26,6 +26,7 @@ public partial class CreatePrePayment
     private BillingContractDto? SelectedContract;
     private List<BillingContractDto> Contracts = new();
     private List<IntItemModel>? Months;
+    private List<PrePaymentServiceDto>? Services;
     private bool isLoading;
     private bool IsSaving;
     private const string BaseUrl = "api/v1/prepayments";
@@ -67,17 +68,31 @@ public partial class CreatePrePayment
             Contracts = responseHttp.Response ?? new();
     }
 
-    private void SelectContract(BillingContractDto contract)
+    private async Task SelectContract(BillingContractDto contract)
     {
         SelectedContract = contract;
         Contracts.Clear();
+        await LoadServicesAsync(contract.ContractClientId);
+    }
+
+    //Los servicios que puede adelantar el contrato elegido
+    private async Task LoadServicesAsync(Guid contractClientId)
+    {
+        Services = null;
+        var url = $"{BaseUrl}/services/{contractClientId}";
+        var responseHttp = await _repository.GetAsync<List<PrePaymentServiceDto>>(url);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Services = responseHttp.Response ?? new();
+        StateHasChanged();
     }
 
     private async Task Create()
     {
         if (Model.ContractClientId == Guid.Empty)
         {
-            await _sweetAlert.FireAsync("Validacion", "Debe seleccionar un contrato activo.", SweetAlertIcon.Warning);
+            await _sweetAlert.FireAsync(Localizer[nameof(Resource.Generic_InvalidModel)], Localizer["PrePayment_NeedActiveContract"], SweetAlertIcon.Warning);
             return;
         }
 

@@ -1,0 +1,123 @@
+/* A quien se le cobra */
+.pay-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #f7f9fd;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.pay-name {
+    color: #152238;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.pay-meta {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.pay-note {
+    color: #16305e;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Las cuentas del recaudo */
+.pay-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.pay-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .pay-tile.is-discount {
+        border-left-color: #6f42c1;
+    }
+
+    .pay-tile.is-money {
+        border-left-color: #198754;
+    }
+
+    .pay-tile.is-balance {
+        border-left-color: #f59f00;
+    }
+
+.pay-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.pay-tile-value {
+    color: #152238;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Cada cosa que se elige */
+.pay-field {
+    margin-bottom: 16px;
+}
+
+.pay-label {
+    color: #6b7690;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    margin-bottom: 6px;
+}
+
+.pay-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* La opcion elegida se pinta; las demas quedan en blanco */
+.pay-chip {
+    border: 1px solid #dfe6f3;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #44507a;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 16px;
+    transition: all .15s ease;
+}
+
+    .pay-chip:hover {
+        border-color: #16305e;
+        color: #16305e;
+    }
+
+    .pay-chip.is-on {
+        border-color: #16305e;
+        background: #16305e;
+        color: #ffffff;
+    }
+
+    .pay-chip.is-warn {
+        border-color: #f59f00;
+        background: #f59f00;
+        color: #ffffff;
+    }
+
+    .pay-chip i {
+        margin-right: 6px;
+    }

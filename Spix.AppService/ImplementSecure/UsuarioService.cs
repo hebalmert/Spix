@@ -120,7 +120,7 @@ public class UsuarioService : IUsuarioService
                 );
             }
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.FirstName).Paginate(pagination).ToListAsync();
+            var modelo = await queryable.OrderBy(x => x.FirstName).Paginate(pagination).AsSplitQuery().ToListAsync();
 
             await Task.WhenAll(modelo.Select(async option =>
             {

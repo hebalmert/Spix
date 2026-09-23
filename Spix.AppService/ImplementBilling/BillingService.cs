@@ -8,6 +8,7 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesBilling;
 using Spix.AppService.InterfacesPayment;
+using Spix.AppService.ImplementPayment;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesGen;
@@ -455,9 +456,237 @@ public class BillingService : IBillingService
         }
     }
 
-    public async Task<ActionResponse<BillingNote>> LaunchBillingNoteAsync(Guid id, string username)
+    //Revision previa al lanzamiento: recorre los contratos activos y dice cuales estan
+    //incompletos y que les falta, para arreglarlos ANTES y que el lanzamiento no se interrumpa.
+    //Todo sale de UNA consulta: con 200 contratos sigue siendo una sola ida a la base.
+    public async Task<ActionResponse<IEnumerable<BillingCheckDto>>> CheckContractsAsync(int yearNumber, MonthType monthType, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<IEnumerable<BillingCheckDto>>();
+
+            var corporationId = Convert.ToInt32(user.CorporationId);
+
+            var list = await _context.ContractClients
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId && x.ContractState == ContractState.Active)
+                .OrderBy(x => x.ControlContrato)
+                .Select(x => new BillingCheckDto
+                {
+                    ContractClientId = x.ContractClientId,
+                    ControlContrato = x.ControlContrato,
+                    ClientFullName = x.Client!.FirstName + " " + x.Client.LastName,
+                    ZoneName = x.Zone!.ZoneName,
+                    HasPlan = x.ContractPlans!.Any(),
+                    HasServer = x.ContractServers!.Any(),
+                    HasIp = x.ContractIps!.Any(),
+                    HasMac = x.ContractMacs!.Any(),
+                    HasNode = x.ContractNodes!.Any(),
+                    HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId),
+                    HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId),
+
+                    //Ya facturado en el periodo que se va a lanzar
+                    AlreadyBilled = _context.CxCBills.Any(c =>
+                        c.CorporationId == corporationId &&
+                        c.ContractClientId == x.ContractClientId &&
+                        c.YearNumber == yearNumber &&
+                        c.MonthType == monthType &&
+                        !c.Cancelled)
+                })
+                .ToListAsync();
+
+            return new ActionResponse<IEnumerable<BillingCheckDto>> { WasSuccess = true, Result = list };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<BillingCheckDto>>(ex);
+        }
+    }
+
+    //Lanza las notas del periodo: recorre los contratos activos y, contrato por contrato,
+    //arma su venta (plan + solicitudes sin facturar), aplica el pago adelantado o la exoneracion
+    //y crea su nota de cobro.
+    //
+    //Un contrato con problema (sin plan) NO detiene el lote: se salta y se reporta al final,
+    //para eso esta ademas la revision previa (CheckContractsAsync).
+    public async Task<ActionResponse<BillingLaunchResultDto>> LaunchBillingNoteAsync(Guid id, string username)
     {
         await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<BillingLaunchResultDto>();
+
+            var corporationId = Convert.ToInt32(user.CorporationId);
+            var note = await _context.BillingNotes
+                .FirstOrDefaultAsync(x => x.BillingNoteId == id && x.CorporationId == corporationId);
+
+            if (note == null)
+                return Fail<BillingLaunchResultDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            //Se reclama la nota en UNA sentencia: si dos personas la lanzan a la vez, solo una entra
+            var claimed = await _context.BillingNotes
+                .Where(x => x.BillingNoteId == id && !x.Created)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Created, true)
+                    .SetProperty(x => x.DateCreated, DateTime.UtcNow.Date));
+
+            if (claimed == 0)
+                return Fail<BillingLaunchResultDto>(_localizer["Billing_AlreadyLaunched"]);
+
+            var contracts = await GetBillableContractsQuery(corporationId)
+                .OrderBy(x => x.ControlContrato)
+                .AsSplitQuery()
+                .ToListAsync();
+
+            if (contracts.Count == 0)
+            {
+                await transaction.RollbackAsync();
+                return Fail<BillingLaunchResultDto>(_localizer["Billing_NoContracts"]);
+            }
+
+            //Lo ya facturado del periodo, en UNA consulta: antes se preguntaba contrato por contrato
+            var yaFacturados = await BilledContractsForPeriodAsync(corporationId, note.YearNumber, note.MonthType);
+
+            var register = await GetOrCreateRegisterAsync(corporationId);
+            var result = new BillingLaunchResultDto { Contracts = contracts.Count };
+
+            foreach (var contract in contracts)
+            {
+                if (yaFacturados.Contains(contract.ContractClientId))
+                {
+                    result.Skipped++;
+                    continue;
+                }
+
+                var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, register, user.Id, $"{user.FirstName} {user.LastName}");
+                if (!response.WasSuccess)
+                {
+                    //Se anota y se sigue: el lote no se detiene por un contrato incompleto
+                    result.Issues.Add(new BillingLaunchIssueDto
+                    {
+                        ContractClientId = contract.ContractClientId,
+                        ControlContrato = contract.ControlContrato,
+                        ClientFullName = $"{contract.Client!.FirstName} {contract.Client.LastName}",
+                        Reason = response.Message ?? string.Empty
+                    });
+                    continue;
+                }
+
+                result.Created++;
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return new ActionResponse<BillingLaunchResultDto> { WasSuccess = true, Result = result };
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return await _httpErrorHandler.HandleErrorAsync<BillingLaunchResultDto>(ex);
+        }
+    }
+
+    //Lanza UN LOTE de contratos de la nota. El front va pidiendo lote tras lote y muestra el
+    //avance; cada lote se confirma solo, asi una caida de red no deja a medias una transaccion
+    //de mil contratos: lo ya facturado queda, y al reintentar esos se saltan.
+    public async Task<ActionResponse<BillingLaunchResultDto>> LaunchBatchAsync(Guid id, List<Guid> contractClientIds, string username)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<BillingLaunchResultDto>();
+
+            var corporationId = Convert.ToInt32(user.CorporationId);
+            var note = await _context.BillingNotes
+                .FirstOrDefaultAsync(x => x.BillingNoteId == id && x.CorporationId == corporationId);
+
+            if (note == null)
+                return Fail<BillingLaunchResultDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            if (note.Created)
+                return Fail<BillingLaunchResultDto>(_localizer["Billing_AlreadyLaunched"]);
+
+            var result = new BillingLaunchResultDto { Contracts = contractClientIds.Count };
+            if (contractClientIds.Count == 0)
+            {
+                await transaction.RollbackAsync();
+                return new ActionResponse<BillingLaunchResultDto> { WasSuccess = true, Result = result };
+            }
+
+            var contracts = await GetBillableContractsQuery(corporationId)
+                .Where(x => contractClientIds.Contains(x.ContractClientId))
+                .OrderBy(x => x.ControlContrato)
+                .AsSplitQuery()
+                .ToListAsync();
+
+            //Lo ya facturado del periodo, solo para los contratos del lote
+            var yaFacturados = await BilledContractsForPeriodAsync(corporationId, note.YearNumber, note.MonthType, contractClientIds);
+
+            //Un contrato activo debe estar completo: plan, IP, MAC, servidor, nodo, queue e
+            //ipbinding. Si le falta algo no se le cobra: se reporta para que lo completen.
+            var incompletos = await IncompleteContractsAsync(corporationId, contractClientIds);
+            var register = await GetOrCreateRegisterAsync(corporationId);
+
+            foreach (var contract in contracts)
+            {
+                if (yaFacturados.Contains(contract.ContractClientId))
+                {
+                    result.Skipped++;
+                    continue;
+                }
+
+                if (incompletos.TryGetValue(contract.ContractClientId, out var falta))
+                {
+                    result.Issues.Add(new BillingLaunchIssueDto
+                    {
+                        ContractClientId = contract.ContractClientId,
+                        ControlContrato = contract.ControlContrato,
+                        ClientFullName = $"{contract.Client!.FirstName} {contract.Client.LastName}",
+                        Reason = $"{_localizer["Billing_Incomplete"]}: {falta}"
+                    });
+                    continue;
+                }
+
+                var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, register, user.Id, $"{user.FirstName} {user.LastName}");
+                if (!response.WasSuccess)
+                {
+                    //Un contrato incompleto no detiene el lote: se anota y se sigue
+                    result.Issues.Add(new BillingLaunchIssueDto
+                    {
+                        ContractClientId = contract.ContractClientId,
+                        ControlContrato = contract.ControlContrato,
+                        ClientFullName = $"{contract.Client!.FirstName} {contract.Client.LastName}",
+                        Reason = response.Message ?? string.Empty
+                    });
+                    continue;
+                }
+
+                result.Created++;
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return new ActionResponse<BillingLaunchResultDto> { WasSuccess = true, Result = result };
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return await _httpErrorHandler.HandleErrorAsync<BillingLaunchResultDto>(ex);
+        }
+    }
+
+    //Cierra la nota general cuando ya se recorrieron todos los lotes.
+    //Se reclama en UNA sentencia: si dos la cierran a la vez, solo una entra.
+    public async Task<ActionResponse<BillingNote>> FinishLaunchAsync(Guid id, string username)
+    {
         try
         {
             var user = await _userHelper.GetUserByUserNameAsync(username);
@@ -465,50 +694,82 @@ public class BillingService : IBillingService
                 return AuthFail<BillingNote>();
 
             var corporationId = Convert.ToInt32(user.CorporationId);
+            var claimed = await _context.BillingNotes
+                .Where(x => x.BillingNoteId == id && x.CorporationId == corporationId && !x.Created)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Created, true)
+                    .SetProperty(x => x.DateCreated, DateTime.UtcNow.Date));
+
+            if (claimed == 0)
+                return Fail<BillingNote>(_localizer["Billing_AlreadyLaunched"]);
+
             var note = await _context.BillingNotes
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.BillingNoteId == id && x.CorporationId == corporationId);
 
-            if (note == null)
-                return Fail<BillingNote>(_localizer[nameof(Resource.Generic_IdNotFound)]);
-
-            if (note.Created)
-                return Fail<BillingNote>("La nota general ya fue lanzada.");
-
-            var contracts = await GetBillableContractsQuery(corporationId)
-                .OrderBy(x => x.ControlContrato)
-                .ToListAsync();
-
-            if (contracts.Count == 0)
-                return Fail<BillingNote>("No hay contratos activos para lanzar notas.");
-
-            var register = await GetOrCreateRegisterAsync(corporationId);
-            foreach (var contract in contracts)
-            {
-                if (await HasBillingForPeriodAsync(contract.ContractClientId, corporationId, note.YearNumber, note.MonthType))
-                {
-                    continue;
-                }
-
-                var response = await CreateBillingForContractAsync(contract, note.YearNumber, note.MonthType, note.BillingNoteId, null, register, user.Id, $"{user.FirstName} {user.LastName}");
-                if (!response.WasSuccess)
-                {
-                    await transaction.RollbackAsync();
-                    return Fail<BillingNote>(response.Message!);
-                }
-            }
-
-            note.Created = true;
-            note.DateCreated = DateTime.UtcNow.Date;
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return new ActionResponse<BillingNote> { WasSuccess = true, Result = note };
+            return new ActionResponse<BillingNote> { WasSuccess = true, Result = note! };
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
             return await _httpErrorHandler.HandleErrorAsync<BillingNote>(ex);
         }
+    }
+
+    //De los contratos del lote, cuales estan incompletos y que les falta. Una sola consulta.
+    private async Task<Dictionary<Guid, string>> IncompleteContractsAsync(int corporationId, List<Guid> contractClientIds)
+    {
+        var datos = await _context.ContractClients
+            .AsNoTracking()
+            .Where(x => x.CorporationId == corporationId && contractClientIds.Contains(x.ContractClientId))
+            .Select(x => new
+            {
+                x.ContractClientId,
+                HasPlan = x.ContractPlans!.Any(),
+                HasIp = x.ContractIps!.Any(),
+                HasMac = x.ContractMacs!.Any(),
+                HasServer = x.ContractServers!.Any(),
+                HasNode = x.ContractNodes!.Any(),
+                HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId),
+                HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId)
+            })
+            .ToListAsync();
+
+        var incompletos = new Dictionary<Guid, string>();
+        foreach (var dato in datos)
+        {
+            var faltas = new List<string>();
+            if (!dato.HasPlan) faltas.Add("Plan");
+            if (!dato.HasIp) faltas.Add("IP");
+            if (!dato.HasMac) faltas.Add("MAC");
+            if (!dato.HasServer) faltas.Add("Servidor");
+            if (!dato.HasNode) faltas.Add("Nodo");
+            if (!dato.HasQueue) faltas.Add("Queue");
+            if (!dato.HasBinding) faltas.Add("IpBinding");
+
+            if (faltas.Count > 0)
+                incompletos[dato.ContractClientId] = string.Join(", ", faltas);
+        }
+
+        return incompletos;
+    }
+
+    //Los contratos que ya tienen nota viva del periodo, de una sola vez.
+    //Sale directo del indice (corporacion, ano, mes): antes se navegaba por la venta y su nota
+    //general, que es justo el tipo de consulta que el hosting cancela por costo.
+    private async Task<HashSet<Guid>> BilledContractsForPeriodAsync(int corporationId, int yearNumber, MonthType monthType, List<Guid>? soloEstos = null)
+    {
+        var ids = await _context.CxCBills
+            .AsNoTracking()
+            .Where(x => x.CorporationId == corporationId &&
+                        x.YearNumber == yearNumber &&
+                        x.MonthType == monthType &&
+                        !x.Cancelled &&
+                        (soloEstos == null || soloEstos.Contains(x.ContractClientId)))
+            .Select(x => x.ContractClientId)
+            .Distinct()
+            .ToListAsync();
+
+        return ids.ToHashSet();
     }
 
     public async Task<ActionResponse<BillingNoteOne>> LaunchBillingNoteOneAsync(Guid id, string username)
@@ -603,6 +864,7 @@ public class BillingService : IBillingService
                     PlanName = x.ContractPlans!.Select(p => p.Plan!.PlanName).FirstOrDefault(),
                     PlanPrice = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault()
                 })
+                .AsSplitQuery()
                 .ToListAsync();
 
             return new ActionResponse<IEnumerable<BillingContractDto>> { WasSuccess = true, Result = contracts };
@@ -625,15 +887,29 @@ public class BillingService : IBillingService
                     .ThenInclude(x => x.Tax)
             .Where(x => x.CorporationId == corporationId && x.ContractState == ContractState.Active);
 
+    //Si un contrato ya tiene nota viva del periodo. Lo primero es el camino corto por indice;
+    //las notas viejas (creadas antes de guardar el periodo en la propia nota) se buscan por la
+    //nota general, para que el corte siga siendo correcto con lo ya facturado.
     private async Task<bool> HasBillingForPeriodAsync(
         Guid contractClientId,
         int corporationId,
         int yearNumber,
         MonthType monthType)
     {
+        var porPeriodo = await _context.CxCBills.AnyAsync(x =>
+            x.CorporationId == corporationId &&
+            x.ContractClientId == contractClientId &&
+            x.YearNumber == yearNumber &&
+            x.MonthType == monthType &&
+            !x.Cancelled);
+
+        if (porPeriodo)
+            return true;
+
         return await _context.CxCBills.AnyAsync(x =>
             x.CorporationId == corporationId &&
             x.ContractClientId == contractClientId &&
+            x.YearNumber == 0 &&
             !x.Cancelled &&
             ((x.BillingNoteOne != null &&
               x.BillingNoteOne.YearNumber == yearNumber &&
@@ -786,6 +1062,8 @@ public class BillingService : IBillingService
         {
             CxCBillId = Guid.NewGuid(),
             DateNote = utcNow.Date,
+            YearNumber = yearNumber,
+            MonthType = monthType,
             CollectionNote = collectionNote,
             ClientId = contract.ClientId,
             ContractClientId = contract.ContractClientId,
@@ -839,6 +1117,31 @@ public class BillingService : IBillingService
         _context.Sells.Add(sell);
         _context.CxCBills.Add(cxCBill);
 
+        //Bitacora del dinero: la nota que nace, y el adelanto o la exoneracion que se cruzan
+        PaymentAuditLog.Add(_context, corporationId, PaymentEventType.BillCreated,
+            contract.ContractClientId, contract.ClientId, cxCBill.CxCBillId, nameof(CxCBill),
+            total - (sell.SellDetails.Sum(x => x.TaxAmount)), sell.SellDetails.Sum(x => x.TaxAmount), total,
+            $"Nota {collectionNote} - {monthType} {yearNumber} - saldo {balance:N2}",
+            usuarioOwner, Guid.Parse(userId));
+
+        if (prePayment != null)
+        {
+            PaymentAuditLog.Add(_context, corporationId, PaymentEventType.PrePaymentApplied,
+                contract.ContractClientId, contract.ClientId, prePayment.PrePaymentId, nameof(PrePayment),
+                prePayment.UnitPrice, prePayment.PriceWithTax - prePayment.UnitPrice, prePayment.PriceWithTax,
+                $"Aplicado en la nota {collectionNote} - {monthType} {yearNumber}",
+                usuarioOwner, Guid.Parse(userId));
+        }
+
+        if (preExonerated != null)
+        {
+            PaymentAuditLog.Add(_context, corporationId, PaymentEventType.ExoneratedApplied,
+                contract.ContractClientId, contract.ClientId, preExonerated.ContractExoneratedId, nameof(ContractExonerated),
+                preExonerated.UnitPrice, preExonerated.PriceWithTax - preExonerated.UnitPrice, preExonerated.PriceWithTax,
+                $"Aplicada en la nota {collectionNote} - {monthType} {yearNumber}",
+                usuarioOwner, Guid.Parse(userId));
+        }
+
         return new ActionResponse<bool> { WasSuccess = true, Result = true };
     }
 
@@ -856,6 +1159,7 @@ public class BillingService : IBillingService
                         !x.Billed &&
                         ((x.CompletedAtUtc != null && x.CompletedAtUtc <= lastDate) ||
                          reservedRequestIds.Contains(x.ServiceRequestId)))
+            .AsSplitQuery()
             .ToListAsync();
     }
 
@@ -908,6 +1212,52 @@ public class BillingService : IBillingService
         CollectionNote
     }
 
+    //El tablero de facturas: solo el mes en curso, para no recorrer el historico
+    public async Task<ActionResponse<SellSummaryDto>> GetSellSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<SellSummaryDto>();
+
+            var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var nextMonth = monthStart.AddMonths(1);
+
+            //Los tres conteos en una sola pasada
+            var summary = await _context.Sells
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            x.DateSell >= monthStart &&
+                            x.DateSell < nextMonth)
+                .GroupBy(x => 1)
+                .Select(g => new SellSummaryDto
+                {
+                    MonthCount = g.Count(x => !x.Cancelled),
+                    MonthPaid = g.Count(x => x.Paid && !x.Cancelled),
+                    MonthCancelled = g.Count(x => x.Cancelled)
+                })
+                .FirstOrDefaultAsync() ?? new SellSummaryDto();
+
+            //El monto vive en los renglones: en la factura es una propiedad calculada.
+            //Se arranca desde la factura, que es la que tiene el indice por fecha.
+            summary.MonthTotal = await _context.Sells
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            !x.Cancelled &&
+                            x.DateSell >= monthStart &&
+                            x.DateSell < nextMonth)
+                .SelectMany(x => x.SellDetails!)
+                .SumAsync(x => (decimal?)(x.Price * x.Quantity)) ?? 0;
+
+            return new ActionResponse<SellSummaryDto> { WasSuccess = true, Result = summary };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<SellSummaryDto>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<Sell>>> GetSellsAsync(PaginationDTO pagination, string username)
     {
         try
@@ -934,6 +1284,7 @@ public class BillingService : IBillingService
             var list = await queryable
                 .OrderByDescending(x => x.DateSell)
                 .Paginate(pagination)
+                .AsSplitQuery()
                 .ToListAsync();
 
             return new ActionResponse<IEnumerable<Sell>> { WasSuccess = true, Result = list };

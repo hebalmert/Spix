@@ -21,6 +21,7 @@ public partial class EditPrePayment
     private BillingContractDto? SelectedContract;
     private List<BillingContractDto> Contracts = new();
     private List<IntItemModel>? Months;
+    private List<PrePaymentServiceDto>? Services;
     private bool isLoading;
     private bool IsSaving;
     private const string BaseUrl = "api/v1/prepayments";
@@ -51,6 +52,9 @@ public partial class EditPrePayment
 
         Model = responseHttp.Response;
         SelectedContract = BuildContractDto(Model);
+
+        if (Model is not null)
+            await LoadServicesAsync(Model.ContractClientId);
     }
 
     private async Task SearchContracts(string filter)
@@ -66,10 +70,24 @@ public partial class EditPrePayment
             Contracts = responseHttp.Response ?? new();
     }
 
-    private void SelectContract(BillingContractDto contract)
+    private async Task SelectContract(BillingContractDto contract)
     {
         SelectedContract = contract;
         Contracts.Clear();
+        await LoadServicesAsync(contract.ContractClientId);
+    }
+
+    //Los servicios que puede adelantar el contrato elegido
+    private async Task LoadServicesAsync(Guid contractClientId)
+    {
+        Services = null;
+        var url = $"{BaseUrl}/services/{contractClientId}" + $"?prePaymentId={Id}";
+        var responseHttp = await _repository.GetAsync<List<PrePaymentServiceDto>>(url);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        Services = responseHttp.Response ?? new();
+        StateHasChanged();
     }
 
     private async Task Edit()

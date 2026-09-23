@@ -93,7 +93,7 @@ public class MarkService : IMarkService
             }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.MarkName).Paginate(pagination).ToListAsync();
+            var modelo = await queryable.OrderBy(x => x.MarkName).Paginate(pagination).AsSplitQuery().ToListAsync();
 
             return new ActionResponse<IEnumerable<Mark>>
             {

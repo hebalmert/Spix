@@ -9,6 +9,7 @@ using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesPayment;
+using Spix.Domain.Entities;
 using Spix.Domain.EntitiesBilling;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesPayment;
@@ -80,6 +81,7 @@ public class PaymentService : IPaymentService
             var list = await queryable
                 .OrderByDescending(x => x.DateNote)
                 .Paginate(pagination)
+                .AsSplitQuery()
                 .ToListAsync();
 
             return new ActionResponse<IEnumerable<CxCBill>> { WasSuccess = true, Result = list };
@@ -98,10 +100,16 @@ public class PaymentService : IPaymentService
             if (user == null)
                 return AuthFail<CxCBill>();
 
+            //Una sola nota: se trae con lo que se le esta cobrando (plan y servicios) para poder
+            //explicarle al cliente por que le llego ese valor.
             var model = await _context.CxCBills
+                .AsNoTracking()
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient)
                 .Include(x => x.CxCBillDetails)
+                .Include(x => x.Sell!)
+                    .ThenInclude(x => x.SellDetails)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(x => x.CxCBillId == id && x.CorporationId == user.CorporationId);
 
             if (model == null)
@@ -121,6 +129,8 @@ public class PaymentService : IPaymentService
         }
     }
 
+    //El recaudo de una nota de cobro. Es plata: la nota se reclama de forma atomica para que
+    //dos usuarios no la cobren dos veces, y el movimiento queda en la bitacora del dinero.
     public async Task<ActionResponse<CxCBill>> PayCxCBillAsync(CxCBillPaymentDto model, string username)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -133,54 +143,65 @@ public class PaymentService : IPaymentService
                 return AuthFail<CxCBill>();
             }
 
+            //Solo la fila de la nota: la factura y el detalle se tocan por su id, sin traerlos
             var bill = await _context.CxCBills
-                .Include(x => x.CxCBillDetails)
-                .Include(x => x.Sell)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.CxCBillId == model.CxCBillId && x.CorporationId == user.CorporationId);
 
             if (bill == null)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<CxCBill>
-                {
-                    WasSuccess = false,
-                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
-                };
-            }
+                return await FailRollbackAsync<CxCBill>(_localizer[nameof(Resource.Generic_IdNotFound)]);
 
             if (bill.Cancelled)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "La cuenta por cobrar esta anulada." };
-            }
+                return await FailRollbackAsync<CxCBill>(_localizer["Pay_BillCancelled"]);
 
             if (bill.Paid || bill.Balance <= 0)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "La cuenta por cobrar ya esta pagada." };
-            }
+                return await FailRollbackAsync<CxCBill>(_localizer["Pay_BillPaid"]);
 
             if (!IsValidDiscount(model.DiscountPercent))
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "El descuento seleccionado no es valido." };
-            }
+                return await FailRollbackAsync<CxCBill>(_localizer["Pay_DiscountInvalid"]);
 
             if (model.DiscountPercent > 0 && string.IsNullOrWhiteSpace(model.Detail))
-            {
-                await _transactionManager.RollbackTransactionAsync();
-                return new ActionResponse<CxCBill> { WasSuccess = false, Message = "Debe especificar la razon del descuento." };
-            }
+                return await FailRollbackAsync<CxCBill>(_localizer["Pay_DiscountReason"]);
 
+            if (!IsValidPaymentMode(model.PaymentMode))
+                return await FailRollbackAsync<CxCBill>(_localizer["Pay_ModeInvalid"]);
+
+            //Las cuentas del recaudo
             var debt = bill.Balance;
             var discount = Math.Round((debt * model.DiscountPercent) / 100, 2);
             var payment = debt - discount;
             var balance = debt - discount - payment;
+            var today = DateTime.UtcNow.Date;
+            var isPaid = balance == 0;
 
+            //Se reclama la nota. Si otro usuario la cobro primero, aqui salen cero filas
+            var claimed = await _context.CxCBills
+                .Where(x => x.CxCBillId == bill.CxCBillId &&
+                            !x.Paid &&
+                            !x.Cancelled &&
+                            x.Balance == debt)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Balance, balance)
+                    .SetProperty(x => x.Paid, isPaid)
+                    .SetProperty(x => x.DatePaid, isPaid ? today : (DateTime?)null));
+
+            if (claimed == 0)
+                return await FailRollbackAsync<CxCBill>(_localizer["Pay_BillPaid"]);
+
+            //La factura sigue el estado de la nota
+            await _context.Sells
+                .Where(x => x.SellId == bill.SellId && x.CorporationId == bill.CorporationId)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Paid, isPaid)
+                    .SetProperty(x => x.DatePaid, isPaid ? today : (DateTime?)null));
+
+            //El renglon del recaudo. El id se fija aqui porque la cuenta por pagar del
+            //contratista lo necesita antes de guardar.
             var detail = new CxCBillDetail
             {
+                CxCBillDetailId = Guid.NewGuid(),
                 CxCBillId = bill.CxCBillId,
-                DatePayment = DateTime.UtcNow.Date,
+                DatePayment = today,
                 PaymentMode = model.PaymentMode,
                 DiscountRate = model.DiscountPercent == 0 ? null : $"{model.DiscountPercent}%",
                 Detail = model.Detail,
@@ -194,20 +215,20 @@ public class PaymentService : IPaymentService
             };
 
             _context.CxCBillDetails.Add(detail);
+
+            //La comision del contratista, si ese contrato la tiene
             await _contractorPaymentService.CreateAccountPayableAsync(bill, detail);
 
-            bill.Balance = balance;
-            bill.Paid = balance == 0;
-            bill.DatePaid = bill.Paid ? DateTime.UtcNow.Date : null;
-
-            if (bill.Sell != null)
-            {
-                bill.Sell.Paid = bill.Paid;
-                bill.Sell.DatePaid = bill.DatePaid;
-            }
+            //Bitacora del dinero: quien recibio, cuanto, con que modo y con que descuento
+            AuditPayment(bill, detail, model.DiscountPercent, user);
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
+
+            //Lo que se devuelve refleja lo que quedo en la base
+            bill.Balance = balance;
+            bill.Paid = isPaid;
+            bill.DatePaid = isPaid ? today : null;
 
             return new ActionResponse<CxCBill> { WasSuccess = true, Result = bill };
         }
@@ -216,6 +237,44 @@ public class PaymentService : IPaymentService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<CxCBill>(ex);
         }
+    }
+
+    //Anota el recaudo en la bitacora del dinero
+    private void AuditPayment(CxCBill bill, CxCBillDetail detail, int discountPercent, User user)
+    {
+        var request = _httpContextAccessor.HttpContext?.Request;
+        var modo = detail.PaymentMode ?? string.Empty;
+        var texto = discountPercent > 0
+            ? $"{bill.CollectionNote} - {modo} - descuento {discountPercent}% ({detail.Discount:N2}) - {detail.Detail}"
+            : $"{bill.CollectionNote} - {modo}";
+
+        PaymentAuditLog.Add(
+            _context,
+            bill.CorporationId,
+            PaymentEventType.PaymentReceived,
+            bill.ContractClientId,
+            bill.ClientId,
+            bill.CxCBillId,
+            nameof(CxCBill),
+            detail.Payment,
+            0,
+            detail.Payment,
+            texto,
+            $"{user.FirstName} {user.LastName}",
+            Guid.TryParse(user.Id, out var userId) ? userId : null,
+            request?.HttpContext.Connection.RemoteIpAddress?.ToString(),
+            request?.Headers["User-Agent"].ToString());
+    }
+
+    //Los modos de pago que acepta el recaudo
+    private static bool IsValidPaymentMode(string? mode) =>
+        mode is "Cash" or "Card" or "Transfer";
+
+    //Deshace la transaccion y devuelve el motivo
+    private async Task<ActionResponse<T>> FailRollbackAsync<T>(string message)
+    {
+        await _transactionManager.RollbackTransactionAsync();
+        return new ActionResponse<T> { WasSuccess = false, Message = message };
     }
 
     public async Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username)
@@ -325,6 +384,75 @@ public class PaymentService : IPaymentService
     private static bool IsValidDiscount(int discount) =>
         discount is 0 or 25 or 50 or 75 or 100;
 
+    //Anota el movimiento del pago adelantado en la bitacora del dinero
+    private void AuditPrePayment(PrePayment model, PaymentEventType eventType, User user)
+    {
+        var lineas = model.PrePaymentDetails?.Count(x => x.ServiceRequestDetailId.HasValue) ?? 0;
+        var request = _httpContextAccessor.HttpContext?.Request;
+
+        PaymentAuditLog.Add(
+            _context,
+            model.CorporationId,
+            eventType,
+            model.ContractClientId,
+            model.ClientId,
+            model.PrePaymentId,
+            nameof(PrePayment),
+            model.UnitPrice,
+            model.PriceWithTax - model.UnitPrice,
+            model.PriceWithTax,
+            $"{model.MonthType} {model.YearNumber} - plan y {lineas} servicio(s)",
+            $"{user.FirstName} {user.LastName}",
+            Guid.TryParse(user.Id, out var userId) ? userId : null,
+            request?.HttpContext.Connection.RemoteIpAddress?.ToString(),
+            request?.Headers["User-Agent"].ToString());
+    }
+
+    //El tablero: lo recibido que aun no se cruza con una nota, y lo que se cruzo en el mes
+    public async Task<ActionResponse<PrePaymentSummaryDto>> GetPrePaymentSummaryAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<PrePaymentSummaryDto>();
+
+            var pendientes = _context.PrePayments
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId && !x.Billed);
+
+            //Una sola pasada para los tres numeros de lo pendiente
+            var summary = await pendientes
+                .GroupBy(x => 1)
+                .Select(g => new PrePaymentSummaryDto
+                {
+                    Pending = g.Count(),
+                    PendingTotal = g.Sum(x => x.PriceWithTax),
+                    Contracts = g.Select(x => x.ContractClientId).Distinct().Count()
+                })
+                .FirstOrDefaultAsync() ?? new PrePaymentSummaryDto();
+
+            var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var nextMonth = monthStart.AddMonths(1);
+
+            var delMes = _context.PrePayments
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            x.Billed &&
+                            x.DateBilled >= monthStart &&
+                            x.DateBilled < nextMonth);
+
+            summary.BilledMonth = await delMes.CountAsync();
+            summary.BilledMonthTotal = await delMes.SumAsync(x => (decimal?)x.PriceWithTax) ?? 0;
+
+            return new ActionResponse<PrePaymentSummaryDto> { WasSuccess = true, Result = summary };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<PrePaymentSummaryDto>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<PrePayment>>> GetPrePaymentsAsync(PaginationDTO pagination, string username)
     {
         try
@@ -337,6 +465,7 @@ public class PaymentService : IPaymentService
                 .Include(x => x.Client)
                 .Include(x => x.ContractClient)
                 .Include(x => x.Plan)
+                .Include(x => x.PrePaymentDetails!)
                 .Where(x => x.CorporationId == user.CorporationId && !x.Billed)
                 .AsQueryable();
 
@@ -357,6 +486,7 @@ public class PaymentService : IPaymentService
                 .ThenBy(x => x.Client!.LastName)
                 .ThenBy(x => x.ContractClient!.ControlContrato)
                 .Paginate(pagination)
+                .AsSplitQuery()
                 .ToListAsync();
 
             return new ActionResponse<IEnumerable<PrePayment>> { WasSuccess = true, Result = list };
@@ -466,6 +596,7 @@ public class PaymentService : IPaymentService
                     TaxRate = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Tax!.Rate).FirstOrDefault(),
                     PlanPriceWithTax = x.ContractPlans!.Select(p => (decimal?)Math.Round(p.Plan!.Price + ((p.Plan!.Price * p.Plan!.Tax!.Rate) / 100), 2)).FirstOrDefault()
                 })
+                .AsSplitQuery()
                 .ToListAsync();
 
             return new ActionResponse<IEnumerable<BillingContractDto>> { WasSuccess = true, Result = contracts };
@@ -518,6 +649,10 @@ public class PaymentService : IPaymentService
             }
 
             _context.PrePayments.Add(model);
+
+            //Es plata recibida: queda su rastro dentro de la misma transaccion
+            AuditPrePayment(model, PaymentEventType.PrePaymentCreated, user);
+
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
@@ -603,6 +738,9 @@ public class PaymentService : IPaymentService
             }
 
             _context.PrePayments.Update(current);
+
+            AuditPrePayment(current, PaymentEventType.PrePaymentUpdated, user);
+
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
 
@@ -649,6 +787,9 @@ public class PaymentService : IPaymentService
                     Message = _localizer["PrePayment_BilledNoDelete"]
                 };
             }
+
+            //La foto queda antes de borrar: el rastro sobrevive al registro
+            AuditPrePayment(current, PaymentEventType.PrePaymentDeleted, user);
 
             _context.PrePayments.Remove(current);
             await _transactionManager.SaveChangesAsync();

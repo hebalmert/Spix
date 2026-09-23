@@ -61,11 +61,39 @@ public class RunSuspendedController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
-    [HttpPost("{id}/run")]
-    public async Task<IActionResult> RunAsync(Guid id)
+    //Revision previa: a quien se le va a cortar y por cuanto
+    [HttpGet("{id}/check")]
+    public async Task<IActionResult> CheckAsync(Guid id)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _runSuspendedService.RunAsync(id, userClaimsInfo.UserName);
+        var response = await _runSuspendedService.CheckAsync(id, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Lo que quedo cortado, paginado
+    [HttpGet("{id}/details")]
+    public async Task<IActionResult> GetDetailsAsync(Guid id, [FromQuery] PaginationDTO pagination)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _runSuspendedService.GetDetailsAsync(id, pagination, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //El corte va equipo por equipo: una conexion Mikrotik por servidor, y se confirma sola
+    [HttpPost("{id}/run/server/{serverId}")]
+    public async Task<IActionResult> RunServerAsync(Guid id, Guid serverId)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _runSuspendedService.RunServerAsync(id, serverId, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Cierra el corte cuando ya pasaron todos los lotes
+    [HttpPost("{id}/run/finish")]
+    public async Task<IActionResult> FinishRunAsync(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _runSuspendedService.FinishRunAsync(id, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 

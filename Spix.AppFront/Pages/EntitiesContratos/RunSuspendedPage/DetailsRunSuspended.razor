@@ -27,41 +27,104 @@
                                   OnSubmit="Return"
                                   ReturnAction="Return" />
 
+                @* Lo que encontro la revision: solo los numeros, contados por la base *@
+                @if (Check is not null && !Model.Executed)
+                {
+                    <div class="cs-board">
+                        <div class="cs-tile">
+                            <div class="cs-tile-label">@Localizer["Corte_Debtors"]</div>
+                            <div class="cs-tile-value">@Check.Debtors.ToString("N0")</div>
+                        </div>
+                        <div class="cs-tile is-cut">
+                            <div class="cs-tile-label">@Localizer["Corte_ToSuspend"]</div>
+                            <div class="cs-tile-value">@Check.ToSuspend.ToString("N0")</div>
+                        </div>
+                        <div class="cs-tile is-ok">
+                            <div class="cs-tile-label">@Localizer["Corte_AlreadySuspended"]</div>
+                            <div class="cs-tile-value">@Check.AlreadySuspended.ToString("N0")</div>
+                        </div>
+                        <div class="cs-tile is-money">
+                            <div class="cs-tile-label">@Localizer["Corte_DebtTotal"]</div>
+                            <div class="cs-tile-value">@Check.DebtTotal.ToString("N2")</div>
+                        </div>
+                    </div>
+
+                    @* El corte va equipo por equipo: aqui se ve como quedan repartidos *@
+                    @if (Check.Servers.Count > 0)
+                    {
+                        <div class="cs-servers">
+                            @foreach (var server in Check.Servers)
+                            {
+                                <span class="cs-server @(server.ServerId == Guid.Empty ? "is-bad" : null)">
+                                    <i class="fa fa-server"></i> @server.ServerName
+                                    <b>@server.Contracts</b>
+                                </span>
+                            }
+                        </div>
+                    }
+
+                    @if (Check.NoServer > 0)
+                    {
+                        <div class="cs-warn">
+                            <i class="fa fa-triangle-exclamation"></i> @Localizer["Corte_ConfirmBlocked", Check.NoServer]
+                        </div>
+                    }
+                }
+
+                @* El avance real: cada equipo que termina mueve la barra *@
+                @if (IsRunning || Processed > 0)
+                {
+                    <div class="cs-progress">
+                        <div class="cs-progress-text">
+                            <span>@(CurrentServer ?? Localizer["Corte_Progress", Processed, ToProcess].Value)</span>
+                            <span>@Processed / @ToProcess &middot; @Percent%</span>
+                        </div>
+                        <div class="cs-bar">
+                            <div class="cs-bar-fill" style="width:@Percent%"></div>
+                        </div>
+                    </div>
+                }
+
+                @* Lo que quedo cortado: pagina por pagina, no de una sola vez *@
                 @if (Model.Executed)
                 {
-                    <div class="table-responsive mt-4">
-                        <table class="table table-hover table-striped align-middle">
-                            <thead class="table-dark">
+                    <div class="table-responsive cs-list">
+                        <table class="idx-table">
+                            <thead>
                                 <tr>
-                                    <th>Contrato</th>
-                                    <th>Cliente</th>
-                                    <th>Nota Cobro</th>
-                                    <th>Saldo CxC</th>
-                                    <th>Monto Plan</th>
+                                    <th>@Localizer[nameof(Resource.Contract)]</th>
+                                    <th>@Localizer[nameof(Resource.Client)]</th>
+                                    <th>@Localizer["Corte_OldestNote"]</th>
+                                    <th style="text-align:right">@Localizer["Corte_Debt"]</th>
+                                    <th style="text-align:right">@Localizer[nameof(Resource.Plan)]</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var detail in Model.RunSuspendedDetails ?? new List<RunSuspendedDetail>())
+                                @foreach (var detail in Details)
                                 {
                                     <tr>
-                                        <td>@detail.ContractClient?.ControlContrato</td>
-                                        <td>@($"{detail.Client?.FirstName} {detail.Client?.LastName}".Trim())</td>
-                                        <td>@detail.CxCBill?.CollectionNote</td>
-                                        <td>@detail.CxCBill?.Balance.ToString("N2")</td>
-                                        <td>@detail.PlanAmount.ToString("N2")</td>
+                                        <td>@detail.ControlContrato</td>
+                                        <td>@detail.ClientFullName</td>
+                                        <td>@detail.CollectionNote</td>
+                                        <td style="text-align:right">@detail.Debt.ToString("N2")</td>
+                                        <td style="text-align:right">@detail.PlanAmount.ToString("N2")</td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
                     </div>
+
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 }
 
-                <div class="d-flex justify-content-center gap-3 mt-5">
-                    @if (!Model.Executed)
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    @if (!Model.Executed && Check is not null && Check.ToSuspend > 0)
                     {
                         <ButtonFormSaveOnClick OnClick="RunAsync"
-                                               TooTip="Correr Corte"
-                                               ProgressText="Corriendo corte"
+                                               TooTip="@Localizer["Corte_Run"]"
+                                               ProgressText="@Localizer["Corte_Run"]"
                                                Icon="fa fa-ban"
                                                CssClass="btn btn-danger btn-bor"
                                                IsSaving="IsRunning"

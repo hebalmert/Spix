@@ -86,6 +86,7 @@ public class SignatureService : ISignatureService
                 .OrderBy(x => x.DocumentType)
                 .ThenBy(x => x.Name)
                 .Paginate(pagination)
+                .AsSplitQuery()
                 .ToListAsync();
 
             foreach (var item in list)
@@ -933,6 +934,7 @@ public class SignatureService : ISignatureService
                 .Where(x => x.ClientId == client.ClientId &&
                             (x.SignatureRequestedAt != null ||
                              _context.ContractSignedDocuments.Any(d => d.ContractClientId == x.ContractClientId && d.Signed)))
+                .AsSplitQuery()
                 .ToListAsync();
 
             var result = new List<MySignatureDocumentDTO>();

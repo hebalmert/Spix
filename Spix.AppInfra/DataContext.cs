@@ -161,6 +161,9 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractorPaymentDetail> ContractorPaymentDetails => Set<ContractorPaymentDetail>();
     public DbSet<PrePayment> PrePayments => Set<PrePayment>();
     public DbSet<PrePaymentDetail> PrePaymentDetails => Set<PrePaymentDetail>();
+
+    //La bitacora del dinero: solo se escribe, nunca se edita ni se borra
+    public DbSet<PaymentAudit> PaymentAudits => Set<PaymentAudit>();
     public DbSet<ContractExonerated> ContractExonerateds => Set<ContractExonerated>();
 
     //EntitiesEmails

@@ -2488,4 +2488,322 @@
   <data name="PrePayment_BilledNoDelete" xml:space="preserve">
     <value>No se puede eliminar un pago adelantado facturado.</value>
   </data>
+  <data name="PrePayment_Services" xml:space="preserve">
+    <value>Servicios por adelantar</value>
+  </data>
+  <data name="PrePayment_ServicesHint" xml:space="preserve">
+    <value>Solicitudes completadas sin facturar. Lo que marque queda reservado para este pago.</value>
+  </data>
+  <data name="PrePayment_NoServices" xml:space="preserve">
+    <value>Este contrato no tiene servicios pendientes.</value>
+  </data>
+  <data name="PrePayment_PlanAmount" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="PrePayment_ServicesAmount" xml:space="preserve">
+    <value>Servicios</value>
+  </data>
+  <data name="NoRecordsFound" xml:space="preserve">
+    <value>No hay registros</value>
+  </data>
+  <data name="PrePayment_Title" xml:space="preserve">
+    <value>Pagos por adelantado</value>
+  </data>
+  <data name="PrePayment_Subtitle" xml:space="preserve">
+    <value>Dinero recibido antes de la nota de cobro; alli se cruza.</value>
+  </data>
+  <data name="PrePayment_Pending" xml:space="preserve">
+    <value>Pendientes</value>
+  </data>
+  <data name="PrePayment_PendingTotal" xml:space="preserve">
+    <value>Monto pendiente</value>
+  </data>
+  <data name="PrePayment_Contracts" xml:space="preserve">
+    <value>Contratos</value>
+  </data>
+  <data name="PrePayment_BilledMonth" xml:space="preserve">
+    <value>Cruzado este mes</value>
+  </data>
+  <data name="PrePayment_Period" xml:space="preserve">
+    <value>Periodo</value>
+  </data>
+  <data name="PrePayment_DatePaid" xml:space="preserve">
+    <value>Fecha de pago</value>
+  </data>
+  <data name="PrePayment_WithServices" xml:space="preserve">
+    <value>+ {0} servicio(s)</value>
+  </data>
+  <data name="PrePayment_New" xml:space="preserve">
+    <value>Nuevo pago adelantado</value>
+  </data>
+  <data name="PrePayment_Edit" xml:space="preserve">
+    <value>Editar pago adelantado</value>
+  </data>
+  <data name="PrePayment_DeleteMessage" xml:space="preserve">
+    <value>Se borrara el pago adelantado y sus servicios quedaran libres.</value>
+  </data>
+  <data name="Request_ContractStateNotAllowed" xml:space="preserve">
+    <value>Solo se hace visita tecnica a contratos activos, exonerados o suspendidos.</value>
+  </data>
+  <data name="Billing_AlreadyLaunched" xml:space="preserve">
+    <value>Esta nota general ya fue lanzada.</value>
+  </data>
+  <data name="Billing_NoContracts" xml:space="preserve">
+    <value>No hay contratos activos para lanzar notas.</value>
+  </data>
+  <data name="Billing_Check" xml:space="preserve">
+    <value>Revisar</value>
+  </data>
+  <data name="Billing_Launch" xml:space="preserve">
+    <value>Lanzar</value>
+  </data>
+  <data name="Billing_Launched" xml:space="preserve">
+    <value>Notas lanzadas</value>
+  </data>
+  <data name="Billing_CheckTitle" xml:space="preserve">
+    <value>Revision de contratos</value>
+  </data>
+  <data name="Billing_CheckSummary" xml:space="preserve">
+    <value>{0} activos · {1} incompletos · {2} ya facturados</value>
+  </data>
+  <data name="Billing_CheckAllGood" xml:space="preserve">
+    <value>Todos los contratos activos estan listos para cobrar.</value>
+  </data>
+  <data name="Billing_ResultCreated" xml:space="preserve">
+    <value>Notas creadas: {0}</value>
+  </data>
+  <data name="Billing_ResultSkipped" xml:space="preserve">
+    <value>Ya facturados, se saltaron: {0}</value>
+  </data>
+  <data name="Billing_ResultIssues" xml:space="preserve">
+    <value>Quedaron fuera ({0}):</value>
+  </data>
+  <data name="Billing_Progress" xml:space="preserve">
+    <value>Procesando {0} de {1}</value>
+  </data>
+  <data name="Billing_NothingToDo" xml:space="preserve">
+    <value>No hay nada que lanzar: todos los contratos activos ya tienen su nota de este periodo.</value>
+  </data>
+  <data name="Billing_ConfirmText" xml:space="preserve">
+    <value>Se van a facturar {0} contrato(s).</value>
+  </data>
+  <data name="Billing_Interrupted" xml:space="preserve">
+    <value>El lanzamiento se interrumpio. Lo facturado quedo guardado y la nota sigue abierta: vuelva a lanzarla para continuar.</value>
+  </data>
+  <data name="Billing_Incomplete" xml:space="preserve">
+    <value>Contrato incompleto</value>
+  </data>
+  <data name="Billing_ConfirmBlocked" xml:space="preserve">
+    <value>Quedan fuera {0} por estar incompletos.</value>
+  </data>
+  <data name="Sell_Details" xml:space="preserve">
+    <value>Detalle de la factura</value>
+  </data>
+  <data name="Sell_Concept" xml:space="preserve">
+    <value>Concepto</value>
+  </data>
+  <data name="Sell_OriginService" xml:space="preserve">
+    <value>Servicio tecnico</value>
+  </data>
+  <data name="CxC_Details" xml:space="preserve">
+    <value>Detalle de la nota</value>
+  </data>
+  <data name="CxC_Debt" xml:space="preserve">
+    <value>Deuda</value>
+  </data>
+  <data name="CxC_PrePayment" xml:space="preserve">
+    <value>Pago adelantado</value>
+  </data>
+  <data name="CxC_Discount" xml:space="preserve">
+    <value>Exoneracion</value>
+  </data>
+  <data name="CxC_Balance" xml:space="preserve">
+    <value>Saldo</value>
+  </data>
+  <data name="Sell_Title" xml:space="preserve">
+    <value>Facturas</value>
+  </data>
+  <data name="Sell_Subtitle" xml:space="preserve">
+    <value>Lo que se le facturo a cada cliente: plan mensual y solicitudes de servicio.</value>
+  </data>
+  <data name="Sell_MonthCount" xml:space="preserve">
+    <value>Facturas del mes</value>
+  </data>
+  <data name="Sell_MonthTotal" xml:space="preserve">
+    <value>Facturado del mes</value>
+  </data>
+  <data name="Sell_MonthPaid" xml:space="preserve">
+    <value>Pagadas</value>
+  </data>
+  <data name="Sell_MonthCancelled" xml:space="preserve">
+    <value>Anuladas</value>
+  </data>
+  <data name="Sell_Paid" xml:space="preserve">
+    <value>Pagada</value>
+  </data>
+  <data name="Sell_Pending" xml:space="preserve">
+    <value>Pendiente</value>
+  </data>
+  <data name="Sell_Cancelled" xml:space="preserve">
+    <value>Anulada</value>
+  </data>
+  <data name="Pay_Title" xml:space="preserve">
+    <value>Registrar pago</value>
+  </data>
+  <data name="Pay_Subtitle" xml:space="preserve">
+    <value>Lo que el cliente debe por esta nota y como se le recibe.</value>
+  </data>
+  <data name="Pay_Debt" xml:space="preserve">
+    <value>Deuda</value>
+  </data>
+  <data name="Pay_Discount" xml:space="preserve">
+    <value>Descuento</value>
+  </data>
+  <data name="Pay_Receive" xml:space="preserve">
+    <value>A recibir</value>
+  </data>
+  <data name="Pay_Balance" xml:space="preserve">
+    <value>Saldo que queda</value>
+  </data>
+  <data name="Pay_Mode" xml:space="preserve">
+    <value>Modo de pago</value>
+  </data>
+  <data name="Pay_Cash" xml:space="preserve">
+    <value>Efectivo</value>
+  </data>
+  <data name="Pay_Card" xml:space="preserve">
+    <value>Tarjeta</value>
+  </data>
+  <data name="Pay_Transfer" xml:space="preserve">
+    <value>Transferencia</value>
+  </data>
+  <data name="Pay_NoDiscount" xml:space="preserve">
+    <value>Ninguno</value>
+  </data>
+  <data name="Pay_Detail" xml:space="preserve">
+    <value>Detalle</value>
+  </data>
+  <data name="Pay_DetailHint" xml:space="preserve">
+    <value>Motivo del descuento, numero de recibo, lo que valga la pena recordar.</value>
+  </data>
+  <data name="Pay_DiscountReason" xml:space="preserve">
+    <value>Debe especificar la razon del descuento.</value>
+  </data>
+  <data name="Pay_DiscountInvalid" xml:space="preserve">
+    <value>El descuento seleccionado no es valido.</value>
+  </data>
+  <data name="Pay_ModeInvalid" xml:space="preserve">
+    <value>El modo de pago seleccionado no es valido.</value>
+  </data>
+  <data name="Pay_BillCancelled" xml:space="preserve">
+    <value>La cuenta por cobrar esta anulada.</value>
+  </data>
+  <data name="Pay_BillPaid" xml:space="preserve">
+    <value>La cuenta por cobrar ya esta pagada.</value>
+  </data>
+  <data name="Pay_Success" xml:space="preserve">
+    <value>Pago registrado correctamente.</value>
+  </data>
+  <data name="Contractor_SelectPayables" xml:space="preserve">
+    <value>Debe seleccionar al menos una cuenta por pagar del contratista.</value>
+  </data>
+  <data name="Contractor_PayablesMismatch" xml:space="preserve">
+    <value>Una o mas cuentas por pagar no pertenecen al contratista seleccionado.</value>
+  </data>
+  <data name="Contractor_PayablesSettled" xml:space="preserve">
+    <value>Una o mas cuentas por pagar ya fueron liquidadas.</value>
+  </data>
+  <data name="Corte_PeriodInvalid" xml:space="preserve">
+    <value>Debe seleccionar un mes y ano validos.</value>
+  </data>
+  <data name="Corte_PeriodExists" xml:space="preserve">
+    <value>Ya existe un corte general para ese mes y ano.</value>
+  </data>
+  <data name="Corte_ExecutedNoEdit" xml:space="preserve">
+    <value>El corte general ya fue ejecutado y no puede modificarse.</value>
+  </data>
+  <data name="Corte_ExecutedNoDelete" xml:space="preserve">
+    <value>El corte general ya fue ejecutado y no puede eliminarse.</value>
+  </data>
+  <data name="Corte_AlreadyExecuted" xml:space="preserve">
+    <value>El corte general ya fue ejecutado.</value>
+  </data>
+  <data name="Corte_NoBinding" xml:space="preserve">
+    <value>Contrato activo sin IpBinding: no se le puede quitar el acceso en el equipo.</value>
+  </data>
+  <data name="Corte_Title" xml:space="preserve">
+    <value>Corte General</value>
+  </data>
+  <data name="Corte_Subtitle" xml:space="preserve">
+    <value>Suspende los contratos activos que deben hasta el periodo seleccionado.</value>
+  </data>
+  <data name="Corte_Active" xml:space="preserve">
+    <value>Contratos activos</value>
+  </data>
+  <data name="Corte_ToSuspend" xml:space="preserve">
+    <value>Se les corta</value>
+  </data>
+  <data name="Corte_UpToDate" xml:space="preserve">
+    <value>Al dia</value>
+  </data>
+  <data name="Corte_DebtTotal" xml:space="preserve">
+    <value>Deuda total</value>
+  </data>
+  <data name="Corte_Run" xml:space="preserve">
+    <value>Ejecutar corte</value>
+  </data>
+  <data name="Corte_ConfirmText" xml:space="preserve">
+    <value>Se van a suspender {0} contrato(s).</value>
+  </data>
+  <data name="Corte_ConfirmBlocked" xml:space="preserve">
+    <value>Quedan fuera {0} por no tener IpBinding.</value>
+  </data>
+  <data name="Corte_NothingToDo" xml:space="preserve">
+    <value>No hay nada que cortar: todos los contratos activos estan al dia.</value>
+  </data>
+  <data name="Corte_Progress" xml:space="preserve">
+    <value>Cortando {0} de {1}</value>
+  </data>
+  <data name="Corte_Done" xml:space="preserve">
+    <value>Corte ejecutado</value>
+  </data>
+  <data name="Corte_Interrupted" xml:space="preserve">
+    <value>El corte se interrumpio. Lo cortado quedo cortado y el corte sigue abierto: vuelva a ejecutarlo para continuar.</value>
+  </data>
+  <data name="Corte_ResultSuspended" xml:space="preserve">
+    <value>Suspendidos: {0}</value>
+  </data>
+  <data name="Corte_ResultSkipped" xml:space="preserve">
+    <value>Saltados: {0}</value>
+  </data>
+  <data name="Corte_ResultIssues" xml:space="preserve">
+    <value>Quedaron fuera: {0}</value>
+  </data>
+  <data name="Corte_Debt" xml:space="preserve">
+    <value>Deuda</value>
+  </data>
+  <data name="Corte_Notes" xml:space="preserve">
+    <value>Notas</value>
+  </data>
+  <data name="Corte_OldestNote" xml:space="preserve">
+    <value>Nota mas vieja</value>
+  </data>
+  <data name="Corte_Cut" xml:space="preserve">
+    <value>Contratos cortados</value>
+  </data>
+  <data name="Corte_NoServer" xml:space="preserve">
+    <value>Sin equipo</value>
+  </data>
+  <data name="Corte_Server" xml:space="preserve">
+    <value>Equipo</value>
+  </data>
+  <data name="Corte_ProgressServer" xml:space="preserve">
+    <value>Equipo {0} de {1}: {2}</value>
+  </data>
+  <data name="Corte_Debtors" xml:space="preserve">
+    <value>Con deuda</value>
+  </data>
+  <data name="Corte_AlreadySuspended" xml:space="preserve">
+    <value>Ya suspendidos</value>
+  </data>
 </root>

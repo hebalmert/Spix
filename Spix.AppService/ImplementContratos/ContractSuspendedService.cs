@@ -172,6 +172,7 @@ public class ContractSuspendedService : IContractSuspendedService
                 .OrderBy(x => x.Client!.FirstName)
                 .ThenBy(x => x.Client!.LastName)
                 .Take(30)
+                .AsSplitQuery()
                 .ToListAsync();
 
             var result = contracts.Select(x => new ActiveContractDTO

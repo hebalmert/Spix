@@ -4,57 +4,128 @@
 
 @using Spix.Domain.EntitiesBilling
 
-<div class="container pt-4">
+<div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Facturas</h3>
 
-        <div class="row align-items-center mb-3">
-            <div class="col-md-12 d-flex justify-content-end">
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-file-invoice-dollar"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Sell_Title"]</h3>
+                <p>@Localizer["Sell_Subtitle"]</p>
+            </div>
+        </div>
+
+        @* El tablero del mes en curso: lo cuenta la base, no la pagina *@
+        @if (Summary is not null)
+        {
+            <div class="sl-board">
+                <div class="sl-tile">
+                    <div class="sl-tile-label">@Localizer["Sell_MonthCount"]</div>
+                    <div class="sl-tile-value">@Summary.MonthCount.ToString("N0")</div>
+                </div>
+                <div class="sl-tile is-money">
+                    <div class="sl-tile-label">@Localizer["Sell_MonthTotal"]</div>
+                    <div class="sl-tile-value">@Summary.MonthTotal.ToString("N2")</div>
+                </div>
+                <div class="sl-tile is-paid">
+                    <div class="sl-tile-label">@Localizer["Sell_MonthPaid"]</div>
+                    <div class="sl-tile-value">@Summary.MonthPaid.ToString("N0")</div>
+                </div>
+                <div class="sl-tile is-cancelled">
+                    <div class="sl-tile-label">@Localizer["Sell_MonthCancelled"]</div>
+                    <div class="sl-tile-value">@Summary.MonthCancelled.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
+        <div class="idx-bar">
+            <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>
 
-        <hr />
-        <GenericList MyList="Sells">
-            <Body>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Factura</th>
-                                <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Contrato</th>
-                                <th class="text-end">SubTotal</th>
-                                <th class="text-end">Tax</th>
-                                <th class="text-end">Total</th>
-                                <th>Pagada</th>
-                                <th>Anulada</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Sells!)
-                            {
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Invoice)]</th>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Subtotal)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Tax)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Sells">
+                            <Loading>
                                 <tr>
-                                    <td>@item.InvoiceNumber</td>
-                                    <td>@item.DateSell.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.ClientFullName</td>
-                                    <td>@item.ControlContrato</td>
-                                    <td class="text-end">@item.SubTotal.ToString("N2")</td>
-                                    <td class="text-end">@item.TotalTax.ToString("N2")</td>
-                                    <td class="text-end">@item.Total.ToString("N2")</td>
-                                    <td>@(item.Paid ? "Si" : "No")</td>
-                                    <td>@(item.Cancelled ? "Si" : "No")</td>
+                                    <td colspan="7" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="7" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Sells!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="sl-invoice">@item.InvoiceNumber</div>
+                                            <div class="idx-meta">@item.DateSell.ToString("dd/MM/yyyy")</div>
+                                        </td>
+                                        <td>
+                                            <div class="idx-name">@item.ClientFullName</div>
+                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato</div>
+                                        </td>
+                                        <td style="text-align:right">@item.SubTotal.ToString("N2")</td>
+                                        <td style="text-align:right">@item.TotalTax.ToString("N2")</td>
+                                        <td style="text-align:right"><strong>@item.Total.ToString("N2")</strong></td>
+                                        <td>
+                                            @if (item.Cancelled)
+                                            {
+                                                <span class="idx-pill is-danger">@Localizer["Sell_Cancelled"]</span>
+                                            }
+                                            else if (item.Paid)
+                                            {
+                                                <span class="idx-pill is-on">@Localizer["Sell_Paid"]</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="idx-pill is-off">@Localizer["Sell_Pending"]</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="idx-actions">
+                                                @* Que se le esta cobrando: plan y servicios *@
+                                                <ButtonGeneric OnClick="() => ShowDetailsAsync(item)"
+                                                               TooTip="@Localizer["Sell_Details"]"
+                                                               Icon="fa fa-receipt" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Sells is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
                 </div>
-            </Body>
-        </GenericList>
-        <hr />
-        <Pagination CurrentPage="CurrentPage"
-                    SelectedPage="SelectedPage"
-                    TotalPages="TotalPages" />
+            }
+        </section>
     </div>
 </div>

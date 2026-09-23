@@ -1,4 +1,5 @@
 @using Spix.Domain.EntitiesBilling
+@using Spix.xLanguage.Resources
 @using Spix.Domain.EntitiesPayment
 
 <EditForm Model="PrePayment" OnValidSubmit="OnSubmit">
@@ -102,6 +103,50 @@
             </div>
         </div>
     </div>
+
+    @* Los servicios que el cliente puede adelantar: solicitudes completadas, sin facturar y con valor.
+       Se marcan los que entran; la solicitud queda reservada, pero NO se factura hasta la nota de cobro. *@
+    @if (SelectedContract is not null)
+    {
+        <div class="pp-services">
+            <div class="pp-services-head">
+                <b><i class="fa fa-screwdriver-wrench"></i> @Localizer["PrePayment_Services"]</b>
+                <span class="pp-meta">@Localizer["PrePayment_ServicesHint"]</span>
+            </div>
+
+            @if (Services is null)
+            {
+                <div class="pp-meta p-2"><span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]</div>
+            }
+            else if (Services.Count == 0)
+            {
+                <div class="pp-meta p-2">@Localizer["PrePayment_NoServices"]</div>
+            }
+            else
+            {
+                @foreach (var service in Services)
+                {
+                    <label class="pp-service">
+                        <input type="checkbox" class="form-check-input"
+                               checked="@IsSelected(service.ServiceRequestDetailId)"
+                               @onchange="e => ToggleService(service, e)" />
+                        <span class="pp-service-text">
+                            <span class="pp-service-name">#@service.RequestNumber · @service.ServiceName</span>
+                            <span class="pp-meta">@service.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy") @service.Detail</span>
+                        </span>
+                        <span class="pp-service-amount">@service.Total.ToString("N2")</span>
+                    </label>
+                }
+            }
+        </div>
+
+        @* Lo que se recibe: plan + servicios marcados *@
+        <div class="pp-totals">
+            <span>@Localizer["PrePayment_PlanAmount"] <b>@PlanTotal.ToString("N2")</b></span>
+            <span>@Localizer["PrePayment_ServicesAmount"] <b>@ServicesTotal.ToString("N2")</b></span>
+            <span class="is-main">@Localizer[nameof(Resource.Total)] <b>@((PlanTotal + ServicesTotal).ToString("N2"))</b></span>
+        </div>
+    }
 
     <div class="row g-2 mb-2">
         <div class="col-12 col-md-5">
