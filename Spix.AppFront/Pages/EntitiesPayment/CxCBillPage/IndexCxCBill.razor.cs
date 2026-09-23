@@ -130,6 +130,16 @@ public partial class IndexCxCBill
         await _modalService.ShowAsync(typeof(DetailsCxCBill), parameters);
     }
 
+    //Reenvia el comprobante al correo del cliente
+    private async Task SendReceiptAsync(Guid id)
+    {
+        var responseHttp = await _repository.PostAsync($"{BaseUrl}/{id}/receipt", new { });
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+            return;
+
+        await _sweetAlert.FireAsync(Localizer["Receipt_Send"], Localizer["Receipt_Sent"], SweetAlertIcon.Success);
+    }
+
     private async Task ShowPayAsync(Guid id)
     {
         var parameters = new Dictionary<string, object>

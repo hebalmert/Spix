@@ -3343,4 +3343,121 @@
   <data name="Collection_Empty" xml:space="preserve">
     <value>Choose a technician and a period, then press Search.</value>
   </data>
+  <data name="Receipt_Subject" xml:space="preserve">
+    <value>Payment receipt {0}</value>
+  </data>
+  <data name="Receipt_Eyebrow" xml:space="preserve">
+    <value>Payment receipt</value>
+  </data>
+  <data name="Receipt_Title" xml:space="preserve">
+    <value>We received your payment</value>
+  </data>
+  <data name="Receipt_Hello" xml:space="preserve">
+    <value>Hello</value>
+  </data>
+  <data name="Receipt_Intro" xml:space="preserve">
+    <value>Thank you. This is the receipt for the payment we just registered on your account.</value>
+  </data>
+  <data name="Receipt_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Receipt_Amount" xml:space="preserve">
+    <value>Amount received</value>
+  </data>
+  <data name="Receipt_Footer" xml:space="preserve">
+    <value>This receipt was generated automatically. Please keep it.</value>
+  </data>
+  <data name="Receipt_NoEmail" xml:space="preserve">
+    <value>The client does not have an email address registered.</value>
+  </data>
+  <data name="Receipt_NoPayment" xml:space="preserve">
+    <value>This note has no payment to send a receipt for.</value>
+  </data>
+  <data name="Receipt_NoProvider" xml:space="preserve">
+    <value>The corporation does not have an active default email provider.</value>
+  </data>
+  <data name="Receipt_Failed" xml:space="preserve">
+    <value>The receipt could not be sent.</value>
+  </data>
+  <data name="Receipt_Send" xml:space="preserve">
+    <value>Send receipt</value>
+  </data>
+  <data name="Receipt_Sent" xml:space="preserve">
+    <value>Receipt sent.</value>
+  </data>
+  <data name="Menu_Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Report_Active" xml:space="preserve">
+    <value>Active contracts</value>
+  </data>
+  <data name="Report_ActiveSubtitle" xml:space="preserve">
+    <value>Every active contract with its plan and what it bills per month.</value>
+  </data>
+  <data name="Report_Zone" xml:space="preserve">
+    <value>Contracts by zone</value>
+  </data>
+  <data name="Report_ZoneSubtitle" xml:space="preserve">
+    <value>How many active contracts each zone has and how much it bills.</value>
+  </data>
+  <data name="Report_Contracts" xml:space="preserve">
+    <value>Contracts</value>
+  </data>
+  <data name="Report_Monthly" xml:space="preserve">
+    <value>Monthly billing</value>
+  </data>
+  <data name="Report_WithoutPlan" xml:space="preserve">
+    <value>Without plan</value>
+  </data>
+  <data name="Report_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Report_SelectState" xml:space="preserve">
+    <value>[Select a state]</value>
+  </data>
+  <data name="Report_SelectCity" xml:space="preserve">
+    <value>[Select a city]</value>
+  </data>
+  <data name="Report_SelectZone" xml:space="preserve">
+    <value>[Select a zone]</value>
+  </data>
+  <data name="Report_State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Report_City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Report_ZoneEmpty" xml:space="preserve">
+    <value>Choose state, city and zone to see its contracts.</value>
+  </data>
+  <data name="Report_ZoneName" xml:space="preserve">
+    <value>Zone</value>
+  </data>
+  <data name="Report_SelectNode" xml:space="preserve">
+    <value>[Select an AP]</value>
+  </data>
+  <data name="Report_SelectServer" xml:space="preserve">
+    <value>[Select a server]</value>
+  </data>
+  <data name="Report_Node" xml:space="preserve">
+    <value>Contracts by AP</value>
+  </data>
+  <data name="Report_NodeName" xml:space="preserve">
+    <value>AP</value>
+  </data>
+  <data name="Report_NodeSubtitle" xml:space="preserve">
+    <value>The contracts hanging from an AP, their plan and what that AP bills.</value>
+  </data>
+  <data name="Report_Server" xml:space="preserve">
+    <value>Contracts by server</value>
+  </data>
+  <data name="Report_ServerSubtitle" xml:space="preserve">
+    <value>The contracts on a server, their plan and what that server bills.</value>
+  </data>
+  <data name="Report_NodeEmpty" xml:space="preserve">
+    <value>Choose an AP to see its contracts.</value>
+  </data>
+  <data name="Report_ServerEmpty" xml:space="preserve">
+    <value>Choose a server to see its contracts.</value>
+  </data>
 </root>

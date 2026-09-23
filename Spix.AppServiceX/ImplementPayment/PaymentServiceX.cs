@@ -31,6 +31,11 @@ public class PaymentServiceX : IPaymentServiceX
     public async Task<ActionResponse<CxCBill>> PayCxCBillAsync(CxCBillPaymentDto model, string username) =>
         await _paymentService.PayCxCBillAsync(model, username);
 
+    public async Task<ActionResponse<bool>> SendPaymentReceiptAsync(Guid cxCBillId, string username)
+    {
+        return await _paymentService.SendPaymentReceiptAsync(cxCBillId, username);
+    }
+
     public async Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username) =>
         await _paymentService.CancelCxCBillAsync(model, username);
 

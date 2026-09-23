@@ -97,6 +97,15 @@ public class CxCBillsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    //El comprobante de pago del cliente: se puede reenviar cuando lo pida
+    [HttpPost("{id:guid}/receipt")]
+    public async Task<IActionResult> SendReceiptAsync(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _paymentService.SendPaymentReceiptAsync(id, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     [HttpPost("cancel")]
     public async Task<IActionResult> CancelAsync(CxCBillCancelDto model)
     {

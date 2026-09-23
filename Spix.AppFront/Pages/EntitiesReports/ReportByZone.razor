@@ -1,0 +1,136 @@
+@page "/reports/by-zone"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesContratos
+@using Spix.DomainLogic.ItemsGeneric
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-map-marker-alt"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_Zone"]</h3>
+                <p>@Localizer["Report_ZoneSubtitle"]</p>
+            </div>
+        </div>
+
+        @* Estado, ciudad y zona: cada lista la arma el backend con lo que si existe *@
+        <div class="rp-filters">
+            <div class="rp-field">
+                <div class="rp-label">@Localizer["Report_State"]</div>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="States">
+                    <Body>
+                        <select class="form-select" value="@StateId" @onchange="StateChanged">
+                            @foreach (var item in States!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+            <div class="rp-field">
+                <div class="rp-label">@Localizer["Report_City"]</div>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="Cities">
+                    <Body>
+                        <select class="form-select" value="@CityId" @onchange="CityChanged">
+                            @foreach (var item in Cities!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+            <div class="rp-field">
+                <div class="rp-label">@Localizer["Report_ZoneName"]</div>
+                <GenericSelectWrapper Tmodel="GuidItemModel" Items="Zones">
+                    <Body>
+                        <select class="form-select" value="@ZoneId" @onchange="ZoneChanged">
+                            @foreach (var item in Zones!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+        </div>
+
+        @* Lo que factura la zona elegida *@
+        @if (Summary is not null)
+        {
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["Report_Contracts"]</div>
+                    <div class="rp-tile-value">@Summary.Contracts.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-money">
+                    <div class="rp-tile-label">@Localizer["Report_Monthly"]</div>
+                    <div class="rp-tile-value">@Summary.MonthlyTotal.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["Report_WithoutPlan"]</div>
+                    <div class="rp-tile-value">@Summary.WithoutPlan.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer["Corte_Server"]</th>
+                            <th>@Localizer[nameof(Resource.Plan)]</th>
+                            <th style="text-align:right">@Localizer["Report_Amount"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Contracts">
+                            <Loading>
+                                <tr>
+                                    <td colspan="4" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="4" class="idx-meta" style="text-align:center">@Localizer["Report_ZoneEmpty"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Contracts!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.ClientFullName</div>
+                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato</div>
+                                        </td>
+                                        <td>@item.ServerName</td>
+                                        <td>@item.PlanName</td>
+                                        <td style="text-align:right"><strong>@item.PlanPrice.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (TotalPages > 0)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
+    </div>
+</div>

@@ -133,6 +133,13 @@
                                                 <ButtonGeneric OnClick="() => ShowDetailsAsync(item)"
                                                                TooTip="@Localizer["CxC_Details"]"
                                                                Icon="fa fa-receipt" />
+                                                @if (item.TotalPayment > 0)
+                                                {
+                                                    @* El comprobante se puede reenviar cuando el cliente lo pida *@
+                                                    <ButtonGeneric OnClick="() => SendReceiptAsync(item.CxCBillId)"
+                                                                   TooTip="@Localizer["Receipt_Send"]"
+                                                                   Icon="fa fa-envelope" />
+                                                }
                                                 @if (!item.Paid && !item.Cancelled && item.Balance > 0)
                                                 {
                                                     <ButtonGeneric OnClick="() => ShowPayAsync(item.CxCBillId)"

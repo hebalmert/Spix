@@ -6046,6 +6046,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reports.
+        /// </summary>
+        public static string Menu_Reports {
+            get {
+                return ResourceManager.GetString("Menu_Reports", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Schedule.
         /// </summary>
         public static string Menu_Schedule {
@@ -8202,6 +8211,348 @@ namespace Spix.xLanguage.Resources {
         public static string RateLimitPerMinute {
             get {
                 return ResourceManager.GetString("RateLimitPerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amount received.
+        /// </summary>
+        public static string Receipt_Amount {
+            get {
+                return ResourceManager.GetString("Receipt_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payment receipt.
+        /// </summary>
+        public static string Receipt_Eyebrow {
+            get {
+                return ResourceManager.GetString("Receipt_Eyebrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The receipt could not be sent..
+        /// </summary>
+        public static string Receipt_Failed {
+            get {
+                return ResourceManager.GetString("Receipt_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This receipt was generated automatically. Please keep it..
+        /// </summary>
+        public static string Receipt_Footer {
+            get {
+                return ResourceManager.GetString("Receipt_Footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello.
+        /// </summary>
+        public static string Receipt_Hello {
+            get {
+                return ResourceManager.GetString("Receipt_Hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thank you. This is the receipt for the payment we just registered on your account..
+        /// </summary>
+        public static string Receipt_Intro {
+            get {
+                return ResourceManager.GetString("Receipt_Intro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The client does not have an email address registered..
+        /// </summary>
+        public static string Receipt_NoEmail {
+            get {
+                return ResourceManager.GetString("Receipt_NoEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This note has no payment to send a receipt for..
+        /// </summary>
+        public static string Receipt_NoPayment {
+            get {
+                return ResourceManager.GetString("Receipt_NoPayment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The corporation does not have an active default email provider..
+        /// </summary>
+        public static string Receipt_NoProvider {
+            get {
+                return ResourceManager.GetString("Receipt_NoProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paid.
+        /// </summary>
+        public static string Receipt_Paid {
+            get {
+                return ResourceManager.GetString("Receipt_Paid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send receipt.
+        /// </summary>
+        public static string Receipt_Send {
+            get {
+                return ResourceManager.GetString("Receipt_Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Receipt sent..
+        /// </summary>
+        public static string Receipt_Sent {
+            get {
+                return ResourceManager.GetString("Receipt_Sent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payment receipt {0}.
+        /// </summary>
+        public static string Receipt_Subject {
+            get {
+                return ResourceManager.GetString("Receipt_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We received your payment.
+        /// </summary>
+        public static string Receipt_Title {
+            get {
+                return ResourceManager.GetString("Receipt_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active contracts.
+        /// </summary>
+        public static string Report_Active {
+            get {
+                return ResourceManager.GetString("Report_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every active contract with its plan and what it bills per month..
+        /// </summary>
+        public static string Report_ActiveSubtitle {
+            get {
+                return ResourceManager.GetString("Report_ActiveSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string Report_Amount {
+            get {
+                return ResourceManager.GetString("Report_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to City.
+        /// </summary>
+        public static string Report_City {
+            get {
+                return ResourceManager.GetString("Report_City", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts.
+        /// </summary>
+        public static string Report_Contracts {
+            get {
+                return ResourceManager.GetString("Report_Contracts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monthly billing.
+        /// </summary>
+        public static string Report_Monthly {
+            get {
+                return ResourceManager.GetString("Report_Monthly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts by AP.
+        /// </summary>
+        public static string Report_Node {
+            get {
+                return ResourceManager.GetString("Report_Node", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose an AP to see its contracts..
+        /// </summary>
+        public static string Report_NodeEmpty {
+            get {
+                return ResourceManager.GetString("Report_NodeEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AP.
+        /// </summary>
+        public static string Report_NodeName {
+            get {
+                return ResourceManager.GetString("Report_NodeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contracts hanging from an AP, their plan and what that AP bills..
+        /// </summary>
+        public static string Report_NodeSubtitle {
+            get {
+                return ResourceManager.GetString("Report_NodeSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select a city].
+        /// </summary>
+        public static string Report_SelectCity {
+            get {
+                return ResourceManager.GetString("Report_SelectCity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select an AP].
+        /// </summary>
+        public static string Report_SelectNode {
+            get {
+                return ResourceManager.GetString("Report_SelectNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select a server].
+        /// </summary>
+        public static string Report_SelectServer {
+            get {
+                return ResourceManager.GetString("Report_SelectServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select a state].
+        /// </summary>
+        public static string Report_SelectState {
+            get {
+                return ResourceManager.GetString("Report_SelectState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select a zone].
+        /// </summary>
+        public static string Report_SelectZone {
+            get {
+                return ResourceManager.GetString("Report_SelectZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts by server.
+        /// </summary>
+        public static string Report_Server {
+            get {
+                return ResourceManager.GetString("Report_Server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose a server to see its contracts..
+        /// </summary>
+        public static string Report_ServerEmpty {
+            get {
+                return ResourceManager.GetString("Report_ServerEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contracts on a server, their plan and what that server bills..
+        /// </summary>
+        public static string Report_ServerSubtitle {
+            get {
+                return ResourceManager.GetString("Report_ServerSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string Report_State {
+            get {
+                return ResourceManager.GetString("Report_State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without plan.
+        /// </summary>
+        public static string Report_WithoutPlan {
+            get {
+                return ResourceManager.GetString("Report_WithoutPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contracts by zone.
+        /// </summary>
+        public static string Report_Zone {
+            get {
+                return ResourceManager.GetString("Report_Zone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose state, city and zone to see its contracts..
+        /// </summary>
+        public static string Report_ZoneEmpty {
+            get {
+                return ResourceManager.GetString("Report_ZoneEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zone.
+        /// </summary>
+        public static string Report_ZoneName {
+            get {
+                return ResourceManager.GetString("Report_ZoneName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many active contracts each zone has and how much it bills..
+        /// </summary>
+        public static string Report_ZoneSubtitle {
+            get {
+                return ResourceManager.GetString("Report_ZoneSubtitle", resourceCulture);
             }
         }
         

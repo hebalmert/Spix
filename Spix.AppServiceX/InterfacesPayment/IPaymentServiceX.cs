@@ -16,6 +16,8 @@ public interface IPaymentServiceX
 
     Task<ActionResponse<CxCBill>> PayCxCBillAsync(CxCBillPaymentDto model, string username);
 
+    Task<ActionResponse<bool>> SendPaymentReceiptAsync(Guid cxCBillId, string username);
+
     Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username);
 
     Task<ActionResponse<PrePaymentSummaryDto>> GetPrePaymentSummaryAsync(string username);

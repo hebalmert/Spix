@@ -18,6 +18,10 @@ using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
+using Spix.AppInfra.SecretProtection;
+using Spix.DomainLogic.EntitiesEmailDTO;
+using Spix.xNotification.Interfaces;
+using Spix.xNotification.Templates;
 using Spix.xLanguage.Resources;
 
 namespace Spix.AppService.ImplementPayment;
@@ -32,11 +36,14 @@ public class PaymentService : IPaymentService
     private readonly IStringLocalizer _localizer;
     private readonly IEnumMultilLanguageService _enumMultilLanguageService;
     private readonly IContractorPaymentService _contractorPaymentService;
+    private readonly IEmailDeliveryService _emailDeliveryService;
+    private readonly ISecretProtector _secretProtector;
 
     public PaymentService(DataContext context, IHttpContextAccessor httpContextAccessor,
         IUserHelper userHelper, ITransactionManager transactionManager, HttpErrorHandler httpErrorHandler,
         IStringLocalizer localizer, IEnumMultilLanguageService enumMultilLanguageService,
-        IContractorPaymentService contractorPaymentService)
+        IContractorPaymentService contractorPaymentService, IEmailDeliveryService emailDeliveryService,
+        ISecretProtector secretProtector)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
@@ -46,6 +53,8 @@ public class PaymentService : IPaymentService
         _localizer = localizer;
         _enumMultilLanguageService = enumMultilLanguageService;
         _contractorPaymentService = contractorPaymentService;
+        _emailDeliveryService = emailDeliveryService;
+        _secretProtector = secretProtector;
     }
 
     //El tablero de cuentas por cobrar: lo vivo y lo que entro en el mes. Solo agregados.
@@ -344,6 +353,153 @@ public class PaymentService : IPaymentService
         await _transactionManager.RollbackTransactionAsync();
         return new ActionResponse<T> { WasSuccess = false, Message = message };
     }
+
+    //El comprobante de pago que se le manda al cliente.
+    //
+    //Se envia DESPUES de confirmar el cobro, nunca dentro: si el correo falla, la plata ya
+    //se recibio y el pago no se puede caer por eso. Por lo mismo se puede reenviar cuando
+    //el cliente lo pida.
+    public async Task<ActionResponse<bool>> SendPaymentReceiptAsync(Guid cxCBillId, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<bool>();
+
+            var corporationId = Convert.ToInt32(user.CorporationId);
+
+            //La nota con lo que se le cobro y con lo que se le recibio
+            var bill = await _context.CxCBills
+                .AsNoTracking()
+                .Include(x => x.Client)
+                .Include(x => x.ContractClient)
+                .Include(x => x.CxCBillDetails)
+                .Include(x => x.Sell!)
+                    .ThenInclude(x => x.SellDetails)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(x => x.CxCBillId == cxCBillId && x.CorporationId == corporationId);
+
+            if (bill == null)
+                return Fail<bool>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            if (string.IsNullOrWhiteSpace(bill.Client?.Email))
+                return Fail<bool>(_localizer["Receipt_NoEmail"]);
+
+            //El ultimo pago recibido: es el que se comprueba
+            var pago = bill.CxCBillDetails?
+                .OrderByDescending(x => x.DatePayment)
+                .ThenByDescending(x => x.Payment)
+                .FirstOrDefault();
+
+            if (pago == null || pago.Payment <= 0)
+                return Fail<bool>(_localizer["Receipt_NoPayment"]);
+
+            var provider = await _context.EmailProviderSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.CorporationId == corporationId && x.Active && x.IsDefault);
+
+            if (provider == null)
+                return Fail<bool>(_localizer["Receipt_NoProvider"]);
+
+            //Los datos de quien emite el comprobante
+            var corporation = await _context.Corporations
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId)
+                .Select(x => new
+                {
+                    x.Name,
+                    x.NroDocument,
+                    x.Address,
+                    x.Phone,
+                    x.Imagen
+                })
+                .FirstOrDefaultAsync();
+
+            var lines = (bill.Sell?.SellDetails ?? new List<SellDetail>())
+                .Select(x => new PaymentReceiptLineModel
+                {
+                    Concept = x.Concept ?? string.Empty,
+                    Origin = x.Origin == "Plan" ? _localizer[nameof(Resource.Plan)].Value : _localizer["Sell_OriginService"].Value,
+                    Amount = x.TotalPrice.ToString("N2")
+                })
+                .ToList();
+
+            var body = PaymentReceiptEmailTemplate.Build(new PaymentReceiptEmailTemplateModel
+            {
+                Subject = _localizer["Receipt_Subject", bill.CollectionNote ?? string.Empty].Value,
+                Eyebrow = _localizer["Receipt_Eyebrow"].Value,
+                Title = _localizer["Receipt_Title"].Value,
+                Hello = _localizer["Receipt_Hello"].Value,
+                Introduction = _localizer["Receipt_Intro"].Value,
+                PaidBadge = _localizer["Receipt_Paid"].Value,
+                Footer = _localizer["Receipt_Footer"].Value,
+                AmountLabel = _localizer["Receipt_Amount"].Value,
+                NoteLabel = _localizer["CxCContractor_Note"].Value,
+                ContractLabel = _localizer[nameof(Resource.Contract)].Value,
+                DateLabel = _localizer[nameof(Resource.Date)].Value,
+                ConceptLabel = _localizer["Sell_Concept"].Value,
+                DebtLabel = _localizer["CxC_Debt"].Value,
+                DiscountLabel = _localizer["CxC_Discount"].Value,
+                BalanceLabel = _localizer["CxC_Balance"].Value,
+                ModeLabel = _localizer["Pay_Mode"].Value,
+                ReceivedByLabel = _localizer["CxC_ReceivedBy"].Value,
+                CorporationName = corporation?.Name,
+                CorporationDocument = corporation?.NroDocument,
+                CorporationAddress = corporation?.Address,
+                CorporationPhone = corporation?.Phone,
+                CorporationLogo = corporation?.Imagen,
+                ClientName = $"{bill.Client?.FirstName} {bill.Client?.LastName}".Trim(),
+                NoteNumber = bill.CollectionNote ?? string.Empty,
+                Contract = bill.ContractClient?.ControlContrato.ToString() ?? string.Empty,
+                Date = pago.DatePayment.ToString("dd/MM/yyyy"),
+                Debt = pago.Debt.ToString("N2"),
+                Discount = pago.Discount.ToString("N2"),
+                Payment = pago.Payment.ToString("N2"),
+                Balance = pago.Balance.ToString("N2"),
+                Mode = ModeName(pago.PaymentMode),
+                ReceivedBy = pago.UsuarioOwner ?? string.Empty,
+                HasDiscount = pago.Discount > 0,
+                Lines = lines
+            });
+
+            var envio = await _emailDeliveryService.SendAsync(new EmailDeliveryDTO
+            {
+                ProviderType = provider.ProviderType,
+                SendGridApiKey = _secretProtector.Unprotect(provider.SendGridApiKeyEncrypted),
+                SmtpHost = provider.SmtpHost,
+                SmtpPort = provider.SmtpPort ?? 0,
+                SmtpUseSsl = provider.SmtpUseSsl,
+                SmtpUser = provider.SmtpUser,
+                SmtpPassword = _secretProtector.Unprotect(provider.SmtpPasswordEncrypted),
+                FromEmail = provider.FromEmail,
+                FromName = provider.FromName,
+                To = bill.Client!.Email!,
+                NameTo = $"{bill.Client.FirstName} {bill.Client.LastName}".Trim(),
+                Subject = _localizer["Receipt_Subject", bill.CollectionNote ?? string.Empty].Value,
+                Body = body
+            });
+
+            if (!envio.IsSuccess)
+                return Fail<bool>(envio.Message ?? _localizer["Receipt_Failed"]);
+
+            return new ActionResponse<bool> { WasSuccess = true, Result = true };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
+    //El modo de pago, en palabras
+    private string ModeName(string? mode) => mode switch
+    {
+        "Cash" => _localizer["Pay_Cash"].Value,
+        "Card" => _localizer["Pay_Card"].Value,
+        "Transfer" => _localizer["Pay_Transfer"].Value,
+        "PrePayment" => _localizer["CxC_PrePayment"].Value,
+        _ => mode ?? string.Empty
+    };
 
     public async Task<ActionResponse<CxCBill>> CancelCxCBillAsync(CxCBillCancelDto model, string username)
     {

@@ -3343,4 +3343,121 @@
   <data name="Collection_Empty" xml:space="preserve">
     <value>Elija un tecnico y un periodo, y pulse Buscar.</value>
   </data>
+  <data name="Receipt_Subject" xml:space="preserve">
+    <value>Comprobante de pago {0}</value>
+  </data>
+  <data name="Receipt_Eyebrow" xml:space="preserve">
+    <value>Comprobante de pago</value>
+  </data>
+  <data name="Receipt_Title" xml:space="preserve">
+    <value>Recibimos tu pago</value>
+  </data>
+  <data name="Receipt_Hello" xml:space="preserve">
+    <value>Hola</value>
+  </data>
+  <data name="Receipt_Intro" xml:space="preserve">
+    <value>Gracias. Este es el comprobante del pago que acabamos de registrar en tu cuenta.</value>
+  </data>
+  <data name="Receipt_Paid" xml:space="preserve">
+    <value>Pagado</value>
+  </data>
+  <data name="Receipt_Amount" xml:space="preserve">
+    <value>Valor recibido</value>
+  </data>
+  <data name="Receipt_Footer" xml:space="preserve">
+    <value>Este comprobante se genero automaticamente. Consérvalo.</value>
+  </data>
+  <data name="Receipt_NoEmail" xml:space="preserve">
+    <value>El cliente no tiene correo registrado.</value>
+  </data>
+  <data name="Receipt_NoPayment" xml:space="preserve">
+    <value>Esta nota no tiene ningun pago que comprobar.</value>
+  </data>
+  <data name="Receipt_NoProvider" xml:space="preserve">
+    <value>La corporacion no tiene proveedor de correo activo por defecto.</value>
+  </data>
+  <data name="Receipt_Failed" xml:space="preserve">
+    <value>No se pudo enviar el comprobante.</value>
+  </data>
+  <data name="Receipt_Send" xml:space="preserve">
+    <value>Enviar comprobante</value>
+  </data>
+  <data name="Receipt_Sent" xml:space="preserve">
+    <value>Comprobante enviado.</value>
+  </data>
+  <data name="Menu_Reports" xml:space="preserve">
+    <value>Reportes</value>
+  </data>
+  <data name="Report_Active" xml:space="preserve">
+    <value>Contratos activos</value>
+  </data>
+  <data name="Report_ActiveSubtitle" xml:space="preserve">
+    <value>Cada contrato activo con su plan y lo que factura al mes.</value>
+  </data>
+  <data name="Report_Zone" xml:space="preserve">
+    <value>Contratos por zona</value>
+  </data>
+  <data name="Report_ZoneSubtitle" xml:space="preserve">
+    <value>Cuantos contratos activos tiene cada zona y cuanto factura.</value>
+  </data>
+  <data name="Report_Contracts" xml:space="preserve">
+    <value>Contratos</value>
+  </data>
+  <data name="Report_Monthly" xml:space="preserve">
+    <value>Facturacion mensual</value>
+  </data>
+  <data name="Report_WithoutPlan" xml:space="preserve">
+    <value>Sin plan</value>
+  </data>
+  <data name="Report_Amount" xml:space="preserve">
+    <value>Monto</value>
+  </data>
+  <data name="Report_SelectState" xml:space="preserve">
+    <value>[Seleccione un estado]</value>
+  </data>
+  <data name="Report_SelectCity" xml:space="preserve">
+    <value>[Seleccione una ciudad]</value>
+  </data>
+  <data name="Report_SelectZone" xml:space="preserve">
+    <value>[Seleccione una zona]</value>
+  </data>
+  <data name="Report_State" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Report_City" xml:space="preserve">
+    <value>Ciudad</value>
+  </data>
+  <data name="Report_ZoneEmpty" xml:space="preserve">
+    <value>Elija estado, ciudad y zona para ver sus contratos.</value>
+  </data>
+  <data name="Report_ZoneName" xml:space="preserve">
+    <value>Zona</value>
+  </data>
+  <data name="Report_SelectNode" xml:space="preserve">
+    <value>[Seleccione un AP]</value>
+  </data>
+  <data name="Report_SelectServer" xml:space="preserve">
+    <value>[Seleccione un servidor]</value>
+  </data>
+  <data name="Report_Node" xml:space="preserve">
+    <value>Contratos por AP</value>
+  </data>
+  <data name="Report_NodeName" xml:space="preserve">
+    <value>AP</value>
+  </data>
+  <data name="Report_NodeSubtitle" xml:space="preserve">
+    <value>Los contratos que cuelgan de un AP, su plan y lo que genera ese AP.</value>
+  </data>
+  <data name="Report_Server" xml:space="preserve">
+    <value>Contratos por servidor</value>
+  </data>
+  <data name="Report_ServerSubtitle" xml:space="preserve">
+    <value>Los contratos que estan en un servidor, su plan y lo que genera ese servidor.</value>
+  </data>
+  <data name="Report_NodeEmpty" xml:space="preserve">
+    <value>Elija un AP para ver sus contratos.</value>
+  </data>
+  <data name="Report_ServerEmpty" xml:space="preserve">
+    <value>Elija un servidor para ver sus contratos.</value>
+  </data>
 </root>

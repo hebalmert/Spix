@@ -1,0 +1,100 @@
+@page "/reports/active-contracts"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-file-contract"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_Active"]</h3>
+                <p>@Localizer["Report_ActiveSubtitle"]</p>
+            </div>
+        </div>
+
+        @* Los totales: lo cuenta la base *@
+        @if (Summary is not null)
+        {
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["Report_Contracts"]</div>
+                    <div class="rp-tile-value">@Summary.Contracts.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-money">
+                    <div class="rp-tile-label">@Localizer["Report_Monthly"]</div>
+                    <div class="rp-tile-value">@Summary.MonthlyTotal.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["Report_WithoutPlan"]</div>
+                    <div class="rp-tile-value">@Summary.WithoutPlan.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
+        <div class="idx-bar">
+            <div class="idx-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer["Report_ZoneName"]</th>
+                            <th>@Localizer["Corte_Server"]</th>
+                            <th>@Localizer[nameof(Resource.Plan)]</th>
+                            <th style="text-align:right">@Localizer["Report_Amount"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Contracts">
+                            <Loading>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Contracts!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.ClientFullName</div>
+                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato</div>
+                                        </td>
+                                        <td>@item.ZoneName</td>
+                                        <td>@item.ServerName</td>
+                                        <td>@item.PlanName</td>
+                                        <td style="text-align:right"><strong>@item.PlanPrice.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Contracts is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
+    </div>
+</div>

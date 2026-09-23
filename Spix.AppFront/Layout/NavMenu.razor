@@ -384,6 +384,36 @@
             </Authorized>
         </AuthorizeView>
 
+        <!-- REPORTES: lo que se consulta en pantalla, cada uno con su propio API -->
+        <AuthorizeView Roles="Administrator">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <button class="nav-link text-white d-flex align-items-center gap-2 w-100 nav-group"
+                            @onclick="() => Toggle(9)">
+                        <span class="fa fa-chart-column"></span>
+                        @Localizer["Menu_Reports"]
+                        <span class="ms-auto fa @(Expanded == 9 ? "fa-chevron-up" : "fa-chevron-down")"></span>
+                    </button>
+
+                    @if (Expanded == 9)
+                    {
+                        <NavLink class="nav-link text-white nav-subitem" href="/reports/active-contracts">
+                            <span class="fa fa-file-contract nav-subicon me-2"></span> @Localizer["Report_Active"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/reports/by-zone">
+                            <span class="fa fa-map-marker-alt nav-subicon me-2"></span> @Localizer["Report_Zone"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/reports/by-node">
+                            <span class="fa fa-tower-broadcast nav-subicon me-2"></span> @Localizer["Report_Node"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" href="/reports/by-server">
+                            <span class="fa fa-database nav-subicon me-2"></span> @Localizer["Report_Server"]
+                        </NavLink>
+                    }
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
         <!-- SISTEMA: quien entra y quien trabaja -->
         <AuthorizeView Roles="Administrator">
             <Authorized>
