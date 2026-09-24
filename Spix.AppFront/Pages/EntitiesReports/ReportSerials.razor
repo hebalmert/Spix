@@ -1,0 +1,95 @@
+@page "/reports/serials"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesInven
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-barcode"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_SerialsTitle"]</h3>
+                <p>@Localizer["Report_SerialsSubtitle"]</p>
+            </div>
+        </div>
+
+        @* Donde estan los equipos *@
+        @if (Summary is not null)
+        {
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["Report_SerialsTotal"]</div>
+                    <div class="rp-tile-value">@Summary.Total.ToString("N0")</div>
+                    <div class="rp-tile-foot">@Summary.Products.ToString("N0") @Localizer["Report_SerialsProducts"]</div>
+                </div>
+                <div class="rp-tile is-cash">
+                    <div class="rp-tile-label">@Localizer["Report_SerialsAvailable"]</div>
+                    <div class="rp-tile-value">@Summary.Available.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-bank">
+                    <div class="rp-tile-label">@Localizer["Report_SerialsOperative"]</div>
+                    <div class="rp-tile-value">@Summary.Operative.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["Report_SerialsDamaged"]</div>
+                    <div class="rp-tile-value">@Summary.Damaged.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
+        @* Cuanto hay de cada producto *@
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Report_Product"]</th>
+                            <th style="text-align:right">@Localizer["Report_SerialsAvailable"]</th>
+                            <th style="text-align:right">@Localizer["Report_SerialsOperative"]</th>
+                            <th style="text-align:right">@Localizer["Report_SerialsDamaged"]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Serials">
+                            <Loading>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Serials!)
+                                {
+                                    <tr>
+                                        <td><div class="idx-name">@item.ProductName</div></td>
+                                        <td style="text-align:right">@item.Available.ToString("N0")</td>
+                                        <td style="text-align:right">@item.Operative.ToString("N0")</td>
+                                        <td style="text-align:right">@item.Damaged.ToString("N0")</td>
+                                        <td style="text-align:right"><strong>@item.Total.ToString("N0")</strong></td>
+                                    </tr>
+                                }
+                                <tr class="rp-total">
+                                    <td>@Localizer[nameof(Resource.Total)]</td>
+                                    <td style="text-align:right">@Serials!.Sum(x => x.Available).ToString("N0")</td>
+                                    <td style="text-align:right">@Serials!.Sum(x => x.Operative).ToString("N0")</td>
+                                    <td style="text-align:right">@Serials!.Sum(x => x.Damaged).ToString("N0")</td>
+                                    <td style="text-align:right">@Serials!.Sum(x => x.Total).ToString("N0")</td>
+                                </tr>
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

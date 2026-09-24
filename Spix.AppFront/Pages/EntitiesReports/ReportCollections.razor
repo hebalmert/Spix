@@ -1,0 +1,129 @@
+@page "/reports/collections"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+@using Spix.Domain.EntitiesPayment
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-cash-register"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["ReportMoney_Title"]</h3>
+                <p>@Localizer["ReportMoney_Subtitle"]</p>
+            </div>
+        </div>
+
+        @* El periodo: hoy, esta semana, el mes... lo que se pida *@
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_From"]</div>
+                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+            </div>
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_To"]</div>
+                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
+
+        @* Lo que entro y como entro *@
+        @if (Summary is not null)
+        {
+            <div class="rp-section"><i class="fa fa-hand-holding-dollar"></i> @Localizer["ReportMoney_Collected"]</div>
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["Collection_Count"]</div>
+                    <div class="rp-tile-value">@Summary.Collections.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-money">
+                    <div class="rp-tile-label">@Localizer["Collection_Total"]</div>
+                    <div class="rp-tile-value">@Summary.Total.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-cash">
+                    <div class="rp-tile-label">@Localizer["Pay_Cash"]</div>
+                    <div class="rp-tile-value">@Summary.Cash.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-bank">
+                    <div class="rp-tile-label">@Localizer["Collection_Bank"]</div>
+                    <div class="rp-tile-value">@((Summary.Card + Summary.Transfer).ToString("N2"))</div>
+                </div>
+                <div class="rp-tile is-pre">
+                    <div class="rp-tile-label">@Localizer["CxC_PrePayment"]</div>
+                    <div class="rp-tile-value">@Summary.PrePayment.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-discount">
+                    <div class="rp-tile-label">@Localizer["ReportMoney_Exonerated"]</div>
+                    <div class="rp-tile-value">@Summary.Discount.ToString("N2")</div>
+                </div>
+            </div>
+        }
+
+        @* Quien recogio *@
+        @if (Collectors is not null && Collectors.Count > 0)
+        {
+            <div class="rp-section"><i class="fa fa-users"></i> @Localizer["ReportMoney_ByCollector"]</div>
+            <section class="idx-panel">
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Collection_Collector"]</th>
+                                <th style="text-align:right">@Localizer["Collection_Count"]</th>
+                                <th style="text-align:right">@Localizer["Collection_Total"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Collectors)
+                            {
+                                <tr>
+                                    <td><div class="idx-name">@item.Name</div></td>
+                                    <td style="text-align:right">@item.Collections.ToString("N0")</td>
+                                    <td style="text-align:right"><strong>@item.Total.ToString("N2")</strong></td>
+                                </tr>
+                            }
+                            <tr class="rp-total">
+                                <td>@Localizer[nameof(Resource.Total)]</td>
+                                <td style="text-align:right">@Collectors.Sum(x => x.Collections).ToString("N0")</td>
+                                <td style="text-align:right">@Collectors.Sum(x => x.Total).ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+
+        @* Lo que se emitio en el mismo periodo *@
+        @if (Notes is not null)
+        {
+            <div class="rp-section"><i class="fa fa-file-invoice"></i> @Localizer["ReportMoney_Notes"]</div>
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["ReportMoney_NotesCount"]</div>
+                    <div class="rp-tile-value">@Notes.Notes.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-issued">
+                    <div class="rp-tile-label">@Localizer["ReportMoney_Issued"]</div>
+                    <div class="rp-tile-value">@Notes.Issued.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-money">
+                    <div class="rp-tile-label">@Localizer["ReportMoney_CollectedAmount"]</div>
+                    <div class="rp-tile-value">@Notes.Collected.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["ReportMoney_Pending"]</div>
+                    <div class="rp-tile-value">@Notes.Pending.ToString("N2")</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -13,6 +13,9 @@ public class ReportActiveContractDto
 
     public string? NodeName { get; set; }
 
+    //Para cuando el reporte muestra todos, no solo los activos
+    public bool IsActive { get; set; }
+
     public string? PlanName { get; set; }
 
     public decimal PlanPrice { get; set; }

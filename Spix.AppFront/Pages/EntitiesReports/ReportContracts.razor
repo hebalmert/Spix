@@ -1,0 +1,94 @@
+@page "/reports/contracts"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-file-signature"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["ReportCt_Title"]</h3>
+                <p>@Localizer["ReportCt_Subtitle"]</p>
+            </div>
+        </div>
+
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_From"]</div>
+                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+            </div>
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_To"]</div>
+                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
+
+        @if (Summary is not null)
+        {
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["ReportCt_New"]</div>
+                    <div class="rp-tile-value">@Summary.NewContracts.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-money">
+                    <div class="rp-tile-label">@Localizer["ReportCt_Installed"]</div>
+                    <div class="rp-tile-value">@Summary.Installed.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-issued">
+                    <div class="rp-tile-label">@Localizer["ReportCt_Monthly"]</div>
+                    <div class="rp-tile-value">@Summary.MonthlyTotal.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["ReportCt_Pending"]</div>
+                    <div class="rp-tile-value">@((Summary.NewContracts - Summary.Installed).ToString("N0"))</div>
+                </div>
+            </div>
+        }
+
+        @* Que plan se llevaron *@
+        @if (Plans is not null && Plans.Count > 0)
+        {
+            <div class="rp-section"><i class="fa fa-sitemap"></i> @Localizer["ReportCt_TopPlans"]</div>
+            <section class="idx-panel">
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer[nameof(Resource.Plan)]</th>
+                                <th style="text-align:right">@Localizer["ReportOp_Times"]</th>
+                                <th style="text-align:right">@Localizer["ReportCt_Monthly"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Plans)
+                            {
+                                <tr>
+                                    <td><div class="idx-name">@item.Name</div></td>
+                                    <td style="text-align:right">@item.Times.ToString("N0")</td>
+                                    <td style="text-align:right"><strong>@item.MonthlyTotal.ToString("N2")</strong></td>
+                                </tr>
+                            }
+                            <tr class="rp-total">
+                                <td>@Localizer[nameof(Resource.Total)]</td>
+                                <td style="text-align:right">@Plans.Sum(x => x.Times).ToString("N0")</td>
+                                <td style="text-align:right">@Plans.Sum(x => x.MonthlyTotal).ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+    </div>
+</div>

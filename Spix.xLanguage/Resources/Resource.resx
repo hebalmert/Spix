@@ -3460,4 +3460,340 @@
   <data name="Report_ServerEmpty" xml:space="preserve">
     <value>Choose a server to see its contracts.</value>
   </data>
+  <data name="Report_Show" xml:space="preserve">
+    <value>Contracts</value>
+  </data>
+  <data name="Report_OnlyActive" xml:space="preserve">
+    <value>Only active</value>
+  </data>
+  <data name="Report_AllContracts" xml:space="preserve">
+    <value>All contracts</value>
+  </data>
+  <data name="Report_Inactive" xml:space="preserve">
+    <value>Not active</value>
+  </data>
+  <data name="Report_ActiveState" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ReportMoney_Title" xml:space="preserve">
+    <value>Collections of the period</value>
+  </data>
+  <data name="ReportMoney_Subtitle" xml:space="preserve">
+    <value>What came in between two dates, how it came in and who collected it.</value>
+  </data>
+  <data name="ReportMoney_Collected" xml:space="preserve">
+    <value>What came in</value>
+  </data>
+  <data name="ReportMoney_ByCollector" xml:space="preserve">
+    <value>Who collected it</value>
+  </data>
+  <data name="ReportMoney_Exonerated" xml:space="preserve">
+    <value>Exempted</value>
+  </data>
+  <data name="ReportMoney_Notes" xml:space="preserve">
+    <value>Notes issued in the period</value>
+  </data>
+  <data name="ReportMoney_NotesCount" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="ReportMoney_Issued" xml:space="preserve">
+    <value>Amount issued</value>
+  </data>
+  <data name="ReportMoney_CollectedAmount" xml:space="preserve">
+    <value>Amount collected</value>
+  </data>
+  <data name="ReportMoney_Pending" xml:space="preserve">
+    <value>Amount to collect</value>
+  </data>
+  <data name="Menu_ReportMoney" xml:space="preserve">
+    <value>Collections of the period</value>
+  </data>
+  <data name="ReportOp_Title" xml:space="preserve">
+    <value>Operation of the period</value>
+  </data>
+  <data name="ReportOp_Subtitle" xml:space="preserve">
+    <value>New contracts, technical services performed and which ones repeat the most.</value>
+  </data>
+  <data name="ReportOp_Growth" xml:space="preserve">
+    <value>What moved</value>
+  </data>
+  <data name="ReportOp_NewContracts" xml:space="preserve">
+    <value>New contracts</value>
+  </data>
+  <data name="ReportOp_NewActive" xml:space="preserve">
+    <value>Already active</value>
+  </data>
+  <data name="ReportOp_Services" xml:space="preserve">
+    <value>Services performed</value>
+  </data>
+  <data name="ReportOp_TopServices" xml:space="preserve">
+    <value>Most common services</value>
+  </data>
+  <data name="ReportOp_Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="ReportOp_Times" xml:space="preserve">
+    <value>Times</value>
+  </data>
+  <data name="Menu_ReportOperation" xml:space="preserve">
+    <value>Operation of the period</value>
+  </data>
+  <data name="ReportCt_Title" xml:space="preserve">
+    <value>Contracts of the period</value>
+  </data>
+  <data name="ReportCt_Subtitle" xml:space="preserve">
+    <value>How many contracts came in, how many got installed and what they add to the monthly billing.</value>
+  </data>
+  <data name="ReportCt_New" xml:space="preserve">
+    <value>Contracts signed</value>
+  </data>
+  <data name="ReportCt_Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="ReportCt_Monthly" xml:space="preserve">
+    <value>Monthly billing added</value>
+  </data>
+  <data name="ReportCt_Pending" xml:space="preserve">
+    <value>Pending installation</value>
+  </data>
+  <data name="ReportCt_TopPlans" xml:space="preserve">
+    <value>Most contracted plans</value>
+  </data>
+  <data name="ReportSv_Title" xml:space="preserve">
+    <value>Services of the period</value>
+  </data>
+  <data name="ReportSv_Subtitle" xml:space="preserve">
+    <value>How the requests came in, how they ended, which ones repeat and who solved them.</value>
+  </data>
+  <data name="ReportSv_Requested" xml:space="preserve">
+    <value>Requested</value>
+  </data>
+  <data name="ReportSv_Phone" xml:space="preserve">
+    <value>Solved by phone</value>
+  </data>
+  <data name="ReportSv_Scheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="ReportSv_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="ReportSv_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="ReportSv_Billed" xml:space="preserve">
+    <value>Billed</value>
+  </data>
+  <data name="ReportSv_Technicians" xml:space="preserve">
+    <value>Who solved them</value>
+  </data>
+  <data name="ReportSv_Solved" xml:space="preserve">
+    <value>Solved</value>
+  </data>
+  <data name="Menu_ReportContracts" xml:space="preserve">
+    <value>Contracts of the period</value>
+  </data>
+  <data name="Menu_ReportServices" xml:space="preserve">
+    <value>Services of the period</value>
+  </data>
+  <data name="Report_AgingTitle" xml:space="preserve">
+    <value>Receivables by age</value>
+  </data>
+  <data name="Report_AgingSubtitle" xml:space="preserve">
+    <value>The money still owed, split by how old the note is.</value>
+  </data>
+  <data name="Report_AgingBalance" xml:space="preserve">
+    <value>Total receivables</value>
+  </data>
+  <data name="Report_AgingCurrent" xml:space="preserve">
+    <value>Up to 30 days</value>
+  </data>
+  <data name="Report_Aging30" xml:space="preserve">
+    <value>31 to 60 days</value>
+  </data>
+  <data name="Report_Aging60" xml:space="preserve">
+    <value>61 to 90 days</value>
+  </data>
+  <data name="Report_Aging90" xml:space="preserve">
+    <value>Over 90 days</value>
+  </data>
+  <data name="Report_Notes" xml:space="preserve">
+    <value>notes</value>
+  </data>
+  <data name="Report_Days" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="Report_TopDebtors" xml:space="preserve">
+    <value>Who owes the most</value>
+  </data>
+  <data name="Report_CutOffTitle" xml:space="preserve">
+    <value>Cut-off effectiveness</value>
+  </data>
+  <data name="Report_CutOffSubtitle" xml:space="preserve">
+    <value>How many were cut off and how many paid because of it.</value>
+  </data>
+  <data name="Report_CutOffCut" xml:space="preserve">
+    <value>Cut off</value>
+  </data>
+  <data name="Report_CutOffRecovered" xml:space="preserve">
+    <value>Already paid</value>
+  </data>
+  <data name="Report_CutOffRate" xml:space="preserve">
+    <value>Effectiveness</value>
+  </data>
+  <data name="Report_CutOffReactivated" xml:space="preserve">
+    <value>Reactivated</value>
+  </data>
+  <data name="Report_CutOffStillDown" xml:space="preserve">
+    <value>Still down</value>
+  </data>
+  <data name="Report_CutOffZones" xml:space="preserve">
+    <value>By zone</value>
+  </data>
+  <data name="Report_ChurnTitle" xml:space="preserve">
+    <value>Contracts out of service</value>
+  </data>
+  <data name="Report_ChurnSubtitle" xml:space="preserve">
+    <value>Who is no longer paying and what that stopped billing.</value>
+  </data>
+  <data name="Report_ChurnTerminated" xml:space="preserve">
+    <value>Terminated</value>
+  </data>
+  <data name="Report_ChurnCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Report_ChurnSuspended" xml:space="preserve">
+    <value>Suspended today</value>
+  </data>
+  <data name="Report_ChurnLost" xml:space="preserve">
+    <value>Billing lost</value>
+  </data>
+  <data name="Report_ChurnZones" xml:space="preserve">
+    <value>Where they are leaving</value>
+  </data>
+  <data name="Report_ChurnNote" xml:space="preserve">
+    <value>This is how contracts stand today: the contract does not store the date it was terminated, so it cannot be counted by period.</value>
+  </data>
+  <data name="Report_SerialsTitle" xml:space="preserve">
+    <value>Serial inventory</value>
+  </data>
+  <data name="Report_SerialsSubtitle" xml:space="preserve">
+    <value>How many units of each product there are and where they are.</value>
+  </data>
+  <data name="Report_SerialsTotal" xml:space="preserve">
+    <value>Serials</value>
+  </data>
+  <data name="Report_SerialsAvailable" xml:space="preserve">
+    <value>In stock</value>
+  </data>
+  <data name="Report_SerialsOperative" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Report_SerialsDamaged" xml:space="preserve">
+    <value>Damaged</value>
+  </data>
+  <data name="Report_SerialsProducts" xml:space="preserve">
+    <value>products</value>
+  </data>
+  <data name="Report_Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="Report_CommissionsTitle" xml:space="preserve">
+    <value>Contractor commissions</value>
+  </data>
+  <data name="Report_CommissionsSubtitle" xml:space="preserve">
+    <value>What each contractor earned in the period and what is still owed.</value>
+  </data>
+  <data name="Report_Contractor" xml:space="preserve">
+    <value>Contractor</value>
+  </data>
+  <data name="Report_CommissionsCount" xml:space="preserve">
+    <value>Commissions</value>
+  </data>
+  <data name="Report_CommissionsBase" xml:space="preserve">
+    <value>Collected from clients</value>
+  </data>
+  <data name="Report_CommissionsTotal" xml:space="preserve">
+    <value>Earned</value>
+  </data>
+  <data name="Report_CommissionsPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Report_CommissionsBalance" xml:space="preserve">
+    <value>Still owed</value>
+  </data>
+  <data name="Report_AuditTitle" xml:space="preserve">
+    <value>Money log</value>
+  </data>
+  <data name="Report_AuditSubtitle" xml:space="preserve">
+    <value>Every money movement the system wrote down, newest first.</value>
+  </data>
+  <data name="Report_AuditEvent" xml:space="preserve">
+    <value>Movement</value>
+  </data>
+  <data name="Report_AuditDetail" xml:space="preserve">
+    <value>Detail</value>
+  </data>
+  <data name="Report_AuditUser" xml:space="preserve">
+    <value>Done by</value>
+  </data>
+  <data name="Report_AllEvents" xml:space="preserve">
+    <value>All movements</value>
+  </data>
+  <data name="PaymentEventType_PrePaymentCreated" xml:space="preserve">
+    <value>Advance payment created</value>
+  </data>
+  <data name="PaymentEventType_PrePaymentUpdated" xml:space="preserve">
+    <value>Advance payment changed</value>
+  </data>
+  <data name="PaymentEventType_PrePaymentDeleted" xml:space="preserve">
+    <value>Advance payment deleted</value>
+  </data>
+  <data name="PaymentEventType_PrePaymentApplied" xml:space="preserve">
+    <value>Advance payment applied</value>
+  </data>
+  <data name="PaymentEventType_ExoneratedCreated" xml:space="preserve">
+    <value>Exoneration created</value>
+  </data>
+  <data name="PaymentEventType_ExoneratedClosed" xml:space="preserve">
+    <value>Exoneration closed</value>
+  </data>
+  <data name="PaymentEventType_ExoneratedApplied" xml:space="preserve">
+    <value>Exoneration applied</value>
+  </data>
+  <data name="PaymentEventType_BillCreated" xml:space="preserve">
+    <value>Note issued</value>
+  </data>
+  <data name="PaymentEventType_BillCancelled" xml:space="preserve">
+    <value>Note cancelled</value>
+  </data>
+  <data name="PaymentEventType_PaymentReceived" xml:space="preserve">
+    <value>Payment received</value>
+  </data>
+  <data name="PaymentEventType_PaymentReversed" xml:space="preserve">
+    <value>Payment reversed</value>
+  </data>
+  <data name="PaymentEventType_ContractorAccrued" xml:space="preserve">
+    <value>Commission earned</value>
+  </data>
+  <data name="PaymentEventType_ContractorPaid" xml:space="preserve">
+    <value>Commission paid</value>
+  </data>
+  <data name="Menu_ReportAging" xml:space="preserve">
+    <value>Receivables by age</value>
+  </data>
+  <data name="Menu_ReportCutOff" xml:space="preserve">
+    <value>Cut-off effectiveness</value>
+  </data>
+  <data name="Menu_ReportChurn" xml:space="preserve">
+    <value>Out of service</value>
+  </data>
+  <data name="Menu_ReportSerials" xml:space="preserve">
+    <value>Serial inventory</value>
+  </data>
+  <data name="Menu_ReportCommissions" xml:space="preserve">
+    <value>Contractor commissions</value>
+  </data>
+  <data name="Menu_ReportAudit" xml:space="preserve">
+    <value>Money log</value>
+  </data>
 </root>

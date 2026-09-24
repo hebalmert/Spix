@@ -3,6 +3,7 @@
 @attribute [Authorize(Roles = "Administrator")]
 
 @using Spix.Domain.EntitiesContratos
+@using Spix.DomainLogic.ItemsGeneric
 
 <div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
@@ -35,7 +36,21 @@
             </div>
         }
 
+        @* El estado y el buscador comparten la linea *@
         <div class="idx-bar">
+            <div class="rp-inline">
+                <div class="rp-label">@Localizer["Report_Show"]</div>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="States">
+                    <Body>
+                        <select class="form-select" value="@StateId" @onchange="StateChanged">
+                            @foreach (var item in States!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
             <div class="idx-search">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
@@ -73,7 +88,12 @@
                                     <tr>
                                         <td>
                                             <div class="idx-name">@item.ClientFullName</div>
-                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato</div>
+                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato
+                                                @if (!item.IsActive)
+                                                {
+                                                    <span class="rp-tag">@Localizer["Report_Inactive"]</span>
+                                                }
+                                            </div>
                                         </td>
                                         <td>@item.ZoneName</td>
                                         <td>@item.ServerName</td>

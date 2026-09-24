@@ -16,14 +16,14 @@ public class ReportServiceX : IReportServiceX
         _reportService = reportService;
     }
 
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetActiveSummaryAsync(string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetActiveSummaryAsync(int stateId, string username)
     {
-        return await _reportService.GetActiveSummaryAsync(username);
+        return await _reportService.GetActiveSummaryAsync(stateId, username);
     }
 
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetActiveContractsAsync(PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetActiveContractsAsync(int stateId, PaginationDTO pagination, string username)
     {
-        return await _reportService.GetActiveContractsAsync(pagination, username);
+        return await _reportService.GetActiveContractsAsync(stateId, pagination, username);
     }
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatesAsync(string username)
@@ -41,14 +41,19 @@ public class ReportServiceX : IReportServiceX
         return await _reportService.ComboZonesAsync(cityId, username);
     }
 
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetZoneSummaryAsync(Guid zoneId, string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetZoneSummaryAsync(Guid zoneId, int stateId, string username)
     {
-        return await _reportService.GetZoneSummaryAsync(zoneId, username);
+        return await _reportService.GetZoneSummaryAsync(zoneId, stateId, username);
     }
 
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetZoneContractsAsync(Guid zoneId, PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetZoneContractsAsync(Guid zoneId, int stateId, PaginationDTO pagination, string username)
     {
-        return await _reportService.GetZoneContractsAsync(zoneId, pagination, username);
+        return await _reportService.GetZoneContractsAsync(zoneId, stateId, pagination, username);
+    }
+
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboContractStatesAsync(string username)
+    {
+        return await _reportService.ComboContractStatesAsync(username);
     }
 
     public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboNodesAsync(string username)
@@ -61,23 +66,23 @@ public class ReportServiceX : IReportServiceX
         return await _reportService.ComboServersAsync(username);
     }
 
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetNodeSummaryAsync(Guid nodeId, string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetNodeSummaryAsync(Guid nodeId, int stateId, string username)
     {
-        return await _reportService.GetNodeSummaryAsync(nodeId, username);
+        return await _reportService.GetNodeSummaryAsync(nodeId, stateId, username);
     }
 
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetNodeContractsAsync(Guid nodeId, PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetNodeContractsAsync(Guid nodeId, int stateId, PaginationDTO pagination, string username)
     {
-        return await _reportService.GetNodeContractsAsync(nodeId, pagination, username);
+        return await _reportService.GetNodeContractsAsync(nodeId, stateId, pagination, username);
     }
 
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetServerSummaryAsync(Guid serverId, string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetServerSummaryAsync(Guid serverId, int stateId, string username)
     {
-        return await _reportService.GetServerSummaryAsync(serverId, username);
+        return await _reportService.GetServerSummaryAsync(serverId, stateId, username);
     }
 
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetServerContractsAsync(Guid serverId, PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetServerContractsAsync(Guid serverId, int stateId, PaginationDTO pagination, string username)
     {
-        return await _reportService.GetServerContractsAsync(serverId, pagination, username);
+        return await _reportService.GetServerContractsAsync(serverId, stateId, pagination, username);
     }
 }

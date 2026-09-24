@@ -1,0 +1,137 @@
+@page "/reports/services"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-screwdriver-wrench"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["ReportSv_Title"]</h3>
+                <p>@Localizer["ReportSv_Subtitle"]</p>
+            </div>
+        </div>
+
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_From"]</div>
+                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+            </div>
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_To"]</div>
+                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
+
+        @* Como entraron y como terminaron *@
+        @if (Summary is not null)
+        {
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["ReportSv_Requested"]</div>
+                    <div class="rp-tile-value">@Summary.Requested.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-phone">
+                    <div class="rp-tile-label">@Localizer["ReportSv_Phone"]</div>
+                    <div class="rp-tile-value">@Summary.PhoneResolved.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-issued">
+                    <div class="rp-tile-label">@Localizer["ReportSv_Scheduled"]</div>
+                    <div class="rp-tile-value">@Summary.Scheduled.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-money">
+                    <div class="rp-tile-label">@Localizer["ReportSv_Completed"]</div>
+                    <div class="rp-tile-value">@Summary.Completed.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["ReportSv_Cancelled"]</div>
+                    <div class="rp-tile-value">@Summary.Cancelled.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-cash">
+                    <div class="rp-tile-label">@Localizer["ReportSv_Billed"]</div>
+                    <div class="rp-tile-value">@Summary.Billed.ToString("N2")</div>
+                </div>
+            </div>
+        }
+
+        @* Que fue lo que mas se hizo *@
+        @if (Services is not null && Services.Count > 0)
+        {
+            <div class="rp-section"><i class="fa fa-list"></i> @Localizer["ReportOp_TopServices"]</div>
+            <section class="idx-panel">
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["ReportOp_Service"]</th>
+                                <th style="text-align:right">@Localizer["ReportOp_Times"]</th>
+                                <th style="text-align:right">@Localizer["Report_Amount"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Services)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="idx-name">@item.Name</div>
+                                        <div class="idx-meta">@item.CategoryName</div>
+                                    </td>
+                                    <td style="text-align:right">@item.Times.ToString("N0")</td>
+                                    <td style="text-align:right"><strong>@item.Total.ToString("N2")</strong></td>
+                                </tr>
+                            }
+                            <tr class="rp-total">
+                                <td>@Localizer[nameof(Resource.Total)]</td>
+                                <td style="text-align:right">@Services.Sum(x => x.Times).ToString("N0")</td>
+                                <td style="text-align:right">@Services.Sum(x => x.Total).ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+
+        @* Quien los resolvio *@
+        @if (Technicians is not null && Technicians.Count > 0)
+        {
+            <div class="rp-section"><i class="fa fa-user-gear"></i> @Localizer["ReportSv_Technicians"]</div>
+            <section class="idx-panel">
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Menu_Technicians"]</th>
+                                <th style="text-align:right">@Localizer["ReportSv_Solved"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Technicians)
+                            {
+                                <tr>
+                                    <td><div class="idx-name">@item.Name</div></td>
+                                    <td style="text-align:right"><strong>@item.Services.ToString("N0")</strong></td>
+                                </tr>
+                            }
+                            <tr class="rp-total">
+                                <td>@Localizer[nameof(Resource.Total)]</td>
+                                <td style="text-align:right">@Technicians.Sum(x => x.Services).ToString("N0")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+    </div>
+</div>

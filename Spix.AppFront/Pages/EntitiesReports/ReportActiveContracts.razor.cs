@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -19,8 +21,12 @@ public partial class ReportActiveContracts
     private const int PageSize = 20;
 
     private List<ReportActiveContractDto>? Contracts { get; set; }
+    private List<IntItemModel>? States { get; set; }
     private ReportActiveSummaryDto? Summary { get; set; }
     private string Filter { get; set; } = string.Empty;
+
+    //Arranca mostrando los activos
+    private int StateId = (int)ContractState.Active;
     private int CurrentPage = 1;
     private int TotalPages;
 
@@ -29,20 +35,24 @@ public partial class ReportActiveContracts
         if (!firstRender)
             return;
 
+        var estados = await _repository.GetAsync<List<IntItemModel>>($"{BaseUrl}/combocontractstates");
+        if (!await _responseHandler.HandleErrorAsync(estados))
+            States = estados.Response ?? new();
+
         await LoadSummaryAsync();
         await LoadAsync();
     }
 
     private async Task LoadSummaryAsync()
     {
-        var responseHttp = await _repository.GetAsync<ReportActiveSummaryDto>($"{BaseUrl}/active/summary");
+        var responseHttp = await _repository.GetAsync<ReportActiveSummaryDto>($"{BaseUrl}/active/summary?stateid={StateId}");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
             Summary = responseHttp.Response;
     }
 
     private async Task LoadAsync(int page = 1)
     {
-        var url = $"{BaseUrl}/active?page={page}&recordsnumber={PageSize}";
+        var url = $"{BaseUrl}/active?page={page}&recordsnumber={PageSize}&stateid={StateId}";
         if (!string.IsNullOrWhiteSpace(Filter))
             url += $"&filter={Uri.EscapeDataString(Filter)}";
 
@@ -56,6 +66,15 @@ public partial class ReportActiveContracts
         Contracts = responseHttp.Response;
         TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
         await InvokeAsync(StateHasChanged);
+    }
+
+    //Cambiar el estado vuelve a preguntar
+    private async Task StateChanged(ChangeEventArgs e)
+    {
+        StateId = int.TryParse(e.Value?.ToString(), out var id) ? id : 0;
+        CurrentPage = 1;
+        await LoadSummaryAsync();
+        await LoadAsync();
     }
 
     private async Task SetFilterValue(string value)

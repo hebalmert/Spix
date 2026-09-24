@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.UserHelper;
@@ -27,23 +28,26 @@ public class ReportService : IReportService
     private readonly IUserHelper _userHelper;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IStringLocalizer _localizer;
+    private readonly IEnumMultilLanguageService _enumMultilLanguageService;
 
     public ReportService(
         DataContext context,
         IHttpContextAccessor httpContextAccessor,
         IUserHelper userHelper,
         HttpErrorHandler httpErrorHandler,
-        IStringLocalizer localizer)
+        IStringLocalizer localizer,
+        IEnumMultilLanguageService enumMultilLanguageService)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
         _userHelper = userHelper;
         _httpErrorHandler = httpErrorHandler;
         _localizer = localizer;
+        _enumMultilLanguageService = enumMultilLanguageService;
     }
 
     //Los totales del reporte: cuantos contratos activos y cuanto suman sus planes
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetActiveSummaryAsync(string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetActiveSummaryAsync(int stateId, string username)
     {
         try
         {
@@ -54,7 +58,7 @@ public class ReportService : IReportService
             var corporationId = Convert.ToInt32(user.CorporationId);
 
             //Una sola pasada: los tres numeros salen del mismo recorrido
-            var summary = await ActiveQuery(corporationId)
+            var summary = await ActiveQuery(corporationId, stateId)
                 .Select(x => new
                 {
                     Price = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault()
@@ -77,7 +81,7 @@ public class ReportService : IReportService
     }
 
     //Los contratos activos con su plan y su monto, pagina por pagina
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetActiveContractsAsync(PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetActiveContractsAsync(int stateId, PaginationDTO pagination, string username)
     {
         try
         {
@@ -87,7 +91,7 @@ public class ReportService : IReportService
 
             var corporationId = Convert.ToInt32(user.CorporationId);
 
-            var queryable = ActiveQuery(corporationId)
+            var queryable = ActiveQuery(corporationId, stateId)
                 .Select(x => new ReportActiveContractDto
                 {
                     ControlContrato = x.ControlContrato,
@@ -95,7 +99,8 @@ public class ReportService : IReportService
                     ZoneName = x.Zone!.ZoneName,
                     ServerName = x.ContractServers!.Select(s => s.Server!.ServerName).FirstOrDefault(),
                     PlanName = x.ContractPlans!.Select(p => p.Plan!.PlanName).FirstOrDefault(),
-                    PlanPrice = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault() ?? 0
+                    PlanPrice = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault() ?? 0,
+                    IsActive = x.ContractState == ContractState.Active
                 });
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -203,7 +208,7 @@ public class ReportService : IReportService
     }
 
     //Lo que factura esa zona: cuantos contratos activos y cuanto suman sus planes
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetZoneSummaryAsync(Guid zoneId, string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetZoneSummaryAsync(Guid zoneId, int stateId, string username)
     {
         try
         {
@@ -213,7 +218,7 @@ public class ReportService : IReportService
 
             var corporationId = Convert.ToInt32(user.CorporationId);
 
-            var summary = await ActiveQuery(corporationId)
+            var summary = await ActiveQuery(corporationId, stateId)
                 .Where(x => x.ZoneId == zoneId)
                 .Select(x => new
                 {
@@ -237,7 +242,7 @@ public class ReportService : IReportService
     }
 
     //Los contratos activos de esa zona, pagina por pagina
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetZoneContractsAsync(Guid zoneId, PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetZoneContractsAsync(Guid zoneId, int stateId, PaginationDTO pagination, string username)
     {
         try
         {
@@ -247,7 +252,7 @@ public class ReportService : IReportService
 
             var corporationId = Convert.ToInt32(user.CorporationId);
 
-            var queryable = ActiveQuery(corporationId)
+            var queryable = ActiveQuery(corporationId, stateId)
                 .Where(x => x.ZoneId == zoneId)
                 .Select(x => new ReportActiveContractDto
                 {
@@ -256,7 +261,8 @@ public class ReportService : IReportService
                     ZoneName = x.Zone!.ZoneName,
                     ServerName = x.ContractServers!.Select(s => s.Server!.ServerName).FirstOrDefault(),
                     PlanName = x.ContractPlans!.Select(p => p.Plan!.PlanName).FirstOrDefault(),
-                    PlanPrice = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault() ?? 0
+                    PlanPrice = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault() ?? 0,
+                    IsActive = x.ContractState == ContractState.Active
                 });
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
@@ -270,6 +276,33 @@ public class ReportService : IReportService
         catch (Exception ex)
         {
             return await _httpErrorHandler.HandleErrorAsync<IEnumerable<ReportActiveContractDto>>(ex);
+        }
+    }
+
+    //Los estados del contrato, con Todos al frente. La lista la arma el backend con el
+    //traductor de enums: la pantalla solo la pinta.
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboContractStatesAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+                return AuthFail<IEnumerable<IntItemModel>>();
+
+            //Solo los tres estados que puede tener un contrato ya instalado: borradores,
+            //anulados y retirados no cuelgan de ningun equipo.
+            var list = _enumMultilLanguageService.GetEnumSelectList<ContractState>()
+                .Where(x => EstadosDelReporte.Contains((ContractState)x.Value))
+                .ToList();
+
+            //El neutro se reinserta: al filtrar la lista se habia ido con el resto
+            list.Insert(0, new IntItemModel { Value = 0, Name = _localizer["Report_AllContracts"] });
+
+            return new ActionResponse<IEnumerable<IntItemModel>> { WasSuccess = true, Result = list };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
         }
     }
 
@@ -326,31 +359,31 @@ public class ReportService : IReportService
     }
 
     //Lo que genera un AP: cuantos contratos activos cuelgan de el y cuanto suman
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetNodeSummaryAsync(Guid nodeId, string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetNodeSummaryAsync(Guid nodeId, int stateId, string username)
     {
-        return await SummaryAsync(x => x.ContractNodes!.Any(n => n.NodeId == nodeId), username);
+        return await SummaryAsync(x => x.ContractNodes!.Any(n => n.NodeId == nodeId), stateId, username);
     }
 
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetNodeContractsAsync(Guid nodeId, PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetNodeContractsAsync(Guid nodeId, int stateId, PaginationDTO pagination, string username)
     {
-        return await ContractsAsync(x => x.ContractNodes!.Any(n => n.NodeId == nodeId), pagination, username);
+        return await ContractsAsync(x => x.ContractNodes!.Any(n => n.NodeId == nodeId), stateId, pagination, username);
     }
 
     //Lo mismo para un servidor
-    public async Task<ActionResponse<ReportActiveSummaryDto>> GetServerSummaryAsync(Guid serverId, string username)
+    public async Task<ActionResponse<ReportActiveSummaryDto>> GetServerSummaryAsync(Guid serverId, int stateId, string username)
     {
-        return await SummaryAsync(x => x.ContractServers!.Any(s => s.ServerId == serverId), username);
+        return await SummaryAsync(x => x.ContractServers!.Any(s => s.ServerId == serverId), stateId, username);
     }
 
-    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetServerContractsAsync(Guid serverId, PaginationDTO pagination, string username)
+    public async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> GetServerContractsAsync(Guid serverId, int stateId, PaginationDTO pagination, string username)
     {
-        return await ContractsAsync(x => x.ContractServers!.Any(s => s.ServerId == serverId), pagination, username);
+        return await ContractsAsync(x => x.ContractServers!.Any(s => s.ServerId == serverId), stateId, pagination, username);
     }
 
     //Los tres reportes de detalle son el mismo, solo cambia por donde se filtra: la zona,
     //el AP o el servidor. Por eso el filtro entra como parametro y no se repite el codigo.
     private async Task<ActionResponse<ReportActiveSummaryDto>> SummaryAsync(
-        System.Linq.Expressions.Expression<Func<ContractClient, bool>> filtro, string username)
+        System.Linq.Expressions.Expression<Func<ContractClient, bool>> filtro, int stateId, string username)
     {
         try
         {
@@ -358,7 +391,7 @@ public class ReportService : IReportService
             if (user == null)
                 return AuthFail<ReportActiveSummaryDto>();
 
-            var summary = await ActiveQuery(Convert.ToInt32(user.CorporationId))
+            var summary = await ActiveQuery(Convert.ToInt32(user.CorporationId), stateId)
                 .Where(filtro)
                 .Select(x => new
                 {
@@ -382,7 +415,7 @@ public class ReportService : IReportService
     }
 
     private async Task<ActionResponse<IEnumerable<ReportActiveContractDto>>> ContractsAsync(
-        System.Linq.Expressions.Expression<Func<ContractClient, bool>> filtro, PaginationDTO pagination, string username)
+        System.Linq.Expressions.Expression<Func<ContractClient, bool>> filtro, int stateId, PaginationDTO pagination, string username)
     {
         try
         {
@@ -390,7 +423,7 @@ public class ReportService : IReportService
             if (user == null)
                 return AuthFail<IEnumerable<ReportActiveContractDto>>();
 
-            var queryable = ActiveQuery(Convert.ToInt32(user.CorporationId))
+            var queryable = ActiveQuery(Convert.ToInt32(user.CorporationId), stateId)
                 .Where(filtro)
                 .Select(x => new ReportActiveContractDto
                 {
@@ -400,7 +433,8 @@ public class ReportService : IReportService
                     ServerName = x.ContractServers!.Select(s => s.Server!.ServerName).FirstOrDefault(),
                     NodeName = x.ContractNodes!.Select(n => n.Node!.NodesName).FirstOrDefault(),
                     PlanName = x.ContractPlans!.Select(p => p.Plan!.PlanName).FirstOrDefault(),
-                    PlanPrice = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault() ?? 0
+                    PlanPrice = x.ContractPlans!.Select(p => (decimal?)p.Plan!.Price).FirstOrDefault() ?? 0,
+                    IsActive = x.ContractState == ContractState.Active
                 });
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
@@ -417,11 +451,23 @@ public class ReportService : IReportService
         }
     }
 
-    //La base de los tres reportes: los contratos activos de la corporacion
-    private IQueryable<ContractClient> ActiveQuery(int corporationId) =>
+    //La base de los reportes. Con stateId en cero entran todos los contratos; con un
+    //estado, solo los de ese estado: asi se ve cuantos hay activos, suspendidos o exentos.
+    private IQueryable<ContractClient> ActiveQuery(int corporationId, int stateId) =>
         _context.ContractClients
             .AsNoTracking()
-            .Where(x => x.CorporationId == corporationId && x.ContractState == ContractState.Active);
+            .Where(x => x.CorporationId == corporationId &&
+                        (stateId == 0
+                            ? EstadosDelReporte.Contains(x.ContractState)
+                            : (int)x.ContractState == stateId));
+
+    //Los unicos estados que tienen sentido en un reporte de servicio instalado
+    private static readonly ContractState[] EstadosDelReporte =
+    [
+        ContractState.Active,
+        ContractState.Suspended,
+        ContractState.Exempt
+    ];
 
     private ActionResponse<T> AuthFail<T>() => new()
     {

@@ -1,0 +1,105 @@
+@page "/reports/cutoff"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesContratos
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-plug-circle-xmark"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_CutOffTitle"]</h3>
+                <p>@Localizer["Report_CutOffSubtitle"]</p>
+            </div>
+        </div>
+
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_From"]</div>
+                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+            </div>
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_To"]</div>
+                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
+
+        @* Cuantos se cortaron y cuantos reaccionaron *@
+        @if (Summary is not null)
+        {
+            <div class="rp-board">
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["Report_CutOffCut"]</div>
+                    <div class="rp-tile-value">@Summary.Cut.ToString("N0")</div>
+                    <div class="rp-tile-foot">@Summary.CutAmount.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-cash">
+                    <div class="rp-tile-label">@Localizer["Report_CutOffRecovered"]</div>
+                    <div class="rp-tile-value">@Summary.Recovered.ToString("N0")</div>
+                    <div class="rp-tile-foot">@Summary.RecoveredAmount.ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-bank">
+                    <div class="rp-tile-label">@Localizer["Report_CutOffRate"]</div>
+                    <div class="rp-tile-value">@Rate.ToString("N0") %</div>
+                </div>
+                <div class="rp-tile is-pre">
+                    <div class="rp-tile-label">@Localizer["Report_CutOffReactivated"]</div>
+                    <div class="rp-tile-value">@Summary.Reactivated.ToString("N0")</div>
+                </div>
+                <div class="rp-tile is-warm">
+                    <div class="rp-tile-label">@Localizer["Report_CutOffStillDown"]</div>
+                    <div class="rp-tile-value">@Summary.StillDown.ToString("N0")</div>
+                    <div class="rp-tile-foot">@Summary.StillDownAmount.ToString("N2")</div>
+                </div>
+            </div>
+        }
+
+        @* Donde se corto mas y donde respondieron mejor *@
+        @if (Zones is not null && Zones.Count > 0)
+        {
+            <div class="rp-section"><i class="fa fa-location-dot"></i> @Localizer["Report_CutOffZones"]</div>
+            <section class="idx-panel">
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Report_ZoneName"]</th>
+                                <th style="text-align:right">@Localizer["Report_CutOffCut"]</th>
+                                <th style="text-align:right">@Localizer["Report_CutOffRecovered"]</th>
+                                <th style="text-align:right">@Localizer["Report_Amount"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Zones)
+                            {
+                                <tr>
+                                    <td><div class="idx-name">@item.Name</div></td>
+                                    <td style="text-align:right">@item.Cut.ToString("N0")</td>
+                                    <td style="text-align:right">@item.Recovered.ToString("N0")</td>
+                                    <td style="text-align:right"><strong>@item.Amount.ToString("N2")</strong></td>
+                                </tr>
+                            }
+                            <tr class="rp-total">
+                                <td>@Localizer[nameof(Resource.Total)]</td>
+                                <td style="text-align:right">@Zones.Sum(x => x.Cut).ToString("N0")</td>
+                                <td style="text-align:right">@Zones.Sum(x => x.Recovered).ToString("N0")</td>
+                                <td style="text-align:right">@Zones.Sum(x => x.Amount).ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+    </div>
+</div>

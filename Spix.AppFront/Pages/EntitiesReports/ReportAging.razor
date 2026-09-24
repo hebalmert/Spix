@@ -1,0 +1,100 @@
+@page "/reports/aging"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesPayment
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-hourglass-half"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_AgingTitle"]</h3>
+                <p>@Localizer["Report_AgingSubtitle"]</p>
+            </div>
+        </div>
+
+        @* La escalera de la cartera: mientras mas a la derecha, mas dificil de cobrar *@
+        @if (Summary is not null)
+        {
+            <div class="rp-board">
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["Report_AgingBalance"]</div>
+                    <div class="rp-tile-value">@Summary.Balance.ToString("N2")</div>
+                    <div class="rp-tile-foot">@Summary.Notes.ToString("N0") @Localizer["Report_Notes"]</div>
+                </div>
+                <div class="rp-tile is-cash">
+                    <div class="rp-tile-label">@Localizer["Report_AgingCurrent"]</div>
+                    <div class="rp-tile-value">@Summary.Current.ToString("N2")</div>
+                    <div class="rp-tile-foot">@Summary.NotesCurrent.ToString("N0") @Localizer["Report_Notes"]</div>
+                </div>
+                <div class="rp-tile is-issued">
+                    <div class="rp-tile-label">@Localizer["Report_Aging30"]</div>
+                    <div class="rp-tile-value">@Summary.Days30.ToString("N2")</div>
+                    <div class="rp-tile-foot">@Summary.Notes30.ToString("N0") @Localizer["Report_Notes"]</div>
+                </div>
+                <div class="rp-tile is-warm">
+                    <div class="rp-tile-label">@Localizer["Report_Aging60"]</div>
+                    <div class="rp-tile-value">@Summary.Days60.ToString("N2")</div>
+                    <div class="rp-tile-foot">@Summary.Notes60.ToString("N0") @Localizer["Report_Notes"]</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["Report_Aging90"]</div>
+                    <div class="rp-tile-value">@Summary.Days90.ToString("N2")</div>
+                    <div class="rp-tile-foot">@Summary.Notes90.ToString("N0") @Localizer["Report_Notes"]</div>
+                </div>
+            </div>
+        }
+
+        @* Los que mas deben: la lista corta, para salir a cobrar *@
+        <div class="rp-section"><i class="fa fa-user-clock"></i> @Localizer["Report_TopDebtors"]</div>
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer["Report_ZoneName"]</th>
+                            <th style="text-align:right">@Localizer["Report_Notes"]</th>
+                            <th style="text-align:right">@Localizer["Report_Days"]</th>
+                            <th style="text-align:right">@Localizer["Report_Amount"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Debtors">
+                            <Loading>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Debtors!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.ClientFullName</div>
+                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato</div>
+                                        </td>
+                                        <td>@item.ZoneName</td>
+                                        <td style="text-align:right">@item.Notes.ToString("N0")</td>
+                                        <td style="text-align:right">@item.Days.ToString("N0")</td>
+                                        <td style="text-align:right"><strong>@item.Balance.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

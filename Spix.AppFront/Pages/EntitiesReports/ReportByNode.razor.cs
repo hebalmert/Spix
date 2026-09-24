@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -19,15 +20,23 @@ public partial class ReportByNode
     private const int PageSize = 20;
 
     private List<GuidItemModel>? Nodes;
+    private List<IntItemModel>? States;
     private List<ReportActiveContractDto>? Contracts = new();
     private ReportActiveSummaryDto? Summary;
 
     private Guid NodeId;
+
+    //Arranca mostrando los activos, que es lo que se mira casi siempre
+    private int StateId = (int)ContractState.Active;
     private int CurrentPage = 1;
     private int TotalPages;
 
     protected override async Task OnInitializedAsync()
     {
+        var estados = await _repository.GetAsync<List<IntItemModel>>($"{BaseUrl}/combocontractstates");
+        if (!await _responseHandler.HandleErrorAsync(estados))
+            States = estados.Response ?? new();
+
         var responseHttp = await _repository.GetAsync<List<GuidItemModel>>($"{BaseUrl}/combonodes");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
             Nodes = responseHttp.Response ?? new();
@@ -50,9 +59,22 @@ public partial class ReportByNode
         await LoadContractsAsync();
     }
 
+    //Cambiar el estado vuelve a preguntar, con el mismo AP elegido
+    private async Task StateChanged(ChangeEventArgs e)
+    {
+        StateId = int.TryParse(e.Value?.ToString(), out var id) ? id : 0;
+
+        if (NodeId == Guid.Empty)
+            return;
+
+        CurrentPage = 1;
+        await LoadSummaryAsync();
+        await LoadContractsAsync();
+    }
+
     private async Task LoadSummaryAsync()
     {
-        var responseHttp = await _repository.GetAsync<ReportActiveSummaryDto>($"{BaseUrl}/by-node/{NodeId}/summary");
+        var responseHttp = await _repository.GetAsync<ReportActiveSummaryDto>($"{BaseUrl}/by-node/{NodeId}/summary?stateid={StateId}");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
             Summary = responseHttp.Response;
     }
@@ -60,7 +82,7 @@ public partial class ReportByNode
     private async Task LoadContractsAsync(int page = 1)
     {
         var responseHttp = await _repository.GetAsync<List<ReportActiveContractDto>>(
-            $"{BaseUrl}/by-node/{NodeId}?page={page}&recordsnumber={PageSize}");
+            $"{BaseUrl}/by-node/{NodeId}?page={page}&recordsnumber={PageSize}&stateid={StateId}");
 
         if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;

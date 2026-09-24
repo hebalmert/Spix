@@ -252,7 +252,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("FirstName", "LastName", "Nro_Document", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitesSoftSec.UsuarioRole", b =>
@@ -277,7 +277,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("UsuarioId", "UserType")
                         .IsUnique();
 
-                    b.ToTable("UsuarioRoles");
+                    b.ToTable("UsuarioRoles", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.City", b =>
@@ -306,7 +306,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Name", "StateId")
                         .IsUnique();
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.Corporation", b =>
@@ -377,7 +377,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Name", "NroDocument")
                         .IsUnique();
 
-                    b.ToTable("Corporations");
+                    b.ToTable("Corporations", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.Country", b =>
@@ -399,7 +399,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.Manager", b =>
@@ -477,7 +477,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("FirstName", "LastName", "NroDocument")
                         .IsUnique();
 
-                    b.ToTable("Managers");
+                    b.ToTable("Managers", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.SoftPlan", b =>
@@ -529,7 +529,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("SoftPlans");
+                    b.ToTable("SoftPlans", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.State", b =>
@@ -558,7 +558,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Name", "CountryId")
                         .IsUnique();
 
-                    b.ToTable("States");
+                    b.ToTable("States", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.Entities.User", b =>
@@ -681,7 +681,7 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique()
                         .HasFilter("[UserType] IS NOT NULL AND [UserId] IS NOT NULL");
 
-                    b.ToTable("UserRoleDetails");
+                    b.ToTable("UserRoleDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesBilling.BillingNote", b =>
@@ -720,7 +720,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "YearNumber", "MonthType")
                         .IsUnique();
 
-                    b.ToTable("BillingNotes");
+                    b.ToTable("BillingNotes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesBilling.BillingNoteOne", b =>
@@ -768,7 +768,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "ContractClientId", "YearNumber", "MonthType");
 
-                    b.ToTable("BillingNoteOnes");
+                    b.ToTable("BillingNoteOnes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesBilling.Sell", b =>
@@ -868,7 +868,7 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique()
                         .HasFilter("[InvoiceNumber] IS NOT NULL");
 
-                    b.ToTable("Sells");
+                    b.ToTable("Sells", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesBilling.SellDetail", b =>
@@ -932,7 +932,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("TaxId");
 
-                    b.ToTable("SellDetails");
+                    b.ToTable("SellDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractAudit", b =>
@@ -987,7 +987,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "DateEvent");
 
-                    b.ToTable("ContractAudits");
+                    b.ToTable("ContractAudits", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractBind", b =>
@@ -1045,7 +1045,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "IpNetId")
                         .IsUnique();
 
-                    b.ToTable("ContractBinds");
+                    b.ToTable("ContractBinds", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractClient", b =>
@@ -1131,7 +1131,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ControlContrato")
                         .IsUnique();
 
-                    b.ToTable("ContractClients");
+                    b.ToTable("ContractClients", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractDocumentTemplate", b =>
@@ -1180,7 +1180,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "DocumentType", "Name")
                         .IsUnique();
 
-                    b.ToTable("ContractDocumentTemplates");
+                    b.ToTable("ContractDocumentTemplates", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractDocumentTemplateField", b =>
@@ -1218,7 +1218,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("ContractDocumentTemplateId");
 
-                    b.ToTable("ContractDocumentTemplateFields");
+                    b.ToTable("ContractDocumentTemplateFields", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractExempt", b =>
@@ -1303,7 +1303,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "DateExempt");
 
-                    b.ToTable("ContractExempts");
+                    b.ToTable("ContractExempts", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractIDPic", b =>
@@ -1341,7 +1341,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId");
 
-                    b.ToTable("ContractIDPics");
+                    b.ToTable("ContractIDPics", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractIp", b =>
@@ -1364,7 +1364,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "IpNetId")
                         .IsUnique();
 
-                    b.ToTable("ContractIps");
+                    b.ToTable("ContractIps", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractMac", b =>
@@ -1387,7 +1387,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "CargueDetailId")
                         .IsUnique();
 
-                    b.ToTable("ContractMacs");
+                    b.ToTable("ContractMacs", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractMap", b =>
@@ -1413,7 +1413,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId")
                         .IsUnique();
 
-                    b.ToTable("ContractMaps");
+                    b.ToTable("ContractMaps", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractNode", b =>
@@ -1436,7 +1436,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "NodeId")
                         .IsUnique();
 
-                    b.ToTable("ContractNodes");
+                    b.ToTable("ContractNodes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractPlan", b =>
@@ -1459,7 +1459,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "PlanId")
                         .IsUnique();
 
-                    b.ToTable("ContractPlans");
+                    b.ToTable("ContractPlans", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractQue", b =>
@@ -1516,7 +1516,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "IpNetId")
                         .IsUnique();
 
-                    b.ToTable("ContractQues");
+                    b.ToTable("ContractQues", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractServer", b =>
@@ -1539,7 +1539,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "ServerId")
                         .IsUnique();
 
-                    b.ToTable("ContractServers");
+                    b.ToTable("ContractServers", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignatureCode", b =>
@@ -1600,7 +1600,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("ContractClientId", "DocumentType", "CreatedAt");
 
-                    b.ToTable("ContractSignatureCodes");
+                    b.ToTable("ContractSignatureCodes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignatureEvent", b =>
@@ -1650,7 +1650,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("ContractClientId", "DocumentType", "CreatedAt");
 
-                    b.ToTable("ContractSignatureEvents");
+                    b.ToTable("ContractSignatureEvents", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSignedDocument", b =>
@@ -1761,7 +1761,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractClientId", "ContractDocumentTemplateId")
                         .IsUnique();
 
-                    b.ToTable("ContractSignedDocuments");
+                    b.ToTable("ContractSignedDocuments", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSuspended", b =>
@@ -1869,7 +1869,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "PaymentReceived", "DateReactivated");
 
-                    b.ToTable("ContractSuspendeds");
+                    b.ToTable("ContractSuspendeds", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractSuspendedAudit", b =>
@@ -1907,7 +1907,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "DateModified");
 
-                    b.ToTable("ContractSuspendedAudits");
+                    b.ToTable("ContractSuspendedAudits", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.RunSuspended", b =>
@@ -1944,7 +1944,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "YearNumber", "MonthType")
                         .IsUnique();
 
-                    b.ToTable("RunSuspendeds");
+                    b.ToTable("RunSuspendeds", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.RunSuspendedDetail", b =>
@@ -1984,7 +1984,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("RunSuspendedId", "ContractClientId")
                         .IsUnique();
 
-                    b.ToTable("RunSuspendedDetails");
+                    b.ToTable("RunSuspendedDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.ChainType", b =>
@@ -2008,7 +2008,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ChainName")
                         .IsUnique();
 
-                    b.ToTable("ChainTypes");
+                    b.ToTable("ChainTypes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.Channel", b =>
@@ -2032,7 +2032,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ChannelName")
                         .IsUnique();
 
-                    b.ToTable("Channels");
+                    b.ToTable("Channels", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.Frecuency", b =>
@@ -2057,7 +2057,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("FrecuencyTypeId", "FrecuencyName")
                         .IsUnique();
 
-                    b.ToTable("Frecuencies");
+                    b.ToTable("Frecuencies", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.FrecuencyType", b =>
@@ -2081,7 +2081,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("TypeName")
                         .IsUnique();
 
-                    b.ToTable("FrecuencyTypes");
+                    b.ToTable("FrecuencyTypes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.HotSpotType", b =>
@@ -2105,7 +2105,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("TypeName")
                         .IsUnique();
 
-                    b.ToTable("HotSpotTypes");
+                    b.ToTable("HotSpotTypes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.Operation", b =>
@@ -2129,7 +2129,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("OperationName")
                         .IsUnique();
 
-                    b.ToTable("Operations");
+                    b.ToTable("Operations", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesData.Security", b =>
@@ -2153,7 +2153,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("SecurityName")
                         .IsUnique();
 
-                    b.ToTable("Securities");
+                    b.ToTable("Securities", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesEmails.EmailProviderSetting", b =>
@@ -2226,7 +2226,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ProviderType", "Name")
                         .IsUnique();
 
-                    b.ToTable("EmailProviderSettings");
+                    b.ToTable("EmailProviderSettings", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.DocumentType", b =>
@@ -2258,7 +2258,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("DocumentName", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("DocumentTypes");
+                    b.ToTable("DocumentTypes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.EstratoSocial", b =>
@@ -2284,7 +2284,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "EstratoSocialName")
                         .IsUnique();
 
-                    b.ToTable("EstratosSociales");
+                    b.ToTable("EstratosSociales", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Mark", b =>
@@ -2312,7 +2312,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("MarkName", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("Marks");
+                    b.ToTable("Marks", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.MarkModel", b =>
@@ -2345,7 +2345,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("MarkModelName", "CorporationId", "MarkId")
                         .IsUnique();
 
-                    b.ToTable("MarkModels");
+                    b.ToTable("MarkModels", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Plan", b =>
@@ -2402,7 +2402,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "PlanName")
                         .IsUnique();
 
-                    b.ToTable("Plans");
+                    b.ToTable("Plans", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.PlanCategory", b =>
@@ -2430,7 +2430,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("PlanCategoryName", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("PlanCategories");
+                    b.ToTable("PlanCategories", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Product", b =>
@@ -2491,7 +2491,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ProductName")
                         .IsUnique();
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.ProductCategory", b =>
@@ -2517,7 +2517,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ProductCategories");
+                    b.ToTable("ProductCategories", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Register", b =>
@@ -2595,7 +2595,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "Solicitudes")
                         .IsUnique();
 
-                    b.ToTable("Registers");
+                    b.ToTable("Registers", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.ServiceCategory", b =>
@@ -2621,7 +2621,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ServiceCategories");
+                    b.ToTable("ServiceCategories", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.ServiceClient", b =>
@@ -2669,7 +2669,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ServiceName")
                         .IsUnique();
 
-                    b.ToTable("ServiceClients");
+                    b.ToTable("ServiceClients", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Tax", b =>
@@ -2702,7 +2702,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "TaxName")
                         .IsUnique();
 
-                    b.ToTable("Taxes");
+                    b.ToTable("Taxes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesGen.Zone", b =>
@@ -2738,7 +2738,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "StateId", "CityId", "ZoneName")
                         .IsUnique();
 
-                    b.ToTable("Zones");
+                    b.ToTable("Zones", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.Cargue", b =>
@@ -2778,7 +2778,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("PurchaseDetailId");
 
-                    b.ToTable("Cargues");
+                    b.ToTable("Cargues", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.CargueDetail", b =>
@@ -2818,7 +2818,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("MacWlan", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("CargueDetails");
+                    b.ToTable("CargueDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.ProductStock", b =>
@@ -2849,7 +2849,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ProductId", "ProductStorageId")
                         .IsUnique();
 
-                    b.ToTable("ProductStocks");
+                    b.ToTable("ProductStocks", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.ProductStorage", b =>
@@ -2885,7 +2885,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "StorageName")
                         .IsUnique();
 
-                    b.ToTable("ProductStorages");
+                    b.ToTable("ProductStorages", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.Purchase", b =>
@@ -2933,7 +2933,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "SupplierId", "NroFactura")
                         .IsUnique();
 
-                    b.ToTable("Purchases");
+                    b.ToTable("Purchases", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.PurchaseDetail", b =>
@@ -2974,7 +2974,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ProductId", "PurchaseId")
                         .IsUnique();
 
-                    b.ToTable("PurchaseDetails");
+                    b.ToTable("PurchaseDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.Supplier", b =>
@@ -3044,7 +3044,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "Document", "DocumentTypeId")
                         .IsUnique();
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.Transfer", b =>
@@ -3094,7 +3094,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "NroTransfer")
                         .IsUnique();
 
-                    b.ToTable("Transfers");
+                    b.ToTable("Transfers", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.TransferDetails", b =>
@@ -3129,7 +3129,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ProductId", "TransferId")
                         .IsUnique();
 
-                    b.ToTable("TransferDetails");
+                    b.ToTable("TransferDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesMK.ConnectionMikrotikControl", b =>
@@ -3150,7 +3150,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId")
                         .IsUnique();
 
-                    b.ToTable("ConnectionMikrotikControls");
+                    b.ToTable("ConnectionMikrotikControls", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesMK.QueueParent", b =>
@@ -3198,7 +3198,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ParentName", "ServerId")
                         .IsUnique();
 
-                    b.ToTable("QueueParents");
+                    b.ToTable("QueueParents", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesMK.QueueType", b =>
@@ -3230,7 +3230,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "TypeName")
                         .IsUnique();
 
-                    b.ToTable("QueueTypes");
+                    b.ToTable("QueueTypes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesNet.IpNet", b =>
@@ -3271,7 +3271,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Ip", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("IpNets");
+                    b.ToTable("IpNets", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesNet.IpNetwork", b =>
@@ -3312,7 +3312,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Ip", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("IpNetworks");
+                    b.ToTable("IpNetworks", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesNet.Node", b =>
@@ -3409,7 +3409,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("NodesName", "CorporationId", "OperationId")
                         .IsUnique();
 
-                    b.ToTable("Nodes");
+                    b.ToTable("Nodes", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesNet.Server", b =>
@@ -3476,7 +3476,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ServerName", "CorporationId")
                         .IsUnique();
 
-                    b.ToTable("Servers");
+                    b.ToTable("Servers", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesOper.Client", b =>
@@ -3552,7 +3552,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "FirstName", "LastName", "Document")
                         .IsUnique();
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesOper.Contractor", b =>
@@ -3635,7 +3635,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "FirstName", "LastName", "Document")
                         .IsUnique();
 
-                    b.ToTable("Contractors");
+                    b.ToTable("Contractors", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesOper.Technician", b =>
@@ -3708,7 +3708,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "DocumentTypeId", "Document")
                         .IsUnique();
 
-                    b.ToTable("Technicians");
+                    b.ToTable("Technicians", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractExonerated", b =>
@@ -3830,7 +3830,7 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique()
                         .HasFilter("[DateEnded] IS NULL");
 
-                    b.ToTable("ContractExonerateds");
+                    b.ToTable("ContractExonerateds", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractorAccountPayable", b =>
@@ -3909,7 +3909,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "Paid", "DateCreated");
 
-                    b.ToTable("ContractorAccountPayables");
+                    b.ToTable("ContractorAccountPayables", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractorPayment", b =>
@@ -3965,7 +3965,7 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique()
                         .HasFilter("[PaymentNumber] <> ''");
 
-                    b.ToTable("ContractorPayments");
+                    b.ToTable("ContractorPayments", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.ContractorPaymentDetail", b =>
@@ -3992,7 +3992,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ContractorPaymentId", "ContractorAccountPayableId")
                         .IsUnique();
 
-                    b.ToTable("ContractorPaymentDetails");
+                    b.ToTable("ContractorPaymentDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.CxCBill", b =>
@@ -4094,7 +4094,7 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique()
                         .HasFilter("[Cancelled] = 0 AND [YearNumber] > 0");
 
-                    b.ToTable("CxCBills");
+                    b.ToTable("CxCBills", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.CxCBillDetail", b =>
@@ -4153,7 +4153,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "UserId", "DatePayment");
 
-                    b.ToTable("CxCBillDetails");
+                    b.ToTable("CxCBillDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.CxCContractor", b =>
@@ -4223,7 +4223,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "Paid", "Cancelled");
 
-                    b.ToTable("CxCContractors");
+                    b.ToTable("CxCContractors", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.CxCContractorDetail", b =>
@@ -4279,7 +4279,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CxCContractorId");
 
-                    b.ToTable("CxCContractorDetails");
+                    b.ToTable("CxCContractorDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.PaymentAudit", b =>
@@ -4352,7 +4352,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "DateEvent");
 
-                    b.ToTable("PaymentAudits");
+                    b.ToTable("PaymentAudits", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.PrePayment", b =>
@@ -4427,7 +4427,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "ContractClientId", "YearNumber", "MonthType")
                         .IsUnique();
 
-                    b.ToTable("PrePayments");
+                    b.ToTable("PrePayments", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesPayment.PrePaymentDetail", b =>
@@ -4486,7 +4486,7 @@ namespace Spix.AppBacken.Migrations
                         .IsUnique()
                         .HasFilter("[ServiceRequestDetailId] IS NOT NULL");
 
-                    b.ToTable("PrePaymentDetails");
+                    b.ToTable("PrePaymentDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSaaS.CorporationSubscription", b =>
@@ -4566,7 +4566,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("CorporationId", "Status");
 
-                    b.ToTable("CorporationSubscriptions");
+                    b.ToTable("CorporationSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSaaS.MercadoPagoPlatformSetting", b =>
@@ -4611,7 +4611,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasKey("MercadoPagoPlatformSettingId");
 
-                    b.ToTable("MercadoPagoPlatformSettings");
+                    b.ToTable("MercadoPagoPlatformSettings", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSaaS.SystemSetting", b =>
@@ -4650,7 +4650,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("SystemSettings");
+                    b.ToTable("SystemSettings", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ScheduleItem", b =>
@@ -4738,7 +4738,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("TechnicianId");
 
-                    b.ToTable("ScheduleItems");
+                    b.ToTable("ScheduleItems", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequest", b =>
@@ -4881,7 +4881,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("CorporationId", "RequestNumber")
                         .IsUnique();
 
-                    b.ToTable("ServiceRequests");
+                    b.ToTable("ServiceRequests", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequestDetail", b =>
@@ -4934,7 +4934,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("TaxId");
 
-                    b.ToTable("ServiceRequestDetails");
+                    b.ToTable("ServiceRequestDetails", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequestPhoto", b =>
@@ -4973,7 +4973,7 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasIndex("ServiceRequestId", "PhotoType");
 
-                    b.ToTable("ServiceRequestPhotos");
+                    b.ToTable("ServiceRequestPhotos", (string)null);
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesSchedule.ServiceRequestPic", b =>
@@ -5017,7 +5017,7 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("ServiceRequestId")
                         .IsUnique();
 
-                    b.ToTable("ServiceRequestPics");
+                    b.ToTable("ServiceRequestPics", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

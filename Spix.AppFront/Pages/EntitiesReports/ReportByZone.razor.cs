@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -20,12 +21,16 @@ public partial class ReportByZone
     private const int PageSize = 20;
 
     private List<IntItemModel>? States;
+    private List<IntItemModel>? ContractStates;
     private List<IntItemModel>? Cities = new();
     private List<GuidItemModel>? Zones = new();
     private List<ReportActiveContractDto>? Contracts = new();
     private ReportActiveSummaryDto? Summary;
 
     private int StateId;
+
+    //Arranca mostrando los activos
+    private int ContractStateId = (int)ContractState.Active;
     private int CityId;
     private Guid ZoneId;
     private int CurrentPage = 1;
@@ -33,6 +38,10 @@ public partial class ReportByZone
 
     protected override async Task OnInitializedAsync()
     {
+        var estados = await _repository.GetAsync<List<IntItemModel>>($"{BaseUrl}/combocontractstates");
+        if (!await _responseHandler.HandleErrorAsync(estados))
+            ContractStates = estados.Response ?? new();
+
         var responseHttp = await _repository.GetAsync<List<IntItemModel>>($"{BaseUrl}/combostates");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
             States = responseHttp.Response ?? new();
@@ -83,6 +92,19 @@ public partial class ReportByZone
         await LoadContractsAsync();
     }
 
+    //Cambiar el estado vuelve a preguntar, con la misma zona elegida
+    private async Task ContractStateChanged(ChangeEventArgs e)
+    {
+        ContractStateId = int.TryParse(e.Value?.ToString(), out var id) ? id : 0;
+
+        if (ZoneId == Guid.Empty)
+            return;
+
+        CurrentPage = 1;
+        await LoadSummaryAsync();
+        await LoadContractsAsync();
+    }
+
     private void LimpiarZona()
     {
         ZoneId = Guid.Empty;
@@ -94,7 +116,7 @@ public partial class ReportByZone
 
     private async Task LoadSummaryAsync()
     {
-        var responseHttp = await _repository.GetAsync<ReportActiveSummaryDto>($"{BaseUrl}/by-zone/{ZoneId}/summary");
+        var responseHttp = await _repository.GetAsync<ReportActiveSummaryDto>($"{BaseUrl}/by-zone/{ZoneId}/summary?stateid={ContractStateId}");
         if (!await _responseHandler.HandleErrorAsync(responseHttp))
             Summary = responseHttp.Response;
     }
@@ -102,7 +124,7 @@ public partial class ReportByZone
     private async Task LoadContractsAsync(int page = 1)
     {
         var responseHttp = await _repository.GetAsync<List<ReportActiveContractDto>>(
-            $"{BaseUrl}/by-zone/{ZoneId}?page={page}&recordsnumber={PageSize}");
+            $"{BaseUrl}/by-zone/{ZoneId}?page={page}&recordsnumber={PageSize}&stateid={ContractStateId}");
 
         if (await _responseHandler.HandleErrorAsync(responseHttp))
             return;

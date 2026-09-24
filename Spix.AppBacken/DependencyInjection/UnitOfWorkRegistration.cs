@@ -203,8 +203,12 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IContractSuspendedAuditService, ContractSuspendedAuditService>();
             services.AddScoped<IRunSuspendedServiceX, RunSuspendedServiceX>();
             services.AddScoped<IRunSuspendedService, RunSuspendedService>();
+            services.AddScoped<IReportOperationServiceX, ReportOperationServiceX>();
+            services.AddScoped<IReportOperationService, ReportOperationService>();
             services.AddScoped<IReportServiceX, ReportServiceX>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<Spix.AppServiceX.InterfacesInven.IReportInventoryServiceX, Spix.AppServiceX.ImplementInven.ReportInventoryServiceX>();
+            services.AddScoped<Spix.AppService.InterfacesInven.IReportInventoryService, Spix.AppService.ImplementInven.ReportInventoryService>();
             services.AddScoped<IActivationServiceX, ActivationServiceX>();
             services.AddScoped<IActivationService, ActivationService>();
             services.AddScoped<IContractIDPicServiceX, ContractIDPicServiceX>();
@@ -241,6 +245,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<Spix.AppService.InterfacesBilling.IBillingService, Spix.AppService.ImplementBilling.BillingService>();
 
             //Payment
+            services.AddScoped<Spix.AppServiceX.InterfacesPayment.IReportFinanceServiceX, Spix.AppServiceX.ImplementPayment.ReportFinanceServiceX>();
+            services.AddScoped<Spix.AppService.InterfacesPayment.IReportFinanceService, Spix.AppService.ImplementPayment.ReportFinanceService>();
             services.AddScoped<Spix.AppServiceX.InterfacesPayment.ITechnicianCollectionServiceX, Spix.AppServiceX.ImplementPayment.TechnicianCollectionServiceX>();
             services.AddScoped<Spix.AppService.InterfacesPayment.ITechnicianCollectionService, Spix.AppService.ImplementPayment.TechnicianCollectionService>();
             services.AddScoped<Spix.AppServiceX.InterfacesPayment.IPaymentServiceX, Spix.AppServiceX.ImplementPayment.PaymentServiceX>();

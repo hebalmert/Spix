@@ -102,22 +102,22 @@
 
                     @if (Expanded == 1)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/payment-settings">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_PaymentSettings"] href="/payment-settings">
                             <span class="fa fa-credit-card nav-subicon me-2"></span> @Localizer["Menu_PaymentSettings"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/systemsettings">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_SystemSettings"] href="/systemsettings">
                             <span class="fa fa-sliders nav-subicon me-2"></span> @Localizer["Menu_SystemSettings"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/softplans">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_SoftPlans"] href="/softplans">
                             <span class="fa fa-layer-group nav-subicon me-2"></span> @Localizer["Menu_SoftPlans"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/corporations">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Corporations"] href="/corporations">
                             <span class="fa fa-building nav-subicon me-2"></span> @Localizer["Menu_Corporations"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/managers">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Managers"] href="/managers">
                             <span class="fa fa-user-shield nav-subicon me-2"></span> @Localizer["Menu_Managers"]
                         </NavLink>
                     }
@@ -138,13 +138,13 @@
 
                     @if (Expanded == 2)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/zones">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Zones"] href="/zones">
                             <span class="fa fa-map-marker-alt nav-subicon me-2"></span> @Localizer["Menu_Zones"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/documenttypes">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_DocumentTypes"] href="/documenttypes">
                             <span class="fa fa-file nav-subicon me-2"></span> @Localizer["Menu_DocumentTypes"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/taxes">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Taxes"] href="/taxes">
                             <span class="fa fa-percent nav-subicon me-2"></span> @Localizer["Menu_Taxes"]
                         </NavLink>
                         <NavLink class="nav-link text-white nav-subitem" href="/estratossociales">
@@ -153,13 +153,13 @@
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/registers">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Registers"] href="/registers">
                             <span class="fa fa-book nav-subicon me-2"></span> @Localizer["Menu_Registers"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractdocumenttemplates">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_PdfTemplates"] href="/contractdocumenttemplates">
                             <span class="fa fa-file-signature nav-subicon me-2"></span> @Localizer["Menu_PdfTemplates"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/emailproviders">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_EmailSetup"] href="/emailproviders">
                             <span class="fa fa-envelope nav-subicon me-2"></span> @Localizer["Menu_EmailSetup"]
                         </NavLink>
                     }
@@ -180,19 +180,19 @@
 
                     @if (Expanded == 3)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/plancategories">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_PlanCategories"] href="/plancategories">
                             <span class="fa fa-sitemap nav-subicon me-2"></span> @Localizer["Menu_PlanCategories"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/servicecategories">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ServiceCategories"] href="/servicecategories">
                             <span class="fa fa-concierge-bell nav-subicon me-2"></span> @Localizer["Menu_ServiceCategories"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/productcategories">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ProductCategories"] href="/productcategories">
                             <span class="fa fa-boxes nav-subicon me-2"></span> @Localizer["Menu_ProductCategories"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/marks/detailed">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Marks"] href="/marks/detailed">
                             <span class="fa fa-tags nav-subicon me-2"></span> @Localizer["Menu_Marks"]
                         </NavLink>
                     }
@@ -213,19 +213,19 @@
 
                     @if (Expanded == 4)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/suppliers">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Suppliers"] href="/suppliers">
                             <span class="fa fa-truck nav-subicon me-2"></span> @Localizer["Menu_Suppliers"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/productstorages">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Storages"] href="/productstorages">
                             <span class="fa fa-warehouse nav-subicon me-2"></span> @Localizer["Menu_Storages"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/purchases">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Purchases"] href="/purchases">
                             <span class="fa fa-shopping-cart nav-subicon me-2"></span> @Localizer["Menu_Purchases"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/cargues">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_SerialLoad"] href="/cargues">
                             <span class="fa fa-barcode nav-subicon me-2"></span> @Localizer["Menu_SerialLoad"]
                         </NavLink>
                     }
@@ -246,31 +246,31 @@
 
                     @if (Expanded == 5)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/ipnets">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_IpClients"] href="/ipnets">
                             <span class="fa fa-laptop nav-subicon me-2"></span> @Localizer["Menu_IpClients"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/ipnetworks">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_IpNetworks"] href="/ipnetworks">
                             <span class="fa fa-project-diagram nav-subicon me-2"></span> @Localizer["Menu_IpNetworks"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/connectionmikrotikcontrols">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_MikrotikControl"] href="/connectionmikrotikcontrols">
                             <span class="fa fa-network-wired nav-subicon me-2"></span> @Localizer["Menu_MikrotikControl"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/queuetypes">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_QueueTypes"] href="/queuetypes">
                             <span class="fa fa-sliders-h nav-subicon me-2"></span> @Localizer["Menu_QueueTypes"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/servers">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Servers"] href="/servers">
                             <span class="fa fa-database nav-subicon me-2"></span> @Localizer["Menu_Servers"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/nodes">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Nodes"] href="/nodes">
                             <span class="fa fa-server nav-subicon me-2"></span> @Localizer["Menu_Nodes"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/nodemap">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["NodeMap_Menu"] href="/nodemap">
                             <span class="fa fa-map-location-dot nav-subicon me-2"></span> @Localizer["NodeMap_Menu"]
                         </NavLink>
                     }
@@ -291,35 +291,35 @@
 
                     @if (Expanded == 6)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/clients">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Clients"] href="/clients">
                             <span class="fa fa-users nav-subicon me-2"></span> @Localizer["Menu_Clients"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractclients">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Contracts"] href="/contractclients">
                             <span class="fa fa-file-contract nav-subicon me-2"></span> @Localizer["Menu_Contracts"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractcontrol">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ContractControl"] href="/contractcontrol">
                             <span class="fa fa-user-gear nav-subicon me-2"></span> @Localizer["Menu_ContractControl"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/servicerequests">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ServiceRequests"] href="/servicerequests">
                             <span class="fa fa-tools nav-subicon me-2"></span> @Localizer["Menu_ServiceRequests"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/schedule">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Schedule"] href="/schedule">
                             <span class="fa fa-calendar-days nav-subicon me-2"></span> @Localizer["Menu_Schedule"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
                         @* Seguimiento: lo que ya paso, para consultar *@
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractsuspended">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_SuspendedContracts"] href="/contractsuspended">
                             <span class="fa fa-ban nav-subicon me-2"></span> @Localizer["Menu_SuspendedContracts"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/runactivation">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Activation"] href="/runactivation">
                             <span class="fa fa-plug-circle-check nav-subicon me-2"></span> @Localizer["Menu_Activation"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractsuspendedaudits">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ActivationAudit"] href="/contractsuspendedaudits">
                             <span class="fa fa-clipboard-check nav-subicon me-2"></span> @Localizer["Menu_ActivationAudit"]
                         </NavLink>
                     }
@@ -340,43 +340,43 @@
 
                     @if (Expanded == 7)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/billingnotes">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_BillingNotes"] href="/billingnotes">
                             <span class="fa fa-calendar-alt nav-subicon me-2"></span> @Localizer["Menu_BillingNotes"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/billingnoteones">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_BillingNoteOne"] href="/billingnoteones">
                             <span class="fa fa-user-clock nav-subicon me-2"></span> @Localizer["Menu_BillingNoteOne"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/prepayments">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_PrePayments"] href="/prepayments">
                             <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> @Localizer["Menu_PrePayments"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractexempt">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ExemptFixed"] href="/contractexempt">
                             <span class="fa fa-user-shield nav-subicon me-2"></span> @Localizer["Menu_ExemptFixed"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractexonerateds">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ExoneratedMonth"] href="/contractexonerateds">
                             <span class="fa fa-percent nav-subicon me-2"></span> @Localizer["Menu_ExoneratedMonth"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/sells">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Sells"] href="/sells">
                             <span class="fa fa-file-invoice nav-subicon me-2"></span> @Localizer["Menu_Sells"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/cxcbills">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_CxCBills"] href="/cxcbills">
                             <span class="fa fa-cash-register nav-subicon me-2"></span> @Localizer["Menu_CxCBills"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/technician-collections">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_TechnicianCollections"] href="/technician-collections">
                             <span class="fa fa-hand-holding-dollar nav-subicon me-2"></span> @Localizer["Menu_TechnicianCollections"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/runsuspended">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Corte_Title"] href="/runsuspended">
                             <span class="fa fa-ban nav-subicon me-2"></span> @Localizer["Corte_Title"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractor-cxc">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ContractorPayments"] href="/contractor-cxc">
                             <span class="fa fa-money-bill-transfer nav-subicon me-2"></span> @Localizer["Menu_ContractorPayments"]
                         </NavLink>
                     }
@@ -397,17 +397,48 @@
 
                     @if (Expanded == 9)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/reports/active-contracts">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportMoney"] href="/reports/collections">
+                            <span class="fa fa-cash-register nav-subicon me-2"></span> @Localizer["Menu_ReportMoney"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportAging"] href="/reports/aging">
+                            <span class="fa fa-hourglass-half nav-subicon me-2"></span> @Localizer["Menu_ReportAging"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportCommissions"] href="/reports/commissions">
+                            <span class="fa fa-handshake nav-subicon me-2"></span> @Localizer["Menu_ReportCommissions"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportAudit"] href="/reports/audit">
+                            <span class="fa fa-book nav-subicon me-2"></span> @Localizer["Menu_ReportAudit"]
+                        </NavLink>
+
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportContracts"] href="/reports/contracts">
+                            <span class="fa fa-file-signature nav-subicon me-2"></span> @Localizer["Menu_ReportContracts"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportServices"] href="/reports/services">
+                            <span class="fa fa-screwdriver-wrench nav-subicon me-2"></span> @Localizer["Menu_ReportServices"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportCutOff"] href="/reports/cutoff">
+                            <span class="fa fa-plug-circle-xmark nav-subicon me-2"></span> @Localizer["Menu_ReportCutOff"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportChurn"] href="/reports/churn">
+                            <span class="fa fa-user-minus nav-subicon me-2"></span> @Localizer["Menu_ReportChurn"]
+                        </NavLink>
+
+                        <hr class="border-top border-light opacity-50 my-2" />
+
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Report_Active"] href="/reports/active-contracts">
                             <span class="fa fa-file-contract nav-subicon me-2"></span> @Localizer["Report_Active"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/reports/by-zone">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Report_Zone"] href="/reports/by-zone">
                             <span class="fa fa-map-marker-alt nav-subicon me-2"></span> @Localizer["Report_Zone"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/reports/by-node">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Report_Node"] href="/reports/by-node">
                             <span class="fa fa-tower-broadcast nav-subicon me-2"></span> @Localizer["Report_Node"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/reports/by-server">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Report_Server"] href="/reports/by-server">
                             <span class="fa fa-database nav-subicon me-2"></span> @Localizer["Report_Server"]
+                        </NavLink>
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_ReportSerials"] href="/reports/serials">
+                            <span class="fa fa-barcode nav-subicon me-2"></span> @Localizer["Menu_ReportSerials"]
                         </NavLink>
                     }
                 </div>
@@ -427,16 +458,16 @@
 
                     @if (Expanded == 8)
                     {
-                        <NavLink class="nav-link text-white nav-subitem" href="/usuarios">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Users"] href="/usuarios">
                             <span class="fa fa-user nav-subicon me-2"></span> @Localizer["Menu_Users"]
                         </NavLink>
 
                         <hr class="border-top border-light opacity-50 my-2" />
 
-                        <NavLink class="nav-link text-white nav-subitem" href="/contractors">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Contractors"] href="/contractors">
                             <span class="fa fa-user-tie nav-subicon me-2"></span> @Localizer["Menu_Contractors"]
                         </NavLink>
-                        <NavLink class="nav-link text-white nav-subitem" href="/technitians">
+                        <NavLink class="nav-link text-white nav-subitem" title=@Localizer["Menu_Technicians"] href="/technitians">
                             <span class="fa fa-screwdriver-wrench nav-subicon me-2"></span> @Localizer["Menu_Technicians"]
                         </NavLink>
                     }

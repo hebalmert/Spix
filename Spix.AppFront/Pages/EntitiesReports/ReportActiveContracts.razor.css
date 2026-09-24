@@ -40,3 +40,9 @@
     color: #152238;
     font-weight: 700;
 }
+
+/* El estado, al lado del buscador y sin ocupar la fila entera */
+.rp-inline {
+    flex: 0 1 260px;
+    min-width: 200px;
+}

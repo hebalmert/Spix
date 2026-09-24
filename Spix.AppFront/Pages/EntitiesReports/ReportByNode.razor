@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        @* El AP: la lista la arma el backend *@
+        @* El AP y el estado: las listas las arma el backend *@
         <div class="rp-filters">
             <div class="rp-field">
                 <div class="rp-label">@Localizer["Report_NodeName"]</div>
@@ -25,6 +25,19 @@
                     <Body>
                         <select class="form-select" value="@NodeId" @onchange="NodeChanged">
                             @foreach (var item in Nodes!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+            <div class="rp-field">
+                <div class="rp-label">@Localizer["Report_Show"]</div>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="States">
+                    <Body>
+                        <select class="form-select" value="@StateId" @onchange="StateChanged">
+                            @foreach (var item in States!)
                             {
                                 <option value="@item.Value">@item.Name</option>
                             }
@@ -84,7 +97,12 @@
                                     <tr>
                                         <td>
                                             <div class="idx-name">@item.ClientFullName</div>
-                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato</div>
+                                            <div class="idx-meta">@Localizer[nameof(Resource.Contract)] #@item.ControlContrato
+                                                @if (!item.IsActive)
+                                                {
+                                                    <span class="rp-tag">@Localizer["Report_Inactive"]</span>
+                                                }
+                                            </div>
                                         </td>
                                         <td>@item.ZoneName</td>
                                         <td>@item.PlanName</td>

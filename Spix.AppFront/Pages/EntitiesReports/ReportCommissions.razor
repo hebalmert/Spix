@@ -1,0 +1,115 @@
+@page "/reports/commissions"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesPayment
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-handshake"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_CommissionsTitle"]</h3>
+                <p>@Localizer["Report_CommissionsSubtitle"]</p>
+            </div>
+        </div>
+
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_From"]</div>
+                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+            </div>
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_To"]</div>
+                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
+
+        @* Lo que se le debe a los contratistas *@
+        @if (Commissions is not null && Commissions.Count > 0)
+        {
+            <div class="rp-board">
+                <div class="rp-tile is-bank">
+                    <div class="rp-tile-label">@Localizer["Report_CommissionsBase"]</div>
+                    <div class="rp-tile-value">@Commissions.Sum(x => x.BaseAmount).ToString("N2")</div>
+                </div>
+                <div class="rp-tile">
+                    <div class="rp-tile-label">@Localizer["Report_CommissionsTotal"]</div>
+                    <div class="rp-tile-value">@Commissions.Sum(x => x.Total).ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-cash">
+                    <div class="rp-tile-label">@Localizer["Report_CommissionsPaid"]</div>
+                    <div class="rp-tile-value">@Commissions.Sum(x => x.Paid).ToString("N2")</div>
+                </div>
+                <div class="rp-tile is-bad">
+                    <div class="rp-tile-label">@Localizer["Report_CommissionsBalance"]</div>
+                    <div class="rp-tile-value">@Commissions.Sum(x => x.Balance).ToString("N2")</div>
+                </div>
+            </div>
+        }
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Report_Contractor"]</th>
+                            <th style="text-align:right">@Localizer["Report_CommissionsCount"]</th>
+                            <th style="text-align:right">@Localizer["Report_CommissionsBase"]</th>
+                            <th style="text-align:right">@Localizer["Report_CommissionsTotal"]</th>
+                            <th style="text-align:right">@Localizer["Report_CommissionsPaid"]</th>
+                            <th style="text-align:right">@Localizer["Report_CommissionsBalance"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Commissions">
+                            <Loading>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Commissions!)
+                                {
+                                    <tr>
+                                        <td><div class="idx-name">@item.Name</div></td>
+                                        <td style="text-align:right">@item.Commissions.ToString("N0")</td>
+                                        <td style="text-align:right">@item.BaseAmount.ToString("N2")</td>
+                                        <td style="text-align:right">@item.Total.ToString("N2")</td>
+                                        <td style="text-align:right">@item.Paid.ToString("N2")</td>
+                                        <td style="text-align:right"><strong>@item.Balance.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                                <tr class="rp-total">
+                                    <td>@Localizer[nameof(Resource.Total)]</td>
+                                    <td style="text-align:right">@Commissions!.Sum(x => x.Commissions).ToString("N0")</td>
+                                    <td style="text-align:right">@Commissions!.Sum(x => x.BaseAmount).ToString("N2")</td>
+                                    <td style="text-align:right">@Commissions!.Sum(x => x.Total).ToString("N2")</td>
+                                    <td style="text-align:right">@Commissions!.Sum(x => x.Paid).ToString("N2")</td>
+                                    <td style="text-align:right">@Commissions!.Sum(x => x.Balance).ToString("N2")</td>
+                                </tr>
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,105 @@
+/* Los totales del reporte */
+.rp-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.rp-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .rp-tile.is-money {
+        border-left-color: #198754;
+    }
+
+    .rp-tile.is-bad {
+        border-left-color: #dc3545;
+    }
+
+.rp-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.rp-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* La fila de totales del reporte agrupado */
+.rp-total td {
+    border-top: 2px solid #16305e;
+    color: #152238;
+    font-weight: 700;
+}
+
+/* El estado, al lado del buscador y sin ocupar la fila entera */
+.rp-inline {
+    flex: 0 1 260px;
+    min-width: 200px;
+}
+
+/* El titulo de cada bloque del reporte */
+.rp-section {
+    color: #16305e;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin: 22px 0 10px;
+}
+
+    .rp-section i {
+        margin-right: 7px;
+    }
+
+/* Los filtros de fecha */
+.rp-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.rp-field.is-date {
+    flex: 0 1 180px;
+}
+
+.rp-field.is-button {
+    flex: 0 0 auto;
+}
+
+/* Los colores de cada tile del recaudo */
+.rp-tile.is-cash {
+    border-left-color: #198754;
+}
+
+.rp-tile.is-bank {
+    border-left-color: #2c5fad;
+}
+
+.rp-tile.is-pre {
+    border-left-color: #0dcaf0;
+}
+
+.rp-tile.is-discount {
+    border-left-color: #6f42c1;
+}
+
+.rp-tile.is-issued {
+    border-left-color: #f59f00;
+}
+
+/* Lo que se resolvio sin salir de la oficina */
+.rp-tile.is-phone {
+    border-left-color: #0dcaf0;
+}

@@ -1,0 +1,116 @@
+@page "/reports/audit"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesPayment
+@using Spix.DomainLogic.ItemsGeneric
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-book"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_AuditTitle"]</h3>
+                <p>@Localizer["Report_AuditSubtitle"]</p>
+            </div>
+        </div>
+
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_From"]</div>
+                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+            </div>
+            <div class="rp-field is-date">
+                <div class="rp-label">@Localizer["Collection_To"]</div>
+                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+            </div>
+            <div class="rp-field is-event">
+                <div class="rp-label">@Localizer["Report_AuditEvent"]</div>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="Events">
+                    <Body>
+                        <select class="form-select" value="@EventType" @onchange="EventChanged">
+                            @foreach (var item in Events!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
+
+        <div class="idx-bar">
+            <div class="idx-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Date)]</th>
+                            <th>@Localizer["Report_AuditEvent"]</th>
+                            <th>@Localizer[nameof(Resource.Client)]</th>
+                            <th>@Localizer["Report_AuditDetail"]</th>
+                            <th>@Localizer["Report_AuditUser"]</th>
+                            <th style="text-align:right">@Localizer["Report_Amount"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Movements">
+                            <Loading>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Movements!)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="idx-name">@item.DateEvent.ToString("dd/MM/yyyy")</div>
+                                            <div class="idx-meta">@item.DateEvent.ToString("HH:mm")</div>
+                                        </td>
+                                        <td><span class="idx-pill">@item.EventName</span></td>
+                                        <td>@item.ClientFullName</td>
+                                        <td class="idx-meta">@item.Detail</td>
+                                        <td>@item.UserByName</td>
+                                        <td style="text-align:right"><strong>@item.Total.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Movements is not null && Movements.Count > 0)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
+    </div>
+</div>

@@ -32,19 +32,19 @@ public class ReportsController : ControllerBase
 
     //Los totales de los contratos activos
     [HttpGet("active/summary")]
-    public async Task<IActionResult> GetActiveSummaryAsync()
+    public async Task<IActionResult> GetActiveSummaryAsync([FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetActiveSummaryAsync(userClaimsInfo.UserName);
+        var response = await _reportService.GetActiveSummaryAsync(stateId, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
     //Los contratos activos con su plan y su monto, paginados
     [HttpGet("active")]
-    public async Task<IActionResult> GetActiveContractsAsync([FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetActiveContractsAsync([FromQuery] PaginationDTO pagination, [FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetActiveContractsAsync(pagination, userClaimsInfo.UserName);
+        var response = await _reportService.GetActiveContractsAsync(stateId, pagination, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
@@ -75,18 +75,27 @@ public class ReportsController : ControllerBase
 
     //Lo que factura una zona y sus contratos
     [HttpGet("by-zone/{zoneId:guid}/summary")]
-    public async Task<IActionResult> GetZoneSummaryAsync(Guid zoneId)
+    public async Task<IActionResult> GetZoneSummaryAsync(Guid zoneId, [FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetZoneSummaryAsync(zoneId, userClaimsInfo.UserName);
+        var response = await _reportService.GetZoneSummaryAsync(zoneId, stateId, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
     [HttpGet("by-zone/{zoneId:guid}")]
-    public async Task<IActionResult> GetZoneContractsAsync(Guid zoneId, [FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetZoneContractsAsync(Guid zoneId, [FromQuery] PaginationDTO pagination, [FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetZoneContractsAsync(zoneId, pagination, userClaimsInfo.UserName);
+        var response = await _reportService.GetZoneContractsAsync(zoneId, stateId, pagination, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Los estados del contrato, con Todos al frente
+    [HttpGet("combocontractstates")]
+    public async Task<IActionResult> ComboContractStatesAsync()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _reportService.ComboContractStatesAsync(userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
@@ -109,35 +118,35 @@ public class ReportsController : ControllerBase
 
     //Lo que genera un AP y sus contratos
     [HttpGet("by-node/{nodeId:guid}/summary")]
-    public async Task<IActionResult> GetNodeSummaryAsync(Guid nodeId)
+    public async Task<IActionResult> GetNodeSummaryAsync(Guid nodeId, [FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetNodeSummaryAsync(nodeId, userClaimsInfo.UserName);
+        var response = await _reportService.GetNodeSummaryAsync(nodeId, stateId, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
     [HttpGet("by-node/{nodeId:guid}")]
-    public async Task<IActionResult> GetNodeContractsAsync(Guid nodeId, [FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetNodeContractsAsync(Guid nodeId, [FromQuery] PaginationDTO pagination, [FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetNodeContractsAsync(nodeId, pagination, userClaimsInfo.UserName);
+        var response = await _reportService.GetNodeContractsAsync(nodeId, stateId, pagination, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
     //Lo que genera un servidor y sus contratos
     [HttpGet("by-server/{serverId:guid}/summary")]
-    public async Task<IActionResult> GetServerSummaryAsync(Guid serverId)
+    public async Task<IActionResult> GetServerSummaryAsync(Guid serverId, [FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetServerSummaryAsync(serverId, userClaimsInfo.UserName);
+        var response = await _reportService.GetServerSummaryAsync(serverId, stateId, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 
     [HttpGet("by-server/{serverId:guid}")]
-    public async Task<IActionResult> GetServerContractsAsync(Guid serverId, [FromQuery] PaginationDTO pagination)
+    public async Task<IActionResult> GetServerContractsAsync(Guid serverId, [FromQuery] PaginationDTO pagination, [FromQuery] int stateId = 0)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
-        var response = await _reportService.GetServerContractsAsync(serverId, pagination, userClaimsInfo.UserName);
+        var response = await _reportService.GetServerContractsAsync(serverId, stateId, pagination, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 }
