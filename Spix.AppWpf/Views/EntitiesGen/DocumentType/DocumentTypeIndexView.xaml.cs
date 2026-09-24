@@ -1,6 +1,7 @@
 using Spix.AppWpf.ViewModels.EntitiesGen.DocumentType;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Spix.AppWpf.Views.EntitiesGen.DocumentType;
 
@@ -27,6 +28,22 @@ public partial class DocumentTypeIndexView : UserControl
         }
 
         _isLoaded = true;
+
+        //El teclado empieza en la vista: asi Ctrl+N y F5 responden sin hacer clic antes
+        Focus();
+
         await _viewModel.LoadAsync();
+    }
+
+    // Ctrl+F lleva el cursor al buscador. El foco es cosa de la pantalla, no del ViewModel.
+    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    {
+        if (e.Key == Key.F && Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            SearchFilter.FocusSearch();
+            e.Handled = true;
+        }
+
+        base.OnPreviewKeyDown(e);
     }
 }

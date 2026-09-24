@@ -1,8 +1,14 @@
+﻿using FontAwesome.Net.Generators;
 using Microsoft.Extensions.DependencyInjection;
+using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shell;
 using Spix.AppWpf.Views.Auth;
 using Spix.AppWpf.Views.EntitiesGen.DocumentType;
 using Spix.AppWpf.Views.EntitiesGen.EstratoSocial;
+using Spix.AppWpf.Views.EntitiesGen.Register;
+using Spix.AppWpf.Views.EntitiesGen.Tax;
+using Spix.AppWpf.Views.EntitiesEmails.EmailProvider;
+using Spix.AppWpf.Views.EntitiesGen.Zone;
 using Spix.AppWpf.Views.EntitiesGen.Plan;
 using Spix.AppWpf.Views.EntitiesGen.Service;
 using Spix.AppWpf.Views.EntitiesInven.Product;
@@ -38,6 +44,9 @@ public partial class MainWindow : Window
         InitializeComponent();
         _viewModel = viewModel;
         _serviceProvider = serviceProvider;
+        //El boton muestra en que tema esta parado
+        ThemeIcon.Icon = AppearanceService.IsLight ? FontAwesomeIcon.Sun : FontAwesomeIcon.Moon;
+
         _viewModel.ChangePasswordRequested += OpenChangePassword;
         _viewModel.LogoutRequested += Logout;
         DataContext = _viewModel;
@@ -61,115 +70,123 @@ public partial class MainWindow : Window
     }
 
     // Abre configuracion y contrae los demas grupos para mantener un menu tipo acordeon.
-    private void ToggleConfigurationClick(object sender, RoutedEventArgs e)
+    // Abre un grupo del menu y cierra los demas: acordeon.
+    //
+    // Un solo metodo para los ocho grupos. El boton dice en su Tag el nombre del panel
+    // que le toca, asi agregar un grupo nuevo no obliga a tocar codigo.
+    private void ToggleMenuClick(object sender, RoutedEventArgs e)
     {
-        bool shouldOpen = ConfigurationMenu.Visibility != Visibility.Visible;
-        ConfigurationMenu.Visibility = shouldOpen
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-
-        if (shouldOpen)
+        if (sender is not Button boton || boton.Tag is not string nombrePanel)
         {
-            InventoryMenu.Visibility = Visibility.Collapsed;
-            NetworkMenu.Visibility = Visibility.Collapsed;
-            OperationsMenu.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var panel = FindName(nombrePanel) as StackPanel;
+        if (panel == null)
+        {
+            return;
+        }
+
+        bool abrir = panel.Visibility != Visibility.Visible;
+
+        foreach (var grupo in MenuPanels())
+        {
+            grupo.Visibility = Visibility.Collapsed;
+        }
+
+        panel.Visibility = abrir ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    // Los paneles de los grupos del menu
+    private IEnumerable<StackPanel> MenuPanels()
+    {
+        string[] nombres =
+        [
+            "ConfigurationMenu", "CatalogMenu", "InventoryMenu", "NetworkMenu",
+            "OperationsMenu", "FinanceMenu", "ReportsMenu", "SystemMenu"
+        ];
+
+        foreach (var nombre in nombres)
+        {
+            if (FindName(nombre) is StackPanel panel)
+            {
+                yield return panel;
+            }
         }
     }
 
-    // Abre inventario y contrae los demas grupos para mantener un menu tipo acordeon.
-    private void ToggleInventoryClick(object sender, RoutedEventArgs e)
-    {
-        bool shouldOpen = InventoryMenu.Visibility != Visibility.Visible;
-        InventoryMenu.Visibility = shouldOpen
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-
-        if (shouldOpen)
-        {
-            ConfigurationMenu.Visibility = Visibility.Collapsed;
-            NetworkMenu.Visibility = Visibility.Collapsed;
-            OperationsMenu.Visibility = Visibility.Collapsed;
-        }
-    }
-
-    // Abre Network y contrae los otros grupos para conservar el menu tipo acordeon.
-    private void ToggleNetworkClick(object sender, RoutedEventArgs e)
-    {
-        bool shouldOpen = NetworkMenu.Visibility != Visibility.Visible;
-        NetworkMenu.Visibility = shouldOpen
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-
-        if (shouldOpen)
-        {
-            ConfigurationMenu.Visibility = Visibility.Collapsed;
-            InventoryMenu.Visibility = Visibility.Collapsed;
-            OperationsMenu.Visibility = Visibility.Collapsed;
-        }
-    }
-
-    // Abre Operaciones y mantiene los demas grupos contraidos como en el menu de Blazor.
-    private void ToggleOperationsClick(object sender, RoutedEventArgs e)
-    {
-        bool shouldOpen = OperationsMenu.Visibility != Visibility.Visible;
-        OperationsMenu.Visibility = shouldOpen
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-
-        if (shouldOpen)
-        {
-            ConfigurationMenu.Visibility = Visibility.Collapsed;
-            InventoryMenu.Visibility = Visibility.Collapsed;
-            NetworkMenu.Visibility = Visibility.Collapsed;
-        }
-    }
-
-    // Restaura el tablero sin conservar una vista de entidad dentro del contenedor central.
+    // Vuelve al tablero
     private void ShowDashboardClick(object sender, RoutedEventArgs e)
     {
         MainContent.Content = DashboardContent;
         MainContent.Margin = new Thickness(0);
-        UpdatePageHeader("Home", "Panel principal");
+        UpdatePageHeader("Home", "Panel principal", FontAwesomeIcon.House);
     }
 
     // Abre los tipos de documento con la misma consulta paginada usada en Blazor.
     private void ShowDocumentTypesClick(object sender, RoutedEventArgs e)
     {
-        ShowView<DocumentTypeIndexView>("Tipo documento", "Configuracion / Tipo documento");
+        ShowView<DocumentTypeIndexView>("Tipo documento", "Configuracion / Tipo documento", FontAwesomeIcon.IdCard);
+    }
+
+    // Abre la configuracion de correo, con el mismo endpoint que usa Blazor.
+    private void ShowEmailProvidersClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<EmailProviderIndexView>("Correo", "Configuracion / Correo", FontAwesomeIcon.Envelope);
+    }
+
+    // Abre las zonas, con el mismo endpoint que usa Blazor.
+    private void ShowZonesClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ZoneIndexView>("Zonas", "Configuracion / Zonas", FontAwesomeIcon.MapLocationDot);
+    }
+
+    // Abre los consecutivos, con el mismo endpoint que usa Blazor.
+    private void ShowRegistersClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<RegisterIndexView>("Consecutivos", "Configuracion / Consecutivos", FontAwesomeIcon.ListOl);
+    }
+
+    // Abre los impuestos, con el mismo endpoint que usa Blazor.
+    private void ShowTaxesClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<TaxIndexView>("Impuestos", "Configuracion / Impuestos", FontAwesomeIcon.Percent);
     }
 
     // Abre los estratos sociales con su propio endpoint existente.
     private void ShowEstratosSocialesClick(object sender, RoutedEventArgs e)
     {
-        ShowView<EstratoSocialIndexView>("Estrato social", "Configuracion / Estrato social");
+        ShowView<EstratoSocialIndexView>("Estrato social", "Configuracion / Estrato social", FontAwesomeIcon.LayerGroup);
     }
 
-    // Muestra las categorias y los planes expandibles en el mismo indice.
+    // Categorias a la izquierda y sus planes a la derecha, igual que en la web.
     private void ShowPlansClick(object sender, RoutedEventArgs e)
     {
-        ShowView<PlanIndexView>("Categoria/Planes", "Configuracion / Categoria/Planes");
+        ShowView<PlanIndexView>("Categoria/Planes", "Configuracion / Categoria/Planes", FontAwesomeIcon.Wifi);
     }
 
-    // Muestra las categorias y los servicios expandibles en el mismo indice.
+    // Categorias a la izquierda y sus servicios a la derecha, igual que en la web.
     private void ShowServicesClick(object sender, RoutedEventArgs e)
     {
-        ShowView<ServiceIndexView>("Categoria/Servicios", "Configuracion / Categoria/Servicios");
+        ShowView<ServiceIndexView>("Categoria/Servicios", "Configuracion / Categoria/Servicios", FontAwesomeIcon.BellConcierge);
     }
 
-    // Abre las categorias y productos con el mismo acordeon usado por Blazor.
+    // Categorias a la izquierda y sus productos a la derecha, igual que en la web.
     private void ShowProductsClick(object sender, RoutedEventArgs e)
     {
         ShowView<ProductIndexView>(
             "Categoria/Productos",
-            "Inventario / Categoria y productos");
+            "Inventario / Categoria y productos",
+            FontAwesomeIcon.BoxOpen);
     }
 
-    // Abre las marcas y modelos con el mismo patron expandible de Blazor.
+    // Marcas a la izquierda y sus modelos a la derecha, igual que en la web.
     private void ShowMarksClick(object sender, RoutedEventArgs e)
     {
         ShowView<MarkIndexView>(
             "Marca/Modelo",
-            "Inventario / Marcas y modelos");
+            "Inventario / Marcas y modelos",
+            FontAwesomeIcon.Tags);
     }
 
     // Abre proveedores usando el mismo indice paginado de la aplicacion web.
@@ -283,25 +300,46 @@ public partial class MainWindow : Window
     }
 
     // Resuelve cada vista con su ViewModel inyectado para mantener la navegacion centralizada.
-    private void ShowView<TView>(string title, string subtitle)
+    private void ShowView<TView>(string title, string subtitle, FontAwesomeIcon? icon = null)
         where TView : UserControl
     {
-        ShowView(_serviceProvider.GetRequiredService<TView>(), title, subtitle);
+        ShowView(_serviceProvider.GetRequiredService<TView>(), title, subtitle, icon);
     }
 
     // Mantiene un unico punto para presentar vistas resueltas por inyeccion de dependencias.
-    private void ShowView(UserControl view, string title, string subtitle)
+    private void ShowView(UserControl view, string title, string subtitle, FontAwesomeIcon? icon = null)
     {
         MainContent.Content = view;
         MainContent.Margin = new Thickness(24, 20, 24, 22);
-        UpdatePageHeader(title, subtitle);
+        UpdatePageHeader(title, subtitle, icon);
     }
 
     // Mantiene el encabezado global sincronizado con la vista que el usuario abre.
-    private void UpdatePageHeader(string title, string subtitle)
+    private void UpdatePageHeader(string title, string subtitle, FontAwesomeIcon? icon = null)
     {
         PageTitleText.Text = title;
         PageSubtitleText.Text = subtitle;
+        PageGlyph.Icon = icon ?? FontAwesomeIcon.TableList;
+    }
+
+    // Tema claro u oscuro para toda la aplicacion, en caliente
+    private void ToggleThemeClick(object sender, RoutedEventArgs e)
+    {
+        AppearanceService.SetLightTheme(!AppearanceService.IsLight);
+
+        ThemeIcon.Icon = AppearanceService.IsLight
+            ? FontAwesomeIcon.Sun
+            : FontAwesomeIcon.Moon;
+    }
+
+    // Filas comodas o compactas en todos los listados
+    private void ToggleDensityClick(object sender, RoutedEventArgs e)
+    {
+        AppearanceService.SetCompact(!AppearanceService.IsCompact);
+
+        DensityIcon.Icon = AppearanceService.IsCompact
+            ? FontAwesomeIcon.Bars
+            : FontAwesomeIcon.BarsStaggered;
     }
 
     // Desconecta eventos para que ninguna ventana cerrada retenga referencias de sesion.

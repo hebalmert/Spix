@@ -3,17 +3,18 @@ using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.AppWpf.Views.EntitiesInven.Product;
-using Spix.Domain.EntitiesGen;
 using Spix.HttpService;
-using System.Collections.ObjectModel;
+using ProductCategoryEntity = Spix.Domain.EntitiesGen.ProductCategory;
 using ProductEntity = Spix.Domain.EntitiesGen.Product;
 
 namespace Spix.AppWpf.ViewModels.EntitiesInven.Product;
 
-// Presenta las categorias y sus productos en un unico indice como el acordeon de Blazor.
-public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryRowViewModel>
+// Productos: maestro-detalle, igual que en la web. Es el unico del catalogo que no filtra
+// por activo sino por stock, y el unico con un tercer boton para ver las bodegas.
+public partial class ProductIndexViewModel : CategoryDetailViewModel<ProductCategoryEntity, ProductEntity>
 {
-    private const int ChildPageSize = 100;
+    // El mismo limite de la web: 15 o menos es stock bajo
+    private const decimal LowStockLimit = 15;
 
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
@@ -22,8 +23,10 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
 
     protected override string Endpoint => "api/v1/productcategories";
 
+    protected override string ChildEndpoint => "api/v1/products";
+
     public ProductIndexViewModel(
-        IPagedEntityService<ProductCategoryRowViewModel> pagedEntityService,
+        IPagedEntityService<ProductCategoryEntity> pagedEntityService,
         IRepository repository,
         ModalService modalService,
         AlertService alertService,
@@ -36,35 +39,55 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
         _responseHandler = responseHandler;
     }
 
-    [RelayCommand]
-    private async Task ToggleProductsAsync(ProductCategoryRowViewModel? category)
+    protected override Guid GetCategoryId(ProductCategoryEntity category)
     {
-        if (category is null)
-        {
-            return;
-        }
-
-        if (category.IsExpanded)
-        {
-            category.IsExpanded = false;
-            return;
-        }
-
-        foreach (var item in Items)
-        {
-            item.IsExpanded = false;
-        }
-
-        category.IsExpanded = true;
-        await LoadProductsAsync(category);
+        return category.ProductCategoryId;
     }
+
+    public override string SelectedCategoryName => SelectedCategory?.Name ?? "Productos";
+
+    // Los dos indicadores propios: lo que esta por acabarse y lo que ya se acabo
+    public int LowStockCount =>
+        Children.Count(item => item.TotalInventario > 0 && item.TotalInventario <= LowStockLimit);
+
+    public int NoStockCount => Children.Count(item => item.TotalInventario == 0);
+
+    protected override void NotifyKpis()
+    {
+        OnPropertyChanged(nameof(LowStockCount));
+        OnPropertyChanged(nameof(NoStockCount));
+    }
+
+    protected override IEnumerable<ProductEntity> ApplyChip(IEnumerable<ProductEntity> children, string chip)
+    {
+        return chip switch
+        {
+            "stock" => children.Where(item => item.TotalInventario > 0),
+            "low" => children.Where(item => item.TotalInventario > 0 && item.TotalInventario <= LowStockLimit),
+            "none" => children.Where(item => item.TotalInventario == 0),
+            "serials" => children.Where(item => item.WithSerials),
+            _ => children
+        };
+    }
+
+    protected override async Task<IReadOnlyCollection<ProductEntity>> GetChildrenAsync(string url)
+    {
+        var responseHttp = await _repository.GetAsync<List<ProductEntity>>(url);
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            return Array.Empty<ProductEntity>();
+        }
+
+        return responseHttp.Response ?? new List<ProductEntity>();
+    }
+
+    // ===== La categoria =====
 
     [RelayCommand]
     private async Task NewAsync()
     {
-        var result = await _modalService.ShowAsync<CreateProductCategoryDialogView>(
-            "Crear categoria producto");
-
+        var result = await _modalService.ShowAsync<CreateProductCategoryDialogView>("Crear categoria de productos");
         if (!result.Succeeded)
         {
             return;
@@ -75,21 +98,16 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
     }
 
     [RelayCommand]
-    private async Task EditAsync(ProductCategoryRowViewModel? category)
+    private async Task EditAsync(ProductCategoryEntity? category)
     {
         if (category is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["Id"] = category.ProductCategoryId
-        };
-
         var result = await _modalService.ShowAsync<EditProductCategoryDialogView>(
-            "Editar categoria producto",
-            parameters);
+            "Editar categoria de productos",
+            new Dictionary<string, object> { ["Id"] = category.ProductCategoryId });
 
         if (!result.Succeeded)
         {
@@ -101,7 +119,7 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
     }
 
     [RelayCommand]
-    private async Task DeleteAsync(ProductCategoryRowViewModel? category)
+    private async Task DeleteAsync(ProductCategoryEntity? category)
     {
         if (category is null)
         {
@@ -109,7 +127,7 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
         }
 
         var confirmed = await _alertService.ConfirmAsync(
-            "Eliminar categoria producto",
+            "Eliminar categoria de productos",
             "Esta accion no se puede deshacer.",
             "Eliminar");
 
@@ -118,9 +136,7 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
             return;
         }
 
-        var responseHttp = await _repository.DeleteAsync(
-            $"api/v1/productcategories/{category.ProductCategoryId}");
-
+        var responseHttp = await _repository.DeleteAsync($"{Endpoint}/{category.ProductCategoryId}");
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             return;
@@ -130,62 +146,57 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
         await _alertService.SuccessAsync("Eliminado", "La categoria de productos fue eliminada correctamente.");
     }
 
+    // ===== El producto =====
+
     [RelayCommand]
-    private async Task NewProductAsync(ProductCategoryRowViewModel? category)
+    private async Task NewChildAsync()
     {
-        if (category is null)
+        if (SelectedCategory is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["ProductCategoryId"] = category.ProductCategoryId
-        };
+        var categoryId = GetCategoryId(SelectedCategory);
 
         var result = await _modalService.ShowAsync<CreateProductDialogView>(
             "Crear producto",
-            parameters);
+            new Dictionary<string, object> { ["ProductCategoryId"] = categoryId });
 
         if (!result.Succeeded)
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(category.ProductCategoryId);
+        //Se recarga tambien el padre porque cambia el contador de la fila
+        await ReloadKeepingSelectionAsync(categoryId);
         await _alertService.SuccessAsync("Guardado", "El producto fue guardado correctamente.");
     }
 
     [RelayCommand]
-    private async Task EditProductAsync(ProductEntity? product)
+    private async Task EditChildAsync(ProductEntity? product)
     {
-        if (product is null)
+        if (product is null || SelectedCategory is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["Id"] = product.ProductId
-        };
-
         var result = await _modalService.ShowAsync<EditProductDialogView>(
             "Editar producto",
-            parameters);
+            new Dictionary<string, object> { ["Id"] = product.ProductId });
 
         if (!result.Succeeded)
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(product.ProductCategoryId);
+        await ReloadKeepingSelectionAsync(GetCategoryId(SelectedCategory));
         await _alertService.SuccessAsync("Actualizado", "El producto fue actualizado correctamente.");
     }
 
     [RelayCommand]
-    private async Task DeleteProductAsync(ProductEntity? product)
+    private async Task DeleteChildAsync(ProductEntity? product)
     {
-        if (product is null)
+        if (product is null || SelectedCategory is null)
         {
             return;
         }
@@ -200,62 +211,27 @@ public partial class ProductIndexViewModel : PagedListViewModel<ProductCategoryR
             return;
         }
 
-        var responseHttp = await _repository.DeleteAsync($"api/v1/products/{product.ProductId}");
+        var responseHttp = await _repository.DeleteAsync($"{ChildEndpoint}/{product.ProductId}");
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(product.ProductCategoryId);
+        await ReloadKeepingSelectionAsync(GetCategoryId(SelectedCategory));
         await _alertService.SuccessAsync("Eliminado", "El producto fue eliminado correctamente.");
     }
 
-    // Descarga solamente los productos de la categoria abierta para conservar la paginacion del indice.
-    private async Task LoadProductsAsync(ProductCategoryRowViewModel category)
+    // Muestra en que bodegas esta repartido el stock. Solo consulta, no cambia nada.
+    [RelayCommand]
+    private async Task ShowStockAsync(ProductEntity? product)
     {
-        category.IsProductsLoading = true;
-        category.ProductsMessage = string.Empty;
-
-        try
+        if (product is null)
         {
-            var responseHttp = await _repository.GetAsync<List<ProductEntity>>(
-                $"api/v1/products?guidId={category.ProductCategoryId}&page=1&recordsnumber={ChildPageSize}");
-
-            if (await _responseHandler.HandleErrorAsync(responseHttp))
-            {
-                return;
-            }
-
-            category.Products = new ObservableCollection<ProductEntity>(
-                responseHttp.Response ?? new List<ProductEntity>());
-
-            if (category.Products.Count == 0)
-            {
-                category.ProductsMessage = "No hay productos registrados en esta categoria.";
-            }
-        }
-        catch (Exception exception)
-        {
-            category.ProductsMessage = exception.Message;
-        }
-        finally
-        {
-            category.IsProductsLoading = false;
-        }
-    }
-
-    private async Task ReloadExpandedCategoryAsync(Guid productCategoryId)
-    {
-        var category = Items.FirstOrDefault(
-            item => item.ProductCategoryId == productCategoryId);
-
-        if (category is null)
-        {
-            await LoadAsync(CurrentPage);
             return;
         }
 
-        category.IsExpanded = true;
-        await LoadProductsAsync(category);
+        await _modalService.ShowAsync<ProductStockDialogView>(
+            "Existencias por bodega",
+            new Dictionary<string, object> { ["Id"] = product.ProductId });
     }
 }

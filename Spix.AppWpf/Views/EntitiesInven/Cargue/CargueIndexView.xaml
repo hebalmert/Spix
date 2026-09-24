@@ -1,4 +1,4 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Cargue.CargueIndexView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Cargue.CargueIndexView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
@@ -114,6 +114,7 @@
         <shared:SharedPagination Grid.Row="6"
                                  CurrentPage="{Binding CurrentPage}"
                                  TotalPages="{Binding TotalPages}"
+                                 TotalRecords="{Binding TotalRecords}"
                                  PageCommand="{Binding GoToPageCommand}" />
     </Grid>
 </UserControl>

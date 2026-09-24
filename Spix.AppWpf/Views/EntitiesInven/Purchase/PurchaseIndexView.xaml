@@ -1,4 +1,4 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Purchase.PurchaseIndexView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Purchase.PurchaseIndexView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
@@ -112,6 +112,7 @@
         <shared:SharedPagination Grid.Row="6"
                                  CurrentPage="{Binding CurrentPage}"
                                  TotalPages="{Binding TotalPages}"
+                                 TotalRecords="{Binding TotalRecords}"
                                  PageCommand="{Binding GoToPageCommand}" />
     </Grid>
 </UserControl>

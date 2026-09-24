@@ -1,0 +1,164 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesGen.Zone.ZoneIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Copiado del molde (DocumentTypeIndexView): solo cambian las columnas y los textos. -->
+    <UserControl.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Command="{Binding NewCommand}"
+                    Style="{StaticResource SharedIndexNewButton}"
+                    ToolTip="Crear una zona (Ctrl+N)"
+                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                    Content="Nuevo" />
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Width="38" Height="38"
+                        Margin="0,0,8,0"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Actualizar (F5)">
+                    <fa:FontAwesomeImage Width="14" Height="14"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+
+                <shared:SharedExportButton Margin="0,0,10,0"
+                                           Items="{Binding Items}"
+                                           FileName="zonas" />
+
+                <shared:SharedSearchFilter x:Name="SearchFilter"
+                                           SearchText="{Binding Filter}"
+                                           SearchCommand="{Binding SearchCommand}"
+                                           ClearCommand="{Binding ClearSearchCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Grid.Row="2"
+                   Margin="0,0,0,10"
+                   Style="{StaticResource SharedIndexMessage}"
+                   Text="{Binding Message}"
+                   Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <Border Grid.Row="3" Style="{StaticResource SharedIndexCard}">
+            <Grid>
+                <DataGrid x:Name="ItemsGrid"
+                          ItemsSource="{Binding Items}"
+                          Style="{StaticResource SharedIndexGrid}"
+                          ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                          RowStyle="{StaticResource SharedIndexRow}"
+                          CellStyle="{StaticResource SharedIndexCell}">
+
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick"
+                                      Command="{Binding EditCommand}"
+                                      CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                    </DataGrid.InputBindings>
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="2*" Header="Zona" SortMemberPath="ZoneName">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ZoneName}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="*" Header="Estado" SortMemberPath="State.Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding State.Name}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="*" Header="Ciudad" SortMemberPath="City.Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding City.Name}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="130" Header="Estado" SortMemberPath="Active">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <shared:SharedStatePill IsOn="{Binding Active}" OnText="Activo" OffText="Inactivo" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="Auto" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                        <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    ToolTip="Editar" />
+
+                                        <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                      CommandParameter="{Binding}"
+                                                                      ToolTip="Eliminar" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Visibility="{Binding Items, Converter={StaticResource CountToVisibilityConverter}}">
+                    <fa:FontAwesomeImage Width="26" Height="26"
+                                         HorizontalAlignment="Center"
+                                         Foreground="{DynamicResource BrushIndexMeta}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.FolderOpen}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    <TextBlock Margin="0,12,0,0"
+                               Style="{StaticResource SharedIndexEmpty}"
+                               Text="Todavia no hay zonas" />
+                    <Button Margin="0,14,0,0"
+                            HorizontalAlignment="Center"
+                            Command="{Binding NewCommand}"
+                            Style="{StaticResource SharedIndexNewButton}"
+                            ToolTip="Crear el primero"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                            Content="Crear el primero" />
+                </StackPanel>
+
+                <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+            </Grid>
+        </Border>
+
+        <shared:SharedPagination Grid.Row="5"
+                                 CurrentPage="{Binding CurrentPage}"
+                                 TotalPages="{Binding TotalPages}"
+                                 TotalRecords="{Binding TotalRecords}"
+                                 PageCommand="{Binding GoToPageCommand}" />
+    </Grid>
+</UserControl>

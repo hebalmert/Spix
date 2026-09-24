@@ -3,13 +3,13 @@ using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.AppWpf.Views.EntitiesInven.Storage;
-using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
 
 namespace Spix.AppWpf.ViewModels.EntitiesInven.Storage;
 
 // Lista bodegas paginadas y conserva las acciones del indice Blazor.
-public partial class ProductStorageIndexViewModel : PagedListViewModel<ProductStorage>
+public partial class ProductStorageIndexViewModel : PagedListViewModel<StorageListItemDto>
 {
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
@@ -18,7 +18,7 @@ public partial class ProductStorageIndexViewModel : PagedListViewModel<ProductSt
 
     protected override string Endpoint => "api/v1/productstorages";
 
-    public ProductStorageIndexViewModel(IPagedEntityService<ProductStorage> pagedEntityService, IRepository repository, ModalService modalService, AlertService alertService, HttpResponseHandler responseHandler)
+    public ProductStorageIndexViewModel(IPagedEntityService<StorageListItemDto> pagedEntityService, IRepository repository, ModalService modalService, AlertService alertService, HttpResponseHandler responseHandler)
         : base(pagedEntityService)
     {
         _repository = repository;
@@ -37,7 +37,7 @@ public partial class ProductStorageIndexViewModel : PagedListViewModel<ProductSt
     }
 
     [RelayCommand]
-    private async Task EditAsync(ProductStorage? storage)
+    private async Task EditAsync(StorageListItemDto? storage)
     {
         if (storage is null) return;
         var result = await _modalService.ShowAsync<EditProductStorageDialogView>("Editar bodega", new Dictionary<string, object> { ["Id"] = storage.ProductStorageId });
@@ -47,7 +47,7 @@ public partial class ProductStorageIndexViewModel : PagedListViewModel<ProductSt
     }
 
     [RelayCommand]
-    private async Task DeleteAsync(ProductStorage? storage)
+    private async Task DeleteAsync(StorageListItemDto? storage)
     {
         if (storage is null) return;
         var confirmed = await _alertService.ConfirmAsync("Eliminar bodega", "Esta accion no se puede deshacer.", "Eliminar");

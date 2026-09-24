@@ -1,6 +1,7 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Node.NodeIndexView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Node.NodeIndexView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
              xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
@@ -23,15 +24,9 @@
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0"
                     Command="{Binding NewCommand}"
-                    Style="{StaticResource SharedButtonFormPrimary}">
-                <StackPanel Orientation="Horizontal">
-                    <fa:FontAwesomeImage Width="16"
-                                         Height="16"
-                                         Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}"
-                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                    <TextBlock Margin="10,0,0,0" Text="Nuevo" />
-                </StackPanel>
-            </Button>
+                    Style="{StaticResource SharedButtonFormPrimary}"
+                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}"
+                    Content="Nuevo" />
             <shared:SharedSearchFilter Grid.Column="2"
                                        VerticalAlignment="Bottom"
                                        SearchText="{Binding Filter}"
@@ -77,15 +72,19 @@
                                         CellStyle="{StaticResource SharedDataGridTextCell}" />
                     <DataGridTextColumn Width="150"
                                         Header="Operacion"
-                                        Binding="{Binding Operation.OperationName}"
+                                        Binding="{Binding OperationName}"
                                         CellStyle="{StaticResource SharedDataGridTextCell}" />
                     <DataGridTextColumn Width="150"
                                         Header="Zona"
-                                        Binding="{Binding Zone.ZoneName}"
+                                        Binding="{Binding ZoneName}"
                                         CellStyle="{StaticResource SharedDataGridTextCell}" />
                     <DataGridTextColumn Width="140"
                                         Header="IP red"
-                                        Binding="{Binding IpNetwork.Ip}"
+                                        Binding="{Binding Ip}"
+                                        CellStyle="{StaticResource SharedDataGridTextCell}" />
+                    <DataGridTextColumn Width="100"
+                                        Header="Clientes"
+                                        Binding="{Binding Clients}"
                                         CellStyle="{StaticResource SharedDataGridTextCell}" />
                     <DataGridCheckBoxColumn Width="90" Header="Activo" Binding="{Binding Active}" />
                     <DataGridTemplateColumn Width="48" Header="">
@@ -161,6 +160,7 @@
                                  HorizontalAlignment="Left"
                                  CurrentPage="{Binding CurrentPage}"
                                  TotalPages="{Binding TotalPages}"
+                                 TotalRecords="{Binding TotalRecords}"
                                  PageCommand="{Binding GoToPageCommand}" />
     </Grid>
 </UserControl>

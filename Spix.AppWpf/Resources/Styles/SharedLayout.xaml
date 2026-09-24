@@ -8,7 +8,7 @@
 
     <Style x:Key="SharedTopBar" TargetType="Border">
         <Setter Property="Height" Value="64" />
-        <Setter Property="Background" Value="{StaticResource BrushShellTopBar}" />
+        <Setter Property="Background" Value="{DynamicResource BrushShellTopBar}" />
         <Setter Property="BorderBrush" Value="#3C4654" />
         <Setter Property="BorderThickness" Value="0,0,0,1" />
     </Style>

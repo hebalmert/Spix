@@ -20,6 +20,9 @@ public partial class LoginWindow : Window
         _serviceProvider = serviceProvider;
         _viewModel.LoginSucceeded += OpenMainWindow;
         DataContext = _viewModel;
+
+        // El cursor arranca en el usuario: se entra escribiendo, sin tocar el mouse
+        Loaded += (_, _) => UserNameBox.Focus();
     }
 
     // Alterna entre los controles para permitir revisar la contraseña escrita.

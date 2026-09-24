@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedButtonRow.SharedButtonRowSuccess"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             x:Name="Raiz">
+
+    <!-- El boton verde de la fila: la accion propia del modulo, como enviar el correo de prueba. -->
+    <Button Command="{Binding Command, ElementName=Raiz}"
+            CommandParameter="{Binding CommandParameter, ElementName=Raiz}"
+            IsEnabled="{Binding IsEnabled, ElementName=Raiz}"
+            Style="{StaticResource SharedIndexIconButtonSuccess}"
+            ToolTip="{Binding ToolTip, ElementName=Raiz}">
+        <fa:FontAwesomeImage Width="14" Height="14"
+                             Foreground="{DynamicResource BrushIndexIconSuccess}"
+                             Icon="{Binding Icon, ElementName=Raiz}"
+                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+    </Button>
+</UserControl>

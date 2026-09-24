@@ -1,4 +1,4 @@
-using Spix.AppWpf.Models.Pagination;
+﻿using Spix.AppWpf.Models.Pagination;
 using Spix.HttpService;
 
 namespace Spix.AppWpf.Services.Data;
@@ -37,19 +37,37 @@ public class PagedEntityService<T> : IPagedEntityService<T>
                     : message.Trim().Trim('"'));
         }
 
-        var totalPages = 0;
-        responseHttp.HttpResponseMessage.Headers.TryGetValues(
-            "Totalpages",
-            out var totalPagesHeaders);
+        var items = responseHttp.Response ?? new List<T>();
 
-        var totalPagesHeader = totalPagesHeaders?.FirstOrDefault();
+        //El Backend manda las paginas en la cabecera. Si por lo que sea no llega, se
+        //calculan con el total de registros, y si tampoco esta, se deducen de lo que vino:
+        //asi la barra de paginas nunca queda en "Pagina 1 de 0" con datos en pantalla.
+        var totalPages = LeerEntero(responseHttp, "Totalpages");
+        var totalRecords = LeerEntero(responseHttp, "Counting");
 
-        _ = int.TryParse(totalPagesHeader, out totalPages);
+        if (totalPages <= 0 && totalRecords > 0)
+        {
+            totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+        }
+
+        if (totalPages <= 0 && items.Count > 0)
+        {
+            totalPages = items.Count < pageSize ? page : page + 1;
+        }
 
         return new PagedResult<T>
         {
-            Items = responseHttp.Response ?? new List<T>(),
-            TotalPages = Math.Max(0, totalPages)
+            Items = items,
+            TotalPages = Math.Max(0, totalPages),
+            TotalRecords = Math.Max(0, totalRecords)
         };
+    }
+
+    //Lee una cabecera numerica de la respuesta; devuelve 0 si no vino o no es un numero
+    private static int LeerEntero(HttpResponseWrapper<List<T>> responseHttp, string header)
+    {
+        responseHttp.HttpResponseMessage.Headers.TryGetValues(header, out var valores);
+
+        return int.TryParse(valores?.FirstOrDefault(), out var numero) ? numero : 0;
     }
 }

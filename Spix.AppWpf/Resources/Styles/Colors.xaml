@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Color x:Key="ColorWhite">#FFFFFF</Color>
     <Color x:Key="ColorDisabled">#9CA3AF</Color>
@@ -61,9 +61,9 @@
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="BrushSidebarHover" Color="#FFFFFF1F" />
-    <SolidColorBrush x:Key="BrushShellContent" Color="#252A33" />
-    <SolidColorBrush x:Key="BrushShellTopBar" Color="#20252E" />
-    <SolidColorBrush x:Key="BrushShellCard" Color="#303640" />
+    <SolidColorBrush x:Key="BrushShellContent" Color="#121A27" />
+    <SolidColorBrush x:Key="BrushShellTopBar" Color="#0E1622" />
+    <SolidColorBrush x:Key="BrushShellCard" Color="#1A2434" />
 
     <SolidColorBrush x:Key="BrushDisabled" Color="{StaticResource ColorDisabled}" />
     <SolidColorBrush x:Key="BrushWhite" Color="{StaticResource ColorWhite}" />
@@ -71,4 +71,182 @@
     <SolidColorBrush x:Key="BrushRowActionForeground" Color="{StaticResource ColorRowActionForeground}" />
     <SolidColorBrush x:Key="BrushTableRowDelete" Color="#EF4444" />
     <SolidColorBrush x:Key="BrushTableRowDeleteHover" Color="#DC2626" />
+    <!-- ======================================================================
+         LISTADOS: el color de todas las pantallas de tabla del escritorio.
+         Si se quiere cambiar el tono de los listados, se cambia AQUI y cambian
+         las 20 pantallas. Los estilos de SharedIndex.xaml solo consumen esto.
+         ====================================================================== -->
+    <!-- LISTADOS. Tres escalones: el fondo es lo mas oscuro, la tarjeta sube uno y la
+         franja del encabezado otro. El cyan de SPIX es el unico color de estado. -->
+    <SolidColorBrush x:Key="BrushIndexCard" Color="#1A2434" />
+    <SolidColorBrush x:Key="BrushIndexHeaderBand" Color="#16305E" />
+    <SolidColorBrush x:Key="BrushIndexBorder" Color="#2B3A52" />
+    <SolidColorBrush x:Key="BrushIndexRowLine" Color="#243149" />
+    <SolidColorBrush x:Key="BrushIndexRowAlt" Color="#1E2938" />
+    <SolidColorBrush x:Key="BrushIndexRowHover" Color="#27354D" />
+    <SolidColorBrush x:Key="BrushIndexRowSelected" Color="#2E4368" />
+    <SolidColorBrush x:Key="BrushIndexText" Color="#EAF1FB" />
+    <SolidColorBrush x:Key="BrushIndexMeta" Color="#8FA3C0" />
+    <SolidColorBrush x:Key="BrushIndexHeaderText" Color="#FFFFFF" />
+
+    <!-- Lo que se escribe sobre el area de trabajo, fuera de la tarjeta: paginacion,
+         avisos y los iconos de la barra -->
+    <SolidColorBrush x:Key="BrushIndexOnCanvas" Color="#8FA3C0" />
+    <SolidColorBrush x:Key="BrushIndexMessage" Color="#FF9BB0" />
+
+    <!-- Los controles de la barra: un solo boton lleno (el azul) y el resto en contorno -->
+    <SolidColorBrush x:Key="BrushIndexField" Color="#1E2A3D" />
+    <SolidColorBrush x:Key="BrushIndexFieldBorder" Color="#334764" />
+    <SolidColorBrush x:Key="BrushIndexAccent" Color="#1F6FEB" />
+    <SolidColorBrush x:Key="BrushIndexAccentHover" Color="#2F80F5" />
+    <SolidColorBrush x:Key="BrushIndexGhostBorder" Color="#37496A" />
+    <SolidColorBrush x:Key="BrushIndexGhostText" Color="#C2D3EC" />
+    <SolidColorBrush x:Key="BrushIndexGhostHover" Color="#27354D" />
+
+    <!-- Los botones de la fila -->
+    <SolidColorBrush x:Key="BrushIndexIcon" Color="#9FB3D1" />
+    <SolidColorBrush x:Key="BrushIndexIconRest" Color="#22304A" />
+    <SolidColorBrush x:Key="BrushIndexIconEdit" Color="#C2D3EC" />
+    <SolidColorBrush x:Key="BrushIndexIconEditBack" Color="#22304A" />
+    <SolidColorBrush x:Key="BrushIndexIconEditBorder" Color="#35476A" />
+    <SolidColorBrush x:Key="BrushIndexIconHover" Color="#2E4368" />
+    <SolidColorBrush x:Key="BrushIndexIconOnDanger" Color="#FFFFFF" />
+    <!-- El icono que va ENCIMA de un boton relleno (rojo, verde): siempre blanco -->
+    <SolidColorBrush x:Key="BrushIndexIconOnFill" Color="#FFFFFF" />
+
+    <!-- Borrar se ve rojo SIEMPRE, con el icono blanco: es el boton que hay que pensar
+         dos veces antes de tocar -->
+    <SolidColorBrush x:Key="BrushIndexIconSuccess" Color="#198754" />
+    <SolidColorBrush x:Key="BrushIndexIconSuccessHover" Color="#1E3A31" />
+    <SolidColorBrush x:Key="BrushIndexIconExcel" Color="#217346" />
+    <SolidColorBrush x:Key="BrushIndexIconExcelHover" Color="#1A5C38" />
+    <SolidColorBrush x:Key="BrushIndexIconDanger" Color="#DC2626" />
+    <SolidColorBrush x:Key="BrushIndexIconDangerHover" Color="#3A2429" />
+
+    <!-- ===== CATALOGO (Planes, Servicios, Productos, Marcas) =====
+         Los valores son EXACTAMENTE los de la hoja de la web
+         (Pages/EntitiesGen/PlanPage/IndexPlanCategory.razor.css, identica en los cuatro).
+         El panel del catalogo es una tarjeta blanca en los dos temas, igual que en la web:
+         por eso estos tonos no se redefinen en ColorsLight. -->
+    <SolidColorBrush x:Key="BrushCatalogCard" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushCatalogPanelBorder" Color="#732D5BA0" />
+    <SolidColorBrush x:Key="BrushCatalogHeadBack" Color="#0A1A3F" />
+    <SolidColorBrush x:Key="BrushCatalogHeadText" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushCatalogSearchBack" Color="#F7F9FD" />
+    <SolidColorBrush x:Key="BrushCatalogLine" Color="#EDF1F7" />
+    <SolidColorBrush x:Key="BrushCatalogSub" Color="#5B6784" />
+    <SolidColorBrush x:Key="BrushCatalogName" Color="#0A1A3F" />
+    <SolidColorBrush x:Key="BrushCatalogMeta" Color="#6B7690" />
+
+    <!-- La lista de categorias: cebra, hover y la que esta elegida -->
+    <SolidColorBrush x:Key="BrushCatalogRowAlt" Color="#E9F0FB" />
+    <SolidColorBrush x:Key="BrushCatalogRowHover" Color="#DAE5F7" />
+    <SolidColorBrush x:Key="BrushCatalogRowSelected" Color="#C9DCF7" />
+    <SolidColorBrush x:Key="BrushCatalogSelectedBar" Color="#0D6EFD" />
+
+    <!-- Los chips que filtran la lista de la derecha -->
+    <SolidColorBrush x:Key="BrushCatalogChipBack" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushCatalogChipBorder" Color="#DFE6F2" />
+    <SolidColorBrush x:Key="BrushCatalogChipText" Color="#33405C" />
+    <SolidColorBrush x:Key="BrushCatalogChipOnBack" Color="#0A1A3F" />
+    <SolidColorBrush x:Key="BrushCatalogChipOnText" Color="#FFFFFF" />
+
+    <!-- La tabla del panel derecho -->
+    <SolidColorBrush x:Key="BrushCatalogHeaderBack" Color="#F4F7FC" />
+    <SolidColorBrush x:Key="BrushCatalogHeaderText" Color="#33405C" />
+    <SolidColorBrush x:Key="BrushCatalogHeaderLine" Color="#E3E9F4" />
+
+    <!-- La pastilla de activo o inactivo -->
+    <SolidColorBrush x:Key="BrushCatalogPillOnBack" Color="#E6F6EE" />
+    <SolidColorBrush x:Key="BrushCatalogPillOnText" Color="#198754" />
+    <SolidColorBrush x:Key="BrushCatalogPillOffBack" Color="#F1F2F5" />
+    <SolidColorBrush x:Key="BrushCatalogPillOffText" Color="#6B7690" />
+
+    <!-- Los cuatro indicadores de arriba. La barra de la izquierda dice que es cada numero -->
+    <SolidColorBrush x:Key="BrushCatalogKpiBorder" Color="#E6ECF6" />
+    <SolidColorBrush x:Key="BrushCatalogKpiAccent" Color="#16305E" />
+    <SolidColorBrush x:Key="BrushCatalogKpiOk" Color="#198754" />
+    <SolidColorBrush x:Key="BrushCatalogKpiWarn" Color="#F59F00" />
+    <SolidColorBrush x:Key="BrushCatalogKpiBad" Color="#DC3545" />
+    <SolidColorBrush x:Key="BrushCatalogKpiWarnText" Color="#C77700" />
+    <SolidColorBrush x:Key="BrushCatalogKpiBadText" Color="#DC3545" />
+
+    <!-- El stock del producto: verde, ambar o rojo segun cuanto quede -->
+    <SolidColorBrush x:Key="BrushCatalogStockOk" Color="#198754" />
+    <SolidColorBrush x:Key="BrushCatalogStockLow" Color="#C77700" />
+    <SolidColorBrush x:Key="BrushCatalogStockNone" Color="#DC3545" />
+
+    <SolidColorBrush x:Key="BrushCatalogEmptyGlyph" Color="#B4C0D6" />
+
+    <!-- El estado de la fila: activo e inactivo -->
+    <SolidColorBrush x:Key="BrushIndexPillOnBack" Color="#123A2E" />
+    <SolidColorBrush x:Key="BrushIndexPillOnBorder" Color="#1F6B4F" />
+    <SolidColorBrush x:Key="BrushIndexPillOnText" Color="#4ADE9B" />
+    <SolidColorBrush x:Key="BrushIndexPillOffBack" Color="#3B2230" />
+    <SolidColorBrush x:Key="BrushIndexPillOffBorder" Color="#6B3A4C" />
+    <SolidColorBrush x:Key="BrushIndexPillOffText" Color="#FF9BB0" />
+
+    <!-- ======================================================================
+         TARJETAS DEL TABLERO. Claras como las tablas, con una linea de color al lado
+         para distinguir cada modulo.
+         ====================================================================== -->
+    <SolidColorBrush x:Key="BrushDashCard" Color="#F5F7FB" />
+    <SolidColorBrush x:Key="BrushDashCardHover" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushDashTitle" Color="#152238" />
+    <SolidColorBrush x:Key="BrushDashMeta" Color="#6B7690" />
+    <SolidColorBrush x:Key="BrushDashIconBack" Color="#E2EBFA" />
+
+    <!-- La linea lateral de cada modulo -->
+    <SolidColorBrush x:Key="BrushDashSetup" Color="#22C1E8" />
+    <SolidColorBrush x:Key="BrushDashInventory" Color="#0F7A4E" />
+    <SolidColorBrush x:Key="BrushDashNetwork" Color="#2C5FAD" />
+    <SolidColorBrush x:Key="BrushDashOperations" Color="#D97706" />
+
+    <!-- ======================================================================
+         BOTONES DE FORMULARIO (los de los modales). El modal es azul oscuro en los dos
+         temas, asi que estos colores no cambian con el tema.
+         ====================================================================== -->
+    <SolidColorBrush x:Key="BrushFormPrimary" Color="#2C5FAD" />
+    <SolidColorBrush x:Key="BrushFormPrimaryHover" Color="#16305E" />
+    <SolidColorBrush x:Key="BrushFormGhost" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushFormGhostHover" Color="#E8EEFA" />
+    <SolidColorBrush x:Key="BrushFormGhostBorder" Color="#D7DEEC" />
+    <SolidColorBrush x:Key="BrushFormGhostText" Color="#16305E" />
+    <SolidColorBrush x:Key="BrushFormClose" Color="#0D2450" />
+    <SolidColorBrush x:Key="BrushFormCloseHover" Color="#071A3C" />
+    <SolidColorBrush x:Key="BrushFormSuccess" Color="#198754" />
+    <SolidColorBrush x:Key="BrushFormSuccessHover" Color="#146C44" />
+    <SolidColorBrush x:Key="BrushFormDanger" Color="#DC2626" />
+    <SolidColorBrush x:Key="BrushFormDangerHover" Color="#B02A37" />
+
+    <!-- El gris del boton secundario y los tonos de texto: el texto del boton va del
+         color de su franja, igual que el icono manda en los botones de la tabla -->
+    <SolidColorBrush x:Key="BrushFormNeutral" Color="#8A96AB" />
+    <SolidColorBrush x:Key="BrushFormTextPrimary" Color="#16305E" />
+    <SolidColorBrush x:Key="BrushFormTextNeutral" Color="#5B6B85" />
+    <SolidColorBrush x:Key="BrushFormTextSuccess" Color="#146C44" />
+    <SolidColorBrush x:Key="BrushFormTextDanger" Color="#B02A37" />
+
+    <!-- ======================================================================
+         ACCESO: el color de la pantalla de entrada
+         ====================================================================== -->
+    <SolidColorBrush x:Key="BrushLoginCard" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushLoginTitle" Color="#152238" />
+    <SolidColorBrush x:Key="BrushLoginMeta" Color="#6B7690" />
+    <SolidColorBrush x:Key="BrushLoginField" Color="#F7F9FD" />
+    <SolidColorBrush x:Key="BrushLoginFieldBorder" Color="#DCE3EF" />
+    <SolidColorBrush x:Key="BrushLoginFieldHover" Color="#ECF1F9" />
+    <SolidColorBrush x:Key="BrushLoginIcon" Color="#8FA0B8" />
+    <SolidColorBrush x:Key="BrushLoginLink" Color="#2C5FAD" />
+    <SolidColorBrush x:Key="BrushLoginBrandText" Color="#C4D7F6" />
+    <SolidColorBrush x:Key="BrushLoginBrandMeta" Color="#7F9BC8" />
+    <SolidColorBrush x:Key="BrushLoginAccent" Color="#22C1E8" />
+    <SolidColorBrush x:Key="BrushLoginErrorBack" Color="#FCEBEB" />
+    <SolidColorBrush x:Key="BrushLoginErrorLine" Color="#E24B4A" />
+    <SolidColorBrush x:Key="BrushLoginErrorText" Color="#B02A37" />
+
+    <LinearGradientBrush x:Key="BrushLoginButton" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#16305E" Offset="0" />
+        <GradientStop Color="#2C5FAD" Offset="1" />
+    </LinearGradientBrush>
 </ResourceDictionary>

@@ -1,0 +1,444 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- El estilo de TODOS los listados del escritorio.
+         Aqui NO se escribe ni un color: todos salen de Colors.xaml. Cada modulo solo
+         arma sus columnas, asi las pantallas se ven iguales y se corrigen en un solo sitio. -->
+
+    <!-- La tarjeta que envuelve la tabla -->
+    <Style x:Key="SharedIndexCard" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BrushIndexCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushIndexBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Effect" Value="{StaticResource SombraTarjeta}" />
+    </Style>
+
+    <!-- La tabla: sin reja, una linea fina por fila y resaltado al pasar -->
+    <Style x:Key="SharedIndexGrid" TargetType="DataGrid">
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="CanUserAddRows" Value="False" />
+        <Setter Property="CanUserDeleteRows" Value="False" />
+        <Setter Property="CanUserResizeRows" Value="False" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="RowBackground" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexText}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontApp}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="RowHeight" Value="{DynamicResource IndexRowHeight}" />
+        <Setter Property="ColumnHeaderHeight" Value="{DynamicResource IndexHeaderHeight}" />
+        <Setter Property="AlternationCount" Value="2" />
+        <Setter Property="VerticalGridLinesBrush" Value="Transparent" />
+        <Setter Property="HorizontalGridLinesBrush" Value="Transparent" />
+    </Style>
+
+    <Style x:Key="SharedIndexHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource BrushIndexHeaderBand}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexHeaderText}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource BrushIndexBorder}"
+                            BorderThickness="0,0,0,1">
+                        <Grid Margin="{TemplateBinding Padding}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- En mayusculas, igual que la web. WPF no tiene separacion
+                                 de letras, asi que eso no se puede copiar. -->
+                            <TextBlock HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource UpperCaseConverter}}"
+                                       TextTrimming="CharacterEllipsis" />
+
+                            <!-- La flechita del orden: aparece solo en la columna ordenada -->
+                            <TextBlock x:Name="SortArrow"
+                                       Grid.Column="1"
+                                       Margin="6,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeCaption}"
+                                       Foreground="{DynamicResource BrushIndexHeaderText}"
+                                       Text="&#x25B2;"
+                                       Visibility="Collapsed" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="SortDirection" Value="Ascending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SortArrow" Property="Text" Value="&#x25B2;" />
+                        </Trigger>
+                        <Trigger Property="SortDirection" Value="Descending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SortArrow" Property="Text" Value="&#x25BC;" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource BrushIndexText}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- El encabezado de una columna de numeros va a la derecha, igual que su celda -->
+    <Style x:Key="SharedIndexHeaderRight" TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedIndexHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Right" />
+    </Style>
+
+    <!-- La fila.
+         Regla dura: pasar el mouse NO puede mover nada de sitio. Por eso la barra de
+         acento de la izquierda existe SIEMPRE (3px transparentes) y lo unico que cambia
+         es su color y el fondo. Antes se cambiaba el grosor del borde y eso corria el
+         contenido de la fila: se sentia un salto en toda la tabla. -->
+    <Style x:Key="SharedIndexRow" TargetType="DataGridRow">
+        <Style.Resources>
+            <Storyboard x:Key="FilaEntra">
+                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.16" />
+            </Storyboard>
+        </Style.Resources>
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridRow">
+                    <Border x:Name="RowBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource BrushIndexRowLine}"
+                            BorderThickness="0,0,0,1"
+                            ClipToBounds="False"
+                            SnapsToDevicePixels="True">
+                        <!-- La barra de acento va ENCIMA de las celdas, no en una columna
+                             aparte: si le quita ancho al area de celdas, la tabla sigue
+                             calculando las columnas con el ancho completo y la ultima
+                             queda recortada. -->
+                        <Grid>
+                            <!-- El contenedor de celdas tambien recorta: sin esto, todo
+                                 lo que se salga de una celda se ve cortado -->
+                            <DataGridCellsPresenter ClipToBounds="False"
+                                                    ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+
+                            <Rectangle x:Name="AccentBar"
+                                       Width="3"
+                                       HorizontalAlignment="Left"
+                                       Fill="Transparent" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource BrushIndexRowHover}" />
+                            <Setter TargetName="AccentBar" Property="Fill" Value="{DynamicResource BrushIndexAccent}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource BrushIndexRowSelected}" />
+                            <Setter TargetName="AccentBar" Property="Fill" Value="{DynamicResource BrushIndexAccent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard Storyboard="{StaticResource FilaEntra}" />
+            </EventTrigger>
+
+            <!-- Una fila si y otra no, mas clara -->
+            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                <Setter Property="Background" Value="{DynamicResource BrushIndexRowAlt}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SharedIndexCell" TargetType="DataGridCell">
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <!-- Como en la web: la celda NO recorta lo que se le salga. En WPF la celda
+             recorta por defecto, y por eso cualquier pixel mal calculado (el ancho de
+             una columna, la sombra de un boton) se ve como un boton mordido. -->
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="Transparent"
+                            Padding="{TemplateBinding Padding}"
+                            ClipToBounds="False">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- La celda de los botones va SIN relleno: el aire se lo dan los margenes de cada
+         boton, no la celda.
+
+         REGLA DURA de la columna de acciones: va SIEMPRE Width="Auto", nunca un numero.
+         Con un numero escrito a mano la cuenta se puede quedar corta (paso en
+         Consecutivos: la columna decia 90 y los dos botones mas el relleno de la celda
+         pedian 106) y entonces la tabla recorta por los dos lados, o sea el boton
+         "mordido". Con Auto la columna pide exactamente lo que miden los botones y
+         ninguna suma puede fallar. -->
+    <Style x:Key="SharedIndexCellActions" TargetType="DataGridCell" BasedOn="{StaticResource SharedIndexCell}">
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style x:Key="SharedIndexCellRight" TargetType="DataGridCell" BasedOn="{StaticResource SharedIndexCell}">
+        <Setter Property="HorizontalContentAlignment" Value="Right" />
+    </Style>
+
+    <!-- El nombre de la fila, mas claro que el resto -->
+    <Style x:Key="SharedIndexName" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexText}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="SharedIndexMeta" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexMeta}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- El estado como pastilla, no como casilla: se lee de un vistazo.
+         Se usa con la propiedad Active de la fila. -->
+    <Style x:Key="SharedIndexPill" TargetType="Border">
+        <Setter Property="Height" Value="22" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="CornerRadius" Value="11" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource BrushIndexPillOffBack}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushIndexPillOffBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Active}" Value="True">
+                <Setter Property="Background" Value="{DynamicResource BrushIndexPillOnBack}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BrushIndexPillOnBorder}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- El puntico de la pastilla: verde si esta activo, rojo si no -->
+    <Style x:Key="SharedIndexPillDot" TargetType="Ellipse">
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Height" Value="6" />
+        <Setter Property="Margin" Value="0,0,7,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Fill" Value="{DynamicResource BrushIndexPillOffText}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Active}" Value="True">
+                <Setter Property="Fill" Value="{DynamicResource BrushIndexPillOnText}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SharedIndexPillText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexPillOffText}" />
+        <Setter Property="Text" Value="Inactivo" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Active}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource BrushIndexPillOnText}" />
+                <Setter Property="Text" Value="Activo" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- El boton Nuevo y el de Buscar de la barra.
+         Son el MISMO boton de los formularios y los modales, solo mas bajitos para que
+         queden a la altura de la caja de busqueda. Toda la pinta sale de alla: aqui no
+         se repite ni un color ni una plantilla. -->
+    <Style x:Key="SharedIndexNewButton" TargetType="Button" BasedOn="{StaticResource SharedButtonFormPrimary}">
+        <Setter Property="Height" Value="38" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="14,0" />
+    </Style>
+
+    <!-- El secundario de la barra (Buscar): la franja en gris -->
+    <Style x:Key="SharedIndexGhostButton" TargetType="Button" BasedOn="{StaticResource SharedButtonFormSecondary}">
+        <Setter Property="Height" Value="38" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="14,0" />
+    </Style>
+
+    <!-- Los botones de la fila: los tres iguales, blancos con borde y el icono en su
+         color (azul editar, rojo borrar, verde enviar). Lo unico que los distingue es
+         el color del icono, no la forma.
+
+         El margen NO es decorativo: la sombra se dibuja FUERA del control y ese espacio
+         hay que reservarlo o la tabla la recorta. Con la columna en Width="Auto" el
+         margen entra en la cuenta y la columna crece sola. -->
+    <Style x:Key="SharedIndexIconButton" TargetType="Button">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="3,3,6,6" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="{DynamicResource BrushIndexIconEditBack}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushIndexIconEditBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Effect" Value="{StaticResource SombraBoton}" />
+        <Setter Property="Tag" Value="{DynamicResource BrushIndexIconHover}" />
+        <Setter Property="ToolTipService.ShowDuration" Value="5000" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Al pasar el mouse solo se tinta el fondo con el color del
+                             boton. La sombra ya esta puesta y no cambia: si creciera se
+                             saldria del espacio reservado y se volveria a ver mordido. -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBorder"
+                                    Property="Background"
+                                    Value="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.7" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Editar: el tono base. El icono azul lo pone el componente. -->
+    <Style x:Key="SharedIndexIconButtonEdit" TargetType="Button" BasedOn="{StaticResource SharedIndexIconButton}">
+    </Style>
+
+    <!-- Enviar: mismo boton blanco, icono verde y el hover tinta de verde claro -->
+    <Style x:Key="SharedIndexIconButtonSuccess" TargetType="Button" BasedOn="{StaticResource SharedIndexIconButton}">
+        <Setter Property="Tag" Value="{DynamicResource BrushIndexIconSuccessHover}" />
+    </Style>
+
+    <!-- El de Excel: verde de Excel con el icono blanco, para que se reconozca de una -->
+    <Style x:Key="SharedIndexIconButtonExcel" TargetType="Button" BasedOn="{StaticResource SharedIndexIconButton}">
+        <Setter Property="Background" Value="{DynamicResource BrushIndexIconExcel}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Tag" Value="{DynamicResource BrushIndexIconExcelHover}" />
+    </Style>
+
+    <!-- Borrar: mismo boton blanco, icono rojo y el hover tinta de rojo claro. Es la
+         unica accion que no se puede deshacer, por eso el icono va en rojo. -->
+    <Style x:Key="SharedIndexIconButtonDanger" TargetType="Button" BasedOn="{StaticResource SharedIndexIconButton}">
+        <Setter Property="Tag" Value="{DynamicResource BrushIndexIconDangerHover}" />
+    </Style>
+
+    <!-- El numero de pagina: el actual queda pintado -->
+    <Style x:Key="SharedIndexPageButton" TargetType="Button" BasedOn="{StaticResource SharedIndexIconButtonEdit}">
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexIconEdit}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                <Setter Property="Background" Value="{DynamicResource BrushIndexAccent}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BrushIndexAccent}" />
+                <Setter Property="Foreground" Value="{DynamicResource BrushWhite}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Tag" Value="{DynamicResource BrushIndexAccent}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- El icono que va dentro de esos botones -->
+    <Style x:Key="SharedIndexIcon" TargetType="Control">
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexIcon}" />
+    </Style>
+
+    <!-- El aviso de cuando no hay nada que mostrar -->
+    <Style x:Key="SharedIndexEmpty" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexMeta}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- El mensaje de error del listado -->
+    <!-- El texto que va sobre el area de trabajo, fuera de la tarjeta -->
+    <Style x:Key="SharedIndexCanvasMeta" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexOnCanvas}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SharedIndexMessage" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushIndexMessage}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <!-- La barra de desplazamiento de toda la aplicacion: delgada y oscura -->
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Width" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Background="Transparent">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <!-- Translucida: se ve igual de bien sobre la
+                                                 tabla blanca y sobre el azul del modal -->
+                                            <Border x:Name="ThumbBorder"
+                                                    Margin="2,4"
+                                                    Background="#6A8398AD"
+                                                    CornerRadius="4" />
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="#B08398AD" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" />
+                            </Track.DecreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter Property="Height" Value="10" />
+                            <Setter Property="Width" Value="Auto" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

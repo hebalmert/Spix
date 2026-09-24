@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesGen.Zone.CreateZoneDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:zone="clr-namespace:Spix.AppWpf.Views.EntitiesGen.Zone"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <zone:ZoneFormView />
+
+        <shared:SharedModalActions Grid.Row="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

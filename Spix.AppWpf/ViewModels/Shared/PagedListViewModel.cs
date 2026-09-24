@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using System.Collections.ObjectModel;
@@ -23,6 +23,9 @@ public abstract partial class PagedListViewModel<T> : ObservableObject
 
     [ObservableProperty]
     private int _totalPages;
+
+    [ObservableProperty]
+    private int _totalRecords;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -60,6 +63,13 @@ public abstract partial class PagedListViewModel<T> : ObservableObject
         await LoadAsync(1);
     }
 
+    // Vuelve a pedir la pagina que se esta viendo, sin perder el filtro ni la posicion.
+    [RelayCommand]
+    private async Task RefreshAsync()
+    {
+        await LoadAsync(CurrentPage);
+    }
+
     // Cambia de pagina sin descargar registros innecesarios.
     [RelayCommand]
     private async Task GoToPageAsync(int page)
@@ -70,6 +80,12 @@ public abstract partial class PagedListViewModel<T> : ObservableObject
         }
 
         await LoadAsync(page);
+    }
+
+    // No hace nada por defecto: solo lo usa quien lo necesite.
+    protected virtual Task AfterLoadAsync()
+    {
+        return Task.CompletedTask;
     }
 
     public async Task LoadAsync(int page = 1)
@@ -88,16 +104,21 @@ public abstract partial class PagedListViewModel<T> : ObservableObject
             Items = new ObservableCollection<T>(result.Items);
             CurrentPage = page;
             TotalPages = result.TotalPages;
+            TotalRecords = result.TotalRecords;
 
-            if (Items.Count == 0)
-            {
-                Message = "No se encontraron registros.";
-            }
+            //Cuando no hay filas no se pone mensaje: de eso se encarga el aviso de la
+            //tabla vacia. El mensaje queda solo para los errores.
+
+            //Gancho para las pantallas que tienen que hacer algo despues de cada carga,
+            //como el catalogo, que vuelve a elegir la categoria y baja sus hijos.
+            await AfterLoadAsync();
         }
         catch (Exception exception)
         {
-            Items.Clear();
+            //Se reemplaza la lista, no se vacia: asi la pantalla se entera del cambio
+            Items = new ObservableCollection<T>();
             TotalPages = 0;
+            TotalRecords = 0;
             Message = exception.Message;
         }
         finally

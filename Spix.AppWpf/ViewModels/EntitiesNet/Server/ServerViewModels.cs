@@ -12,12 +12,13 @@ using Spix.DomainLogic.MkDTOs;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
 using IpNetworkEntity = Spix.Domain.EntitiesNet.IpNetwork;
+using Spix.DomainLogic.EntitiesNetDTO;
 using ServerEntity = Spix.Domain.EntitiesNet.Server;
 
 namespace Spix.AppWpf.ViewModels.EntitiesNet.Server;
 
 // Lista los servidores y coordina sus operaciones de red locales desde WPF.
-public partial class ServerIndexViewModel : PagedListViewModel<ServerEntity>
+public partial class ServerIndexViewModel : PagedListViewModel<ServerListItemDto>
 {
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
@@ -27,7 +28,7 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerEntity>
     protected override string Endpoint => "api/v1/servers";
 
     public ServerIndexViewModel(
-        IPagedEntityService<ServerEntity> pagedEntityService,
+        IPagedEntityService<ServerListItemDto> pagedEntityService,
         IRepository repository,
         ModalService modalService,
         AlertService alertService,
@@ -54,7 +55,7 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerEntity>
     }
 
     [RelayCommand]
-    private async Task EditAsync(ServerEntity? server)
+    private async Task EditAsync(ServerListItemDto? server)
     {
         if (server == null)
         {
@@ -77,7 +78,7 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerEntity>
     }
 
     [RelayCommand]
-    private async Task DeleteAsync(ServerEntity? server)
+    private async Task DeleteAsync(ServerListItemDto? server)
     {
         if (server == null)
         {
@@ -106,9 +107,9 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerEntity>
 
     // Ejecuta ICMP desde el computador Windows hacia la IP configurada en el servidor.
     [RelayCommand]
-    private async Task PingAsync(ServerEntity? server)
+    private async Task PingAsync(ServerListItemDto? server)
     {
-        string? host = server?.IpNetwork?.Ip;
+        string? host = server?.Ip;
         if (string.IsNullOrWhiteSpace(host))
         {
             await _alertService.WarningAsync("Ping", "El servidor no tiene una IP de red disponible para ejecutar el ping.");
@@ -126,7 +127,7 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerEntity>
 
     // Entrega el servidor del indice a la prueba MikroTik ejecutada desde Windows.
     [RelayCommand]
-    private async Task CheckMikrotikAsync(ServerEntity? server)
+    private async Task CheckMikrotikAsync(ServerListItemDto? server)
     {
         if (server == null)
         {
@@ -135,7 +136,7 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerEntity>
 
         var parameters = new Dictionary<string, object>
         {
-            ["Server"] = server
+            ["Id"] = server.ServerId
         };
 
         await _modalService.ShowAsync<ServerMikrotikDialogView>("Conexion MikroTik", parameters);
@@ -514,6 +515,7 @@ public partial class ServerMikrotikDialogViewModel : ObservableObject
 {
     private readonly IMkConnectionControl _mkConnectionControl;
     private readonly ModalService _modalService;
+    private readonly IRepository _repository;
     private ServerEntity? _serverToCheck;
 
     [ObservableProperty]
@@ -536,10 +538,12 @@ public partial class ServerMikrotikDialogViewModel : ObservableObject
 
     public ServerMikrotikDialogViewModel(
         IMkConnectionControl mkConnectionControl,
-        ModalService modalService)
+        ModalService modalService,
+        IRepository repository)
     {
         _mkConnectionControl = mkConnectionControl;
         _modalService = modalService;
+        _repository = repository;
     }
 
     // Actualiza la apariencia del estado cuando la conexion informa un error.
@@ -553,6 +557,32 @@ public partial class ServerMikrotikDialogViewModel : ObservableObject
     partial void OnResultChanged(MkConnectionResultDTO? value)
     {
         OnPropertyChanged(nameof(ConnectionTitle));
+    }
+
+    // El listado solo trae lo que se ve en pantalla: el usuario y la clave del equipo
+    // se piden aqui, con el id, y no viajan en la lista de servidores.
+    public async Task InitializeAsync(Guid serverId)
+    {
+        if (serverId == Guid.Empty)
+        {
+            ErrorMessage = "No fue posible identificar el servidor.";
+            return;
+        }
+
+        IsLoading = true;
+        ErrorMessage = string.Empty;
+
+        var response = await _repository.GetAsync<ServerEntity>($"api/v1/servers/{serverId}");
+
+        IsLoading = false;
+
+        if (response.Error || response.Response == null)
+        {
+            ErrorMessage = "No fue posible leer la configuracion del servidor.";
+            return;
+        }
+
+        await InitializeAsync(response.Response);
     }
 
     public async Task InitializeAsync(ServerEntity? server)

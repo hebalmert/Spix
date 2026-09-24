@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +21,12 @@ public partial class SharedPagination : UserControl, INotifyPropertyChanged
         typeof(SharedPagination),
         new PropertyMetadata(0, OnPaginationChanged));
 
+    public static readonly DependencyProperty TotalRecordsProperty = DependencyProperty.Register(
+        nameof(TotalRecords),
+        typeof(int),
+        typeof(SharedPagination),
+        new PropertyMetadata(0, OnPaginationChanged));
+
     public static readonly DependencyProperty PageCommandProperty = DependencyProperty.Register(
         nameof(PageCommand),
         typeof(ICommand),
@@ -33,7 +39,10 @@ public partial class SharedPagination : UserControl, INotifyPropertyChanged
     public SharedPagination()
     {
         InitializeComponent();
-        DataContext = this;
+
+        //OJO: aqui NO se pone DataContext = this. Si se pone, los enlaces que la pantalla
+        //escribe (CurrentPage="{Binding CurrentPage}") se resuelven contra el propio
+        //control y nunca leen el ViewModel. Adentro todo se enlaza con RelativeSource.
     }
 
     public int CurrentPage
@@ -48,10 +57,35 @@ public partial class SharedPagination : UserControl, INotifyPropertyChanged
         set => SetValue(TotalPagesProperty, value);
     }
 
+    public int TotalRecords
+    {
+        get => (int)GetValue(TotalRecordsProperty);
+        set => SetValue(TotalRecordsProperty, value);
+    }
+
     public ICommand? PageCommand
     {
         get => (ICommand?)GetValue(PageCommandProperty);
         set => SetValue(PageCommandProperty, value);
+    }
+
+    // Lo que se lee abajo a la izquierda: en que pagina va y cuantos registros hay.
+    // Se arma aqui y no en el marcado para no repetir el plural en cada pantalla.
+    public string Summary
+    {
+        get
+        {
+            var paginas = $"Pagina {CurrentPage} de {Math.Max(TotalPages, 1)}";
+
+            if (TotalRecords <= 0)
+            {
+                return paginas;
+            }
+
+            var registros = TotalRecords == 1 ? "1 registro" : $"{TotalRecords} registros";
+
+            return $"{paginas}  \u00b7  {registros}";
+        }
     }
 
     public bool CanGoPrevious => CurrentPage > 1;
@@ -95,6 +129,9 @@ public partial class SharedPagination : UserControl, INotifyPropertyChanged
 
     private void NotifyNavigationProperties()
     {
+        PropertyChanged?.Invoke(
+            this,
+            new PropertyChangedEventArgs(nameof(Summary)));
         PropertyChanged?.Invoke(
             this,
             new PropertyChangedEventArgs(nameof(CanGoPrevious)));

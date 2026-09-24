@@ -1,19 +1,18 @@
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.AppWpf.Views.EntitiesGen.Service;
 using Spix.HttpService;
-using System.Collections.ObjectModel;
+using ServiceCategoryEntity = Spix.Domain.EntitiesGen.ServiceCategory;
 using ServiceClientEntity = Spix.Domain.EntitiesGen.ServiceClient;
 
 namespace Spix.AppWpf.ViewModels.EntitiesGen.Service;
 
-// Presenta categorias y sus servicios en el mismo indice, siguiendo el acordeon de Productos de Blazor.
-public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryRowViewModel>
+// Servicios: maestro-detalle, igual que en la web. Todo lo que comparte con los otros
+// tres modulos del catalogo vive en CategoryDetailViewModel; aqui solo lo propio.
+public partial class ServiceIndexViewModel : CategoryDetailViewModel<ServiceCategoryEntity, ServiceClientEntity>
 {
-    private const int ChildPageSize = 100;
-
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
     private readonly AlertService _alertService;
@@ -21,8 +20,10 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
 
     protected override string Endpoint => "api/v1/servicecategories";
 
+    protected override string ChildEndpoint => "api/v1/serviceclients";
+
     public ServiceIndexViewModel(
-        IPagedEntityService<ServiceCategoryRowViewModel> pagedEntityService,
+        IPagedEntityService<ServiceCategoryEntity> pagedEntityService,
         IRepository repository,
         ModalService modalService,
         AlertService alertService,
@@ -35,36 +36,52 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
         _responseHandler = responseHandler;
     }
 
-    // Mantiene una sola categoria abierta para que el listado sea facil de recorrer.
-    [RelayCommand]
-    private async Task ToggleServicesAsync(ServiceCategoryRowViewModel? category)
+    protected override Guid GetCategoryId(ServiceCategoryEntity category)
     {
-        if (category is null)
-        {
-            return;
-        }
-
-        if (category.IsExpanded)
-        {
-            category.IsExpanded = false;
-            return;
-        }
-
-        foreach (var item in Items)
-        {
-            item.IsExpanded = false;
-        }
-
-        category.IsExpanded = true;
-        await LoadServicesAsync(category);
+        return category.ServiceCategoryId;
     }
+
+    public override string SelectedCategoryName => SelectedCategory?.Name ?? "Servicios";
+
+    // Los dos indicadores propios de este modulo
+    public int ActiveCount => Children.Count(item => item.Active);
+
+    public int InactiveCount => Children.Count(item => !item.Active);
+
+    protected override void NotifyKpis()
+    {
+        OnPropertyChanged(nameof(ActiveCount));
+        OnPropertyChanged(nameof(InactiveCount));
+    }
+
+    protected override IEnumerable<ServiceClientEntity> ApplyChip(IEnumerable<ServiceClientEntity> children, string chip)
+    {
+        return chip switch
+        {
+            "active" => children.Where(item => item.Active),
+            "inactive" => children.Where(item => !item.Active),
+            _ => children
+        };
+    }
+
+    protected override async Task<IReadOnlyCollection<ServiceClientEntity>> GetChildrenAsync(string url)
+    {
+        var responseHttp = await _repository.GetAsync<List<ServiceClientEntity>>(url);
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            return Array.Empty<ServiceClientEntity>();
+        }
+
+        return responseHttp.Response ?? new List<ServiceClientEntity>();
+    }
+
+    // ===== La categoria =====
 
     [RelayCommand]
     private async Task NewAsync()
     {
-        var result = await _modalService.ShowAsync<CreateServiceCategoryDialogView>(
-            "Crear categoria servicio");
-
+        var result = await _modalService.ShowAsync<CreateServiceCategoryDialogView>("Crear categoria de servicios");
         if (!result.Succeeded)
         {
             return;
@@ -75,21 +92,16 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
     }
 
     [RelayCommand]
-    private async Task EditAsync(ServiceCategoryRowViewModel? category)
+    private async Task EditAsync(ServiceCategoryEntity? category)
     {
         if (category is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["Id"] = category.ServiceCategoryId
-        };
-
         var result = await _modalService.ShowAsync<EditServiceCategoryDialogView>(
-            "Editar categoria servicio",
-            parameters);
+            "Editar categoria de servicios",
+            new Dictionary<string, object> { ["Id"] = category.ServiceCategoryId });
 
         if (!result.Succeeded)
         {
@@ -101,7 +113,7 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
     }
 
     [RelayCommand]
-    private async Task DeleteAsync(ServiceCategoryRowViewModel? category)
+    private async Task DeleteAsync(ServiceCategoryEntity? category)
     {
         if (category is null)
         {
@@ -109,7 +121,7 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
         }
 
         var confirmed = await _alertService.ConfirmAsync(
-            "Eliminar categoria servicio",
+            "Eliminar categoria de servicios",
             "Esta accion no se puede deshacer.",
             "Eliminar");
 
@@ -118,9 +130,7 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
             return;
         }
 
-        var responseHttp = await _repository.DeleteAsync(
-            $"api/v1/servicecategories/{category.ServiceCategoryId}");
-
+        var responseHttp = await _repository.DeleteAsync($"{Endpoint}/{category.ServiceCategoryId}");
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             return;
@@ -130,62 +140,57 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
         await _alertService.SuccessAsync("Eliminado", "La categoria de servicios fue eliminada correctamente.");
     }
 
+    // ===== El hijo de la categoria =====
+
     [RelayCommand]
-    private async Task NewServiceAsync(ServiceCategoryRowViewModel? category)
+    private async Task NewChildAsync()
     {
-        if (category is null)
+        if (SelectedCategory is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["ServiceCategoryId"] = category.ServiceCategoryId
-        };
+        var categoryId = GetCategoryId(SelectedCategory);
 
         var result = await _modalService.ShowAsync<CreateServiceClientDialogView>(
             "Crear servicio",
-            parameters);
+            new Dictionary<string, object> { ["ServiceCategoryId"] = categoryId });
 
         if (!result.Succeeded)
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(category.ServiceCategoryId);
+        //Se recarga tambien el padre porque cambia el contador de la fila
+        await ReloadKeepingSelectionAsync(categoryId);
         await _alertService.SuccessAsync("Guardado", "El servicio fue guardado correctamente.");
     }
 
     [RelayCommand]
-    private async Task EditServiceAsync(ServiceClientEntity? service)
+    private async Task EditChildAsync(ServiceClientEntity? child)
     {
-        if (service is null)
+        if (child is null || SelectedCategory is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["Id"] = service.ServiceClientId
-        };
-
         var result = await _modalService.ShowAsync<EditServiceClientDialogView>(
             "Editar servicio",
-            parameters);
+            new Dictionary<string, object> { ["Id"] = child.ServiceClientId });
 
         if (!result.Succeeded)
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(service.ServiceCategoryId);
+        await ReloadKeepingSelectionAsync(GetCategoryId(SelectedCategory));
         await _alertService.SuccessAsync("Actualizado", "El servicio fue actualizado correctamente.");
     }
 
     [RelayCommand]
-    private async Task DeleteServiceAsync(ServiceClientEntity? service)
+    private async Task DeleteChildAsync(ServiceClientEntity? child)
     {
-        if (service is null)
+        if (child is null || SelectedCategory is null)
         {
             return;
         }
@@ -200,64 +205,13 @@ public partial class ServiceIndexViewModel : PagedListViewModel<ServiceCategoryR
             return;
         }
 
-        var responseHttp = await _repository.DeleteAsync(
-            $"api/v1/serviceclients/{service.ServiceClientId}");
-
+        var responseHttp = await _repository.DeleteAsync($"{ChildEndpoint}/{child.ServiceClientId}");
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(service.ServiceCategoryId);
+        await ReloadKeepingSelectionAsync(GetCategoryId(SelectedCategory));
         await _alertService.SuccessAsync("Eliminado", "El servicio fue eliminado correctamente.");
-    }
-
-    // Obtiene los hijos cuando el usuario abre una categoria y evita descargas masivas del indice.
-    private async Task LoadServicesAsync(ServiceCategoryRowViewModel category)
-    {
-        category.IsServicesLoading = true;
-        category.ServicesMessage = string.Empty;
-
-        try
-        {
-            var responseHttp = await _repository.GetAsync<List<ServiceClientEntity>>(
-                $"api/v1/serviceclients?guidId={category.ServiceCategoryId}&page=1&recordsnumber={ChildPageSize}");
-
-            if (await _responseHandler.HandleErrorAsync(responseHttp))
-            {
-                return;
-            }
-
-            category.Services = new ObservableCollection<ServiceClientEntity>(
-                responseHttp.Response ?? new List<ServiceClientEntity>());
-
-            if (category.Services.Count == 0)
-            {
-                category.ServicesMessage = "No hay servicios registrados en esta categoria.";
-            }
-        }
-        catch (Exception exception)
-        {
-            category.ServicesMessage = exception.Message;
-        }
-        finally
-        {
-            category.IsServicesLoading = false;
-        }
-    }
-
-    // Vuelve a cargar el padre y conserva expandida la categoria afectada por el CRUD hijo.
-    private async Task ReloadExpandedCategoryAsync(Guid serviceCategoryId)
-    {
-        await LoadAsync(CurrentPage);
-
-        var category = Items.FirstOrDefault(item => item.ServiceCategoryId == serviceCategoryId);
-        if (category is null)
-        {
-            return;
-        }
-
-        category.IsExpanded = true;
-        await LoadServicesAsync(category);
     }
 }

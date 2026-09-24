@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedExportButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators">
+    <!-- Baja a Excel lo que el listado tiene en pantalla. No pide nada al Backend -->
+    <Button Width="38"
+            Height="38"
+            Click="ExportClick"
+            Style="{StaticResource SharedIndexIconButtonExcel}"
+            ToolTip="Exportar a Excel lo que se ve en pantalla">
+        <fa:FontAwesomeImage Width="14" Height="14"
+                             Foreground="{DynamicResource BrushIndexIconOnDanger}"
+                             Icon="{x:Static icons:FontAwesomeIcon.FileExcel}"
+                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+    </Button>
+</UserControl>

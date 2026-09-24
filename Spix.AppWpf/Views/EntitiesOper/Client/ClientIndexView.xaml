@@ -1,6 +1,7 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesOper.Client.ClientIndexView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesOper.Client.ClientIndexView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
              xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
@@ -21,12 +22,9 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Command="{Binding NewCommand}" Style="{StaticResource SharedButtonFormPrimary}">
-                <StackPanel Orientation="Horizontal">
-                    <fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                    <TextBlock Margin="10,0,0,0" Text="Nuevo" />
-                </StackPanel>
-            </Button>
+            <Button Grid.Column="0" Command="{Binding NewCommand}" Style="{StaticResource SharedButtonFormPrimary}"
+                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}"
+                    Content="Nuevo" />
             <shared:SharedSearchFilter Grid.Column="2"
                                        VerticalAlignment="Bottom"
                                        SearchText="{Binding Filter}"
@@ -120,6 +118,7 @@
                                  HorizontalAlignment="Left"
                                  CurrentPage="{Binding CurrentPage}"
                                  TotalPages="{Binding TotalPages}"
+                                 TotalRecords="{Binding TotalRecords}"
                                  PageCommand="{Binding GoToPageCommand}" />
     </Grid>
 </UserControl>

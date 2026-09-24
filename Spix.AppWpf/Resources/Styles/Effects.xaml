@@ -1,0 +1,58 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Las SOMBRAS de la aplicacion, en un solo lugar.
+         Son solidas y sin difuminar: el boton se ve flotando sobre la pantalla en vez de
+         parecer una etiqueta pegada. Si un dia se quieren mas suaves, se cambia aqui. -->
+
+    <!-- La de todos los botones. Se dibuja FUERA del control, asi que quien la use
+         tiene que reservarle el espacio en su propio Margin. -->
+    <DropShadowEffect x:Key="SombraBoton"
+                      BlurRadius="0"
+                      ShadowDepth="3"
+                      Direction="315"
+                      Opacity="0.55"
+                      Color="#000000" />
+
+    <!-- La de los botones del modal: blanca, porque el fondo del modal es azul oscuro -->
+    <DropShadowEffect x:Key="SombraBotonBlanca"
+                      BlurRadius="0"
+                      ShadowDepth="2"
+                      Direction="315"
+                      Opacity="1"
+                      Color="#FFFFFF" />
+
+    <!-- La del boton que ya es blanco: se baja para que se note el relieve sin ensuciar -->
+    <DropShadowEffect x:Key="SombraBotonBlancaSuave"
+                      BlurRadius="0"
+                      ShadowDepth="2"
+                      Direction="315"
+                      Opacity="0.55"
+                      Color="#FFFFFF" />
+
+    <!-- La de los botones de formulario y modal. Va en gris azulado porque estos
+         botones viven sobre el azul oscuro del modal, donde una sombra negra se pierde. -->
+    <DropShadowEffect x:Key="SombraBotonForm"
+                      BlurRadius="0"
+                      ShadowDepth="3"
+                      Direction="315"
+                      Opacity="1"
+                      Color="#7C8CA8" />
+
+    <!-- La de los paneles del catalogo: la misma de la web (5px a la derecha, 6 abajo,
+         azul al 24%), sin difuminar -->
+    <DropShadowEffect x:Key="SombraCatalogo"
+                      BlurRadius="0"
+                      ShadowDepth="7.8"
+                      Direction="310"
+                      Opacity="0.24"
+                      Color="#2C5FAD" />
+
+    <!-- La de la tarjeta del listado: mas grande y mas suave -->
+    <DropShadowEffect x:Key="SombraTarjeta"
+                      BlurRadius="18"
+                      ShadowDepth="4"
+                      Direction="315"
+                      Opacity="0.35"
+                      Color="#060B14" />
+</ResourceDictionary>

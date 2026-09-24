@@ -13,12 +13,13 @@ using Spix.HttpService;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using IpNetworkEntity = Spix.Domain.EntitiesNet.IpNetwork;
+using Spix.DomainLogic.EntitiesNetDTO;
 using NodeEntity = Spix.Domain.EntitiesNet.Node;
 
 namespace Spix.AppWpf.ViewModels.EntitiesNet.Node;
 
 // Lista los nodos de acceso y conserva las acciones disponibles en el indice Blazor.
-public partial class NodeIndexViewModel : PagedListViewModel<NodeEntity>
+public partial class NodeIndexViewModel : PagedListViewModel<NodeListItemDto>
 {
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
@@ -28,7 +29,7 @@ public partial class NodeIndexViewModel : PagedListViewModel<NodeEntity>
     protected override string Endpoint => "api/v1/nodes";
 
     public NodeIndexViewModel(
-        IPagedEntityService<NodeEntity> pagedEntityService,
+        IPagedEntityService<NodeListItemDto> pagedEntityService,
         IRepository repository,
         ModalService modalService,
         AlertService alertService,
@@ -55,7 +56,7 @@ public partial class NodeIndexViewModel : PagedListViewModel<NodeEntity>
     }
 
     [RelayCommand]
-    private async Task EditAsync(NodeEntity? node)
+    private async Task EditAsync(NodeListItemDto? node)
     {
         if (node is null)
         {
@@ -78,7 +79,7 @@ public partial class NodeIndexViewModel : PagedListViewModel<NodeEntity>
     }
 
     [RelayCommand]
-    private async Task DeleteAsync(NodeEntity? node)
+    private async Task DeleteAsync(NodeListItemDto? node)
     {
         if (node is null)
         {
@@ -106,7 +107,7 @@ public partial class NodeIndexViewModel : PagedListViewModel<NodeEntity>
     }
 
     [RelayCommand]
-    private async Task ViewMapAsync(NodeEntity? node)
+    private async Task ViewMapAsync(NodeListItemDto? node)
     {
         if (node?.Latitude is null || node.Longitude is null)
         {
@@ -126,9 +127,9 @@ public partial class NodeIndexViewModel : PagedListViewModel<NodeEntity>
 
     // Ejecuta el ping desde el Windows local contra la IP configurada en el nodo.
     [RelayCommand]
-    private async Task PingAsync(NodeEntity? node)
+    private async Task PingAsync(NodeListItemDto? node)
     {
-        string? host = node?.IpNetwork?.Ip;
+        string? host = node?.Ip;
         if (string.IsNullOrWhiteSpace(host))
         {
             await _alertService.WarningAsync(

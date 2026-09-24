@@ -3,14 +3,13 @@ using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.AppWpf.Views.EntitiesInven.Supplier;
-using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
-using SupplierEntity = Spix.Domain.EntitiesInven.Supplier;
 
 namespace Spix.AppWpf.ViewModels.EntitiesInven.Supplier;
 
 // Lista proveedores paginados y concentra sus acciones CRUD.
-public partial class SupplierIndexViewModel : PagedListViewModel<SupplierEntity>
+public partial class SupplierIndexViewModel : PagedListViewModel<SupplierListItemDto>
 {
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
@@ -19,7 +18,7 @@ public partial class SupplierIndexViewModel : PagedListViewModel<SupplierEntity>
 
     protected override string Endpoint => "api/v1/suppliers";
 
-    public SupplierIndexViewModel(IPagedEntityService<SupplierEntity> pagedEntityService, IRepository repository, ModalService modalService, AlertService alertService, HttpResponseHandler responseHandler)
+    public SupplierIndexViewModel(IPagedEntityService<SupplierListItemDto> pagedEntityService, IRepository repository, ModalService modalService, AlertService alertService, HttpResponseHandler responseHandler)
         : base(pagedEntityService)
     {
         _repository = repository;
@@ -38,7 +37,7 @@ public partial class SupplierIndexViewModel : PagedListViewModel<SupplierEntity>
     }
 
     [RelayCommand]
-    private async Task EditAsync(SupplierEntity? supplier)
+    private async Task EditAsync(SupplierListItemDto? supplier)
     {
         if (supplier is null) return;
         var result = await _modalService.ShowAsync<EditSupplierDialogView>("Editar proveedor", new Dictionary<string, object> { ["Id"] = supplier.SupplierId });
@@ -48,7 +47,7 @@ public partial class SupplierIndexViewModel : PagedListViewModel<SupplierEntity>
     }
 
     [RelayCommand]
-    private async Task DeleteAsync(SupplierEntity? supplier)
+    private async Task DeleteAsync(SupplierListItemDto? supplier)
     {
         if (supplier is null) return;
         var confirmed = await _alertService.ConfirmAsync("Eliminar proveedor", "Esta accion no se puede deshacer.", "Eliminar");

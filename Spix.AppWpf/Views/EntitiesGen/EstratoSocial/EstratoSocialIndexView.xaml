@@ -1,106 +1,152 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesGen.EstratoSocial.EstratoSocialIndexView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesGen.EstratoSocial.EstratoSocialIndexView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
              xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Copiado del molde (DocumentTypeIndexView): solo cambian las columnas, los textos
+         y el nombre del archivo que baja a Excel. -->
+    <UserControl.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="14" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="16" />
+            <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid>
+
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" VerticalAlignment="Bottom" Command="{Binding NewCommand}" Style="{StaticResource SharedButtonFormPrimary}">
-                <StackPanel Orientation="Horizontal">
-                    <fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                    <TextBlock Margin="10,0,0,0" Text="Nuevo" />
-                </StackPanel>
-            </Button>
-            <StackPanel Grid.Column="2">
-                <TextBlock FontSize="25" FontWeight="SemiBold" Foreground="White" Text="Estratos sociales" />
-                <TextBlock Margin="0,5,0,0" FontSize="13" Foreground="#B9C8DD" Text="Configuracion / Estratos sociales" />
+
+            <Button Command="{Binding NewCommand}"
+                    Style="{StaticResource SharedIndexNewButton}"
+                    ToolTip="Crear un estrato social (Ctrl+N)"
+                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                    Content="Nuevo" />
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Width="38" Height="38"
+                        Margin="0,0,8,0"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Actualizar (F5)">
+                    <fa:FontAwesomeImage Width="14" Height="14"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+
+                <shared:SharedExportButton Margin="0,0,10,0"
+                                           Items="{Binding Items}"
+                                           FileName="estratos-sociales" />
+
+                <shared:SharedSearchFilter x:Name="SearchFilter"
+                                           SearchText="{Binding Filter}"
+                                           SearchCommand="{Binding SearchCommand}"
+                                           ClearCommand="{Binding ClearSearchCommand}" />
             </StackPanel>
-            <shared:SharedSearchFilter Grid.Column="3"
-                                       VerticalAlignment="Bottom"
-                                       SearchText="{Binding Filter}"
-                                       SearchCommand="{Binding SearchCommand}"
-                                       ClearCommand="{Binding ClearSearchCommand}" />
         </Grid>
+
         <TextBlock Grid.Row="2"
-                   FontSize="13"
-                   Foreground="#FF9AAE"
+                   Margin="0,0,0,10"
+                   Style="{StaticResource SharedIndexMessage}"
                    Text="{Binding Message}"
                    Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
-        <Grid Grid.Row="4">
-            <DataGrid
-                  ItemsSource="{Binding Items}"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  IsReadOnly="True"
-                  Background="#303640"
-                  Foreground="White"
-                  BorderBrush="#455160"
-                  BorderThickness="1"
-                  HeadersVisibility="Column"
-                  GridLinesVisibility="Horizontal"
-                  RowBackground="#303640"
-                  AlternatingRowBackground="#2B303A"
-                  AlternationCount="2"
-                  RowHeight="42"
-                  FontSize="14">
-            <DataGrid.ColumnHeaderStyle>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background" Value="#102A4C" />
-                    <Setter Property="Foreground" Value="White" />
-                    <Setter Property="FontWeight" Value="SemiBold" />
-                    <Setter Property="Padding" Value="14,10" />
-                    <Setter Property="BorderBrush" Value="#314563" />
-                </Style>
-            </DataGrid.ColumnHeaderStyle>
-            <DataGrid.Columns>
-                <DataGridTextColumn Width="*"
-                                    Header="Estrato"
-                                    Binding="{Binding EstratoSocialName}"
-                                    CellStyle="{StaticResource SharedDataGridTextCell}" />
-                <DataGridCheckBoxColumn Width="140" Header="Aplica impuesto" Binding="{Binding ApplyTax}" />
-                <DataGridTemplateColumn Width="48" Header="">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowEdit}" ToolTip="Editar">
-                                <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                            </Button>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="48" Header="">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowDelete}" ToolTip="Eliminar">
-                                <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                            </Button>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-            </DataGrid>
-            <shared:SharedLoading IsLoading="{Binding IsLoading}" />
-        </Grid>
-        <shared:SharedPagination Grid.Row="6"
-                                 HorizontalAlignment="Left"
+
+        <Border Grid.Row="3" Style="{StaticResource SharedIndexCard}">
+            <Grid>
+                <DataGrid x:Name="ItemsGrid"
+                          ItemsSource="{Binding Items}"
+                          Style="{StaticResource SharedIndexGrid}"
+                          ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                          RowStyle="{StaticResource SharedIndexRow}"
+                          CellStyle="{StaticResource SharedIndexCell}">
+
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick"
+                                      Command="{Binding EditCommand}"
+                                      CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                    </DataGrid.InputBindings>
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="*" Header="Estrato" SortMemberPath="EstratoSocialName">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding EstratoSocialName}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Aqui el estado no es Activo/Inactivo sino si cobra impuesto -->
+                        <DataGridTemplateColumn Width="170" Header="Impuesto" SortMemberPath="ApplyTax">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <shared:SharedStatePill IsOn="{Binding ApplyTax}"
+                                                            OnText="Aplica impuesto"
+                                                            OffText="Sin impuesto" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="Auto" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                        <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    ToolTip="Editar" />
+
+                                        <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                      CommandParameter="{Binding}"
+                                                                      ToolTip="Eliminar" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Visibility="{Binding Items, Converter={StaticResource CountToVisibilityConverter}}">
+                    <fa:FontAwesomeImage Width="26" Height="26"
+                                         HorizontalAlignment="Center"
+                                         Foreground="{DynamicResource BrushIndexMeta}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.FolderOpen}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    <TextBlock Margin="0,12,0,0"
+                               Style="{StaticResource SharedIndexEmpty}"
+                               Text="Todavia no hay estratos sociales" />
+                    <Button Margin="0,14,0,0"
+                            HorizontalAlignment="Center"
+                            Command="{Binding NewCommand}"
+                            Style="{StaticResource SharedIndexNewButton}"
+                            ToolTip="Crear el primero"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                            Content="Crear el primero" />
+                </StackPanel>
+
+                <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+            </Grid>
+        </Border>
+
+        <shared:SharedPagination Grid.Row="5"
                                  CurrentPage="{Binding CurrentPage}"
                                  TotalPages="{Binding TotalPages}"
+                                 TotalRecords="{Binding TotalRecords}"
                                  PageCommand="{Binding GoToPageCommand}" />
     </Grid>
 </UserControl>

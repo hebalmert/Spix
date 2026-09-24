@@ -1,0 +1,182 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesGen.Register.RegisterFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="600">
+    <!-- Los nueve campos del formulario de Blazor, en el mismo orden -->
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Contratos" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.Contratos, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Soportes" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.Solicitudes, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="2" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Cargue Inventario" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.Cargue, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="3" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Salida Efectivo" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.Egresos, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="4" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Pago Contratista" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.PagoContratista, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="5" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Pre Pago" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.Adelantado, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="6" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Excento" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.Exonerado, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="7" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Nota Cobro" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.NotaCobro, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="8" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Factura" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     Text="{Binding Entity.Factura, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+    </Grid>
+</UserControl>

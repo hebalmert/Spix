@@ -45,4 +45,27 @@ public partial class SharedSearchFilter : UserControl
         get => (ICommand?)GetValue(ClearCommandProperty);
         set => SetValue(ClearCommandProperty, value);
     }
+
+    // La pantalla la llama con Ctrl+F para poner el cursor en la caja
+    public void FocusSearch()
+    {
+        SearchBox.Focus();
+        SearchBox.SelectAll();
+    }
+
+    // Enter busca: no hay que soltar el teclado para ir hasta el boton
+    private void SearchBoxKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter)
+        {
+            return;
+        }
+
+        if (SearchCommand?.CanExecute(null) == true)
+        {
+            SearchCommand.Execute(null);
+        }
+
+        e.Handled = true;
+    }
 }

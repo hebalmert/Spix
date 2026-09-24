@@ -6,10 +6,11 @@
              MinWidth="620">
     <Grid Margin="0,24,0,0">
         <Grid.RowDefinitions>
+            <!-- La separacion entre campos es la MISMA para todos: 16 -->
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="28" />
+            <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 

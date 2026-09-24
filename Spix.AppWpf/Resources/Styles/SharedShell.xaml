@@ -81,6 +81,10 @@
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="SubMenuBackground" Property="Opacity" Value="0.75" />
                         </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -119,11 +123,38 @@
         </Setter>
     </Style>
 
+    <!-- La tarjeta del tablero: clara como las tablas, con la linea de color del modulo
+         a la izquierda y la sombra solida para que se vea despegada del fondo.
+         El color de la linea se pone en cada tarjeta con BorderBrush. -->
     <Style x:Key="ShellQuickCard" TargetType="Border">
-        <Setter Property="Padding" Value="20" />
-        <Setter Property="Background" Value="{StaticResource BrushShellCard}" />
-        <Setter Property="BorderBrush" Value="#3C4451" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="Background" Value="{DynamicResource BrushDashCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushDashNetwork}" />
+        <Setter Property="BorderThickness" Value="5,1,1,1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Effect" Value="{StaticResource SombraTarjeta}" />
+    </Style>
+
+    <!-- El cuadrito del icono dentro de la tarjeta -->
+    <Style x:Key="ShellQuickCardIcon" TargetType="Border">
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Background" Value="{DynamicResource BrushDashIconBack}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <Style x:Key="ShellQuickCardTitle" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,14,0,0" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushDashTitle}" />
+    </Style>
+
+    <Style x:Key="ShellQuickCardText" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,5,0,0" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushDashMeta}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 </ResourceDictionary>

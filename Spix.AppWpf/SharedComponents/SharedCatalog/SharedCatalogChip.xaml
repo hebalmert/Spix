@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedCatalog.SharedCatalogChip"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Raiz">
+
+    <!-- El chip que filtra la lista de la derecha. Pintado cuando esta puesto. -->
+    <Button Command="{Binding Command, ElementName=Raiz}"
+            CommandParameter="{Binding Value, ElementName=Raiz}"
+            Content="{Binding Text, ElementName=Raiz}"
+            Style="{StaticResource SharedCatalogChipButton}"
+            Tag="{Binding IsOn, ElementName=Raiz}" />
+</UserControl>

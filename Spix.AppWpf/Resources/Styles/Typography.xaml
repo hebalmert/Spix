@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- Los TAMANOS de la aplicacion, en un solo lugar.
+         Ningun estilo escribe un numero de fuente: todos apuntan aqui. Si un dia la letra
+         queda chica para un cliente, se sube en este archivo y sube en toda la aplicacion. -->
+
+    <FontFamily x:Key="FontApp">Segoe UI Variable Text, Segoe UI</FontFamily>
+
+    <sys:Double x:Key="FontSizeCaption">11</sys:Double>
+    <sys:Double x:Key="FontSizeMeta">12</sys:Double>
+    <sys:Double x:Key="FontSizeBody">13</sys:Double>
+    <sys:Double x:Key="FontSizeName">14</sys:Double>
+    <sys:Double x:Key="FontSizeSection">17</sys:Double>
+    <sys:Double x:Key="FontSizeTitle">21</sys:Double>
+
+    <!-- La DENSIDAD del listado. Se cambia en caliente desde la barra superior:
+         comoda para el dia a dia, compacta para quien maneja cientos de filas. -->
+    <sys:Double x:Key="IndexRowHeight">48</sys:Double>
+    <sys:Double x:Key="IndexHeaderHeight">42</sys:Double>
+</ResourceDictionary>

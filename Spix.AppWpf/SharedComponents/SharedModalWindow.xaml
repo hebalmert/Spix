@@ -23,7 +23,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="1" />
                 <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
+                <!-- El contenido se lleva lo que sobre y, si no alcanza, se desplaza -->
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Grid>
@@ -37,13 +38,11 @@
                            FontWeight="SemiBold"
                            Foreground="White" />
                 <Button Grid.Column="1"
-                        Width="36"
-                        Height="36"
                         Click="CloseClick"
-                        Style="{StaticResource ShellIconButton}"
+                        Style="{StaticResource SharedButtonFormClose}"
                         ToolTip="Cerrar">
-                    <fa:FontAwesomeImage Width="18"
-                                         Height="18"
+                    <fa:FontAwesomeImage Width="15"
+                                         Height="15"
                                          Foreground="White"
                                          Icon="{x:Static icons:FontAwesomeIcon.Xmark}"
                                          IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
@@ -51,7 +50,14 @@
             </Grid>
 
             <Border Grid.Row="1" Margin="0,20,0,0" Background="#4A5565" />
-            <ContentControl x:Name="ModalContent" Grid.Row="3" />
+            <!-- Formularios como el de correo crecen segun lo que se elija: sin este
+                 desplazamiento los ultimos campos y los botones quedan cortados -->
+            <ScrollViewer Grid.Row="3"
+                          Padding="0,0,10,0"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
+                <ContentControl x:Name="ModalContent" />
+            </ScrollViewer>
         </Grid>
     </Border>
 </Window>

@@ -1,162 +1,316 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Product.ProductIndexView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Product.ProductIndexView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
              xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
-             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="20" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow">
+
+    <!-- Productos: el mismo maestro-detalle de la web. Las categorias a la izquierda,
+         los productos de la elegida a la derecha, y cuatro numeros arriba.
+         Los estilos salen de SharedCatalog.xaml; aqui no se escribe ni un color. -->
+    <Border Style="{StaticResource SharedCatalogCard}">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" VerticalAlignment="Bottom" Command="{Binding NewCommand}" Style="{StaticResource SharedButtonFormPrimary}">
-                <StackPanel Orientation="Horizontal">
-                    <fa:FontAwesomeImage Width="16" Height="16" Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                    <TextBlock Margin="10,0,0,0" Text="Nuevo" />
-                </StackPanel>
-            </Button>
-            <StackPanel Grid.Column="2">
-                <TextBlock FontSize="25" FontWeight="SemiBold" Foreground="White" Text="Categoria/Productos" />
-                <TextBlock Margin="0,5,0,0" FontSize="13" Foreground="#B9C8DD" Text="Inventario / Categoria y productos" />
-            </StackPanel>
-            <shared:SharedSearchFilter Grid.Column="3" VerticalAlignment="Bottom" SearchText="{Binding Filter}" SearchCommand="{Binding SearchCommand}" ClearCommand="{Binding ClearSearchCommand}" />
-        </Grid>
-        <TextBlock Grid.Row="2" FontSize="13" Foreground="#FF9AAE" Text="{Binding Message}" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
-        <Border Grid.Row="4" Background="#303640" BorderBrush="#455160" BorderThickness="1" CornerRadius="4">
-            <Grid Margin="0,0,0,2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="42" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid Background="#102A4C">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="52" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="110" />
-                        <ColumnDefinition Width="100" />
-                        <ColumnDefinition Width="96" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="1" Margin="14,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="White" Text="Categoria" />
-                    <TextBlock Grid.Column="2" Margin="14,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="White" Text="Productos" />
-                    <TextBlock Grid.Column="3" Margin="14,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="White" Text="Activo" />
-                </Grid>
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Items}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="#3B4452" BorderThickness="0,0,0,1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- El titulo lo pone la barra de arriba del shell; aqui solo va la indicacion -->
+            <TextBlock Style="{StaticResource SharedCatalogSubtitle}"
+                       Text="Elija una categoria a la izquierda y trabaje sus productos a la derecha." />
+
+            <!-- Los cuatro numeros -->
+            <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,8">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Categorias" Value="{Binding CategoriesCount}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Productos" Value="{Binding ChildrenCount}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Stock bajo (15 o menos)" Value="{Binding LowStockCount}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}" />
+                <catalog:SharedCatalogKpi Label="Sin stock" Value="{Binding NoStockCount}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+            </UniformGrid>
+
+            <TextBlock Grid.Row="2"
+                       Margin="0,0,0,10"
+                       Style="{StaticResource SharedCatalogMessage}"
+                       Text="{Binding Message}"
+                       Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="340" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- ================= Las categorias ================= -->
+                <Border Style="{StaticResource SharedCatalogPanel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Border Style="{StaticResource SharedCatalogPanelHead}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Style="{StaticResource SharedCatalogPanelHeadText}" Text="Categorias" />
+                                <Button Grid.Column="1"
+                                        Command="{Binding NewCommand}"
+                                        Style="{StaticResource SharedIndexNewButton}"
+                                        ToolTip="Crear categoria"
+                                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                        Content="Nuevo" />
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="1" Style="{StaticResource SharedCatalogSearchBar}">
+                            <TextBox Style="{StaticResource SharedCatalogSearchBox}"
+                                     Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Escriba y pulse Enter">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding SearchCommand}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Border>
+
+                        <ListBox Grid.Row="2"
+                                 ItemsSource="{Binding Items}"
+                                 SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                 Style="{StaticResource SharedCatalogList}"
+                                 ItemContainerStyle="{StaticResource SharedCatalogCategoryItem}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
                                     <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="42" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <Grid Background="#303640">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="52" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="110" />
-                                                <ColumnDefinition Width="100" />
-                                                <ColumnDefinition Width="48" />
-                                                <ColumnDefinition Width="48" />
-                                            </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" Command="{Binding DataContext.ToggleProductsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowDetails}">
-                                                <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.ChevronRight}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                            </Button>
-                                            <TextBlock Grid.Column="1" Margin="14,0" VerticalAlignment="Center" Foreground="White" Text="{Binding Name}" />
-                                            <TextBlock Grid.Column="2" Margin="14,0" VerticalAlignment="Center" Foreground="White" Text="{Binding ProductsNumer}" />
-                                            <CheckBox Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Active}" IsHitTestVisible="False" />
-                                            <Button Grid.Column="4" Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowEdit}">
-                                                <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                            </Button>
-                                            <Button Grid.Column="5" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowDelete}">
-                                                <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                            </Button>
-                                        </Grid>
-                                        <Border Grid.Row="1" Margin="26,0,16,14" Padding="16" Background="#252B35" BorderBrush="#526176" BorderThickness="1" CornerRadius="6" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="12" />
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="12" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
-                                                <Button HorizontalAlignment="Left" Command="{Binding DataContext.NewProductCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonFormPrimary}" Content="Nuevo producto" />
-                                                <StackPanel Grid.Row="2" Visibility="{Binding IsProductsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                    <ProgressBar Height="4" IsIndeterminate="True" />
-                                                    <TextBlock Margin="0,10,0,0" Foreground="#B9C8DD" Text="Cargando productos..." />
-                                                </StackPanel>
-                                                <Grid Grid.Row="4" Visibility="{Binding HasProducts, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="34" />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-                                                    <Grid Background="#17202D">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*" />
-                                                            <ColumnDefinition Width="100" />
-                                                            <ColumnDefinition Width="100" />
-                                                            <ColumnDefinition Width="96" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="White" Text="Producto" />
-                                                        <TextBlock Grid.Column="1" Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="White" Text="Stock" />
-                                                        <TextBlock Grid.Column="2" Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="White" Text="Seriales" />
-                                                        <TextBlock Grid.Column="3" Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="White" Text="Activo" />
-                                                    </Grid>
-                                                    <ItemsControl Grid.Row="1" ItemsSource="{Binding Products}">
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Grid MinHeight="42" Background="#2E3641">
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="100" />
-                                                                        <ColumnDefinition Width="100" />
-                                                                        <ColumnDefinition Width="96" />
-                                                                        <ColumnDefinition Width="48" />
-                                                                        <ColumnDefinition Width="48" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <StackPanel Margin="12,4" VerticalAlignment="Center">
-                                                                        <TextBlock Foreground="White" Text="{Binding ProductName}" />
-                                                                        <TextBlock FontSize="11" Foreground="#B9C8DD" Text="{Binding Mark.MarkName}" />
-                                                                    </StackPanel>
-                                                                    <TextBlock Grid.Column="1" Margin="12,0" VerticalAlignment="Center" Foreground="White" Text="{Binding TotalInventario}" />
-                                                                    <CheckBox Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding WithSerials}" IsHitTestVisible="False" />
-                                                                    <CheckBox Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Active}" IsHitTestVisible="False" />
-                                                                    <Button Grid.Column="4" Command="{Binding DataContext.EditProductCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowEdit}">
-                                                                        <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                                                    </Button>
-                                                                    <Button Grid.Column="5" Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Style="{StaticResource SharedButtonTableRowDelete}">
-                                                                        <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                                                    </Button>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
-                                                </Grid>
-                                                <TextBlock Grid.Row="4" HorizontalAlignment="Center" Foreground="#B9C8DD" Text="{Binding ProductsMessage}" Visibility="{Binding HasProductsMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                            </Grid>
-                                        </Border>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Style="{StaticResource SharedCatalogCategoryName}" Text="{Binding Name}" />
+                                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                                <TextBlock Style="{StaticResource SharedCatalogCategoryMeta}">
+                                                    <Run Text="{Binding ProductsNumer, Mode=OneWay}" />
+                                                    <Run Text="productos" />
+                                                </TextBlock>
+                                                <catalog:SharedCatalogPill Margin="8,0,0,0" IsOn="{Binding Active}" />
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                        CommandParameter="{Binding}"
+                                                                        ToolTip="Editar categoria" />
+                                            <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                          CommandParameter="{Binding}"
+                                                                          ToolTip="Eliminar categoria" />
+                                        </StackPanel>
                                     </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <Border Grid.Row="3" Style="{StaticResource SharedCatalogPanelFoot}">
+                            <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                     CurrentPage="{Binding CurrentPage}"
+                                                     TotalPages="{Binding TotalPages}"
+                                                     TotalRecords="{Binding TotalRecords}"
+                                                     PageCommand="{Binding GoToPageCommand}" />
+                        </Border>
+
+                        <shared:SharedLoading Grid.RowSpan="4" IsLoading="{Binding IsLoading}" />
+                    </Grid>
+                </Border>
+
+                <!-- ================= Los productos de la categoria ================= -->
+                <Border Grid.Column="2" Style="{StaticResource SharedCatalogPanel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Border Style="{StaticResource SharedCatalogPanelHead}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:FontAwesomeImage Width="14" Height="14"
+                                                         Margin="0,0,8,0"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{DynamicResource BrushCatalogHeadText}"
+                                                         Icon="{x:Static icons:FontAwesomeIcon.BoxOpen}"
+                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                    <TextBlock Style="{StaticResource SharedCatalogPanelHeadText}"
+                                               Text="{Binding SelectedCategoryName}" />
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Command="{Binding NewChildCommand}"
+                                        Style="{StaticResource SharedIndexNewButton}"
+                                        ToolTip="Crear producto"
+                                        Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                        Content="Nuevo producto" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Los chips filtran lo que ya se bajo; el buscador va al servidor -->
+                        <Border Grid.Row="1"
+                                Style="{StaticResource SharedCatalogToolbar}"
+                                Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <WrapPanel VerticalAlignment="Center">
+                                    <catalog:SharedCatalogChip Text="Todos"
+                                                               Value="all"
+                                                               Command="{Binding SetChipCommand}"
+                                                               IsOn="{Binding Chip, Converter={StaticResource EqualsToBooleanConverter}, ConverterParameter=all}" />
+                                    <catalog:SharedCatalogChip Text="Con stock"
+                                                               Value="stock"
+                                                               Command="{Binding SetChipCommand}"
+                                                               IsOn="{Binding Chip, Converter={StaticResource EqualsToBooleanConverter}, ConverterParameter=stock}" />
+                                    <catalog:SharedCatalogChip Text="Stock bajo"
+                                                               Value="low"
+                                                               Command="{Binding SetChipCommand}"
+                                                               IsOn="{Binding Chip, Converter={StaticResource EqualsToBooleanConverter}, ConverterParameter=low}" />
+                                    <catalog:SharedCatalogChip Text="Sin stock"
+                                                               Value="none"
+                                                               Command="{Binding SetChipCommand}"
+                                                               IsOn="{Binding Chip, Converter={StaticResource EqualsToBooleanConverter}, ConverterParameter=none}" />
+                                    <catalog:SharedCatalogChip Text="Con seriales"
+                                                               Value="serials"
+                                                               Command="{Binding SetChipCommand}"
+                                                               IsOn="{Binding Chip, Converter={StaticResource EqualsToBooleanConverter}, ConverterParameter=serials}" />
+                                </WrapPanel>
+
+                                <TextBox Grid.Column="1"
+                                         Width="260"
+                                         Style="{StaticResource SharedCatalogSearchBox}"
+                                         Text="{Binding ChildFilter, UpdateSourceTrigger=PropertyChanged}"
+                                         ToolTip="Escriba y pulse Enter">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Return" Command="{Binding SearchChildrenCommand}" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="2">
+                            <DataGrid ItemsSource="{Binding FilteredChildren}"
+                                      Style="{StaticResource SharedCatalogGrid}"
+                                      ColumnHeaderStyle="{StaticResource SharedCatalogHeader}"
+                                      RowStyle="{StaticResource SharedCatalogRow}"
+                                      CellStyle="{StaticResource SharedCatalogCell}">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Width="*" Header="Producto">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Style="{StaticResource SharedCatalogItemName}" Text="{Binding ProductName}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Width="150" Header="Stock">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Style="{StaticResource SharedCatalogItemName}"
+                                                           Foreground="{Binding TotalInventario, Converter={StaticResource StockToBrushConverter}}"
+                                                           Text="{Binding TotalInventario, StringFormat=N2}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Width="120" Header="Seriales">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <catalog:SharedCatalogPill IsOn="{Binding WithSerials}" OnText="Con seriales" OffText="Sin seriales" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Width="112" Header="Activo">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <catalog:SharedCatalogPill IsOn="{Binding Active}" OnText="Activo" OffText="Inactivo" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Width="Auto" Header="" CanUserSort="False" CellStyle="{StaticResource SharedCatalogCellActions}">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
+                                                    <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.ShowStockCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                                CommandParameter="{Binding}"
+                                                                                Icon="{x:Static icons:FontAwesomeIcon.Warehouse}"
+                                                                                ToolTip="Ver existencias por bodega" />
+                                                    <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditChildCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                                CommandParameter="{Binding}"
+                                                                                ToolTip="Editar producto" />
+                                                    <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteChildCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                                  CommandParameter="{Binding}"
+                                                                                  ToolTip="Eliminar producto" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <!-- Sin categoria elegida no hay nada que mostrar -->
+                            <StackPanel VerticalAlignment="Center"
+                                        Visibility="{Binding HasSelection, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                <fa:FontAwesomeImage Width="26" Height="26"
+                                                     HorizontalAlignment="Center"
+                                                     Foreground="{DynamicResource BrushCatalogEmptyGlyph}"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.HandPointer}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Style="{StaticResource SharedCatalogEmptyTitle}" Text="Elija una categoria" />
+                                <TextBlock Style="{StaticResource SharedCatalogEmptyText}"
+                                           Text="Al elegir una categoria se muestran sus productos." />
+                            </StackPanel>
+
+                            <StackPanel VerticalAlignment="Center"
+                                        Visibility="{Binding ShowChildrenEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <fa:FontAwesomeImage Width="26" Height="26"
+                                                     HorizontalAlignment="Center"
+                                                     Foreground="{DynamicResource BrushCatalogEmptyGlyph}"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.BoxOpen}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Style="{StaticResource SharedCatalogEmptyTitle}" Text="No hay registros" />
+                                <TextBlock Style="{StaticResource SharedCatalogEmptyText}"
+                                           Text="Esta categoria todavia no tiene productos." />
+                            </StackPanel>
+
+                            <shared:SharedLoading IsLoading="{Binding IsChildrenLoading}" />
+                        </Grid>
+
+                        <Border Grid.Row="3" Style="{StaticResource SharedCatalogPanelFoot}">
+                            <TextBlock Style="{StaticResource SharedCatalogFootText}">
+                                <Run Text="{Binding FilteredChildrenCount, Mode=OneWay}" />
+                                <Run Text="/" />
+                                <Run Text="{Binding ChildrenCount, Mode=OneWay}" />
+                                <Run Text="productos" />
+                            </TextBlock>
+                        </Border>
+                    </Grid>
+                </Border>
             </Grid>
-        </Border>
-        <shared:SharedLoading Grid.Row="4" IsLoading="{Binding IsLoading}" />
-        <shared:SharedPagination Grid.Row="6" HorizontalAlignment="Left" CurrentPage="{Binding CurrentPage}" TotalPages="{Binding TotalPages}" PageCommand="{Binding GoToPageCommand}" />
-    </Grid>
+        </Grid>
+    </Border>
 </UserControl>

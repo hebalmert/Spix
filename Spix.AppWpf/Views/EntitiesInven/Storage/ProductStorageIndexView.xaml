@@ -1,4 +1,4 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Storage.ProductStorageIndexView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Storage.ProductStorageIndexView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
@@ -16,8 +16,10 @@
         <DataGrid Grid.Row="4" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True" Background="#303640" Foreground="White" BorderBrush="#455160">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Bodega" Binding="{Binding StorageName}" Width="*" />
-                <DataGridTextColumn Header="Estado" Binding="{Binding State.Name}" Width="*" />
-                <DataGridTextColumn Header="Ciudad" Binding="{Binding City.Name}" Width="*" />
+                <DataGridTextColumn Header="Estado" Binding="{Binding StateName}" Width="*" />
+                <DataGridTextColumn Header="Ciudad" Binding="{Binding CityName}" Width="*" />
+                <DataGridTextColumn Header="Productos" Binding="{Binding Products}" Width="100" />
+                <DataGridTextColumn Header="Unidades" Binding="{Binding Units, StringFormat=N0}" Width="100" />
                 <DataGridCheckBoxColumn Header="Activo" Binding="{Binding Active}" Width="90" />
                 <DataGridTemplateColumn Width="96">
                     <DataGridTemplateColumn.CellTemplate>
@@ -36,6 +38,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <shared:SharedLoading Grid.Row="4" IsLoading="{Binding IsLoading}" />
-        <shared:SharedPagination Grid.Row="6" CurrentPage="{Binding CurrentPage}" TotalPages="{Binding TotalPages}" PageCommand="{Binding GoToPageCommand}" />
+        <shared:SharedPagination Grid.Row="6" CurrentPage="{Binding CurrentPage}" TotalPages="{Binding TotalPages}"
+                                 TotalRecords="{Binding TotalRecords}" PageCommand="{Binding GoToPageCommand}" />
     </Grid>
 </UserControl>

@@ -27,6 +27,7 @@
   <ItemGroup>
     <PackageReference Include="FontAwesome.Net.Generators" Version="1.0.0" />
     <PackageReference Include="FontAwesome.Net.Wpf" Version="1.0.0" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />

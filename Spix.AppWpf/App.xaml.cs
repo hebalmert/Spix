@@ -1,4 +1,4 @@
-using FontAwesome.Net.Generators;
+﻿using FontAwesome.Net.Generators;
 using FontAwesome.Net.Wpf;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +9,10 @@ using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.Services.Session;
 using Spix.AppWpf.ViewModels.Auth;
 using Spix.AppWpf.ViewModels.EntitiesGen.DocumentType;
+using Spix.AppWpf.ViewModels.EntitiesGen.Register;
+using Spix.AppWpf.ViewModels.EntitiesGen.Tax;
+using Spix.AppWpf.ViewModels.EntitiesEmails.EmailProvider;
+using Spix.AppWpf.ViewModels.EntitiesGen.Zone;
 using Spix.AppWpf.ViewModels.EntitiesGen.EstratoSocial;
 using Spix.AppWpf.ViewModels.EntitiesGen.Plan;
 using Spix.AppWpf.ViewModels.EntitiesGen.Service;
@@ -30,6 +34,10 @@ using Spix.AppWpf.ViewModels.EntitiesMK.QueueType;
 using Spix.AppWpf.ViewModels.Shell;
 using Spix.AppWpf.Views.Auth;
 using Spix.AppWpf.Views.EntitiesGen.DocumentType;
+using Spix.AppWpf.Views.EntitiesGen.Register;
+using Spix.AppWpf.Views.EntitiesGen.Tax;
+using Spix.AppWpf.Views.EntitiesEmails.EmailProvider;
+using Spix.AppWpf.Views.EntitiesGen.Zone;
 using Spix.AppWpf.Views.EntitiesGen.EstratoSocial;
 using Spix.AppWpf.Views.EntitiesGen.Plan;
 using Spix.AppWpf.Views.EntitiesGen.Service;
@@ -68,6 +76,11 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        //El escritorio abre con los colores de la web, para que el cliente vea el mismo
+        //producto entre en el navegador o en el programa. Con el boton de la barra
+        //superior se pasa al oscuro.
+        AppearanceService.SetLightTheme(true);
 
         var configuration = new ConfigurationBuilder()
             .AddJsonFile(
@@ -114,6 +127,18 @@ public partial class App : Application
         services.AddTransient<LoginViewModel>();
         services.AddTransient<ChangePasswordViewModel>();
         services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<EmailProviderIndexViewModel>();
+        services.AddTransient<CreateEmailProviderDialogViewModel>();
+        services.AddTransient<EditEmailProviderDialogViewModel>();
+        services.AddTransient<ZoneIndexViewModel>();
+        services.AddTransient<CreateZoneDialogViewModel>();
+        services.AddTransient<EditZoneDialogViewModel>();
+        services.AddTransient<RegisterIndexViewModel>();
+        services.AddTransient<CreateRegisterDialogViewModel>();
+        services.AddTransient<EditRegisterDialogViewModel>();
+        services.AddTransient<TaxIndexViewModel>();
+        services.AddTransient<CreateTaxDialogViewModel>();
+        services.AddTransient<EditTaxDialogViewModel>();
         services.AddTransient<DocumentTypeIndexViewModel>();
         services.AddTransient<CreateDocumentTypeDialogViewModel>();
         services.AddTransient<EditDocumentTypeDialogViewModel>();
@@ -135,6 +160,7 @@ public partial class App : Application
         services.AddTransient<EditProductCategoryDialogViewModel>();
         services.AddTransient<CreateProductDialogViewModel>();
         services.AddTransient<EditProductDialogViewModel>();
+        services.AddTransient<ProductStockDialogViewModel>();
         services.AddTransient<MarkIndexViewModel>();
         services.AddTransient<CreateMarkDialogViewModel>();
         services.AddTransient<EditMarkDialogViewModel>();
@@ -194,6 +220,18 @@ public partial class App : Application
         services.AddTransient<LoginWindow>();
         services.AddTransient<ChangePasswordWindow>();
         services.AddTransient<MainWindow>();
+        services.AddTransient<EmailProviderIndexView>();
+        services.AddTransient<CreateEmailProviderDialogView>();
+        services.AddTransient<EditEmailProviderDialogView>();
+        services.AddTransient<ZoneIndexView>();
+        services.AddTransient<CreateZoneDialogView>();
+        services.AddTransient<EditZoneDialogView>();
+        services.AddTransient<RegisterIndexView>();
+        services.AddTransient<CreateRegisterDialogView>();
+        services.AddTransient<EditRegisterDialogView>();
+        services.AddTransient<TaxIndexView>();
+        services.AddTransient<CreateTaxDialogView>();
+        services.AddTransient<EditTaxDialogView>();
         services.AddTransient<DocumentTypeIndexView>();
         services.AddTransient<CreateDocumentTypeDialogView>();
         services.AddTransient<EditDocumentTypeDialogView>();
@@ -215,6 +253,7 @@ public partial class App : Application
         services.AddTransient<EditProductCategoryDialogView>();
         services.AddTransient<CreateProductDialogView>();
         services.AddTransient<EditProductDialogView>();
+        services.AddTransient<ProductStockDialogView>();
         services.AddTransient<MarkIndexView>();
         services.AddTransient<CreateMarkDialogView>();
         services.AddTransient<EditMarkDialogView>();

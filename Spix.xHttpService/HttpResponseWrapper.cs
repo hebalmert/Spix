@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json;
 
 namespace Spix.HttpService;
 
@@ -45,6 +46,51 @@ public class HttpResponseWrapper<T>
     private async Task<string?> ReadBodyAsync(string? fallback = null)
     {
         var body = await HttpResponseMessage.Content.ReadAsStringAsync();
-        return string.IsNullOrWhiteSpace(body) ? (fallback ?? body) : body;
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            return fallback ?? body;
+        }
+
+        return LeerValidaciones(body) ?? body;
+    }
+
+    // Cuando el modelo no pasa las validaciones, ASP.NET no devuelve un mensaje sino un
+    // JSON con todos los errores. Sin esto el usuario ve el JSON crudo en pantalla.
+    private static string? LeerValidaciones(string body)
+    {
+        if (!body.TrimStart().StartsWith("{"))
+        {
+            return null;
+        }
+
+        try
+        {
+            using var documento = JsonDocument.Parse(body);
+            var raiz = documento.RootElement;
+
+            if (raiz.TryGetProperty("errors", out var errores) && errores.ValueKind == JsonValueKind.Object)
+            {
+                var mensajes = errores.EnumerateObject()
+                    .SelectMany(campo => campo.Value.EnumerateArray().Select(x => x.GetString()))
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .ToList();
+
+                if (mensajes.Count > 0)
+                {
+                    return string.Join(Environment.NewLine, mensajes);
+                }
+            }
+
+            if (raiz.TryGetProperty("title", out var titulo) && titulo.ValueKind == JsonValueKind.String)
+            {
+                return titulo.GetString();
+            }
+        }
+        catch (JsonException)
+        {
+            //No era un JSON de validacion: se devuelve el cuerpo tal cual
+        }
+
+        return null;
     }
 }

@@ -1,0 +1,338 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- El CATALOGO: Planes, Servicios, Productos y Marcas.
+         Los cuatro son la misma pantalla de la web (maestro-detalle): las categorias a la
+         izquierda, los hijos de la elegida a la derecha, y cuatro numeros arriba.
+         En Blazor los cuatro comparten una sola hoja de estilos; aqui tambien.
+         Ninguna vista escribe un color: todos salen de Colors.xaml. -->
+
+    <!-- La tarjeta blanca que envuelve toda la pantalla -->
+    <Style x:Key="SharedCatalogCard" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogCard}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="Effect" Value="{StaticResource SombraTarjeta}" />
+    </Style>
+
+    <Style x:Key="SharedCatalogTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeTitle}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogName}" />
+    </Style>
+
+    <Style x:Key="SharedCatalogSubtitle" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,2,0,14" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogSub}" />
+    </Style>
+
+    <!-- ===== Los dos paneles ===== -->
+    <Style x:Key="SharedCatalogPanel" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogPanelBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Effect" Value="{StaticResource SombraCatalogo}" />
+        <!-- La sombra se dibuja fuera: se le reserva el sitio -->
+        <Setter Property="Margin" Value="0,0,8,8" />
+    </Style>
+
+    <Style x:Key="SharedCatalogPanelHead" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogHeadBack}" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="CornerRadius" Value="11,11,0,0" />
+    </Style>
+
+    <Style x:Key="SharedCatalogPanelHeadText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogHeadText}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- La franja del buscador, arriba de la lista de categorias -->
+    <Style x:Key="SharedCatalogSearchBar" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogSearchBack}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogLine}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="12,10" />
+    </Style>
+
+    <!-- La franja de los chips, arriba de la tabla de hijos -->
+    <Style x:Key="SharedCatalogToolbar" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogLine}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="14,12" />
+    </Style>
+
+    <Style x:Key="SharedCatalogPanelFoot" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogLine}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="14,10" />
+    </Style>
+
+    <Style x:Key="SharedCatalogFootText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogMeta}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- La caja de texto de los dos buscadores -->
+    <Style x:Key="SharedCatalogSearchBox" TargetType="TextBox">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogName}" />
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogChipBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <!-- ===== La lista de categorias ===== -->
+    <Style x:Key="SharedCatalogList" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="AlternationCount" Value="2" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    </Style>
+
+    <!-- Una categoria de la lista.
+         Cebra, resaltado al pasar y, la elegida, azul mas oscuro con una barra al lado.
+         La barra existe SIEMPRE (4px transparentes): asi elegir una no corre el texto. -->
+    <Style x:Key="SharedCatalogCategoryItem" TargetType="ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="ItemBorder"
+                            Background="Transparent"
+                            BorderBrush="{DynamicResource BrushCatalogLine}"
+                            BorderThickness="0,0,0,1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle x:Name="AccentBar" Fill="Transparent" />
+
+                            <ContentPresenter Grid.Column="1" Margin="14,11" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource BrushCatalogRowAlt}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource BrushCatalogRowHover}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource BrushCatalogRowSelected}" />
+                            <Setter TargetName="AccentBar" Property="Fill" Value="{DynamicResource BrushCatalogSelectedBar}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SharedCatalogCategoryName" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogName}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="SharedCatalogCategoryMeta" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,2,0,0" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogMeta}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ===== Los chips que filtran los hijos ===== -->
+    <Style x:Key="SharedCatalogChipButton" TargetType="Button">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogChipText}" />
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogChipBack}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogChipBorder}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ChipBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="13"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <!-- El chip puesto va pintado. El componente le pasa el booleano en el Tag. -->
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Background" Value="{DynamicResource BrushCatalogChipOnBack}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogChipOnBack}" />
+                <Setter Property="Foreground" Value="{DynamicResource BrushCatalogChipOnText}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ===== La tabla de los hijos ===== -->
+    <Style x:Key="SharedCatalogGrid" TargetType="DataGrid">
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="CanUserAddRows" Value="False" />
+        <Setter Property="CanUserDeleteRows" Value="False" />
+        <Setter Property="CanUserResizeRows" Value="False" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="RowBackground" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogName}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontApp}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="RowHeight" Value="44" />
+        <Setter Property="ColumnHeaderHeight" Value="36" />
+        <Setter Property="AlternationCount" Value="2" />
+    </Style>
+
+    <Style x:Key="SharedCatalogHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogHeaderBack}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogHeaderText}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource BrushCatalogHeaderLine}"
+                            BorderThickness="0,0,0,1"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter VerticalAlignment="Center"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SharedCatalogRow" TargetType="DataGridRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridRow">
+                    <Border x:Name="RowBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource BrushCatalogLine}"
+                            BorderThickness="0,0,0,1"
+                            SnapsToDevicePixels="True">
+                        <DataGridCellsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource BrushCatalogRowHover}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                <Setter Property="Background" Value="{DynamicResource BrushCatalogRowAlt}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SharedCatalogCell" TargetType="DataGridCell">
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- La celda de los botones va sin relleno y su columna en Auto, igual que en los
+         listados: con un ancho a mano la sombra del boton se recorta. -->
+    <Style x:Key="SharedCatalogCellActions" TargetType="DataGridCell" BasedOn="{StaticResource SharedCatalogCell}">
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style x:Key="SharedCatalogItemName" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogName}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="SharedCatalogItemMeta" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogMeta}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- La velocidad del plan va en una capsula, como en la web -->
+    <Style x:Key="SharedCatalogTag" TargetType="Border">
+        <Setter Property="Padding" Value="10,3" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogChipBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="SharedCatalogTagText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogChipText}" />
+    </Style>
+
+    <!-- El aviso de error. Va en rojo porque vive DENTRO de la tarjeta blanca; el del
+         tablero es rosa palido y ahi no se leeria. -->
+    <Style x:Key="SharedCatalogMessage" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogKpiBadText}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- El aviso de "elija una categoria" y el de "no hay nada" -->
+    <Style x:Key="SharedCatalogEmptyText" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogMeta}" />
+    </Style>
+
+    <Style x:Key="SharedCatalogEmptyTitle" TargetType="TextBlock" BasedOn="{StaticResource SharedCatalogEmptyText}">
+        <Setter Property="Margin" Value="0,10,0,4" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogName}" />
+    </Style>
+</ResourceDictionary>

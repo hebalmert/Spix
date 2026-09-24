@@ -1,0 +1,66 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- TEMA WEB: los mismos colores del Blazor — fondo azul profundo y tarjetas claras.
+         Es el tema por defecto del escritorio, para que el cliente vea el mismo producto
+         entre en el navegador o en el programa.
+
+         Solo redefine las llaves que cambian; el resto sale de Colors.xaml. El
+         AppearanceService lo agrega o lo quita en caliente, por eso los estilos piden los
+         pinceles con DynamicResource.
+
+         La barra lateral y la superior se quedan azul marino en los dos temas: son la
+         marca, y ademas su texto es blanco. -->
+
+    <!-- El area de trabajo: el mismo degradado azul de la web -->
+    <LinearGradientBrush x:Key="BrushShellContent" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#081A3F" Offset="0" />
+        <GradientStop Color="#103678" Offset="0.55" />
+        <GradientStop Color="#0B2452" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Los tonos de la tabla son los MISMOS de la web (app.css, bloque .idx-table):
+         la fila normal es el blanco de la tarjeta, la par se pinta y el hover pinta mas. -->
+    <SolidColorBrush x:Key="BrushIndexCard" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushIndexBorder" Color="#D7DEEC" />
+    <SolidColorBrush x:Key="BrushIndexRowLine" Color="#EDF1F7" />
+    <SolidColorBrush x:Key="BrushIndexRowAlt" Color="#E9F0FB" />
+    <SolidColorBrush x:Key="BrushIndexRowHover" Color="#DAE5F7" />
+    <SolidColorBrush x:Key="BrushIndexRowSelected" Color="#D3E2F8" />
+    <SolidColorBrush x:Key="BrushIndexText" Color="#152238" />
+    <SolidColorBrush x:Key="BrushIndexMeta" Color="#6B7690" />
+
+    <!-- Sobre el azul del fondo el texto va claro, no gris -->
+    <SolidColorBrush x:Key="BrushIndexOnCanvas" Color="#D6E3F7" />
+    <SolidColorBrush x:Key="BrushIndexMessage" Color="#FFD3DC" />
+
+    <!-- Los controles de la barra, con el azul de la web -->
+    <SolidColorBrush x:Key="BrushIndexField" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushIndexFieldBorder" Color="#C9D4E6" />
+    <SolidColorBrush x:Key="BrushIndexAccent" Color="#2C5FAD" />
+    <SolidColorBrush x:Key="BrushIndexAccentHover" Color="#16305E" />
+    <SolidColorBrush x:Key="BrushIndexGhostBorder" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushIndexGhostText" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushIndexGhostHover" Color="#1E3F78" />
+
+    <!-- Los botones de la fila -->
+    <SolidColorBrush x:Key="BrushIndexIcon" Color="#5C6B85" />
+    <SolidColorBrush x:Key="BrushIndexIconRest" Color="#EDF1F8" />
+    <SolidColorBrush x:Key="BrushIndexIconEdit" Color="#16305E" />
+    <SolidColorBrush x:Key="BrushIndexIconEditBack" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushIndexIconEditBorder" Color="#D7DEEC" />
+    <SolidColorBrush x:Key="BrushIndexIconHover" Color="#D3E2F8" />
+    <SolidColorBrush x:Key="BrushIndexIconOnDanger" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushIndexIconDanger" Color="#DC2626" />
+    <SolidColorBrush x:Key="BrushIndexIconDangerHover" Color="#FCE8E8" />
+    <SolidColorBrush x:Key="BrushIndexIconSuccess" Color="#198754" />
+    <SolidColorBrush x:Key="BrushIndexIconSuccessHover" Color="#E3F3EB" />
+
+    <!-- El estado de la fila -->
+    <SolidColorBrush x:Key="BrushIndexPillOnBack" Color="#E3F6EC" />
+    <SolidColorBrush x:Key="BrushIndexPillOnBorder" Color="#A5DEC3" />
+    <SolidColorBrush x:Key="BrushIndexPillOnText" Color="#0F7A4E" />
+    <SolidColorBrush x:Key="BrushIndexPillOffBack" Color="#FBE7EC" />
+    <SolidColorBrush x:Key="BrushIndexPillOffBorder" Color="#F0BCC9" />
+    <SolidColorBrush x:Key="BrushIndexPillOffText" Color="#B02A37" />
+</ResourceDictionary>

@@ -1,16 +1,33 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+                    xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+                    xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices">
+
+    <!-- Los botones de los formularios y los modales.
+         Son el mismo boton de las filas de la tabla, estirado: blanco, borde fino,
+         esquina 8 y sombra solida. Lo que cambia entre uno y otro es SOLO el color,
+         y ese color vive en la franja de la izquierda y en el texto.
+
+         La franja mide 42 cuando lleva icono y se encoge a 5 cuando el boton es solo
+         texto (que son la mayoria). Asi el acento esta siempre, con o sin icono.
+
+         La sombra va en gris azulado y NO en negro: estos botones viven sobre el azul
+         oscuro del modal, donde una sombra negra no se ve. -->
     <Style x:Key="SharedButtonForm" TargetType="Button">
-        <Setter Property="MinWidth" Value="144" />
-        <Setter Property="Height" Value="42" />
-        <Setter Property="Padding" Value="20,0" />
-        <Setter Property="Margin" Value="0" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Effect" Value="{StaticResource SombraBotonForm}" />
+        <Setter Property="MinWidth" Value="124" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Padding" Value="18,0" />
+        <!-- La sombra se dibuja FUERA del control: hay que reservarle el sitio -->
+        <Setter Property="Margin" Value="0,0,4,4" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource BrushWhite}" />
-        <Setter Property="Background" Value="{StaticResource BrushButtonPrimary}" />
-        <Setter Property="Tag" Value="{StaticResource BrushButtonPrimaryHover}" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource BrushFormGhostText}" />
+        <Setter Property="Background" Value="{StaticResource BrushFormGhost}" />
+        <Setter Property="Tag" Value="{StaticResource BrushFormGhostHover}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BrushFormGhostBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -19,33 +36,59 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="6">
-                        <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          Margin="{TemplateBinding Padding}"
-                                          RecognizesAccessKey="True" />
+                            CornerRadius="8"
+                            SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- La franja de color: es el boton de la fila metido aqui -->
+                            <Border x:Name="Franja"
+                                    Width="5"
+                                    Background="{Binding Path=(svc:FormButton.Accent), RelativeSource={RelativeSource TemplatedParent}}"
+                                    CornerRadius="7,0,0,7">
+                                <fa:FontAwesomeImage x:Name="FranjaIcono"
+                                                     Width="16" Height="16"
+                                                     Visibility="Collapsed"
+                                                     Foreground="{StaticResource BrushWhite}"
+                                                     Icon="{Binding Path=(svc:FormButton.Icon), RelativeSource={RelativeSource TemplatedParent}}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Border>
+
+                            <ContentPresenter Grid.Column="1"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              RecognizesAccessKey="True" />
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <!-- Con icono la franja se ensancha para darle sitio -->
+                        <Trigger Property="svc:FormButton.HasIcon" Value="True">
+                            <Setter TargetName="Franja" Property="Width" Value="42" />
+                            <Setter TargetName="FranjaIcono" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <!-- Sin color de acento no hay franja: el boton queda liso -->
+                        <Trigger Property="svc:FormButton.Accent" Value="{x:Null}">
+                            <Setter TargetName="Franja" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <!-- Al pasar el mouse solo se tinta el fondo: la sombra no cambia
+                             para que el boton no se mueva de sitio -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="ButtonBorder"
                                     Property="Background"
                                     Value="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" />
-                            <Setter TargetName="ButtonBorder" Property="Effect">
-                                <Setter.Value>
-                                    <DropShadowEffect BlurRadius="14"
-                                                      ShadowDepth="4"
-                                                      Opacity="0.65"
-                                                      Color="#000000" />
-                                </Setter.Value>
-                            </Setter>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.86" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource BrushDisabled}" />
+                            <Setter Property="Opacity" Value="0.55" />
                             <Setter Property="Cursor" Value="Arrow" />
-                            <Setter Property="Opacity" Value="0.7" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -53,23 +96,41 @@
         </Setter>
     </Style>
 
+    <!-- El principal: la franja en el azul de la casa -->
     <Style x:Key="SharedButtonFormPrimary" TargetType="Button" BasedOn="{StaticResource SharedButtonForm}">
-        <Setter Property="Background" Value="{StaticResource BrushButtonPrimary}" />
-        <Setter Property="Tag" Value="{StaticResource BrushButtonPrimaryHover}" />
+        <Setter Property="svc:FormButton.Accent" Value="{StaticResource BrushFormPrimary}" />
+        <Setter Property="Foreground" Value="{StaticResource BrushFormTextPrimary}" />
     </Style>
 
+    <!-- El secundario (Volver): la franja en gris, para que no le compita al principal -->
     <Style x:Key="SharedButtonFormSecondary" TargetType="Button" BasedOn="{StaticResource SharedButtonForm}">
-        <Setter Property="Background" Value="{StaticResource BrushButtonSecondary}" />
-        <Setter Property="Tag" Value="{StaticResource BrushButtonSecondaryHover}" />
+        <Setter Property="svc:FormButton.Accent" Value="{StaticResource BrushFormNeutral}" />
+        <Setter Property="Foreground" Value="{StaticResource BrushFormTextNeutral}" />
     </Style>
 
+    <!-- Verde, para cuando de verdad se quiere marcar un exito -->
     <Style x:Key="SharedButtonFormSuccess" TargetType="Button" BasedOn="{StaticResource SharedButtonForm}">
-        <Setter Property="Background" Value="{StaticResource BrushButtonSuccess}" />
-        <Setter Property="Tag" Value="{StaticResource BrushButtonSuccessHover}" />
+        <Setter Property="svc:FormButton.Accent" Value="{StaticResource BrushFormSuccess}" />
+        <Setter Property="Foreground" Value="{StaticResource BrushFormTextSuccess}" />
     </Style>
 
+    <!-- Rojo: lo que no se puede deshacer. El texto tambien va rojo, como el icono de
+         borrar en la tabla. -->
     <Style x:Key="SharedButtonFormDanger" TargetType="Button" BasedOn="{StaticResource SharedButtonForm}">
-        <Setter Property="Background" Value="{StaticResource BrushButtonDanger}" />
-        <Setter Property="Tag" Value="{StaticResource BrushButtonDangerHover}" />
+        <Setter Property="svc:FormButton.Accent" Value="{StaticResource BrushFormDanger}" />
+        <Setter Property="Foreground" Value="{StaticResource BrushFormTextDanger}" />
+    </Style>
+
+    <!-- La X que cierra el modal: cuadradito azul oscuro relleno, sin franja. Es el unico
+         que no lleva texto, asi que la franja no tendria a que acompanar. -->
+    <Style x:Key="SharedButtonFormClose" TargetType="Button" BasedOn="{StaticResource SharedButtonForm}">
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="MinWidth" Value="36" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="{StaticResource BrushFormClose}" />
+        <Setter Property="Tag" Value="{StaticResource BrushFormCloseHover}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
 </ResourceDictionary>

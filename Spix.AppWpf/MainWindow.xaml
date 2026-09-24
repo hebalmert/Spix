@@ -9,7 +9,7 @@
         MinHeight="640"
         MinWidth="1024"
         WindowStartupLocation="CenterScreen">
-    <Grid Background="{StaticResource BrushShellContent}">
+    <Grid Background="{DynamicResource BrushShellContent}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280" />
             <ColumnDefinition Width="*" />
@@ -54,7 +54,7 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Click="ToggleConfigurationClick" Style="{StaticResource ShellMenuItem}">
+                        <Button Click="ToggleMenuClick" Tag="ConfigurationMenu" Style="{StaticResource ShellMenuItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -72,21 +72,62 @@
                         </Button>
 
                         <StackPanel x:Name="ConfigurationMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button Click="ShowZonesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Zonas" />
+                            </Button>
                             <Button Click="ShowDocumentTypesClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Tipo documento" />
+                                <TextBlock FontSize="14" Text="Tipos de documento" />
+                            </Button>
+                            <Button Click="ShowTaxesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Impuestos" />
                             </Button>
                             <Button Click="ShowEstratosSocialesClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Estrato social" />
+                                <TextBlock FontSize="14" Text="Estratos sociales" />
                             </Button>
-                            <Button Click="ShowPlansClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Categoria/Planes" />
+                            <Button Click="ShowRegistersClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Consecutivos" />
                             </Button>
-                            <Button Click="ShowServicesClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Categoria/Servicios" />
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Plantillas PDF" />
+                            </Button>
+                            <Button Click="ShowEmailProvidersClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Correo" />
                             </Button>
                         </StackPanel>
 
-                        <Button Click="ToggleInventoryClick" Style="{StaticResource ShellMenuItem}">
+                        <Button Click="ToggleMenuClick" Tag="CatalogMenu" Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.LayerGroup}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Catalogo" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+
+                        <StackPanel x:Name="CatalogMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button Click="ShowPlansClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Categorias de planes" />
+                            </Button>
+                            <Button Click="ShowServicesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Categorias de servicios" />
+                            </Button>
+                            <Button Click="ShowProductsClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Categorias de productos" />
+                            </Button>
+                            <Button Click="ShowMarksClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Marcas y modelos" />
+                            </Button>
+                        </StackPanel>
+
+                        <Button Click="ToggleMenuClick" Tag="InventoryMenu" Style="{StaticResource ShellMenuItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -104,29 +145,21 @@
                         </Button>
 
                         <StackPanel x:Name="InventoryMenu" Margin="30,0,14,8" Visibility="Collapsed">
-                            <Button Click="ShowProductsClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Categoria/Productos" />
-                            </Button>
-                            <Button Click="ShowMarksClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Marca/Modelo" />
-                            </Button>
-                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
                             <Button Click="ShowSuppliersClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Proveedores" />
                             </Button>
                             <Button Click="ShowStoragesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Bodegas" />
                             </Button>
-                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
                             <Button Click="ShowPurchasesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Compras" />
                             </Button>
                             <Button Click="ShowCarguesClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Cargue Seriales" />
+                                <TextBlock FontSize="14" Text="Cargue de seriales" />
                             </Button>
                         </StackPanel>
 
-                        <Button Click="ToggleNetworkClick" Style="{StaticResource ShellMenuItem}">
+                        <Button Click="ToggleMenuClick" Tag="NetworkMenu" Style="{StaticResource ShellMenuItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -145,28 +178,29 @@
 
                         <StackPanel x:Name="NetworkMenu" Margin="30,0,14,8" Visibility="Collapsed">
                             <Button Click="ShowIpNetsClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="IP Clientes" />
+                                <TextBlock FontSize="14" Text="IP de clientes" />
                             </Button>
                             <Button Click="ShowIpNetworksClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="IP Red" />
+                                <TextBlock FontSize="14" Text="IP de red" />
                             </Button>
-                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
                             <Button Click="ShowConnectionMikrotikControlsClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Control MikroTik" />
+                                <TextBlock FontSize="14" Text="Control Mikrotik" />
                             </Button>
                             <Button Click="ShowQueueTypesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Queue Types" />
                             </Button>
-                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
-                            <Button Click="ShowNodesClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Nodos" />
-                            </Button>
                             <Button Click="ShowServersClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Servidores" />
                             </Button>
+                            <Button Click="ShowNodesClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Nodos" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Mapa de nodos" />
+                            </Button>
                         </StackPanel>
 
-                        <Button Click="ToggleOperationsClick" Style="{StaticResource ShellMenuItem}">
+                        <Button Click="ToggleMenuClick" Tag="OperationsMenu" Style="{StaticResource ShellMenuItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -184,16 +218,33 @@
                         </Button>
 
                         <StackPanel x:Name="OperationsMenu" Margin="30,0,14,8" Visibility="Collapsed">
-                            <Button Click="ShowScheduleClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Schedule" />
-                            </Button>
-                            <Separator Style="{StaticResource ShellSubMenuSeparator}" />
                             <Button Click="ShowClientsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Clientes" />
                             </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratos" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Control de contratos" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Solicitudes de servicio" />
+                            </Button>
+                            <Button Click="ShowScheduleClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Agenda" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratos suspendidos" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Reactivacion" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Auditoria de activaciones" />
+                            </Button>
                         </StackPanel>
 
-                        <Button Style="{StaticResource ShellMenuItem}">
+                        <Button Click="ToggleMenuClick" Tag="FinanceMenu" Style="{StaticResource ShellMenuItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -210,7 +261,99 @@
                             </Grid>
                         </Button>
 
-                        <Button Style="{StaticResource ShellMenuItem}">
+                        <StackPanel x:Name="FinanceMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Notas de cobro" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Nota individual" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Pagos adelantados" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Exoneracion fija" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Exoneracion del mes" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Facturas" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Cuentas por cobrar" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Cobro tecnico" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Corte general" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Pagos a contratistas" />
+                            </Button>
+                        </StackPanel>
+
+                        <Button Click="ToggleMenuClick" Tag="ReportsMenu" Style="{StaticResource ShellMenuItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChartColumn}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Reportes" />
+                                <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
+                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            </Grid>
+                        </Button>
+
+                        <StackPanel x:Name="ReportsMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Recaudo del periodo" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Cartera por antiguedad" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Comisiones de contratistas" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Bitacora del dinero" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratos del periodo" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Servicios del periodo" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Efectividad del corte" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Fuera de servicio" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratos activos" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratos por zona" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratos por AP" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratos por servidor" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Inventario de seriales" />
+                            </Button>
+                        </StackPanel>
+
+                        <Button Click="ToggleMenuClick" Tag="SystemMenu" Style="{StaticResource ShellMenuItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -220,12 +363,24 @@
                                 <fa:FontAwesomeImage Width="18" Height="18" Foreground="White"
                                                      Icon="{x:Static icons:FontAwesomeIcon.Sliders}"
                                                      IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="System Setting" />
+                                <TextBlock Grid.Column="1" Margin="14,0,0,0" FontSize="16" FontWeight="SemiBold" Text="Sistema" />
                                 <fa:FontAwesomeImage Grid.Column="2" Width="14" Height="14" Foreground="White"
                                                      Icon="{x:Static icons:FontAwesomeIcon.ChevronDown}"
                                                      IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
                             </Grid>
                         </Button>
+
+                        <StackPanel x:Name="SystemMenu" Margin="30,0,14,8" Visibility="Collapsed">
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Usuarios" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Contratistas" />
+                            </Button>
+                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                                <TextBlock FontSize="14" Text="Tecnicos" />
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
 
@@ -245,12 +400,54 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock x:Name="PageTitleText" FontSize="17" FontWeight="SemiBold" Foreground="White" Text="Home" />
-                        <TextBlock x:Name="PageSubtitleText" Margin="0,2,0,0" FontSize="11" Foreground="#AAB7C9" Text="Panel principal" />
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- El glifo del modulo: le pone cara a cada pantalla -->
+                        <Border Width="40" Height="40"
+                                Margin="0,0,14,0"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource BrushIndexIconRest}"
+                                CornerRadius="10">
+                            <fa:FontAwesomeImage x:Name="PageGlyph"
+                                                 Width="17" Height="17"
+                                                 Foreground="{DynamicResource BrushIndexAccent}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.House}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                        </Border>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock x:Name="PageTitleText" FontSize="{StaticResource FontSizeSection}" FontWeight="SemiBold" Foreground="White" Text="Home" />
+                            <TextBlock x:Name="PageSubtitleText" Margin="0,2,0,0" FontSize="{StaticResource FontSizeCaption}" Foreground="#AAB7C9" Text="Panel principal" />
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Aspecto: tema claro/oscuro y que tan apretadas van las tablas -->
+                        <Button x:Name="ThemeButton"
+                                Width="36" Height="36"
+                                Margin="0,0,4,0"
+                                Click="ToggleThemeClick"
+                                Style="{StaticResource ShellIconButton}"
+                                ToolTip="Cambiar entre tema claro y oscuro">
+                            <fa:FontAwesomeImage x:Name="ThemeIcon"
+                                                 Width="15" Height="15"
+                                                 Foreground="#AAB7C9"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.Moon}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                        </Button>
+
+                        <Button x:Name="DensityButton"
+                                Width="36" Height="36"
+                                Margin="0,0,14,0"
+                                Click="ToggleDensityClick"
+                                Style="{StaticResource ShellIconButton}"
+                                ToolTip="Filas comodas o compactas">
+                            <fa:FontAwesomeImage x:Name="DensityIcon"
+                                                 Width="15" Height="15"
+                                                 Foreground="#AAB7C9"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.BarsStaggered}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                        </Button>
+
                         <StackPanel Margin="0,0,12,0" VerticalAlignment="Center">
                             <TextBlock HorizontalAlignment="Right" FontSize="13" FontWeight="SemiBold" Foreground="White" Text="{Binding FullName}" />
                             <TextBlock HorizontalAlignment="Right" Margin="0,2,0,0" FontSize="11" Foreground="#AAB7C9" Text="{Binding Role}" />
@@ -303,40 +500,52 @@
                     <TextBlock Margin="0,8,0,28" FontSize="14" Foreground="#B9C8DD" Text="Accesos principales de la operacion SPIX." />
 
                     <UniformGrid Columns="4" HorizontalAlignment="Left">
-                        <Border Width="220" Margin="0,0,14,0" Style="{StaticResource ShellQuickCard}">
+                        <Border Width="220" Margin="0,0,14,0" BorderBrush="{DynamicResource BrushDashSetup}" Style="{StaticResource ShellQuickCard}">
                             <StackPanel>
-                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#22C1E8"
-                                                     Icon="{x:Static icons:FontAwesomeIcon.Gears}"
-                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Configuracion" />
-                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Parametros del sistema." TextWrapping="Wrap" />
+                                <Border Style="{StaticResource ShellQuickCardIcon}">
+                                    <fa:FontAwesomeImage Width="19" Height="19"
+                                                         Foreground="{DynamicResource BrushDashSetup}"
+                                                         Icon="{x:Static icons:FontAwesomeIcon.Gears}"
+                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                </Border>
+                                <TextBlock Style="{StaticResource ShellQuickCardTitle}" Text="Configuracion" />
+                                <TextBlock Style="{StaticResource ShellQuickCardText}" Text="Parametros del sistema." />
                             </StackPanel>
                         </Border>
-                        <Border Width="220" Margin="0,0,14,0" Style="{StaticResource ShellQuickCard}">
+                        <Border Width="220" Margin="0,0,14,0" BorderBrush="{DynamicResource BrushDashInventory}" Style="{StaticResource ShellQuickCard}">
                             <StackPanel>
-                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#6F9DFF"
-                                                     Icon="{x:Static icons:FontAwesomeIcon.BoxesStacked}"
-                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Inventario" />
-                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Productos y existencias." TextWrapping="Wrap" />
+                                <Border Style="{StaticResource ShellQuickCardIcon}">
+                                    <fa:FontAwesomeImage Width="19" Height="19"
+                                                         Foreground="{DynamicResource BrushDashInventory}"
+                                                         Icon="{x:Static icons:FontAwesomeIcon.BoxesStacked}"
+                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                </Border>
+                                <TextBlock Style="{StaticResource ShellQuickCardTitle}" Text="Inventario" />
+                                <TextBlock Style="{StaticResource ShellQuickCardText}" Text="Productos y existencias." />
                             </StackPanel>
                         </Border>
-                        <Border Width="220" Margin="0,0,14,0" Style="{StaticResource ShellQuickCard}">
+                        <Border Width="220" Margin="0,0,14,0" BorderBrush="{DynamicResource BrushDashNetwork}" Style="{StaticResource ShellQuickCard}">
                             <StackPanel>
-                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#51D88A"
-                                                     Icon="{x:Static icons:FontAwesomeIcon.NetworkWired}"
-                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Network" />
-                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Nodos, servidores y MikroTik." TextWrapping="Wrap" />
+                                <Border Style="{StaticResource ShellQuickCardIcon}">
+                                    <fa:FontAwesomeImage Width="19" Height="19"
+                                                         Foreground="{DynamicResource BrushDashNetwork}"
+                                                         Icon="{x:Static icons:FontAwesomeIcon.NetworkWired}"
+                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                </Border>
+                                <TextBlock Style="{StaticResource ShellQuickCardTitle}" Text="Network" />
+                                <TextBlock Style="{StaticResource ShellQuickCardText}" Text="Nodos, servidores y MikroTik." />
                             </StackPanel>
                         </Border>
-                        <Border Width="220" Style="{StaticResource ShellQuickCard}">
+                        <Border Width="220" BorderBrush="{DynamicResource BrushDashOperations}" Style="{StaticResource ShellQuickCard}">
                             <StackPanel>
-                                <fa:FontAwesomeImage Width="34" Height="34" Foreground="#F5B461"
-                                                     Icon="{x:Static icons:FontAwesomeIcon.Briefcase}"
-                                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                <TextBlock Margin="0,18,0,0" FontSize="16" FontWeight="SemiBold" Foreground="White" Text="Operaciones" />
-                                <TextBlock Margin="0,7,0,0" FontSize="12" Foreground="#B9C8DD" Text="Contratos y servicio al cliente." TextWrapping="Wrap" />
+                                <Border Style="{StaticResource ShellQuickCardIcon}">
+                                    <fa:FontAwesomeImage Width="19" Height="19"
+                                                         Foreground="{DynamicResource BrushDashOperations}"
+                                                         Icon="{x:Static icons:FontAwesomeIcon.Briefcase}"
+                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                </Border>
+                                <TextBlock Style="{StaticResource ShellQuickCardTitle}" Text="Operaciones" />
+                                <TextBlock Style="{StaticResource ShellQuickCardText}" Text="Contratos y servicio al cliente." />
                             </StackPanel>
                         </Border>
                     </UniformGrid>

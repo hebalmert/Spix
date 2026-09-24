@@ -1,0 +1,249 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesEmails.EmailProvider.EmailProviderFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="600">
+    <!-- Los campos son los mismos del formulario de Blazor. Los de SendGrid y los de
+         Gmail se muestran segun el proveedor elegido; el que se oculta no deja hueco
+         porque la separacion va en el margen de cada campo, no en filas fijas. -->
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Nombre" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="60"
+                     Text="{Binding Entity.Name, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Proveedor" />
+            </Border>
+            <ComboBox Grid.Column="1"
+                      MinHeight="42"
+                      Padding="12,8"
+                      FontSize="14"
+                      ItemsSource="{Binding ProviderTypes}"
+                      SelectedItem="{Binding Entity.ProviderType, Mode=TwoWay}" />
+        </Grid>
+        <Grid Grid.Row="2" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Correo remitente" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="120"
+                     Text="{Binding Entity.FromEmail, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="3" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Nombre remitente" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="60"
+                     Text="{Binding Entity.FromName, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="4" Margin="0,0,0,16"
+              Visibility="{Binding Entity.ProviderType, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=SendGrid}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Llave SendGrid" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="200"
+                     Text="{Binding Entity.SendGridApiKey, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="5" Margin="0,0,0,16"
+              Visibility="{Binding Entity.ProviderType, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=Gmail}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Servidor" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="120"
+                     Text="{Binding Entity.SmtpHost, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="6" Margin="0,0,0,16"
+              Visibility="{Binding Entity.ProviderType, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=Gmail}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Puerto" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="6"
+                     Text="{Binding Entity.SmtpPort, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="7" Margin="0,0,0,16"
+              Visibility="{Binding Entity.ProviderType, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=Gmail}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Seguridad" />
+            </Border>
+            <Border Grid.Column="1"
+                    MinHeight="42"
+                    Background="White"
+                    BorderBrush="#566273"
+                    BorderThickness="1"
+                    CornerRadius="0,6,6,0">
+                <CheckBox Margin="14,0" VerticalAlignment="Center" IsChecked="{Binding Entity.SmtpUseSsl}" Content="Usar SSL" />
+            </Border>
+        </Grid>
+        <Grid Grid.Row="8" Margin="0,0,0,16"
+              Visibility="{Binding Entity.ProviderType, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=Gmail}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Usuario" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="120"
+                     Text="{Binding Entity.SmtpUser, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="9" Margin="0,0,0,16"
+              Visibility="{Binding Entity.ProviderType, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=Gmail}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Clave" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MinHeight="42"
+                     Padding="12,8"
+                     Background="White"
+                     BorderBrush="#566273"
+                     BorderThickness="1"
+                     FontSize="14"
+                     Foreground="#1E2B3C"
+                     MaxLength="200"
+                     Text="{Binding Entity.SmtpPassword, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+        <Grid Grid.Row="10" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Predeterminado" />
+            </Border>
+            <Border Grid.Column="1"
+                    MinHeight="42"
+                    Background="White"
+                    BorderBrush="#566273"
+                    BorderThickness="1"
+                    CornerRadius="0,6,6,0">
+                <CheckBox Margin="14,0" VerticalAlignment="Center" IsChecked="{Binding Entity.IsDefault}" Content="Es la configuracion por defecto" />
+            </Border>
+        </Grid>
+        <Grid Grid.Row="11" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1" CornerRadius="6,0,0,6">
+                <TextBlock Margin="14,0" VerticalAlignment="Center" FontSize="14" Foreground="#1E2B3C" Text="Activo" />
+            </Border>
+            <Border Grid.Column="1"
+                    MinHeight="42"
+                    Background="White"
+                    BorderBrush="#566273"
+                    BorderThickness="1"
+                    CornerRadius="0,6,6,0">
+                <CheckBox Margin="14,0" VerticalAlignment="Center" IsChecked="{Binding Entity.Active}" Content="Activo" />
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

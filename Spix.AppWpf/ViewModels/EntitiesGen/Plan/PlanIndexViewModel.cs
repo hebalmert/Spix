@@ -1,19 +1,18 @@
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.AppWpf.Views.EntitiesGen.Plan;
 using Spix.HttpService;
-using System.Collections.ObjectModel;
+using PlanCategoryEntity = Spix.Domain.EntitiesGen.PlanCategory;
 using PlanEntity = Spix.Domain.EntitiesGen.Plan;
 
 namespace Spix.AppWpf.ViewModels.EntitiesGen.Plan;
 
-// Presenta categorias y sus planes en el mismo indice, siguiendo el acordeon de Productos de Blazor.
-public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowViewModel>
+// Planes: maestro-detalle, igual que en la web. Todo lo que comparte con los otros
+// tres modulos del catalogo vive en CategoryDetailViewModel; aqui solo lo propio.
+public partial class PlanIndexViewModel : CategoryDetailViewModel<PlanCategoryEntity, PlanEntity>
 {
-    private const int ChildPageSize = 100;
-
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
     private readonly AlertService _alertService;
@@ -21,8 +20,10 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
 
     protected override string Endpoint => "api/v1/plancategories";
 
+    protected override string ChildEndpoint => "api/v1/plans";
+
     public PlanIndexViewModel(
-        IPagedEntityService<PlanCategoryRowViewModel> pagedEntityService,
+        IPagedEntityService<PlanCategoryEntity> pagedEntityService,
         IRepository repository,
         ModalService modalService,
         AlertService alertService,
@@ -35,36 +36,52 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
         _responseHandler = responseHandler;
     }
 
-    // Mantiene una sola categoria abierta para que el listado sea facil de recorrer.
-    [RelayCommand]
-    private async Task TogglePlansAsync(PlanCategoryRowViewModel? category)
+    protected override Guid GetCategoryId(PlanCategoryEntity category)
     {
-        if (category is null)
-        {
-            return;
-        }
-
-        if (category.IsExpanded)
-        {
-            category.IsExpanded = false;
-            return;
-        }
-
-        foreach (var item in Items)
-        {
-            item.IsExpanded = false;
-        }
-
-        category.IsExpanded = true;
-        await LoadPlansAsync(category);
+        return category.PlanCategoryId;
     }
+
+    public override string SelectedCategoryName => SelectedCategory?.PlanCategoryName ?? "Planes";
+
+    // Los dos indicadores propios de este modulo
+    public int ActiveCount => Children.Count(item => item.Active);
+
+    public int InactiveCount => Children.Count(item => !item.Active);
+
+    protected override void NotifyKpis()
+    {
+        OnPropertyChanged(nameof(ActiveCount));
+        OnPropertyChanged(nameof(InactiveCount));
+    }
+
+    protected override IEnumerable<PlanEntity> ApplyChip(IEnumerable<PlanEntity> children, string chip)
+    {
+        return chip switch
+        {
+            "active" => children.Where(item => item.Active),
+            "inactive" => children.Where(item => !item.Active),
+            _ => children
+        };
+    }
+
+    protected override async Task<IReadOnlyCollection<PlanEntity>> GetChildrenAsync(string url)
+    {
+        var responseHttp = await _repository.GetAsync<List<PlanEntity>>(url);
+
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            return Array.Empty<PlanEntity>();
+        }
+
+        return responseHttp.Response ?? new List<PlanEntity>();
+    }
+
+    // ===== La categoria =====
 
     [RelayCommand]
     private async Task NewAsync()
     {
-        var result = await _modalService.ShowAsync<CreatePlanCategoryDialogView>(
-            "Crear categoria plan");
-
+        var result = await _modalService.ShowAsync<CreatePlanCategoryDialogView>("Crear categoria de planes");
         if (!result.Succeeded)
         {
             return;
@@ -75,21 +92,16 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
     }
 
     [RelayCommand]
-    private async Task EditAsync(PlanCategoryRowViewModel? category)
+    private async Task EditAsync(PlanCategoryEntity? category)
     {
         if (category is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["Id"] = category.PlanCategoryId
-        };
-
         var result = await _modalService.ShowAsync<EditPlanCategoryDialogView>(
-            "Editar categoria plan",
-            parameters);
+            "Editar categoria de planes",
+            new Dictionary<string, object> { ["Id"] = category.PlanCategoryId });
 
         if (!result.Succeeded)
         {
@@ -101,7 +113,7 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
     }
 
     [RelayCommand]
-    private async Task DeleteAsync(PlanCategoryRowViewModel? category)
+    private async Task DeleteAsync(PlanCategoryEntity? category)
     {
         if (category is null)
         {
@@ -109,7 +121,7 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
         }
 
         var confirmed = await _alertService.ConfirmAsync(
-            "Eliminar categoria plan",
+            "Eliminar categoria de planes",
             "Esta accion no se puede deshacer.",
             "Eliminar");
 
@@ -118,9 +130,7 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
             return;
         }
 
-        var responseHttp = await _repository.DeleteAsync(
-            $"api/v1/plancategories/{category.PlanCategoryId}");
-
+        var responseHttp = await _repository.DeleteAsync($"{Endpoint}/{category.PlanCategoryId}");
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             return;
@@ -130,62 +140,57 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
         await _alertService.SuccessAsync("Eliminado", "La categoria de planes fue eliminada correctamente.");
     }
 
+    // ===== El hijo de la categoria =====
+
     [RelayCommand]
-    private async Task NewPlanAsync(PlanCategoryRowViewModel? category)
+    private async Task NewChildAsync()
     {
-        if (category is null)
+        if (SelectedCategory is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["PlanCategoryId"] = category.PlanCategoryId
-        };
+        var categoryId = GetCategoryId(SelectedCategory);
 
         var result = await _modalService.ShowAsync<CreatePlanDialogView>(
             "Crear plan",
-            parameters);
+            new Dictionary<string, object> { ["PlanCategoryId"] = categoryId });
 
         if (!result.Succeeded)
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(category.PlanCategoryId);
+        //Se recarga tambien el padre porque cambia el contador de la fila
+        await ReloadKeepingSelectionAsync(categoryId);
         await _alertService.SuccessAsync("Guardado", "El plan fue guardado correctamente.");
     }
 
     [RelayCommand]
-    private async Task EditPlanAsync(PlanEntity? plan)
+    private async Task EditChildAsync(PlanEntity? child)
     {
-        if (plan is null)
+        if (child is null || SelectedCategory is null)
         {
             return;
         }
 
-        var parameters = new Dictionary<string, object>
-        {
-            ["Id"] = plan.PlanId
-        };
-
         var result = await _modalService.ShowAsync<EditPlanDialogView>(
             "Editar plan",
-            parameters);
+            new Dictionary<string, object> { ["Id"] = child.PlanId });
 
         if (!result.Succeeded)
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(plan.PlanCategoryId);
+        await ReloadKeepingSelectionAsync(GetCategoryId(SelectedCategory));
         await _alertService.SuccessAsync("Actualizado", "El plan fue actualizado correctamente.");
     }
 
     [RelayCommand]
-    private async Task DeletePlanAsync(PlanEntity? plan)
+    private async Task DeleteChildAsync(PlanEntity? child)
     {
-        if (plan is null)
+        if (child is null || SelectedCategory is null)
         {
             return;
         }
@@ -200,62 +205,13 @@ public partial class PlanIndexViewModel : PagedListViewModel<PlanCategoryRowView
             return;
         }
 
-        var responseHttp = await _repository.DeleteAsync($"api/v1/plans/{plan.PlanId}");
+        var responseHttp = await _repository.DeleteAsync($"{ChildEndpoint}/{child.PlanId}");
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             return;
         }
 
-        await ReloadExpandedCategoryAsync(plan.PlanCategoryId);
+        await ReloadKeepingSelectionAsync(GetCategoryId(SelectedCategory));
         await _alertService.SuccessAsync("Eliminado", "El plan fue eliminado correctamente.");
-    }
-
-    // Obtiene los hijos cuando el usuario abre una categoria y evita descargas masivas del indice.
-    private async Task LoadPlansAsync(PlanCategoryRowViewModel category)
-    {
-        category.IsPlansLoading = true;
-        category.PlansMessage = string.Empty;
-
-        try
-        {
-            var responseHttp = await _repository.GetAsync<List<PlanEntity>>(
-                $"api/v1/plans?guidId={category.PlanCategoryId}&page=1&recordsnumber={ChildPageSize}");
-
-            if (await _responseHandler.HandleErrorAsync(responseHttp))
-            {
-                return;
-            }
-
-            category.Plans = new ObservableCollection<PlanEntity>(
-                responseHttp.Response ?? new List<PlanEntity>());
-
-            if (category.Plans.Count == 0)
-            {
-                category.PlansMessage = "No hay planes registrados en esta categoria.";
-            }
-        }
-        catch (Exception exception)
-        {
-            category.PlansMessage = exception.Message;
-        }
-        finally
-        {
-            category.IsPlansLoading = false;
-        }
-    }
-
-    // Vuelve a cargar el padre y conserva expandida la categoria afectada por el CRUD hijo.
-    private async Task ReloadExpandedCategoryAsync(Guid planCategoryId)
-    {
-        await LoadAsync(CurrentPage);
-
-        var category = Items.FirstOrDefault(item => item.PlanCategoryId == planCategoryId);
-        if (category is null)
-        {
-            return;
-        }
-
-        category.IsExpanded = true;
-        await LoadPlansAsync(category);
     }
 }

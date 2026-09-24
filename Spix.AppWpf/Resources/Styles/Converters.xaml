@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:Spix.AppWpf.Converters">
+
+    <!-- TODOS los convertidores de la aplicacion, en un diccionario que se carga PRIMERO.
+         Tienen que estar antes que los estilos: si un estilo pide un convertidor con
+         StaticResource y este se declara despues, la pantalla revienta al abrirse con
+         "Provide value on StaticResourceHolder threw an exception". -->
+
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <converters:CargueSerialUploadStatusConverter x:Key="CargueSerialUploadStatusConverter" />
+    <converters:CargueCanUploadSerialConverter x:Key="CargueCanUploadSerialConverter" />
+    <converters:WidthToVisibilityConverter x:Key="WidthToVisibilityConverter" />
+    <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+    <converters:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
+    <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
+    <converters:EqualsToVisibilityConverter x:Key="EqualsToVisibilityConverter" />
+    <converters:EqualsToBooleanConverter x:Key="EqualsToBooleanConverter" />
+    <converters:StockToBrushConverter x:Key="StockToBrushConverter" />
+    <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+</ResourceDictionary>
