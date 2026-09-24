@@ -1,0 +1,41 @@
+/* Lo que debe hoy: lo primero que ve el cliente */
+.mb-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.mb-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    /* Con saldo se pone rojo, sin saldo verde */
+    .mb-tile.is-due {
+        border-left-color: #dc3545;
+    }
+
+    .mb-tile.is-clear {
+        border-left-color: #198754;
+    }
+
+.mb-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.mb-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* El saldo de la fila */
+.mb-due {
+    color: #b02a37;
+}

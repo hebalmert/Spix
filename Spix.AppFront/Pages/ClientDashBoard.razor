@@ -26,11 +26,27 @@
             <i class="fa fa-wifi client-card__icon"></i>
         </div>
 
-        <div class="client-card client-card--billing">
+        @* Facturacion: sus facturas, que se le cobro y cuanto debe *@
+        <div class="client-card client-card--billing" @onclick="GoToBills" role="button">
             <div class="client-card__content">
                 <span class="client-card__label">Facturacion</span>
-                <h2>Pagos y balance</h2>
-                <p>Espacio reservado para facturas, pagos pendientes e historial.</p>
+                <h2>
+                    Mis facturas
+                    @if (pendingBills > 0)
+                    {
+                        <span class="client-card__badge">@pendingBills</span>
+                    }
+                </h2>
+                <p>
+                    @if (pendingBills > 0)
+                    {
+                        <text>Tiene facturas por pagar. Entre para ver que se le cobro y cuanto debe.</text>
+                    }
+                    else
+                    {
+                        <text>Esta al dia. Entre para ver sus facturas y lo que se le cobro.</text>
+                    }
+                </p>
             </div>
             <i class="fa fa-file-invoice-dollar client-card__icon"></i>
         </div>

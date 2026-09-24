@@ -1,6 +1,7 @@
 ﻿using Spix.Domain.EntitiesSchedule;
 using Microsoft.AspNetCore.Components;
 using Spix.AppFront.Helper;
+using Spix.Domain.EntitiesBilling;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.HttpService;
 
@@ -18,6 +19,9 @@ public partial class ClientDashBoard
     //Lo que todavia no se cierra: es lo que el cliente quiere ver de un vistazo
     private int openRequests;
 
+    //Las facturas que le faltan por pagar
+    private int pendingBills;
+
     protected override async Task OnInitializedAsync()
     {
         //Solo para el contador de la tarjeta: si falla, la tarjeta igual se muestra
@@ -28,6 +32,17 @@ public partial class ClientDashBoard
         pendingSignatures = responseHttp.Response.Count(x => !x.Signed);
 
         await LoadRequestsAsync();
+        await LoadBillsAsync();
+    }
+
+    //Solo el numerito de la tarjeta: dos totales que suma la base
+    private async Task LoadBillsAsync()
+    {
+        var responseHttp = await _repository.GetAsync<MyBillSummaryDto>("api/v1/mybills/summary");
+        if (responseHttp.Error || responseHttp.Response == null)
+            return;
+
+        pendingBills = responseHttp.Response.Pending;
     }
 
     private async Task LoadRequestsAsync()
@@ -39,6 +54,11 @@ public partial class ClientDashBoard
         openRequests = responseHttp.Response.Count(x => x.ScheduleStatus != ScheduleStatus.Completed &&
                                                        x.ScheduleStatus != ScheduleStatus.PhoneResolved &&
                                                        x.ScheduleStatus != ScheduleStatus.Cancelled);
+    }
+
+    private void GoToBills()
+    {
+        _navigationManager.NavigateTo("/my-bills");
     }
 
     private void GoToRequests()

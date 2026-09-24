@@ -243,6 +243,8 @@ namespace Spix.AppBack.DependencyInjection
             //Billing
             services.AddScoped<Spix.AppServiceX.InterfacesBilling.IBillingServiceX, Spix.AppServiceX.ImplementBilling.BillingServiceX>();
             services.AddScoped<Spix.AppService.InterfacesBilling.IBillingService, Spix.AppService.ImplementBilling.BillingService>();
+            services.AddScoped<Spix.AppServiceX.InterfacesBilling.IMyBillServiceX, Spix.AppServiceX.ImplementBilling.MyBillServiceX>();
+            services.AddScoped<Spix.AppService.InterfacesBilling.IMyBillService, Spix.AppService.ImplementBilling.MyBillService>();
 
             //Payment
             services.AddScoped<Spix.AppServiceX.InterfacesPayment.IReportFinanceServiceX, Spix.AppServiceX.ImplementPayment.ReportFinanceServiceX>();

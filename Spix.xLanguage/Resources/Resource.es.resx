@@ -3796,4 +3796,25 @@
   <data name="Menu_ReportAudit" xml:space="preserve">
     <value>Bitacora del dinero</value>
   </data>
+  <data name="Menu_MyBills" xml:space="preserve">
+    <value>Mis facturas</value>
+  </data>
+  <data name="MyBill_Title" xml:space="preserve">
+    <value>Mis facturas</value>
+  </data>
+  <data name="MyBill_Subtitle" xml:space="preserve">
+    <value>Lo que se le cobro, lo que ya pago y lo que falta por pagar.</value>
+  </data>
+  <data name="MyBill_Invoice" xml:space="preserve">
+    <value>Factura</value>
+  </data>
+  <data name="MyBill_Balance" xml:space="preserve">
+    <value>Saldo</value>
+  </data>
+  <data name="MyBill_PendingBills" xml:space="preserve">
+    <value>Facturas por pagar</value>
+  </data>
+  <data name="MyBill_Details" xml:space="preserve">
+    <value>Detalle de la factura</value>
+  </data>
 </root>

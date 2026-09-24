@@ -5929,6 +5929,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to My bills.
+        /// </summary>
+        public static string Menu_MyBills {
+            get {
+                return ResourceManager.GetString("Menu_MyBills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My documents.
         /// </summary>
         public static string Menu_MyDocuments {
@@ -6636,6 +6645,60 @@ namespace Spix.xLanguage.Resources {
         public static string msg_ValidationWarningTitle {
             get {
                 return ResourceManager.GetString("msg_ValidationWarningTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Due.
+        /// </summary>
+        public static string MyBill_Balance {
+            get {
+                return ResourceManager.GetString("MyBill_Balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bill detail.
+        /// </summary>
+        public static string MyBill_Details {
+            get {
+                return ResourceManager.GetString("MyBill_Details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invoice.
+        /// </summary>
+        public static string MyBill_Invoice {
+            get {
+                return ResourceManager.GetString("MyBill_Invoice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bills to pay.
+        /// </summary>
+        public static string MyBill_PendingBills {
+            get {
+                return ResourceManager.GetString("MyBill_PendingBills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What you were charged, what you already paid and what is still due..
+        /// </summary>
+        public static string MyBill_Subtitle {
+            get {
+                return ResourceManager.GetString("MyBill_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My bills.
+        /// </summary>
+        public static string MyBill_Title {
+            get {
+                return ResourceManager.GetString("MyBill_Title", resourceCulture);
             }
         }
         

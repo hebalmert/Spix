@@ -3796,4 +3796,25 @@
   <data name="Menu_ReportAudit" xml:space="preserve">
     <value>Money log</value>
   </data>
+  <data name="Menu_MyBills" xml:space="preserve">
+    <value>My bills</value>
+  </data>
+  <data name="MyBill_Title" xml:space="preserve">
+    <value>My bills</value>
+  </data>
+  <data name="MyBill_Subtitle" xml:space="preserve">
+    <value>What you were charged, what you already paid and what is still due.</value>
+  </data>
+  <data name="MyBill_Invoice" xml:space="preserve">
+    <value>Invoice</value>
+  </data>
+  <data name="MyBill_Balance" xml:space="preserve">
+    <value>Due</value>
+  </data>
+  <data name="MyBill_PendingBills" xml:space="preserve">
+    <value>Bills to pay</value>
+  </data>
+  <data name="MyBill_Details" xml:space="preserve">
+    <value>Bill detail</value>
+  </data>
 </root>

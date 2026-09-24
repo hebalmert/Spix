@@ -1,0 +1,84 @@
+@inherits ComponentBase
+
+@* De que se compone la factura del cliente: el plan del mes y lo que se le hizo *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">@Localizer["MyBill_Details"]</h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @if (Bill is null)
+            {
+                <div class="idx-meta text-center py-4">
+                    <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                </div>
+            }
+            else
+            {
+                <div class="mb-head">
+                    <div>
+                        <div class="mb-invoice">@Bill.InvoiceNumber</div>
+                        <div class="mb-meta">@Localizer[nameof(Resource.Contract)] #@Bill.ControlContrato · @Bill.DateSell.ToString("dd/MM/yyyy")</div>
+                        <div class="mb-meta">@Bill.Address</div>
+                    </div>
+                    <div>
+                        @if (Bill.Paid)
+                        {
+                            <span class="idx-pill is-on">@Localizer["Sell_Paid"]</span>
+                            @if (Bill.DatePaid.HasValue)
+                            {
+                                <div class="mb-meta text-end">@Bill.DatePaid.Value.ToString("dd/MM/yyyy")</div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="idx-pill is-off">@Localizer["Sell_Pending"]</span>
+                            <div class="mb-meta text-end">@Localizer["MyBill_Balance"] @Bill.Balance.ToString("N2")</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Sell_Concept"]</th>
+                                <th style="text-align:right">@Localizer[nameof(Resource.Subtotal)]</th>
+                                <th style="text-align:right">@Localizer[nameof(Resource.Tax)]</th>
+                                <th style="text-align:right">@Localizer[nameof(Resource.Total)]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Bill.Lines)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="mb-line">@item.Concept</div>
+                                        <div class="mb-meta">@OriginName(item.Origin)</div>
+                                    </td>
+                                    <td style="text-align:right">@item.UnitPrice.ToString("N2")</td>
+                                    <td style="text-align:right">@item.TaxAmount.ToString("N2")</td>
+                                    <td style="text-align:right"><strong>@item.Total.ToString("N2")</strong></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mb-totals">
+                    <span>@Localizer[nameof(Resource.Subtotal)] <b>@Bill.SubTotal.ToString("N2")</b></span>
+                    <span>@Localizer[nameof(Resource.Tax)] <b>@Bill.TotalTax.ToString("N2")</b></span>
+                    <span class="is-main">@Localizer[nameof(Resource.Total)] <b>@Bill.Total.ToString("N2")</b></span>
+                </div>
+            }
+
+            <div class="d-flex justify-content-center mt-4">
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>
