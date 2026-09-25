@@ -1,3 +1,4 @@
+using Spix.AppWpf.SharedServices;
 using System.Globalization;
 using System.Text.Json;
 using System.Windows;
@@ -36,7 +37,7 @@ public partial class SharedMapViewer : UserControl
     {
         try
         {
-            await MapBrowser.EnsureCoreWebView2Async();
+            await WebViewEnvironment.PrepararAsync(MapBrowser);
             _isBrowserReady = true;
             await RenderMapAsync();
         }
@@ -55,7 +56,8 @@ public partial class SharedMapViewer : UserControl
         }
 
         MapErrorText.Visibility = Visibility.Collapsed;
-        MapBrowser.CoreWebView2.NavigateToString(CreateMapDocument());
+        MapBrowser.CoreWebView2.Navigate(
+            WebViewEnvironment.PublicarDocumento("ubicacion.html", CreateMapDocument()));
         return Task.CompletedTask;
     }
 

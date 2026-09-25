@@ -9,9 +9,31 @@ public class PingControl : IPingControl
     {
         var result = new PingResult { Host = host, Sent = attempts };
 
+        //Sin host no hay nada que probar: se responde en vez de reventar
+        if (string.IsNullOrWhiteSpace(host))
+        {
+            return new ActionResponse<PingResult>
+            {
+                WasSuccess = false,
+                Message = "Debes indicar un host o direccion IP para ejecutar el ping.",
+                Result = result
+            };
+        }
+
+        if (attempts <= 0 || timeout <= 0)
+        {
+            return new ActionResponse<PingResult>
+            {
+                WasSuccess = false,
+                Message = "Los intentos y el tiempo de espera deben ser mayores que cero.",
+                Result = result
+            };
+        }
+
         try
         {
-            var ping = new Ping();
+            //Ping es IDisposable: sin el using se queda el recurso abierto en cada llamada
+            using var ping = new Ping();
 
             for (int i = 0; i < attempts; i++)
             {

@@ -1,127 +1,293 @@
-﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Cargue.CargueDetailsView"
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Cargue.CargueDetailsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
              xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+
+    <!-- El detalle de un cargue, igual que en la web: cuanto se lleva subido y cuales son
+         sus seriales.
+         El campo de arriba es para el lector de codigo de barras: se dispara la MAC, se
+         guarda con Enter y el campo queda listo para la siguiente. Los avisos salen en
+         linea y no en ventana, para no cortar el ritmo del escaneo. -->
+    <Border Style="{StaticResource SharedIndexShell}">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel>
-                <TextBlock FontSize="25" FontWeight="SemiBold" Foreground="White" Text="Detalle cargue seriales" />
-                <TextBlock Margin="0,5,0,0" FontSize="13" Foreground="#B9C8DD" Text="Inventario / Cargue seriales / Detalle" />
-            </StackPanel>
-            <Button Grid.Column="1" Command="{Binding BackCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" />
-            <Button Grid.Column="3"
-                    Command="{Binding CloseCommand}"
-                    Style="{StaticResource SharedButtonFormSuccess}"
-                    Visibility="{Binding CanCloseCargue, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Content="Cerrar cargue" />
-        </Grid>
-        <Grid Grid.Row="2" DataContext="{Binding Cargue}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="18" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Border Padding="16" Background="#303640" BorderBrush="#455160" BorderThickness="1" CornerRadius="6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- De que cargue estamos hablando -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource SharedCatalogTitle}">
+                        <Run Text="Cargue" />
+                        <Run Text="{Binding Progress.ControlCargue, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock Margin="0,4,0,0" Style="{StaticResource SharedCatalogFootText}">
+                        <Run Text="{Binding Progress.ProductName, Mode=OneWay}" />
+                        <Run Text="&#183;" />
+                        <Run Text="Factura" />
+                        <Run Text="{Binding Progress.NroFactura, Mode=OneWay}" />
+                        <Run Text="&#183;" />
+                        <Run Text="{Binding Progress.DateCargue, StringFormat=dd/MM/yyyy, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+
+                <catalog:SharedCatalogPill Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           IsOn="{Binding Progress.Status, Converter={StaticResource EqualsToBooleanConverter}, ConverterParameter=Completado}"
+                                           OnText="Completado"
+                                           OffText="Pendiente" />
+            </Grid>
+
+            <!-- Cuanto se lleva y como quedaron los seriales -->
+            <Border Grid.Row="1" Margin="0,0,0,14" Style="{StaticResource SharedCatalogPanel}">
+                <StackPanel Margin="16,14">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Style="{StaticResource SharedCatalogItemName}">
+                            <Run Text="{Binding Progress.Uploaded, Mode=OneWay}" />
+                            <Run Text="de" />
+                            <Run Text="{Binding Progress.CantToUp, StringFormat=N0, Mode=OneWay}" />
+                            <Run Text="seriales" />
+                        </TextBlock>
+
+                        <TextBlock Grid.Column="1" Style="{StaticResource SharedCatalogFootText}"
+                                   Visibility="{Binding Missing, Converter={StaticResource NumberToVisibilityConverter}, ConverterParameter=positive}">
+                            <Run Text="Faltan" />
+                            <Run Text="{Binding Missing, Mode=OneWay}" />
+                        </TextBlock>
+                    </Grid>
+
+                    <ProgressBar Height="8"
+                                 Margin="0,10,0,0"
+                                 Maximum="100"
+                                 Style="{StaticResource SharedIndexProgress}"
+                                 Value="{Binding Progress, Converter={StaticResource CargueProgressConverter}, Mode=OneWay}" />
+
+                    <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
+                        <Border Style="{StaticResource SharedCatalogTag}" Margin="0,0,8,0">
+                            <TextBlock Style="{StaticResource SharedCatalogTagText}">
+                                <Run Text="Disponibles" />
+                                <Run FontWeight="SemiBold" Text="{Binding Progress.Available, Mode=OneWay}" />
+                            </TextBlock>
+                        </Border>
+                        <Border Style="{StaticResource SharedCatalogTag}" Margin="0,0,8,0">
+                            <TextBlock Style="{StaticResource SharedCatalogTagText}">
+                                <Run Text="Instalados" />
+                                <Run FontWeight="SemiBold" Text="{Binding Progress.Installed, Mode=OneWay}" />
+                            </TextBlock>
+                        </Border>
+                        <Border Style="{StaticResource SharedCatalogTag}">
+                            <TextBlock Style="{StaticResource SharedCatalogTagText}">
+                                <Run Text="Averiados" />
+                                <Run FontWeight="SemiBold" Text="{Binding Progress.Damaged, Mode=OneWay}" />
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- El lector de codigo de barras y lo que se puede hacer con el cargue -->
+            <Grid Grid.Row="2" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding BackCommand}"
+                        Style="{StaticResource SharedIndexGhostButton}"
+                        ToolTip="Volver a los cargues"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
+                        Content="Volver" />
+
+                <StackPanel Grid.Column="1"
+                            Margin="14,0,0,0"
+                            Orientation="Horizontal"
+                            Visibility="{Binding CanUploadSerials, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBox x:Name="ScanBox"
+                             Width="260"
+                             Height="38"
+                             Style="{StaticResource SharedCatalogSearchBox}"
+                             Text="{Binding ScanMac, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="Dispare el lector o escriba la MAC y pulse Enter">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding ScanCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+
+                    <Button Margin="10,0,0,0"
+                            Command="{Binding ScanCommand}"
+                            Style="{StaticResource SharedIndexNewButton}"
+                            ToolTip="Cargar el serial"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Barcode}"
+                            Content="Cargar" />
+                </StackPanel>
+
+                <!-- Solo cuando ya no falta ninguna MAC se puede cerrar -->
+                <Button Grid.Column="3"
+                        Command="{Binding CloseCommand}"
+                        Style="{StaticResource SharedIndexGhostButton}"
+                        ToolTip="Cerrar el cargue y mover el inventario"
+                        Visibility="{Binding CanCloseCargue, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Lock}"
+                        Content="Cerrar cargue" />
+            </Grid>
+
+            <!-- El aviso del escaneo: verde si entro, rojo si la rechazaron -->
+            <TextBlock Grid.Row="3"
+                       Margin="0,0,0,10"
+                       FontWeight="SemiBold"
+                       Text="{Binding ScanMessage}"
+                       Visibility="{Binding HasScanMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogStockNone}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ScanOk}" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource BrushCatalogStockOk}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <Border Grid.Row="4" Style="{StaticResource SharedIndexPanel}">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
+                        <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock FontWeight="SemiBold" Foreground="#B9C8DD" Text="Producto" />
-                    <TextBlock Grid.Row="2" Foreground="White" Text="{Binding Product.ProductName}" />
-                    <TextBlock Grid.Row="4" FontWeight="SemiBold" Foreground="#B9C8DD" Text="Factura" />
-                    <TextBlock Grid.Row="6" Foreground="White" Text="{Binding PurchaseDetail.Purchase.NroFactura}" />
-                </Grid>
-            </Border>
-            <Border Grid.Column="2" Padding="16" Background="#303640" BorderBrush="#455160" BorderThickness="1" CornerRadius="6">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock FontWeight="SemiBold" Foreground="#B9C8DD" Text="Seriales" />
-                    <TextBlock Grid.Row="2" Foreground="White" Text="{Binding TotalSeriales, StringFormat={}{0:N0}}" />
-                    <TextBlock Grid.Row="4" FontWeight="SemiBold" Foreground="#B9C8DD" Text="Seriales requeridos" />
-                    <TextBlock Grid.Row="6" FontSize="16" FontWeight="SemiBold" Foreground="#F97316" Text="{Binding CantToUp, StringFormat={}{0:N0}}" />
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Serials}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="240" Header="MAC" SortMemberPath="MacWlan">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding MacWlan}" />
+                                                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateCargue, StringFormat=dd/MM/yyyy HH:mm}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="160" Header="Estado" SortMemberPath="Status">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Status}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogStockLow}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Averiado">
+                                                                <Setter Property="Foreground" Value="{DynamicResource BrushCatalogStockNone}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Operativo">
+                                                                <Setter Property="Foreground" Value="{DynamicResource BrushCatalogStockOk}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Donde quedo instalada la MAC. Sale del contrato, no del comentario. -->
+                                <DataGridTemplateColumn Width="260" Header="Instalado en" CanUserSort="False">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding InstalledClient}" />
+                                                <TextBlock Style="{StaticResource SharedIndexMeta}">
+                                                    <Run Text="Contrato" />
+                                                    <Run Text="{Binding ControlContrato, Mode=OneWay}" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="*" Header="Comentario" SortMemberPath="Comment">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Comment}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="96" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <!-- Con el cargue cerrado los seriales no se tocan -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Center"
+                                                        Margin="0,0,6,0"
+                                                        Visibility="{Binding DataContext.CanManageSerials, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditSerialCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Editar" />
+
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteSerialCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Eliminar" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Serials, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.Barcode}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="Todavia no hay seriales cargados" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
                 </Grid>
             </Border>
         </Grid>
-        <Grid Grid.Row="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                    Command="{Binding UploadSerialCommand}"
-                    Style="{StaticResource SharedButtonFormPrimary}"
-                    Visibility="{Binding CanUploadSerials, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Content="Subir serial" />
-            <TextBlock Grid.Column="2" VerticalAlignment="Center" FontSize="17" FontWeight="SemiBold" Foreground="White" Text="Seriales cargados" />
-            <shared:SharedSearchFilter Grid.Column="3" SearchText="{Binding Filter}" SearchCommand="{Binding SearchCommand}" ClearCommand="{Binding ClearSearchCommand}" />
-        </Grid>
-        <TextBlock Grid.Row="6" Margin="0,0,0,12" VerticalAlignment="Top" Foreground="#FF9AAE" Text="{Binding Message}" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
-        <DataGrid Grid.Row="6" Margin="0,30,0,0" ItemsSource="{Binding Details}" AutoGenerateColumns="False" IsReadOnly="True" Background="#303640" Foreground="White" BorderBrush="#455160" HeadersVisibility="Column">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="MAC" Binding="{Binding MacWlan}" Width="260" />
-                <DataGridTextColumn Header="Comentario" Binding="{Binding Comment}" Width="*" />
-                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="150" />
-                <DataGridTemplateColumn Width="96">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Command="{Binding DataContext.EditSerialCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}"
-                                        ToolTip="Editar"
-                                        Style="{StaticResource SharedButtonTableRowEdit}"
-                                        Visibility="{Binding DataContext.CanManageSerials, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                </Button>
-                                <Button Command="{Binding DataContext.DeleteSerialCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}"
-                                        ToolTip="Eliminar"
-                                        Style="{StaticResource SharedButtonTableRowDelete}"
-                                        Visibility="{Binding DataContext.CanManageSerials, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <fa:FontAwesomeImage Width="16" Height="16" Style="{StaticResource SharedButtonTableRowIcon}" Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                </Button>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-        <shared:SharedLoading Grid.Row="6" IsLoading="{Binding IsLoading}" />
-        <shared:SharedPagination Grid.Row="8" CurrentPage="{Binding CurrentPage}" TotalPages="{Binding TotalPages}"
-                                 TotalRecords="{Binding TotalRecords}" PageCommand="{Binding GoToPageCommand}" />
-    </Grid>
+    </Border>
 </UserControl>

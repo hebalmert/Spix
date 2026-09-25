@@ -1,0 +1,29 @@
+<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedStepPill"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             x:Name="Raiz">
+
+    <!-- Un paso del recorrido de la orden, o una de las cosas que faltan para cerrarla.
+         Verde cuando ya esta, gris mientras no. -->
+    <Border x:Name="Marco"
+            Padding="12,6"
+            CornerRadius="999"
+            BorderThickness="1">
+        <StackPanel Orientation="Horizontal">
+            <fa:FontAwesomeImage x:Name="Glifo"
+                                 Width="12" Height="12"
+                                 VerticalAlignment="Center"
+                                 Icon="{x:Static icons:FontAwesomeIcon.Circle}"
+                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+
+            <TextBlock x:Name="Texto"
+                       Margin="8,0,0,0"
+                       VerticalAlignment="Center"
+                       FontSize="12"
+                       FontWeight="SemiBold"
+                       Text="{Binding Text, ElementName=Raiz}" />
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -1,6 +1,7 @@
-<Window x:Class="Spix.AppWpf.SharedComponents.SharedAlertWindow"
+﻿<Window x:Class="Spix.AppWpf.SharedComponents.SharedAlertWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
         xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
         xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
         Width="500"
@@ -48,23 +49,25 @@
                        Foreground="#D5DEEB"
                        TextAlignment="Center"
                        TextWrapping="Wrap" />
-            <Grid Grid.Row="3" Margin="0,28,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <!-- Los botones van del ancho de su texto y centrados, no estirados: estirados
+                 pierden la forma del boton de la casa. Y llevan icono para que se les vea
+                 la franja de color; sin icono solo sale la barrita de 5px. -->
+            <StackPanel Grid.Row="3"
+                        Margin="0,28,0,0"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
                 <Button x:Name="CancelButton"
-                        Grid.Column="0"
+                        Margin="0,0,16,0"
                         Click="CancelClick"
                         Content="Cancelar"
-                        Style="{StaticResource SharedButtonFormSecondary}" />
+                        Style="{StaticResource SharedButtonFormSecondary}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Xmark}" />
                 <Button x:Name="ConfirmButton"
-                        Grid.Column="2"
                         Click="ConfirmClick"
                         Content="OK"
-                        Style="{StaticResource SharedButtonFormPrimary}" />
-            </Grid>
+                        Style="{StaticResource SharedButtonFormPrimary}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Check}" />
+            </StackPanel>
         </Grid>
     </Border>
 </Window>

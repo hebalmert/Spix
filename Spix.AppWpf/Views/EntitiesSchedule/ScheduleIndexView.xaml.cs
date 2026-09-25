@@ -1,4 +1,4 @@
-using Spix.AppWpf.SharedComponents.SharedCalendar;
+﻿using Spix.AppWpf.SharedComponents.SharedCalendar;
 using Spix.AppWpf.ViewModels.EntitiesSchedule;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,6 +32,9 @@ public partial class ScheduleIndexView : UserControl
         }
 
         _loaded = true;
+
+        //El filtro y la leyenda primero: de ahi salen los colores del calendario
+        await _viewModel.LoadStatusesAsync();
         await _viewModel.LoadAsync();
     }
 

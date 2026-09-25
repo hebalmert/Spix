@@ -1,4 +1,4 @@
-<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedCatalog.SharedCatalogKpi"
+﻿<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedCatalog.SharedCatalogKpi"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Name="Raiz">
@@ -6,21 +6,22 @@
     <!-- Uno de los cuatro numeros de arriba. La barra de la izquierda dice que es:
          azul lo normal, verde lo activo, ambar el aviso, rojo el problema.
 
-         La barra va como columna propia y el relleno vive en el contenido: si se hiciera
-         con un margen negativo, la barra se saldria por fuera de la esquina redondeada. -->
+         OJO: en WPF un Border NO recorta a sus esquinas redondeadas, solo al rectangulo.
+         Por eso la barra lleva SU PROPIO redondeo a la izquierda (11 = los 12 de la
+         tarjeta menos el borde de 1); si fuera un rectangulo liso, asomaria cuadrada
+         sobre la esquina y la tarjeta se veria redonda de un lado y cuadrada del otro. -->
     <Border CornerRadius="12"
             Background="{DynamicResource BrushCatalogCard}"
             BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
             BorderThickness="1"
-            Effect="{StaticResource SombraCatalogo}"
-            ClipToBounds="True">
+            Effect="{StaticResource SombraCatalogo}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="6" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Rectangle Fill="{Binding Accent, ElementName=Raiz}" />
+            <Border CornerRadius="11,0,0,11" Background="{Binding Accent, ElementName=Raiz}" />
 
             <StackPanel Grid.Column="1" Margin="14,12" VerticalAlignment="Center">
                 <TextBlock FontSize="{StaticResource FontSizeMeta}"

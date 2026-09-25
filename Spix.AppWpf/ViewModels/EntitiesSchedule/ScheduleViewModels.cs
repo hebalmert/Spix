@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedComponents.SharedCalendar;
 using Spix.AppWpf.SharedServices;
@@ -24,6 +24,14 @@ public partial class ScheduleIndexViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<CalendarEventModel> _events = new();
 
+    //La lista del filtro la arma el backend, con "Todos" en la posicion 0
+    [ObservableProperty]
+    private ObservableCollection<IntItemModel> _statuses = new();
+
+    //Que significa cada color del calendario
+    [ObservableProperty]
+    private ObservableCollection<ScheduleLegendItem> _legend = new();
+
     [ObservableProperty]
     private bool _isLoading;
 
@@ -31,6 +39,28 @@ public partial class ScheduleIndexViewModel : ObservableObject
     private string _message = string.Empty;
 
     public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
+
+    public bool HasLegend => Legend.Count > 0;
+
+    private int _statusFilter;
+
+    // Cero es "todos": el calendario vuelve a mostrar la agenda completa
+    public int StatusFilter
+    {
+        get => _statusFilter;
+        set
+        {
+            if (_statusFilter == value)
+            {
+                return;
+            }
+
+            _statusFilter = value;
+            OnPropertyChanged();
+
+            AplicarFiltro();
+        }
+    }
 
     public ScheduleIndexViewModel(
         IRepository repository,
@@ -49,6 +79,42 @@ public partial class ScheduleIndexViewModel : ObservableObject
     partial void OnMessageChanged(string value)
     {
         OnPropertyChanged(nameof(HasMessage));
+    }
+
+    // El filtro y la leyenda salen de la MISMA lista que arma el backend: no se inventa
+    // ningun estado ni se traduce nada aqui.
+    public async Task LoadStatusesAsync()
+    {
+        var response = await _repository.GetAsync<List<IntItemModel>>(
+            "api/v1/schedulecontrol/loadStatusFilter");
+
+        if (await _responseHandler.HandleErrorAsync(response))
+        {
+            return;
+        }
+
+        var lista = response.Response ?? new List<IntItemModel>();
+
+        Statuses = new ObservableCollection<IntItemModel>(lista);
+
+        //En la leyenda no va el "Todos" de la posicion 0: no es un estado, es el filtro
+        Legend = new ObservableCollection<ScheduleLegendItem>(
+            lista.Where(x => x.Value > 0).Select(x => new ScheduleLegendItem(x)));
+
+        OnPropertyChanged(nameof(HasLegend));
+    }
+
+    // Con un estatus puesto solo quedan las citas de ese estatus. Se filtra sobre lo que
+    // ya se bajo, como en la web: no se vuelve a pedir nada al servidor.
+    private void AplicarFiltro()
+    {
+        var items = StatusFilter == 0
+            ? _scheduleItems
+            : _scheduleItems.Where(x => (int?)x.ScheduleStatus == StatusFilter).ToList();
+
+        Events = new ObservableCollection<CalendarEventModel>(items.Select(CreateCalendarEvent));
+
+        EventsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     // Replica el rango usado por Blazor: un mes anterior y dos meses posteriores.
@@ -73,9 +139,9 @@ public partial class ScheduleIndexViewModel : ObservableObject
             }
 
             _scheduleItems = response.Response?.ToList() ?? new List<ScheduleItemDto>();
-            Events = new ObservableCollection<CalendarEventModel>(
-                _scheduleItems.Select(CreateCalendarEvent));
-            EventsChanged?.Invoke(this, EventArgs.Empty);
+
+            //Respeta el filtro que este puesto
+            AplicarFiltro();
         }
         catch (Exception exception)
         {
@@ -143,12 +209,12 @@ public partial class ScheduleIndexViewModel : ObservableObject
         }
     }
 
-    // Replica el color especial que Blazor asigna unicamente a eventos completados.
+    // Cada estado con SU color, igual que el ScheduleColors de la web. Antes solo se
+    // pintaban las citas cerradas y todas las demas salian del mismo azul, asi que el
+    // calendario no decia nada de un golpe de vista.
     private CalendarEventModel CreateCalendarEvent(ScheduleItemDto item)
     {
-        string? color = item.ScheduleStatus == ScheduleStatus.Completed
-            ? "#6B8E23"
-            : null;
+        string color = ScheduleColors.Hex(item.ScheduleStatus);
 
         return new CalendarEventModel
         {
@@ -160,9 +226,7 @@ public partial class ScheduleIndexViewModel : ObservableObject
             Origin = item.Origin,
             ServiceRequestId = item.ServiceRequestId,
             Color = color,
-            TextColor = item.ScheduleStatus == ScheduleStatus.Completed
-                ? "#FFFFFF"
-                : null
+            TextColor = "#FFFFFF"
         };
     }
 }
@@ -452,6 +516,7 @@ public partial class ServiceRequestScheduleInfoDialogViewModel : ObservableObjec
     private readonly IRepository _repository;
     private readonly HttpResponseHandler _responseHandler;
     private readonly ModalService _modalService;
+    private readonly NavigationService _navigationService;
 
     [ObservableProperty]
     private ScheduleItemDto? _schedule;
@@ -469,14 +534,39 @@ public partial class ServiceRequestScheduleInfoDialogViewModel : ObservableObjec
         ? null
         : DateTime.SpecifyKind(Schedule.EndUtc, DateTimeKind.Utc).ToLocalTime();
 
+    // Desde el calendario se puede ir a la orden de trabajo de la solicitud
+    public bool HasServiceRequest => Schedule?.ServiceRequestId is not null &&
+                                     Schedule.ServiceRequestId != Guid.Empty;
+
     public ServiceRequestScheduleInfoDialogViewModel(
         IRepository repository,
         HttpResponseHandler responseHandler,
-        ModalService modalService)
+        ModalService modalService,
+        NavigationService navigationService)
     {
         _repository = repository;
         _responseHandler = responseHandler;
         _modalService = modalService;
+        _navigationService = navigationService;
+    }
+
+    // Cierra el aviso del calendario y abre la orden, igual que en la web
+    [RelayCommand]
+    private async Task GoToServiceRequestAsync()
+    {
+        if (!HasServiceRequest)
+        {
+            return;
+        }
+
+        var id = Schedule!.ServiceRequestId!.Value;
+
+        await _modalService.CloseAsync(ModalResult.Ok());
+
+        _navigationService.Show<Views.EntitiesSchedule.ServiceRequest.ServiceRequestOrderView>(
+            "Orden de trabajo",
+            "Operaciones / Solicitud de servicio",
+            vista => vista.Prepare(id));
     }
 
     // Recupera los datos de solo lectura que Blazor muestra para una solicitud de servicio.
@@ -496,6 +586,7 @@ public partial class ServiceRequestScheduleInfoDialogViewModel : ObservableObjec
             OnPropertyChanged(nameof(StatusName));
             OnPropertyChanged(nameof(StartLocal));
             OnPropertyChanged(nameof(EndLocal));
+            OnPropertyChanged(nameof(HasServiceRequest));
         }
         finally
         {
@@ -507,5 +598,19 @@ public partial class ServiceRequestScheduleInfoDialogViewModel : ObservableObjec
     private async Task CloseAsync()
     {
         await _modalService.CloseAsync(ModalResult.Cancel());
+    }
+}
+
+// Un color de la leyenda del calendario, ya resuelto: su nombre y su pincel.
+public class ScheduleLegendItem
+{
+    public string? Name { get; }
+
+    public System.Windows.Media.Brush Color { get; }
+
+    public ScheduleLegendItem(IntItemModel estado)
+    {
+        Name = estado.Name;
+        Color = ScheduleColors.Pincel(estado.Value);
     }
 }

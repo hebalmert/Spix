@@ -1,10 +1,11 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.AppWpf.Views.EntitiesNet.Node;
 using Spix.AppWpf.NetHelper;
+using Spix.xNetwork.PingHelper;
 using Spix.Domain.Entities;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesNet;
@@ -27,6 +28,25 @@ public partial class NodeIndexViewModel : PagedListViewModel<NodeListItemDto>
     private readonly HttpResponseHandler _responseHandler;
 
     protected override string Endpoint => "api/v1/nodes";
+
+    //Los cuatro numeros de arriba: los cuenta la base sobre TODOS los equipos,
+    //no sobre la pagina que se esta viendo
+    [ObservableProperty]
+    private NetSummaryDto? _summary;
+
+    // Despues de cada carga se vuelven a pedir: crear o borrar un equipo los cambia.
+    protected override async Task AfterLoadAsync()
+    {
+        var responseHttp = await _repository.GetAsync<NetSummaryDto>("api/v1/nodes/summary");
+
+        if (responseHttp.Error)
+        {
+            //El tablero es informativo: si no llega, el listado sigue funcionando
+            return;
+        }
+
+        Summary = responseHttp.Response;
+    }
 
     public NodeIndexViewModel(
         IPagedEntityService<NodeListItemDto> pagedEntityService,
@@ -636,15 +656,6 @@ public partial class NodeMapDialogViewModel : ObservableObject
     }
 }
 
-// Resume un intento individual para presentar los tiempos locales dentro del modal de ping.
-public class NodePingAttempt
-{
-    public int Number { get; init; }
-    public long Time { get; init; }
-    public bool WasSuccessful => Time >= 0;
-    public string Text => WasSuccessful ? $"{Time} ms" : "Timeout";
-}
-
 // Ejecuta y presenta el ping local sin enviar la solicitud al Backend.
 public partial class NodePingDialogViewModel : ObservableObject
 {
@@ -660,8 +671,12 @@ public partial class NodePingDialogViewModel : ObservableObject
     [ObservableProperty]
     private PingResult? _result;
 
-    [ObservableProperty]
-    private ObservableCollection<NodePingAttempt> _attempts = new();
+    public bool HasResult => Result is not null;
+
+    partial void OnResultChanged(PingResult? value)
+    {
+        OnPropertyChanged(nameof(HasResult));
+    }
 
     [ObservableProperty]
     private string _errorMessage = string.Empty;
@@ -682,7 +697,6 @@ public partial class NodePingDialogViewModel : ObservableObject
         Host = host;
         NodeName = string.IsNullOrWhiteSpace(nodeName) ? host : nodeName;
         Result = null;
-        Attempts = new ObservableCollection<NodePingAttempt>();
         ErrorMessage = string.Empty;
     }
 
@@ -702,13 +716,6 @@ public partial class NodePingDialogViewModel : ObservableObject
         {
             var response = await _pingControl.PingAsync(Host);
             Result = response.Result;
-
-            Attempts = new ObservableCollection<NodePingAttempt>(
-                Result?.Times.Select((time, index) => new NodePingAttempt
-                {
-                    Number = index + 1,
-                    Time = time
-                }) ?? Enumerable.Empty<NodePingAttempt>());
 
             if (Result is null)
             {

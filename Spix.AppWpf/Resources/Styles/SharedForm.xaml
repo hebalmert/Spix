@@ -1,0 +1,57 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Los CAMPOS de los formularios de los modales.
+         Hasta ahora cada formulario repetia los mismos colores escritos a mano
+         (#F2F4F7, #566273, #1E2B3C). Aqui viven una sola vez.
+
+         La forma es siempre la misma: la etiqueta a la izquierda, pegada al campo, como
+         una sola pieza. Un formulario NO mezcla etiqueta al lado con etiqueta encima:
+         asi es como se desordena. -->
+
+    <!-- La etiqueta, pegada por la izquierda del campo -->
+    <Style x:Key="SharedFormLabel" TargetType="Border">
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Background" Value="{DynamicResource BrushFormFieldLabelBack}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushFormFieldBorder}" />
+        <Setter Property="BorderThickness" Value="1,1,0,1" />
+        <Setter Property="CornerRadius" Value="6,0,0,6" />
+    </Style>
+
+    <Style x:Key="SharedFormLabelText" TargetType="TextBlock">
+        <Setter Property="Margin" Value="14,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushFormFieldText}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- La caja de texto -->
+    <Style x:Key="SharedFormBox" TargetType="TextBox">
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushFormFieldText}" />
+        <Setter Property="Background" Value="{DynamicResource BrushFormFieldBack}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushFormFieldBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="SharedFormCombo" TargetType="ComboBox">
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeName}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushFormFieldText}" />
+    </Style>
+
+    <!-- El marco para lo que no es una caja de texto: una casilla, un aviso -->
+    <Style x:Key="SharedFormBoxBorder" TargetType="Border">
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Background" Value="{DynamicResource BrushFormFieldBack}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushFormFieldBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="0,6,6,0" />
+    </Style>
+</ResourceDictionary>

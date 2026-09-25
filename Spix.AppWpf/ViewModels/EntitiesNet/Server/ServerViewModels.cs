@@ -1,6 +1,7 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.NetHelper;
+using Spix.xNetwork.PingHelper;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
@@ -26,6 +27,25 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerListItemDto
     private readonly HttpResponseHandler _responseHandler;
 
     protected override string Endpoint => "api/v1/servers";
+
+    //Los cuatro numeros de arriba: los cuenta la base sobre TODOS los equipos,
+    //no sobre la pagina que se esta viendo
+    [ObservableProperty]
+    private NetSummaryDto? _summary;
+
+    // Despues de cada carga se vuelven a pedir: crear o borrar un equipo los cambia.
+    protected override async Task AfterLoadAsync()
+    {
+        var responseHttp = await _repository.GetAsync<NetSummaryDto>("api/v1/servers/summary");
+
+        if (responseHttp.Error)
+        {
+            //El tablero es informativo: si no llega, el listado sigue funcionando
+            return;
+        }
+
+        Summary = responseHttp.Response;
+    }
 
     public ServerIndexViewModel(
         IPagedEntityService<ServerListItemDto> pagedEntityService,
@@ -134,9 +154,11 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerListItemDto
             return;
         }
 
+        //La IP va desde aqui: el listado ya la trae y el endpoint del servidor no la devuelve
         var parameters = new Dictionary<string, object>
         {
-            ["Id"] = server.ServerId
+            ["Id"] = server.ServerId,
+            ["Ip"] = server.Ip ?? string.Empty
         };
 
         await _modalService.ShowAsync<ServerMikrotikDialogView>("Conexion MikroTik", parameters);
@@ -453,6 +475,13 @@ public partial class ServerPingDialogViewModel : ObservableObject
     [ObservableProperty]
     private PingResult? _result;
 
+    public bool HasResult => Result is not null;
+
+    partial void OnResultChanged(PingResult? value)
+    {
+        OnPropertyChanged(nameof(HasResult));
+    }
+
     [ObservableProperty]
     private string _errorMessage = string.Empty;
 
@@ -510,16 +539,23 @@ public partial class ServerPingDialogViewModel : ObservableObject
     }
 }
 
-// Prueba MikroTik desde Windows con la configuracion completa que ya entrega el indice.
+// Comprueba la conexion con el MikroTik del servidor, DESDE ESTE EQUIPO.
+//
+// Aqui esta la diferencia con la web: el navegador no puede hablarle al equipo, asi que
+// alla el Backend hace la prueba. El escritorio si esta en la misma red, y ese es el
+// sentido de tenerlo: sirve aunque el MikroTik no tenga IP publica.
+//
+// La IP llega del listado, que ya la trae; del servidor solo se piden el puerto y las
+// credenciales. Antes se leia server.IpNetwork.Ip, pero ese endpoint no devuelve esa
+// relacion y la IP salia nula: de ahi el "no tiene direccion IP".
 public partial class ServerMikrotikDialogViewModel : ObservableObject
 {
     private readonly IMkConnectionControl _mkConnectionControl;
     private readonly ModalService _modalService;
     private readonly IRepository _repository;
-    private ServerEntity? _serverToCheck;
 
-    [ObservableProperty]
-    private ServerEntity? _server;
+    private Guid _serverId;
+    private string? _ip;
 
     [ObservableProperty]
     private MkConnectionResultDTO? _result;
@@ -531,6 +567,8 @@ public partial class ServerMikrotikDialogViewModel : ObservableObject
     private bool _isLoading;
 
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    public bool HasResult => Result is not null;
 
     public string ConnectionTitle => HasError
         ? "No fue posible conectar con MikroTik"
@@ -546,22 +584,19 @@ public partial class ServerMikrotikDialogViewModel : ObservableObject
         _repository = repository;
     }
 
-    // Actualiza la apariencia del estado cuando la conexion informa un error.
     partial void OnErrorMessageChanged(string value)
     {
         OnPropertyChanged(nameof(HasError));
         OnPropertyChanged(nameof(ConnectionTitle));
     }
 
-    // Actualiza el titulo cuando la conexion completa exitosamente.
     partial void OnResultChanged(MkConnectionResultDTO? value)
     {
+        OnPropertyChanged(nameof(HasResult));
         OnPropertyChanged(nameof(ConnectionTitle));
     }
 
-    // El listado solo trae lo que se ve en pantalla: el usuario y la clave del equipo
-    // se piden aqui, con el id, y no viajan en la lista de servidores.
-    public async Task InitializeAsync(Guid serverId)
+    public async Task InitializeAsync(Guid serverId, string? ip)
     {
         if (serverId == Guid.Empty)
         {
@@ -569,43 +604,39 @@ public partial class ServerMikrotikDialogViewModel : ObservableObject
             return;
         }
 
-        IsLoading = true;
-        ErrorMessage = string.Empty;
+        _serverId = serverId;
+        _ip = ip;
 
-        var response = await _repository.GetAsync<ServerEntity>($"api/v1/servers/{serverId}");
-
-        IsLoading = false;
-
-        if (response.Error || response.Response == null)
-        {
-            ErrorMessage = "No fue posible leer la configuracion del servidor.";
-            return;
-        }
-
-        await InitializeAsync(response.Response);
-    }
-
-    public async Task InitializeAsync(ServerEntity? server)
-    {
-        if (server == null)
-        {
-            ErrorMessage = "No fue posible identificar el servidor.";
-            return;
-        }
-
-        _serverToCheck = server;
         IsLoading = true;
         ErrorMessage = string.Empty;
         Result = null;
 
         try
         {
-            Server = server;
-            var connectionResponse = await _mkConnectionControl.CheckConnectionAsync(server);
-            Result = connectionResponse.Result;
-            if (!connectionResponse.WasSuccess)
+            //Del servidor solo hacen falta el puerto del API y las credenciales; la IP ya
+            //viene del listado. Las credenciales solo las entrega el Backend al Administrator.
+            var servidor = await _repository.GetAsync<ServerEntity>($"api/v1/servers/{serverId}");
+
+            if (servidor.Error || servidor.Response is null)
             {
-                ErrorMessage = connectionResponse.Message ?? "No fue posible conectar con MikroTik.";
+                ErrorMessage = "No fue posible leer la configuracion del servidor.";
+                return;
+            }
+
+            var datos = servidor.Response;
+            var direccion = string.IsNullOrWhiteSpace(_ip) ? datos.IpNetwork?.Ip : _ip;
+
+            var conexion = await _mkConnectionControl.CheckConnectionAsync(
+                direccion,
+                datos.ApiPort,
+                datos.Usuario,
+                datos.Clave);
+
+            Result = conexion.Result;
+
+            if (!conexion.WasSuccess)
+            {
+                ErrorMessage = conexion.Message ?? "No fue posible conectar con MikroTik.";
             }
         }
         catch (Exception exception)
@@ -621,10 +652,7 @@ public partial class ServerMikrotikDialogViewModel : ObservableObject
     [RelayCommand]
     private async Task RetryAsync()
     {
-        if (_serverToCheck != null)
-        {
-            await InitializeAsync(_serverToCheck);
-        }
+        await InitializeAsync(_serverId, _ip);
     }
 
     [RelayCommand]

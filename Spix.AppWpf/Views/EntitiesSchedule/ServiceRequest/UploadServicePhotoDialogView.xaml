@@ -1,0 +1,43 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest.UploadServicePhotoDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="560">
+
+    <!-- Una foto de la visita, del disco o de la camara. Es el MISMO selector del
+         cliente: solo cambia el icono de respaldo. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="24" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <shared:SharedImagePicker HorizontalAlignment="Center"
+                                  Title="Foto de la visita"
+                                  Icon="{x:Static icons:FontAwesomeIcon.Camera}"
+                                  ImageSelected="PhotoSelected" />
+
+        <!-- Antes o despues: de eso depende que la orden se pueda cerrar -->
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal">
+            <RadioButton Margin="0,0,24,0"
+                         VerticalContentAlignment="Center"
+                         GroupName="Momento"
+                         IsChecked="True"
+                         Checked="AntesElegido"
+                         Content="Antes" />
+            <RadioButton VerticalContentAlignment="Center"
+                         GroupName="Momento"
+                         Checked="DespuesElegido"
+                         Content="Despues" />
+        </StackPanel>
+
+        <shared:SharedModalActions Grid.Row="4"
+                                   SaveText="Guardar la foto"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+    </Grid>
+</UserControl>

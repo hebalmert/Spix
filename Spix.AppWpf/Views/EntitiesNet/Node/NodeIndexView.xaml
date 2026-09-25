@@ -4,163 +4,208 @@
              xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
              xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
              xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="20" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
 
+    <!-- Nodos: replicado del index de Blazor, con la UI del escritorio.
+         Los cuatro numeros de arriba los cuenta la base sobre todos los equipos.
+         Un equipo con clientes colgando NO se borra: solo se inactiva. -->
+    <UserControl.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                    Command="{Binding NewCommand}"
-                    Style="{StaticResource SharedButtonFormPrimary}"
-                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.CirclePlus}"
-                    Content="Nuevo" />
-            <shared:SharedSearchFilter Grid.Column="2"
-                                       VerticalAlignment="Bottom"
-                                       SearchText="{Binding Filter}"
-                                       SearchCommand="{Binding SearchCommand}"
-                                       ClearCommand="{Binding ClearSearchCommand}" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <UniformGrid Columns="4" Margin="0,0,0,14">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Nodos" Value="{Binding Summary.Total, StringFormat=N0}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Activos" Value="{Binding Summary.Active, StringFormat=N0}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Inactivos" Value="{Binding Summary.Inactive, StringFormat=N0}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiWarnText}" />
+                <catalog:SharedCatalogKpi Label="Clientes" Value="{Binding Summary.Clients, StringFormat=N0}" />
+            </UniformGrid>
+
+            <Grid Grid.Row="1" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding NewCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Crear un nodo (Ctrl+N)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                        Content="Nuevo" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Width="38" Height="38"
+                            Margin="0,0,8,0"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource SharedIndexIconButtonEdit}"
+                            ToolTip="Actualizar (F5)">
+                        <fa:FontAwesomeImage Width="14" Height="14"
+                                             Foreground="{DynamicResource BrushIndexIconEdit}"
+                                             Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    </Button>
+
+                    <shared:SharedExportButton Margin="0,0,10,0"
+                                               Items="{Binding Items}"
+                                               FileName="nodos" />
+
+                    <shared:SharedSearchFilter SearchText="{Binding Filter}"
+                                               SearchCommand="{Binding SearchCommand}"
+                                               ClearCommand="{Binding ClearSearchCommand}" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Grid.Row="2"
+                       Margin="0,0,0,10"
+                       Style="{StaticResource SharedCatalogMessage}"
+                       Text="{Binding Message}"
+                       Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid x:Name="ItemsGrid"
+                                  ItemsSource="{Binding Items}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding EditCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" Header="Nodo" SortMemberPath="NodesName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding NodesName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="190" Header="Operacion" SortMemberPath="OperationName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding OperationName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="170" Header="Zona" SortMemberPath="ZoneName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ZoneName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="160" Header="IP" SortMemberPath="Ip">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Ip}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="120" Header="Clientes" SortMemberPath="Clients" HeaderStyle="{StaticResource SharedIndexHeaderRight}" CellStyle="{StaticResource SharedIndexCellRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Clients, StringFormat=N0}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="140" Header="Estado" SortMemberPath="Active">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <shared:SharedStatePill IsOn="{Binding Active}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="140" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.ViewMapCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Icon="{x:Static icons:FontAwesomeIcon.LocationDot}"
+                                                                            ToolTip="Ver en el mapa" />
+
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Editar" />
+
+                                                <!-- Con clientes colgando NO se borra: se inactiva.
+                                                     Es la misma regla de la web. -->
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Eliminar"
+                                                                              Visibility="{Binding Clients, Converter={StaticResource NumberToVisibilityConverter}}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Items, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.TowerBroadcast}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="Todavia no hay nodos" />
+                            <Button Margin="0,14,0,0"
+                                    HorizontalAlignment="Center"
+                                    Command="{Binding NewCommand}"
+                                    Style="{StaticResource SharedIndexNewButton}"
+                                    ToolTip="Crear el primero"
+                                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                    Content="Crear el primero" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 TotalRecords="{Binding TotalRecords}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
         </Grid>
-
-        <TextBlock Grid.Row="2"
-                   FontSize="13"
-                   Foreground="#FF9AAE"
-                   Text="{Binding Message}"
-                   Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-        <Grid Grid.Row="4">
-            <DataGrid ItemsSource="{Binding Items}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      IsReadOnly="True"
-                      Background="#303640"
-                      Foreground="White"
-                      BorderBrush="#455160"
-                      BorderThickness="1"
-                      HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal"
-                      RowBackground="#303640"
-                      AlternatingRowBackground="#2B303A"
-                      AlternationCount="2"
-                      RowHeight="42"
-                      FontSize="14">
-                <DataGrid.ColumnHeaderStyle>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#102A4C" />
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="FontWeight" Value="SemiBold" />
-                        <Setter Property="Padding" Value="14,10" />
-                    </Style>
-                </DataGrid.ColumnHeaderStyle>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Width="*"
-                                        Header="Nodo SSID"
-                                        Binding="{Binding NodesName}"
-                                        CellStyle="{StaticResource SharedDataGridTextCell}" />
-                    <DataGridTextColumn Width="150"
-                                        Header="Operacion"
-                                        Binding="{Binding OperationName}"
-                                        CellStyle="{StaticResource SharedDataGridTextCell}" />
-                    <DataGridTextColumn Width="150"
-                                        Header="Zona"
-                                        Binding="{Binding ZoneName}"
-                                        CellStyle="{StaticResource SharedDataGridTextCell}" />
-                    <DataGridTextColumn Width="140"
-                                        Header="IP red"
-                                        Binding="{Binding Ip}"
-                                        CellStyle="{StaticResource SharedDataGridTextCell}" />
-                    <DataGridTextColumn Width="100"
-                                        Header="Clientes"
-                                        Binding="{Binding Clients}"
-                                        CellStyle="{StaticResource SharedDataGridTextCell}" />
-                    <DataGridCheckBoxColumn Width="90" Header="Activo" Binding="{Binding Active}" />
-                    <DataGridTemplateColumn Width="48" Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.PingCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"
-                                        Style="{StaticResource SharedButtonTableRowEdit}"
-                                        ToolTip="Probar ping local">
-                                    <fa:FontAwesomeImage Width="16"
-                                                         Height="16"
-                                                         Style="{StaticResource SharedButtonTableRowIcon}"
-                                                         Icon="{x:Static icons:FontAwesomeIcon.Gear}"
-                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="48" Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.ViewMapCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"
-                                        Style="{StaticResource SharedButtonTableRowEdit}"
-                                        ToolTip="Ver mapa">
-                                    <fa:FontAwesomeImage Width="16"
-                                                         Height="16"
-                                                         Style="{StaticResource SharedButtonTableRowIcon}"
-                                                         Icon="{x:Static icons:FontAwesomeIcon.MapLocationDot}"
-                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="48" Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"
-                                        Style="{StaticResource SharedButtonTableRowEdit}"
-                                        ToolTip="Editar">
-                                    <fa:FontAwesomeImage Width="16"
-                                                         Height="16"
-                                                         Style="{StaticResource SharedButtonTableRowIcon}"
-                                                         Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}"
-                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="48" Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"
-                                        Style="{StaticResource SharedButtonTableRowDelete}"
-                                        ToolTip="Eliminar">
-                                    <fa:FontAwesomeImage Width="16"
-                                                         Height="16"
-                                                         Style="{StaticResource SharedButtonTableRowIcon}"
-                                                         Icon="{x:Static icons:FontAwesomeIcon.TrashCan}"
-                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-            <shared:SharedLoading IsLoading="{Binding IsLoading}" />
-        </Grid>
-
-        <shared:SharedPagination Grid.Row="6"
-                                 HorizontalAlignment="Left"
-                                 CurrentPage="{Binding CurrentPage}"
-                                 TotalPages="{Binding TotalPages}"
-                                 TotalRecords="{Binding TotalRecords}"
-                                 PageCommand="{Binding GoToPageCommand}" />
-    </Grid>
+    </Border>
 </UserControl>

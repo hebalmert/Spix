@@ -1,0 +1,175 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.NodeMap.NodeMapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:sharedMap="clr-namespace:Spix.AppWpf.SharedComponents.SharedMap"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- El mapa de nodos, replicado de la pantalla /nodemap de la web.
+         Se elige un nodo y se ve el AP con sus clientes: como puntos, con lineas al AP o
+         con la distancia encima. La mascara del transmisor se gira con el azimut.
+         Las tres listas llegan armadas del backend; aqui solo se pintan. -->
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Los selectores -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Nodo" />
+                    <ComboBox Margin="0,5,0,0"
+                              Style="{StaticResource SharedFormCombo}"
+                              ItemsSource="{Binding Nodes}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Value"
+                              SelectedValue="{Binding SelectedNodeId, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Vista" />
+                    <ComboBox Margin="0,5,0,0"
+                              Style="{StaticResource SharedFormCombo}"
+                              IsEnabled="{Binding HasMap}"
+                              ItemsSource="{Binding Views}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Value"
+                              SelectedValue="{Binding SelectedView, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="4">
+                    <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Cobertura" />
+                    <ComboBox Margin="0,5,0,0"
+                              Style="{StaticResource SharedFormCombo}"
+                              IsEnabled="{Binding HasMap}"
+                              ItemsSource="{Binding Coverages}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Value"
+                              SelectedValue="{Binding SelectedCoverage, Mode=TwoWay}" />
+                </StackPanel>
+
+                <!-- Los clientes que solo se sabe que salen por el AP, sin coordenadas -->
+                <StackPanel Grid.Column="6">
+                    <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Sin ubicar" />
+                    <ComboBox Margin="0,5,0,0"
+                              Style="{StaticResource SharedFormCombo}"
+                              IsEnabled="{Binding HasMap}"
+                              ItemsSource="{Binding Map.UnlocatedOptions}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Value"
+                              SelectedValue="{Binding SelectedUnlocatedId, Mode=TwoWay}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- El azimut solo tiene sentido con una mascara puesta -->
+            <Grid Grid.Row="1"
+                  Margin="0,0,0,14"
+                  Visibility="{Binding HasCoverage, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock VerticalAlignment="Center" Style="{StaticResource SharedCatalogFootText}">
+                    <Run Text="Azimut:" />
+                    <Run FontWeight="SemiBold" Text="{Binding Azimuth, Mode=OneWay}" />
+                    <Run Text="&#176;" />
+                </TextBlock>
+
+                <!-- Los botones mueven de a un grado: con el deslizador cuesta afinar -->
+                <Button Grid.Column="1"
+                        Width="30" Height="30"
+                        Margin="14,0,0,0"
+                        Command="{Binding StepAzimuthCommand}"
+                        CommandParameter="-1"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Un grado menos">
+                    <fa:FontAwesomeImage Width="12" Height="12"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.Minus}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+
+                <Slider Grid.Column="2"
+                        Margin="12,0"
+                        VerticalAlignment="Center"
+                        Minimum="0"
+                        Maximum="359"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Value="{Binding Azimuth, Mode=TwoWay}" />
+
+                <Button Grid.Column="3"
+                        Width="30" Height="30"
+                        Command="{Binding StepAzimuthCommand}"
+                        CommandParameter="1"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Un grado mas">
+                    <fa:FontAwesomeImage Width="12" Height="12"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+            </Grid>
+
+            <!-- El tablero del nodo elegido -->
+            <UniformGrid Grid.Row="2"
+                         Columns="5"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasMap, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Clientes" Value="{Binding Map.Clients, StringFormat=N0}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Ubicados" Value="{Binding Map.WithLocation, StringFormat=N0}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Sin ubicar" Value="{Binding Map.WithoutLocation, StringFormat=N0}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiWarnText}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0" Label="Dentro de cobertura" Value="{Binding InsideCoverage, StringFormat=N0}" />
+                <catalog:SharedCatalogKpi Label="El mas lejano (Km)" Value="{Binding Map.FarthestKm, StringFormat=N2}" />
+            </UniformGrid>
+
+            <Grid Grid.Row="3">
+                <sharedMap:SharedNodeMapViewer x:Name="MapViewer"
+                                               Visibility="{Binding HasMap, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <!-- Sin nodo elegido no hay nada que dibujar -->
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Visibility="{Binding HasMap, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <fa:FontAwesomeImage Width="30" Height="30"
+                                         HorizontalAlignment="Center"
+                                         Foreground="{DynamicResource BrushCatalogEmptyGlyph}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.TowerBroadcast}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    <TextBlock Style="{StaticResource SharedCatalogEmptyTitle}" Text="Elija un nodo" />
+                    <TextBlock Style="{StaticResource SharedCatalogEmptyText}"
+                               Text="Al elegir un nodo se dibuja el AP con sus clientes." />
+                </StackPanel>
+
+                <TextBlock VerticalAlignment="Top"
+                           Style="{StaticResource SharedCatalogMessage}"
+                           Text="{Binding Message}"
+                           Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

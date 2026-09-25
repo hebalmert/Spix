@@ -1,15 +1,18 @@
-using Spix.Domain.EntitiesNet;
-using Spix.DomainLogic.MkDTOs;
+﻿using Spix.DomainLogic.MkDTOs;
 using Spix.DomainLogic.ModelUtility;
 
 namespace Spix.AppWpf.NetHelper;
 
-// Comprueba localmente la identidad y los IP bindings del MikroTik configurado en un servidor.
+// Comprueba DESDE ESTE EQUIPO la identidad y los IP bindings del MikroTik.
 public class MkConnectionControl : IMkConnectionControl
 {
-    public async Task<ActionResponse<MkConnectionResultDTO>> CheckConnectionAsync(Server server)
+    public async Task<ActionResponse<MkConnectionResultDTO>> CheckConnectionAsync(
+        string? ip,
+        int apiPort,
+        string? usuario,
+        string? clave)
     {
-        string? validationMessage = GetValidationMessage(server);
+        string? validationMessage = GetValidationMessage(ip, apiPort, usuario, clave);
         if (!string.IsNullOrWhiteSpace(validationMessage))
         {
             return new ActionResponse<MkConnectionResultDTO>
@@ -21,7 +24,7 @@ public class MkConnectionControl : IMkConnectionControl
 
         try
         {
-            return await Task.Run(() => CheckConnection(server));
+            return await Task.Run(() => CheckConnection(ip!, apiPort, usuario!, clave!));
         }
         catch (Exception exception)
         {
@@ -34,15 +37,19 @@ public class MkConnectionControl : IMkConnectionControl
     }
 
     // Ejecuta el protocolo TCP fuera del hilo visual para mantener WPF responsivo.
-    private static ActionResponse<MkConnectionResultDTO> CheckConnection(Server server)
+    private static ActionResponse<MkConnectionResultDTO> CheckConnection(
+        string ip,
+        int apiPort,
+        string usuario,
+        string clave)
     {
         MK? mikrotik = null;
 
         try
         {
-            mikrotik = new MK(server.IpNetwork!.Ip!, server.ApiPort);
+            mikrotik = new MK(ip, apiPort);
 
-            if (!mikrotik.Login(server.Usuario, server.Clave))
+            if (!mikrotik.Login(usuario, clave))
             {
                 return new ActionResponse<MkConnectionResultDTO>
                 {
@@ -106,24 +113,19 @@ public class MkConnectionControl : IMkConnectionControl
     }
 
     // Evita intentos locales cuando faltan datos esenciales de la configuracion del servidor.
-    private static string? GetValidationMessage(Server? server)
+    private static string? GetValidationMessage(string? ip, int apiPort, string? usuario, string? clave)
     {
-        if (server is null)
-        {
-            return "No fue posible identificar el servidor MikroTik.";
-        }
-
-        if (string.IsNullOrWhiteSpace(server.IpNetwork?.Ip))
+        if (string.IsNullOrWhiteSpace(ip))
         {
             return "El servidor no tiene una direccion IP de red configurada.";
         }
 
-        if (server.ApiPort <= 0)
+        if (apiPort <= 0)
         {
             return "El servidor no tiene un puerto API valido.";
         }
 
-        if (string.IsNullOrWhiteSpace(server.Usuario) || string.IsNullOrWhiteSpace(server.Clave))
+        if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(clave))
         {
             return "El servidor no tiene credenciales MikroTik configuradas.";
         }

@@ -10,9 +10,18 @@
     <Grid>
         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="28" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
         <local:ClientFormView />
-        <Grid Grid.Row="2"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Button Grid.Column="0" Command="{Binding CancelCommand}" Style="{StaticResource SharedButtonFormSecondary}" Content="Volver" /><Button Grid.Column="2" Command="{Binding ResendActivationEmailCommand}" Style="{StaticResource SharedButtonFormPrimary}" IsEnabled="{Binding Entity.CreateAccount}"
-        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Envelope}"
-        Content="Reenviar correo" /><Button Grid.Column="4" Command="{Binding SaveCommand}" Style="{StaticResource SharedButtonFormSuccess}" Content="Guardar" /></Grid>
+        <shared:SharedModalActions Grid.Row="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}">
+            <!-- El boton propio de este modal: reenviar el correo de activacion -->
+            <shared:SharedModalActions.Extra>
+                <Button Command="{Binding ResendActivationEmailCommand}"
+                        Style="{StaticResource SharedButtonFormSuccess}"
+                        IsEnabled="{Binding Entity.CreateAccount}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Envelope}"
+                        Content="Reenviar correo" />
+            </shared:SharedModalActions.Extra>
+        </shared:SharedModalActions>
         <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
     </Grid>
 </UserControl>

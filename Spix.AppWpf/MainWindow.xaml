@@ -1,4 +1,4 @@
-<Window x:Class="Spix.AppWpf.MainWindow"
+﻿<Window x:Class="Spix.AppWpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
@@ -195,7 +195,7 @@
                             <Button Click="ShowNodesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Nodos" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowNodeMapClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Mapa de nodos" />
                             </Button>
                         </StackPanel>
@@ -227,7 +227,7 @@
                             <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
                                 <TextBlock FontSize="14" Text="Control de contratos" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowServiceRequestsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Solicitudes de servicio" />
                             </Button>
                             <Button Click="ShowScheduleClick" Style="{StaticResource ShellSubMenuItem}">

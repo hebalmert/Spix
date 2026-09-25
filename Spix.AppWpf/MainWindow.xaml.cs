@@ -21,8 +21,10 @@ using Spix.AppWpf.Views.EntitiesInven.Cargue;
 using Spix.AppWpf.Views.EntitiesNet.IpNet;
 using Spix.AppWpf.Views.EntitiesNet.IpNetwork;
 using Spix.AppWpf.Views.EntitiesNet.Node;
+using Spix.AppWpf.Views.EntitiesNet.NodeMap;
 using Spix.AppWpf.Views.EntitiesNet.Server;
 using Spix.AppWpf.Views.EntitiesSchedule;
+using Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest;
 using Spix.AppWpf.Views.EntitiesOper.Client;
 using Spix.AppWpf.Views.EntitiesMK.ConnectionMikrotikControl;
 using Spix.AppWpf.Views.EntitiesMK.QueueType;
@@ -39,11 +41,15 @@ public partial class MainWindow : Window
 
     public MainWindow(
         MainWindowViewModel viewModel,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        NavigationService navigationService)
     {
         InitializeComponent();
         _viewModel = viewModel;
         _serviceProvider = serviceProvider;
+
+        //Las pantallas que se abren desde una fila (la orden de trabajo) entran por aqui
+        navigationService.Requested += AtenderNavegacion;
         //El boton muestra en que tema esta parado
         ThemeIcon.Icon = AppearanceService.IsLight ? FontAwesomeIcon.Sun : FontAwesomeIcon.Moon;
 
@@ -189,6 +195,15 @@ public partial class MainWindow : Window
             FontAwesomeIcon.Tags);
     }
 
+    // El mapa del nodo elegido con sus clientes, igual que la pantalla /nodemap de la web.
+    private void ShowNodeMapClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<NodeMapView>(
+            "Mapa de nodos",
+            "Red / Mapa de nodos",
+            FontAwesomeIcon.MapLocationDot);
+    }
+
     // Abre proveedores usando el mismo indice paginado de la aplicacion web.
     private void ShowSuppliersClick(object sender, RoutedEventArgs e)
     {
@@ -297,6 +312,19 @@ public partial class MainWindow : Window
     private void ShowClientsClick(object sender, RoutedEventArgs e)
     {
         ShowView<ClientIndexView>("Clientes", "Operaciones / Clientes");
+    }
+
+    // Las pantallas que se abren desde una fila (la orden de trabajo) piden por aqui:
+    // la ventana principal es la unica que sabe pintar.
+    private void AtenderNavegacion(object? sender, NavigationRequest peticion)
+    {
+        ShowView(peticion.View, peticion.Title, peticion.Subtitle);
+    }
+
+    // Abre las visitas tecnicas del cliente.
+    private void ShowServiceRequestsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ServiceRequestIndexView>("Solicitudes de servicio", "Operaciones / Solicitudes de servicio");
     }
 
     // Resuelve cada vista con su ViewModel inyectado para mantener la navegacion centralizada.

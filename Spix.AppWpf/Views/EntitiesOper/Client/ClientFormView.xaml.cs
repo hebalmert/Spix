@@ -1,11 +1,10 @@
-using Microsoft.Win32;
 using Spix.AppWpf.ViewModels.EntitiesOper.Client;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Spix.AppWpf.Views.EntitiesOper.Client;
 
-// Permite seleccionar una foto local y aplica la regla visual de cuenta activa.
+// Recoge la foto que entrega el selector y aplica la regla visual de cuenta activa.
 public partial class ClientFormView : UserControl
 {
     public ClientFormView()
@@ -13,22 +12,12 @@ public partial class ClientFormView : UserControl
         InitializeComponent();
     }
 
-    private void SelectPhotoClick(object sender, RoutedEventArgs e)
+    // La foto llega en el mismo Base64 venga del disco o de la camara: al formulario le da igual
+    private void PhotoSelected(object? sender, string base64)
     {
-        if (DataContext is not ClientFormViewModel viewModel)
+        if (DataContext is ClientFormViewModel viewModel)
         {
-            return;
-        }
-
-        var dialog = new OpenFileDialog
-        {
-            Filter = "Imagenes|*.jpg;*.jpeg;*.png;*.webp",
-            Multiselect = false
-        };
-
-        if (dialog.ShowDialog() == true)
-        {
-            viewModel.SelectPhoto(dialog.FileName);
+            viewModel.SetPhoto(base64);
         }
     }
 

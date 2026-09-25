@@ -1,0 +1,26 @@
+<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedAvatar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators">
+
+    <!-- La foto de un registro (cliente, proveedor, usuario...). Si no hay foto, o si la
+         direccion falla, pinta un icono en vez de dejar la imagen rota.
+         Es el mismo AvatarImage de la web, con sus mismos colores.
+
+         El icono lo elige quien lo usa: un cliente lleva persona, un proveedor camion.
+         Uso: <shared:SharedAvatar Url="{Binding ImageFullPath}" Size="34"
+                                   Icon="{x:Static icons:FontAwesomeIcon.User}" /> -->
+    <Border x:Name="Marco" ClipToBounds="True">
+        <Grid>
+            <Image x:Name="Foto" Stretch="UniformToFill" />
+
+            <fa:FontAwesomeImage x:Name="Glifo"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Foreground="{DynamicResource BrushAvatarGlyph}"
+                                 Icon="{x:Static icons:FontAwesomeIcon.User}"
+                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+        </Grid>
+    </Border>
+</UserControl>

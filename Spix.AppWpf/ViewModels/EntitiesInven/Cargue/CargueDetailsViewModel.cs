@@ -2,31 +2,55 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.Views.EntitiesInven.Cargue;
+using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Spix.AppWpf.ViewModels.EntitiesInven.Cargue;
 
-// Controla los seriales de una recepcion y su cierre sin mover reglas de inventario al escritorio.
+// El detalle de un cargue: cuanto se lleva subido y cuales son sus seriales.
+//
+// Lee los MISMOS endpoints que la web (cargueboard), no la tabla en crudo: de ahi salen
+// el desglose (disponibles, instalados, averiados) y, por cada MAC, en que contrato quedo
+// instalada. Con la entidad pelada esos datos no existen.
 public partial class CargueDetailsViewModel : ObservableObject
 {
     private const int PageSize = 15;
+    private const string BoardUrl = "api/v1/cargueboard";
+    private const string DetailsUrl = "api/v1/cargueDetails";
+
+    //El mismo formato que valida la web antes de ir al servidor
+    private static readonly Regex FormatoMac = new(@"^([0-9A-Fa-f]{2}[:-]?){5}[0-9A-Fa-f]{2}$");
 
     private readonly IRepository _repository;
     private readonly ModalService _modalService;
     private readonly AlertService _alertService;
     private readonly HttpResponseHandler _responseHandler;
+
     private Guid _cargueId;
 
     [ObservableProperty]
-    private Spix.Domain.EntitiesInven.Cargue? _cargue;
+    private CargueProgressDto? _progress;
 
     [ObservableProperty]
-    private ObservableCollection<Spix.Domain.EntitiesInven.CargueDetail> _details = new();
+    private ObservableCollection<CargueSerialDto> _serials = new();
 
     [ObservableProperty]
     private string _filter = string.Empty;
+
+    //Lo que se teclea o dispara el lector de codigo de barras
+    [ObservableProperty]
+    private string _scanMac = string.Empty;
+
+    [ObservableProperty]
+    private string _scanMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _scanOk;
 
     [ObservableProperty]
     private int _currentPage = 1;
@@ -42,15 +66,17 @@ public partial class CargueDetailsViewModel : ObservableObject
 
     public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
 
-    public bool CanManageSerials => Cargue?.Status == CargueType.Pendiente;
+    public bool HasScanMessage => !string.IsNullOrWhiteSpace(ScanMessage);
 
-    public bool CanUploadSerials => CanManageSerials &&
-                                    Cargue is not null &&
-                                    Cargue.TotalSeriales < Cargue.CantToUp;
+    public bool CanManageSerials => Progress?.Status == CargueType.Pendiente;
 
-    public bool CanCloseCargue => CanManageSerials &&
-                                  Cargue is not null &&
-                                  Cargue.TotalSeriales == Cargue.CantToUp;
+    public int Missing => Progress is null ? 0 : Math.Max(0, (int)Progress.CantToUp - Progress.Uploaded);
+
+    // Mientras falten MAC se sigue escaneando
+    public bool CanUploadSerials => CanManageSerials && Missing > 0;
+
+    // Y solo cuando ya no falta ninguna se puede cerrar
+    public bool CanCloseCargue => CanManageSerials && Missing == 0;
 
     public event EventHandler? BackRequested;
 
@@ -71,14 +97,19 @@ public partial class CargueDetailsViewModel : ObservableObject
         OnPropertyChanged(nameof(HasMessage));
     }
 
-    partial void OnCargueChanged(Spix.Domain.EntitiesInven.Cargue? value)
+    partial void OnScanMessageChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasScanMessage));
+    }
+
+    partial void OnProgressChanged(CargueProgressDto? value)
     {
         OnPropertyChanged(nameof(CanManageSerials));
         OnPropertyChanged(nameof(CanUploadSerials));
         OnPropertyChanged(nameof(CanCloseCargue));
+        OnPropertyChanged(nameof(Missing));
     }
 
-    // Carga una pagina de MAC y el encabezado que determina si aun falta por subir.
     public async Task LoadAsync(Guid cargueId, int page = 1)
     {
         if (cargueId == Guid.Empty)
@@ -92,45 +123,35 @@ public partial class CargueDetailsViewModel : ObservableObject
 
         try
         {
-            var cargueResponse = await _repository.GetAsync<Spix.Domain.EntitiesInven.Cargue>(
-                $"api/v1/cargues/{cargueId}");
-            if (await _responseHandler.HandleErrorAsync(cargueResponse))
+            var avance = await _repository.GetAsync<CargueProgressDto>($"{BoardUrl}/{cargueId}/progress");
+            if (await _responseHandler.HandleErrorAsync(avance))
             {
                 return;
             }
 
-            var url = $"api/v1/cargueDetails?guidId={cargueId}&page={page}&recordsnumber={PageSize}";
+            var url = $"{BoardUrl}/{cargueId}/serials?page={page}&recordsnumber={PageSize}";
             if (!string.IsNullOrWhiteSpace(Filter))
             {
                 url += $"&filter={Uri.EscapeDataString(Filter.Trim())}";
             }
 
-            var detailsResponse = await _repository.GetAsync<List<Spix.Domain.EntitiesInven.CargueDetail>>(url);
-            if (await _responseHandler.HandleErrorAsync(detailsResponse))
+            var seriales = await _repository.GetAsync<List<CargueSerialDto>>(url);
+            if (await _responseHandler.HandleErrorAsync(seriales))
             {
                 return;
             }
 
-            Cargue = cargueResponse.Response;
-            Details = new ObservableCollection<Spix.Domain.EntitiesInven.CargueDetail>(
-                detailsResponse.Response ?? new List<Spix.Domain.EntitiesInven.CargueDetail>());
+            Progress = avance.Response;
+            Serials = new ObservableCollection<CargueSerialDto>(seriales.Response ?? new List<CargueSerialDto>());
             CurrentPage = page;
 
-            detailsResponse.HttpResponseMessage.Headers.TryGetValues(
-                "Totalpages",
-                out var pageHeaders);
-
-            _ = int.TryParse(pageHeaders?.FirstOrDefault(), out var totalPages);
+            seriales.HttpResponseMessage.Headers.TryGetValues("Totalpages", out var cabecera);
+            _ = int.TryParse(cabecera?.FirstOrDefault(), out var totalPages);
             TotalPages = Math.Max(0, totalPages);
-
-            if (Details.Count == 0)
-            {
-                Message = "Aun no hay seriales cargados.";
-            }
         }
         catch (Exception exception)
         {
-            Details.Clear();
+            Serials.Clear();
             TotalPages = 0;
             Message = exception.Message;
         }
@@ -140,17 +161,64 @@ public partial class CargueDetailsViewModel : ObservableObject
         }
     }
 
+    // Enter del lector: guarda, limpia el campo y lo deja listo para la siguiente MAC.
+    // Los avisos van en linea y no en ventana, para no cortar el ritmo del escaneo.
+    [RelayCommand]
+    private async Task ScanAsync()
+    {
+        var mac = ScanMac.Trim();
+
+        if (string.IsNullOrEmpty(mac) || !CanUploadSerials)
+        {
+            return;
+        }
+
+        if (!FormatoMac.IsMatch(mac))
+        {
+            MostrarAviso(false, $"La MAC {mac} no tiene el formato correcto.");
+            return;
+        }
+
+        var responseHttp = await _repository.PostAsync(DetailsUrl, new CargueDetail
+        {
+            CargueId = _cargueId,
+            MacWlan = mac
+        });
+
+        if (responseHttp.Error)
+        {
+            //Lo que rechaza el negocio (MAC repetida, cargue lleno) se muestra en linea;
+            //lo demas (sesion, permisos, servidor) sigue el manejo central.
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var mensaje = await responseHttp.GetErrorMessageAsync();
+                MostrarAviso(false, mensaje?.Trim('"') ?? mac);
+            }
+            else
+            {
+                await _responseHandler.HandleErrorAsync(responseHttp);
+            }
+
+            return;
+        }
+
+        MostrarAviso(true, $"{mac} cargada.");
+        ScanMac = string.Empty;
+
+        await LoadAsync(_cargueId, CurrentPage);
+    }
+
     [RelayCommand]
     private async Task SearchAsync()
     {
-        await LoadAsync(_cargueId, 1);
+        await LoadAsync(_cargueId);
     }
 
     [RelayCommand]
     private async Task ClearSearchAsync()
     {
         Filter = string.Empty;
-        await LoadAsync(_cargueId, 1);
+        await LoadAsync(_cargueId);
     }
 
     [RelayCommand]
@@ -164,49 +232,17 @@ public partial class CargueDetailsViewModel : ObservableObject
         await LoadAsync(_cargueId, page);
     }
 
-    // Abre el formulario de carga solamente cuando el total registrado aun es insuficiente.
     [RelayCommand]
-    private async Task UploadSerialAsync()
+    private async Task EditSerialAsync(CargueSerialDto? serial)
     {
-        if (!CanUploadSerials || _cargueId == Guid.Empty)
+        if (!CanManageSerials || serial is null)
         {
             return;
         }
-
-        var parameters = new Dictionary<string, object>
-        {
-            ["CargueId"] = _cargueId
-        };
-
-        var result = await _modalService.ShowAsync<CreateCargueDetailDialogView>(
-            "Subir serial",
-            parameters);
-
-        if (!result.Succeeded)
-        {
-            return;
-        }
-
-        await LoadAsync(_cargueId, CurrentPage);
-        await _alertService.SuccessAsync("Guardado", "El serial fue cargado correctamente.");
-    }
-
-    [RelayCommand]
-    private async Task EditSerialAsync(Spix.Domain.EntitiesInven.CargueDetail? detail)
-    {
-        if (!CanManageSerials || detail is null)
-        {
-            return;
-        }
-
-        var parameters = new Dictionary<string, object>
-        {
-            ["Id"] = detail.CargueDetailId
-        };
 
         var result = await _modalService.ShowAsync<EditCargueDetailDialogView>(
             "Editar serial",
-            parameters);
+            new Dictionary<string, object> { ["Id"] = serial.CargueDetailId });
 
         if (!result.Succeeded)
         {
@@ -218,9 +254,9 @@ public partial class CargueDetailsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task DeleteSerialAsync(Spix.Domain.EntitiesInven.CargueDetail? detail)
+    private async Task DeleteSerialAsync(CargueSerialDto? serial)
     {
-        if (!CanManageSerials || detail is null)
+        if (!CanManageSerials || serial is null)
         {
             return;
         }
@@ -235,8 +271,7 @@ public partial class CargueDetailsViewModel : ObservableObject
             return;
         }
 
-        var response = await _repository.DeleteAsync(
-            $"api/v1/cargueDetails/{detail.CargueDetailId}");
+        var response = await _repository.DeleteAsync($"{DetailsUrl}/{serial.CargueDetailId}");
         if (await _responseHandler.HandleErrorAsync(response))
         {
             return;
@@ -246,11 +281,11 @@ public partial class CargueDetailsViewModel : ObservableObject
         await _alertService.SuccessAsync("Eliminado", "El serial fue eliminado correctamente.");
     }
 
-    // Cierra el cargue mediante el endpoint existente y evita cambios posteriores desde la interfaz.
+    // Cerrar el cargue mueve el inventario y ya no se le tocan los seriales.
     [RelayCommand]
     private async Task CloseAsync()
     {
-        if (!CanCloseCargue || Cargue is null)
+        if (!CanCloseCargue)
         {
             return;
         }
@@ -258,27 +293,32 @@ public partial class CargueDetailsViewModel : ObservableObject
         var confirmed = await _alertService.ConfirmAsync(
             "Cerrar cargue",
             "Al cerrar no podras editar los seriales de esta recepcion.",
-            "Cerrar cargue");
+            "Cerrar");
 
         if (!confirmed)
         {
             return;
         }
 
-        var response = await _repository.GetAsync(
-            $"api/v1/cargueDetails/CerrarTrans/{Cargue.CargueId}");
+        var response = await _repository.GetAsync($"{DetailsUrl}/CerrarTrans/{_cargueId}");
         if (await _responseHandler.HandleErrorAsync(response))
         {
             return;
         }
 
         await LoadAsync(_cargueId, CurrentPage);
-        await _alertService.SuccessAsync("Cargue cerrado", "La recepcion de seriales fue completada.");
+        await _alertService.SuccessAsync("Cerrado", "El cargue fue cerrado correctamente.");
     }
 
     [RelayCommand]
     private void Back()
     {
         BackRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void MostrarAviso(bool correcto, string mensaje)
+    {
+        ScanOk = correcto;
+        ScanMessage = mensaje;
     }
 }

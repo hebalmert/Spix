@@ -18,4 +18,12 @@
     <converters:EqualsToBooleanConverter x:Key="EqualsToBooleanConverter" />
     <converters:StockToBrushConverter x:Key="StockToBrushConverter" />
     <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    <converters:NumberToVisibilityConverter x:Key="NumberToVisibilityConverter" />
+    <converters:NotEqualsToVisibilityConverter x:Key="NotEqualsToVisibilityConverter" />
+    <converters:CargueProgressConverter x:Key="CargueProgressConverter" />
+    <converters:PingAttemptConverter x:Key="PingAttemptConverter" />
+    <converters:PingLossConverter x:Key="PingLossConverter" />
+    <converters:IndexToNumberConverter x:Key="IndexToNumberConverter" />
+    <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    <converters:EnumToIntConverter x:Key="EnumToIntConverter" />
 </ResourceDictionary>

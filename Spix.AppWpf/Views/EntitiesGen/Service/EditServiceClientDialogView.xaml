@@ -13,19 +13,9 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <local:ServiceClientFormView />
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Command="{Binding CancelCommand}" Style="{StaticResource SharedButtonFormSecondary}"
-                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
-                    Content="Volver" />
-            <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource SharedButtonFormSuccess}"
-                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.FloppyDisk}"
-                    Content="Guardar" />
-        </Grid>
+        <shared:SharedModalActions Grid.Row="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
         <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
     </Grid>
 </UserControl>

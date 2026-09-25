@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
@@ -8,8 +8,8 @@ using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesOper;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Windows.Media.Imaging;
+
+
 using ClientEntity = Spix.Domain.EntitiesOper.Client;
 
 namespace Spix.AppWpf.ViewModels.EntitiesOper.Client;
@@ -136,9 +136,6 @@ public abstract partial class ClientFormViewModel : ObservableObject
     private ObservableCollection<DocumentType> _documentTypes = new();
 
     [ObservableProperty]
-    private BitmapImage? _previewImage;
-
-    [ObservableProperty]
     private bool _isLoading;
 
     [ObservableProperty]
@@ -176,7 +173,6 @@ public abstract partial class ClientFormViewModel : ObservableObject
                 CreateAccount = true
             };
 
-            PreviewImage = null;
             await LoadDocumentTypesAsync();
         }
         finally
@@ -200,7 +196,6 @@ public abstract partial class ClientFormViewModel : ObservableObject
             }
 
             Entity = response.Response ?? new ClientEntity();
-            PreviewImage = CreatePreviewImage(Entity.ImageFullPath);
             await LoadDocumentTypesAsync();
         }
         finally
@@ -249,17 +244,16 @@ public abstract partial class ClientFormViewModel : ObservableObject
         }
     }
 
-    // Convierte la foto elegida localmente al mismo Base64 que recibe el Backend web.
-    public void SelectPhoto(string filePath)
+    // La foto que entrega el selector, ya en el Base64 que recibe el Backend web.
+    // Es el mismo dato venga del disco o de la camara: aqui no se distingue.
+    public void SetPhoto(string base64)
     {
-        if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+        if (string.IsNullOrWhiteSpace(base64))
         {
             return;
         }
 
-        byte[] bytes = File.ReadAllBytes(filePath);
-        Entity.ImgBase64 = Convert.ToBase64String(bytes);
-        PreviewImage = CreatePreviewImage(filePath);
+        Entity.ImgBase64 = base64;
     }
 
     // Mantiene la regla: un cliente inactivo no puede crear ni conservar cuenta.
@@ -295,29 +289,6 @@ public abstract partial class ClientFormViewModel : ObservableObject
         {
             Entity.DocumentTypeId = DocumentTypes[0].DocumentTypeId;
             OnPropertyChanged(nameof(Entity));
-        }
-    }
-
-    private static BitmapImage? CreatePreviewImage(string? source)
-    {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            return null;
-        }
-
-        try
-        {
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = new Uri(source, UriKind.Absolute);
-            image.EndInit();
-            image.Freeze();
-            return image;
-        }
-        catch
-        {
-            return null;
         }
     }
 

@@ -1,0 +1,74 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest.ServicePhotoViewerDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="760">
+
+    <!-- Las fotos de la visita, una por una, con flechas para pasarlas.
+         Solo muestra: no sube ni borra. -->
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border HorizontalAlignment="Left"
+                Padding="10,4"
+                CornerRadius="999"
+                Background="{DynamicResource BrushCatalogKpiAccent}">
+            <TextBlock FontSize="12"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       Text="{Binding Tag}" />
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <rowbtn:SharedButtonRowEdit VerticalAlignment="Center"
+                                        Command="{Binding PreviousCommand}"
+                                        Icon="{x:Static icons:FontAwesomeIcon.ChevronLeft}"
+                                        ToolTip="Anterior"
+                                        Visibility="{Binding HasMany, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <Border Grid.Column="1"
+                    Height="430"
+                    Margin="10,0"
+                    CornerRadius="12"
+                    Background="{DynamicResource BrushAvatarBack}"
+                    BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                    BorderThickness="1"
+                    ClipToBounds="True">
+                <Image Stretch="Uniform" Source="{Binding Current.ImageFullPath}" />
+            </Border>
+
+            <rowbtn:SharedButtonRowEdit Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        Command="{Binding NextCommand}"
+                                        Icon="{x:Static icons:FontAwesomeIcon.ChevronRight}"
+                                        ToolTip="Siguiente"
+                                        Visibility="{Binding HasMany, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+
+        <!-- Cuando se tomo y quien la tomo -->
+        <TextBlock Grid.Row="4"
+                   HorizontalAlignment="Center"
+                   Style="{StaticResource SharedIndexMeta}"
+                   Text="{Binding Meta}" />
+
+        <shared:SharedModalActions Grid.Row="6"
+                                   ShowSave="False"
+                                   CancelCommand="{Binding CloseCommand}" />
+    </Grid>
+</UserControl>

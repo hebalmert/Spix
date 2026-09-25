@@ -1,4 +1,4 @@
-using Spix.AppWpf.SharedComponents;
+﻿using Spix.AppWpf.SharedComponents;
 using Spix.AppWpf.ViewModels.EntitiesNet.Server;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,6 +10,7 @@ public partial class ServerMikrotikDialogView : UserControl, ISharedModalContent
 {
     private readonly ServerMikrotikDialogViewModel _viewModel;
     private Guid _id;
+    private string? _ip;
     private bool _loaded;
 
     public ServerMikrotikDialogView(ServerMikrotikDialogViewModel viewModel)
@@ -26,6 +27,12 @@ public partial class ServerMikrotikDialogView : UserControl, ISharedModalContent
         {
             _id = id;
         }
+
+        //La IP la manda el listado: el endpoint del servidor no devuelve esa relacion
+        if (parameters?.TryGetValue("Ip", out object? ipValue) == true)
+        {
+            _ip = ipValue?.ToString();
+        }
     }
 
     private async void LoadDialog(object sender, RoutedEventArgs e)
@@ -36,6 +43,6 @@ public partial class ServerMikrotikDialogView : UserControl, ISharedModalContent
         }
 
         _loaded = true;
-        await _viewModel.InitializeAsync(_id);
+        await _viewModel.InitializeAsync(_id, _ip);
     }
 }

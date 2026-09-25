@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
@@ -19,6 +19,25 @@ public partial class IpNetIndexViewModel : PagedListViewModel<IpNetEntity>
     private readonly HttpResponseHandler _responseHandler;
 
     protected override string Endpoint => "api/v1/ipnets";
+
+    //Los cuatro numeros de arriba: los cuenta la base sobre TODAS las direcciones,
+    //no sobre la pagina que se esta viendo
+    [ObservableProperty]
+    private IpSummaryDto? _summary;
+
+    // Despues de cada carga se vuelven a pedir: crear o borrar un pool los cambia.
+    protected override async Task AfterLoadAsync()
+    {
+        var responseHttp = await _repository.GetAsync<IpSummaryDto>("api/v1/ipnets/summary");
+
+        if (responseHttp.Error)
+        {
+            //El tablero es informativo: si no llega, el listado sigue funcionando
+            return;
+        }
+
+        Summary = responseHttp.Response;
+    }
 
     public IpNetIndexViewModel(
         IPagedEntityService<IpNetEntity> pagedEntityService,

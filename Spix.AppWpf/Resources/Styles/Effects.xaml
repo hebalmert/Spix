@@ -39,14 +39,17 @@
                       Opacity="1"
                       Color="#7C8CA8" />
 
-    <!-- La de los paneles del catalogo: la misma de la web (5px a la derecha, 6 abajo,
-         azul al 24%), sin difuminar -->
+    <!-- La de las tarjetas y los paneles: 5px a la derecha y 6 abajo, sin difuminar,
+         como en la web.
+         Va en azul MUY oscuro y no en el azul medio de la web porque la misma tarjeta se
+         usa sobre blanco (los listados) y sobre el azul del modal: un azul medio se lee
+         en el primero y desaparece en el segundo, y las tarjetas se veian distintas. -->
     <DropShadowEffect x:Key="SombraCatalogo"
                       BlurRadius="0"
                       ShadowDepth="7.8"
                       Direction="310"
-                      Opacity="0.24"
-                      Color="#2C5FAD" />
+                      Opacity="0.30"
+                      Color="#08152F" />
 
     <!-- La de la tarjeta del listado: mas grande y mas suave -->
     <DropShadowEffect x:Key="SombraTarjeta"

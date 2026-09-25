@@ -21,152 +21,167 @@
         <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
     </UserControl.InputBindings>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="14" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <!-- Todo vive dentro de una sola tarjeta blanca: el boton Nuevo, el buscador,
+         la tabla y la paginacion. Asi nada queda flotando sobre el azul. -->
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="14" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <!-- Barra: crear y contador a la izquierda, herramientas y buscador a la derecha -->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+            <!-- Barra: crear y contador a la izquierda, herramientas y buscador a la derecha -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <Button Command="{Binding NewCommand}"
-                    Style="{StaticResource SharedIndexNewButton}"
-                    ToolTip="Crear un tipo de documento (Ctrl+N)"
-                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
-                    Content="Nuevo" />
+                <Button Command="{Binding NewCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Crear un tipo de documento (Ctrl+N)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                        Content="Nuevo" />
 
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <Button Width="38" Height="38"
-                        Margin="0,0,8,0"
-                        Command="{Binding RefreshCommand}"
-                        Style="{StaticResource SharedIndexIconButtonEdit}"
-                        ToolTip="Actualizar (F5)">
-                    <fa:FontAwesomeImage Width="14" Height="14"
-                                         Foreground="{DynamicResource BrushIndexIconEdit}"
-                                         Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
-                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                </Button>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Width="38" Height="38"
+                            Margin="0,0,8,0"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource SharedIndexIconButtonEdit}"
+                            ToolTip="Actualizar (F5)">
+                        <fa:FontAwesomeImage Width="14" Height="14"
+                                             Foreground="{DynamicResource BrushIndexIconEdit}"
+                                             Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    </Button>
 
-                <shared:SharedExportButton Margin="0,0,10,0"
-                                           Items="{Binding Items}"
-                                           FileName="tipos-de-documento" />
+                    <shared:SharedExportButton Margin="0,0,10,0"
+                                               Items="{Binding Items}"
+                                               FileName="tipos-de-documento" />
 
-                <shared:SharedSearchFilter x:Name="SearchFilter"
-                                           SearchText="{Binding Filter}"
-                                           SearchCommand="{Binding SearchCommand}"
-                                           ClearCommand="{Binding ClearSearchCommand}" />
-            </StackPanel>
-        </Grid>
-
-        <TextBlock Grid.Row="2"
-                   Margin="0,0,0,10"
-                   Style="{StaticResource SharedIndexMessage}"
-                   Text="{Binding Message}"
-                   Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-        <Border Grid.Row="3" Style="{StaticResource SharedIndexCard}">
-            <Grid>
-                <DataGrid x:Name="ItemsGrid"
-                          ItemsSource="{Binding Items}"
-                          Style="{StaticResource SharedIndexGrid}"
-                          ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
-                          RowStyle="{StaticResource SharedIndexRow}"
-                          CellStyle="{StaticResource SharedIndexCell}">
-
-                    <!-- Doble clic en la fila abre la edicion, como en cualquier programa
-                         de escritorio -->
-                    <DataGrid.InputBindings>
-                        <MouseBinding MouseAction="LeftDoubleClick"
-                                      Command="{Binding EditCommand}"
-                                      CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
-                    </DataGrid.InputBindings>
-
-                    <DataGrid.Columns>
-                        <!-- SortMemberPath es lo que permite ordenar con clic en el titulo -->
-                        <DataGridTemplateColumn Width="2*" Header="Documento" SortMemberPath="DocumentName">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding DocumentName}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Width="3*" Header="Descripcion" SortMemberPath="Descripcion">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Descripcion}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- El estado en pastilla: verde activo, rojo inactivo -->
-                        <DataGridTemplateColumn Width="120" Header="Estado" SortMemberPath="Active">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <shared:SharedStatePill IsOn="{Binding Active}"
-                                                            OnText="Activo"
-                                                            OffText="Inactivo" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Width="Auto" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
-                                        <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                    CommandParameter="{Binding}"
-                                                                    ToolTip="Editar" />
-
-                                        <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                      CommandParameter="{Binding}"
-                                                                      ToolTip="Eliminar" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <!-- Cuando no hay nada, la pantalla ofrece el camino en vez de quedarse muda -->
-                <StackPanel HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Visibility="{Binding Items, Converter={StaticResource CountToVisibilityConverter}}">
-                    <fa:FontAwesomeImage Width="26" Height="26"
-                                         HorizontalAlignment="Center"
-                                         Foreground="{DynamicResource BrushIndexMeta}"
-                                         Icon="{x:Static icons:FontAwesomeIcon.FolderOpen}"
-                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
-                    <TextBlock Margin="0,12,0,0"
-                               Style="{StaticResource SharedIndexEmpty}"
-                               Text="Todavia no hay tipos de documento" />
-                    <Button Margin="0,14,0,0"
-                            HorizontalAlignment="Center"
-                            Command="{Binding NewCommand}"
-                            Style="{StaticResource SharedIndexNewButton}"
-                            ToolTip="Crear el primero"
-                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
-                            Content="Crear el primero" />
+                    <shared:SharedSearchFilter x:Name="SearchFilter"
+                                               SearchText="{Binding Filter}"
+                                               SearchCommand="{Binding SearchCommand}"
+                                               ClearCommand="{Binding ClearSearchCommand}" />
                 </StackPanel>
-
-                <shared:SharedLoading IsLoading="{Binding IsLoading}" />
             </Grid>
-        </Border>
 
-        <shared:SharedPagination Grid.Row="5"
-                                 CurrentPage="{Binding CurrentPage}"
-                                 TotalPages="{Binding TotalPages}"
-                                 TotalRecords="{Binding TotalRecords}"
-                                 PageCommand="{Binding GoToPageCommand}" />
-    </Grid>
+            <TextBlock Grid.Row="2"
+                       Margin="0,0,0,10"
+                       Style="{StaticResource SharedCatalogMessage}"
+                       Text="{Binding Message}"
+                       Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <!-- La franja azul del encabezado: va detras de la tabla para que sus
+                             esquinas de arriba sigan la curva del panel -->
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid x:Name="ItemsGrid"
+                                  ItemsSource="{Binding Items}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <!-- Doble clic en la fila abre la edicion, como en cualquier programa
+                                 de escritorio -->
+                            <DataGrid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding EditCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.Columns>
+                                <!-- SortMemberPath es lo que permite ordenar con clic en el titulo -->
+                                <DataGridTemplateColumn Width="2*" Header="Documento" SortMemberPath="DocumentName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding DocumentName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="3*" Header="Descripcion" SortMemberPath="Descripcion">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Descripcion}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- El estado en pastilla: verde activo, rojo inactivo -->
+                                <DataGridTemplateColumn Width="120" Header="Estado" SortMemberPath="Active">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <shared:SharedStatePill IsOn="{Binding Active}"
+                                                                    OnText="Activo"
+                                                                    OffText="Inactivo" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="96" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Editar" />
+
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Eliminar" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Cuando no hay nada, la pantalla ofrece el camino en vez de quedarse muda -->
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Items, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.FolderOpen}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="Todavia no hay tipos de documento" />
+                            <Button Margin="0,14,0,0"
+                                    HorizontalAlignment="Center"
+                                    Command="{Binding NewCommand}"
+                                    Style="{StaticResource SharedIndexNewButton}"
+                                    ToolTip="Crear el primero"
+                                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                    Content="Crear el primero" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 TotalRecords="{Binding TotalRecords}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
 </UserControl>

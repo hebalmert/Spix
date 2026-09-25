@@ -26,8 +26,10 @@ using Spix.AppWpf.ViewModels.EntitiesInven.Cargue;
 using Spix.AppWpf.ViewModels.EntitiesNet.IpNet;
 using Spix.AppWpf.ViewModels.EntitiesNet.IpNetwork;
 using Spix.AppWpf.ViewModels.EntitiesNet.Node;
+using Spix.AppWpf.ViewModels.EntitiesNet.NodeMap;
 using Spix.AppWpf.ViewModels.EntitiesNet.Server;
 using Spix.AppWpf.ViewModels.EntitiesSchedule;
+using Spix.AppWpf.ViewModels.EntitiesSchedule.ServiceRequest;
 using Spix.AppWpf.ViewModels.EntitiesOper.Client;
 using Spix.AppWpf.ViewModels.EntitiesMK.ConnectionMikrotikControl;
 using Spix.AppWpf.ViewModels.EntitiesMK.QueueType;
@@ -51,14 +53,17 @@ using Spix.AppWpf.Views.EntitiesInven.Cargue;
 using Spix.AppWpf.Views.EntitiesNet.IpNet;
 using Spix.AppWpf.Views.EntitiesNet.IpNetwork;
 using Spix.AppWpf.Views.EntitiesNet.Node;
+using Spix.AppWpf.Views.EntitiesNet.NodeMap;
 using Spix.AppWpf.Views.EntitiesNet.Server;
 using Spix.AppWpf.Views.EntitiesSchedule;
+using Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest;
 using Spix.AppWpf.Views.EntitiesOper.Client;
 using Spix.AppWpf.Views.EntitiesMK.ConnectionMikrotikControl;
 using Spix.AppWpf.Views.EntitiesMK.QueueType;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.Services.Network;
 using Spix.AppWpf.NetHelper;
+using Spix.xNetwork.PingHelper;
 using Spix.HttpService;
 using System.IO;
 using System.Net.Http;
@@ -100,6 +105,9 @@ public partial class App : Application
                 "La URL configurada para el Backend no es valida.");
         }
 
+        //Los mapas se identifican ante OpenStreetMap con la direccion del producto
+        WebViewEnvironment.SitioWeb = apiSettings.BaseUrl;
+
         var services = new ServiceCollection();
 
         // Registra objetos compartidos para todas las vistas y servicios desktop.
@@ -117,6 +125,7 @@ public partial class App : Application
         services.AddSingleton<IAccountService, AccountService>();
         services.AddSingleton(typeof(IPagedEntityService<>), typeof(PagedEntityService<>));
         services.AddSingleton<ModalService>();
+        services.AddSingleton<NavigationService>();
         services.AddSingleton<AlertService>();
         services.AddSingleton<HttpResponseHandler>();
         // Ejecuta ping y consultas MikroTik desde la red local del equipo Windows.
@@ -197,12 +206,20 @@ public partial class App : Application
         services.AddTransient<EditNodeDialogViewModel>();
         services.AddTransient<NodeMapDialogViewModel>();
         services.AddTransient<NodePingDialogViewModel>();
+        services.AddTransient<NodeMapViewModel>();
         services.AddTransient<ServerIndexViewModel>();
         services.AddTransient<CreateServerDialogViewModel>();
         services.AddTransient<EditServerDialogViewModel>();
         services.AddTransient<ServerPingDialogViewModel>();
         services.AddTransient<ServerMikrotikDialogViewModel>();
         services.AddTransient<ScheduleIndexViewModel>();
+        services.AddTransient<ServiceRequestIndexViewModel>();
+        services.AddTransient<CreateServiceRequestDialogViewModel>();
+        services.AddTransient<ServiceRequestOrderViewModel>();
+        services.AddTransient<AssignServiceRequestDialogViewModel>();
+        services.AddTransient<ResolveByPhoneDialogViewModel>();
+        services.AddTransient<UploadServicePhotoDialogViewModel>();
+        services.AddTransient<ServicePhotoViewerDialogViewModel>();
         services.AddTransient<CreateScheduleDialogViewModel>();
         services.AddTransient<EditScheduleDialogViewModel>();
         services.AddTransient<ServiceRequestScheduleInfoDialogViewModel>();
@@ -292,12 +309,20 @@ public partial class App : Application
         services.AddTransient<EditNodeDialogView>();
         services.AddTransient<NodeMapDialogView>();
         services.AddTransient<NodePingDialogView>();
+        services.AddTransient<NodeMapView>();
         services.AddTransient<ServerIndexView>();
         services.AddTransient<CreateServerDialogView>();
         services.AddTransient<EditServerDialogView>();
         services.AddTransient<ServerPingDialogView>();
         services.AddTransient<ServerMikrotikDialogView>();
         services.AddTransient<ScheduleIndexView>();
+        services.AddTransient<ServiceRequestIndexView>();
+        services.AddTransient<CreateServiceRequestDialogView>();
+        services.AddTransient<ServiceRequestOrderView>();
+        services.AddTransient<AssignServiceRequestDialogView>();
+        services.AddTransient<ResolveByPhoneDialogView>();
+        services.AddTransient<UploadServicePhotoDialogView>();
+        services.AddTransient<ServicePhotoViewerDialogView>();
         services.AddTransient<CreateScheduleDialogView>();
         services.AddTransient<EditScheduleDialogView>();
         services.AddTransient<ServiceRequestScheduleInfoDialogView>();

@@ -2,29 +2,40 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
-             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
-             xmlns:icons="clr-namespace:FontAwesome.Net.Generators">
+             x:Name="Raiz">
 
     <!-- Los botones de TODOS los modales del escritorio.
-         Van a la derecha y del ancho de su texto, lo principal mas a la derecha, como en
-         cualquier ventana de Windows. Los colores y la sombra salen de los estilos. -->
-    <Grid HorizontalAlignment="Right">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="12" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-
-        <Button Grid.Column="0"
-                Command="{Binding CancelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+         Van a la IZQUIERDA y del ancho de su texto, lo principal a la derecha de la
+         pareja. Los colores, la sombra y la franja salen de los estilos; aqui solo se
+         ordenan. Cambiar esta linea los mueve en los 64 modales de una vez. -->
+    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+        <Button Margin="0,0,12,0"
+                Command="{Binding CancelCommand, ElementName=Raiz}"
+                Content="{Binding CancelText, ElementName=Raiz}"
                 Style="{StaticResource SharedButtonFormSecondary}"
-                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
-                Content="Volver" />
+                svc:FormButton.Icon="{Binding CancelIcon, ElementName=Raiz}" />
 
-        <Button Grid.Column="2"
-                Command="{Binding SaveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+        <Button Margin="0,0,12,0"
+                Command="{Binding SaveCommand, ElementName=Raiz}"
+                Content="{Binding SaveText, ElementName=Raiz}"
                 Style="{StaticResource SharedButtonFormPrimary}"
-                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.FloppyDisk}"
-                Content="Guardar" />
-    </Grid>
+                svc:FormButton.Icon="{Binding SaveIcon, ElementName=Raiz}"
+                Visibility="{Binding ShowSave, ElementName=Raiz, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!-- El tercer boton del modal, cuando lo hay: Reenviar correo, Eliminar...
+             Va de ULTIMO, despues de Guardar (decidido con Hebalmert el 2026-09-24).
+             Si no lo hay se esconde, para que no deje un hueco al final. -->
+        <ContentPresenter VerticalAlignment="Center"
+                          Content="{Binding Extra, ElementName=Raiz}">
+            <ContentPresenter.Style>
+                <Style TargetType="ContentPresenter">
+                    <Style.Triggers>
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentPresenter.Style>
+        </ContentPresenter>
+    </StackPanel>
 </UserControl>

@@ -1,9 +1,11 @@
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.AppWpf.Views.EntitiesInven.Purchase;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
 
@@ -18,6 +20,10 @@ public partial class PurchaseIndexViewModel : PagedListViewModel<Spix.Domain.Ent
     private readonly HttpResponseHandler _responseHandler;
 
     protected override string Endpoint => "api/v1/purchases";
+
+    //Los tres numeros de arriba: los cuenta la base, igual que en la web
+    [ObservableProperty]
+    private PurchaseSummaryDto? _summary;
 
     public event EventHandler<Guid>? DetailsRequested;
 
@@ -36,6 +42,21 @@ public partial class PurchaseIndexViewModel : PagedListViewModel<Spix.Domain.Ent
     }
 
     // El detalle controla sus productos y cierre, igual que DetailsPurchases de Blazor.
+    // Cada vez que se recarga el listado se vuelven a pedir los tres numeros: crear,
+    // borrar o cerrar una compra los cambia.
+    protected override async Task AfterLoadAsync()
+    {
+        var responseHttp = await _repository.GetAsync<PurchaseSummaryDto>($"{Endpoint}/summary");
+
+        if (responseHttp.Error)
+        {
+            //El tablero es informativo: si no llega, el listado sigue funcionando
+            return;
+        }
+
+        Summary = responseHttp.Response;
+    }
+
     [RelayCommand]
     private void Details(Spix.Domain.EntitiesInven.Purchase? purchase)
     {

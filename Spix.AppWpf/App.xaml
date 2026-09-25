@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="Resources/Styles/SharedLayout.xaml" />
                 <ResourceDictionary Source="Resources/Styles/SharedLogin.xaml" />
                 <ResourceDictionary Source="Resources/Styles/SharedButtonForm.xaml" />
+                <ResourceDictionary Source="Resources/Styles/SharedForm.xaml" />
                 <ResourceDictionary Source="Resources/Styles/SharedIndex.xaml" />
                 <ResourceDictionary Source="Resources/Styles/SharedCatalog.xaml" />
                 <ResourceDictionary Source="Resources/Styles/SharedButtonTableRow.xaml" />

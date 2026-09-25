@@ -1,8 +1,6 @@
 ﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Product.ProductStockDialogView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
-             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
              MinWidth="560">
     <Grid Margin="0,20,0,0">
@@ -57,13 +55,10 @@
             </Grid>
         </Border>
 
-        <!-- Este modal solo consulta: el unico boton es el de volver -->
-        <Button Grid.Row="4"
-                HorizontalAlignment="Right"
-                Command="{Binding CloseCommand}"
-                Style="{StaticResource SharedButtonFormSecondary}"
-                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
-                Content="Volver" />
+        <!-- Este modal solo consulta: el pie va por el componente comun y solo deja Volver -->
+        <shared:SharedModalActions Grid.Row="4"
+                                   ShowSave="False"
+                                   CancelCommand="{Binding CloseCommand}" />
 
         <shared:SharedLoading Grid.RowSpan="5" IsLoading="{Binding IsLoading}" />
     </Grid>

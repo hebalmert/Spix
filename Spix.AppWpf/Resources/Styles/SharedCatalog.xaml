@@ -193,6 +193,10 @@
     <!-- ===== La tabla de los hijos ===== -->
     <Style x:Key="SharedCatalogGrid" TargetType="DataGrid">
         <Setter Property="AutoGenerateColumns" Value="False" />
+        <!-- Sin desplazamiento horizontal la tabla NUNCA se puede salir del panel:
+             si algo no cabe, la columna estrella se encoge en vez de empujar a las
+             demas hacia afuera y dejar el ultimo boton cortado. -->
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="CanUserAddRows" Value="False" />
         <Setter Property="CanUserDeleteRows" Value="False" />
         <Setter Property="CanUserResizeRows" Value="False" />

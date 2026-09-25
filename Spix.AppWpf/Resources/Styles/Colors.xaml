@@ -171,6 +171,46 @@
     <SolidColorBrush x:Key="BrushCatalogKpiWarnText" Color="#C77700" />
     <SolidColorBrush x:Key="BrushCatalogKpiBadText" Color="#DC3545" />
 
+    <!-- La foto de un registro (SharedAvatar). Son los mismos tonos de AvatarImage de la
+         web y no cambian con el tema, igual que las tarjetas: el circulo es claro siempre. -->
+    <SolidColorBrush x:Key="BrushAvatarPhotoBack" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrushAvatarBorder" Color="#DBE7FB" />
+    <SolidColorBrush x:Key="BrushAvatarGlyph" Color="#2B6FD6" />
+
+    <!-- La tarjeta del selector de foto (SharedImagePicker), los tonos del
+         InputImageGeneral de la web -->
+    <SolidColorBrush x:Key="BrushPickerCardBack" Color="#F6F9FF" />
+    <SolidColorBrush x:Key="BrushPickerCardBorder" Color="#D7E1F3" />
+    <SolidColorBrush x:Key="BrushPickerTitle" Color="#0E2A5E" />
+
+    <!-- Solicitudes de servicio. La fecha programada dice que tan urgente es, no solo
+         cuando es: son los tonos de .sr-when de la web. -->
+    <SolidColorBrush x:Key="BrushWhenLateBack" Color="#FCEAEA" />
+    <SolidColorBrush x:Key="BrushWhenLateText" Color="#A32D2D" />
+    <SolidColorBrush x:Key="BrushWhenTodayBack" Color="#E6F1FB" />
+    <SolidColorBrush x:Key="BrushWhenTodayText" Color="#0C447C" />
+    <SolidColorBrush x:Key="BrushWhenNextBack" Color="#F1F4FA" />
+    <SolidColorBrush x:Key="BrushWhenNextText" Color="#33405C" />
+    <SolidColorBrush x:Key="BrushWhenDoneBack" Color="#EAF3DE" />
+    <SolidColorBrush x:Key="BrushWhenDoneText" Color="#3B6D11" />
+
+    <!-- El estado de la solicitud, los mismos colores del ScheduleStatusBadge de la web -->
+    <SolidColorBrush x:Key="BrushScheduleRequested" Color="#0DCAF0" />
+    <SolidColorBrush x:Key="BrushSchedulePhoneResolved" Color="#20C997" />
+    <SolidColorBrush x:Key="BrushSchedulePending" Color="#FD7E14" />
+    <SolidColorBrush x:Key="BrushScheduleInProgress" Color="#6F42C1" />
+    <SolidColorBrush x:Key="BrushScheduleOnHold" Color="#E67700" />
+    <SolidColorBrush x:Key="BrushScheduleRescheduled" Color="#0D6EFD" />
+    <SolidColorBrush x:Key="BrushScheduleCompleted" Color="#6B8E23" />
+    <SolidColorBrush x:Key="BrushScheduleCancelled" Color="#B02A37" />
+    <SolidColorBrush x:Key="BrushScheduleUnknown" Color="#6C757D" />
+    <!-- La cita manual de la agenda puede no traer estatus: cae en el azul del sistema -->
+    <SolidColorBrush x:Key="BrushScheduleManual" Color="#16305E" />
+    <LinearGradientBrush x:Key="BrushAvatarBack" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#F2F7FF" Offset="0" />
+        <GradientStop Color="#DFEAFF" Offset="1" />
+    </LinearGradientBrush>
+
     <!-- El stock del producto: verde, ambar o rojo segun cuanto quede -->
     <SolidColorBrush x:Key="BrushCatalogStockOk" Color="#198754" />
     <SolidColorBrush x:Key="BrushCatalogStockLow" Color="#C77700" />
@@ -218,6 +258,12 @@
     <SolidColorBrush x:Key="BrushFormSuccessHover" Color="#146C44" />
     <SolidColorBrush x:Key="BrushFormDanger" Color="#DC2626" />
     <SolidColorBrush x:Key="BrushFormDangerHover" Color="#B02A37" />
+
+    <!-- Los campos de los formularios: la etiqueta pegada al campo -->
+    <SolidColorBrush x:Key="BrushFormFieldLabelBack" Color="#F2F4F7" />
+    <SolidColorBrush x:Key="BrushFormFieldBorder" Color="#566273" />
+    <SolidColorBrush x:Key="BrushFormFieldText" Color="#1E2B3C" />
+    <SolidColorBrush x:Key="BrushFormFieldBack" Color="#FFFFFF" />
 
     <!-- El gris del boton secundario y los tonos de texto: el texto del boton va del
          color de su franja, igual que el icono manda en los botones de la tabla -->

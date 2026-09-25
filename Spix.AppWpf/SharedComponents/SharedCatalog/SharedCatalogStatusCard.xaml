@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedCatalog.SharedCatalogStatusCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             x:Name="Raiz">
+
+    <!-- El aviso de "salio bien" o "salio mal" de un diagnostico.
+         Es la MISMA tarjeta de los indicadores: blanca, con su barra de color pegada a la
+         izquierda y su sombra. Antes era una banda plana de color y se veia como una linea
+         atravesada, distinta a todo lo demas de la pantalla. -->
+    <Border CornerRadius="12"
+            Background="{DynamicResource BrushCatalogCard}"
+            BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+            BorderThickness="1"
+            Effect="{StaticResource SombraCatalogo}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border x:Name="AccentBar" CornerRadius="11,0,0,11" />
+
+            <fa:FontAwesomeImage x:Name="Glifo"
+                                 Grid.Column="1"
+                                 Width="18" Height="18"
+                                 Margin="14,0,0,0"
+                                 VerticalAlignment="Center"
+                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+
+            <StackPanel Grid.Column="2" Margin="12,12,14,12" VerticalAlignment="Center">
+                <TextBlock x:Name="TituloTexto"
+                           FontSize="{StaticResource FontSizeName}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource BrushCatalogName}"
+                           TextWrapping="Wrap"
+                           Text="{Binding Title, ElementName=Raiz}" />
+                <TextBlock Margin="0,2,0,0"
+                           FontSize="{StaticResource FontSizeMeta}"
+                           Foreground="{DynamicResource BrushCatalogMeta}"
+                           TextWrapping="Wrap"
+                           Text="{Binding Detail, ElementName=Raiz}"
+                           Visibility="{Binding Detail, ElementName=Raiz, Converter={StaticResource TextToVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

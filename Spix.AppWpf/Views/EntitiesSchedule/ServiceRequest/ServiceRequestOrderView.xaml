@@ -1,0 +1,415 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest.ServiceRequestOrderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- La orden de trabajo, replicada del FormServiceRequest de la web en modo edicion.
+         No es un formulario: es un RECORRIDO. Registrada -> En sitio -> Cerrada, con un
+         solo boton grande para que el tecnico no tenga que adivinar cual estado cierra.
+         Y no se cierra sin servicio, sin comentario y sin foto del despues. -->
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- De quien es la orden, como va y el unico boton que importa -->
+            <Grid Margin="0,0,0,14" Visibility="{Binding HasEntity, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource SharedIndexName}"
+                               FontSize="17"
+                               Text="{Binding Header}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding SubHeader}" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <!-- Una solicitud del cliente primero se tria: se agenda o se resuelve llamando -->
+                    <Button Margin="0,0,10,0"
+                            Command="{Binding AssignCommand}"
+                            Style="{StaticResource SharedButtonFormPrimary}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.CalendarCheck}"
+                            Content="Agendar"
+                            Visibility="{Binding IsRequested, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                    <Button Margin="0,0,10,0"
+                            Command="{Binding ResolveByPhoneCommand}"
+                            Style="{StaticResource SharedButtonFormSuccess}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Phone}"
+                            Content="Resolver por telefono"
+                            Visibility="{Binding IsRequested, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                    <Button Margin="0,0,10,0"
+                            Command="{Binding AdvanceCommand}"
+                            Style="{StaticResource SharedButtonFormPrimary}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.FlagCheckered}"
+                            Content="{Binding AdvanceText}"
+                            Visibility="{Binding ShowAdvance, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                    <Button Command="{Binding BackCommand}"
+                            Style="{StaticResource SharedButtonFormSecondary}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
+                            Content="Volver" />
+                </StackPanel>
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <Grid Margin="0,0,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="330" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Lo que solo se consulta -->
+                    <StackPanel>
+                        <catalog:SharedCatalogKpi Margin="0,0,0,12" Label="Telefono" Value="{Binding ContactPhone}" />
+                        <catalog:SharedCatalogKpi Margin="0,0,0,12" Label="Red" Value="{Binding Entity.IpCliente}"
+                                                  Accent="{DynamicResource BrushCatalogKpiOk}" />
+                        <catalog:SharedCatalogKpi Margin="0,0,0,12" Label="AP / Nodo" Value="{Binding Entity.NodeName}" />
+                        <catalog:SharedCatalogKpi Margin="0,0,0,12" Label="Plan" Value="{Binding Entity.PlanName}" />
+
+                        <!-- Las fotos son de la VISITA, no de cada servicio -->
+                        <Border Style="{StaticResource SharedIndexPanel}" Padding="14">
+                            <StackPanel>
+                                <TextBlock Margin="0,0,0,10"
+                                           Style="{StaticResource SharedIndexName}"
+                                           Text="Fotos de la visita" />
+
+                                <ItemsControl ItemsSource="{Binding Photos}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="132" Height="112"
+                                                    Margin="0,0,10,10"
+                                                    CornerRadius="10"
+                                                    Background="{DynamicResource BrushAvatarBack}"
+                                                    BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                                                    BorderThickness="1"
+                                                    ClipToBounds="True"
+                                                    Cursor="Hand">
+                                                <!-- Tocar la miniatura abre el carrusel -->
+                                                <Border.InputBindings>
+                                                    <MouseBinding MouseAction="LeftClick"
+                                                                  Command="{Binding DataContext.ViewPhotoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                  CommandParameter="{Binding}" />
+                                                </Border.InputBindings>
+                                                <Grid>
+                                                    <Image Stretch="UniformToFill" Source="{Binding ImageFullPath}" />
+
+                                                    <Border VerticalAlignment="Bottom"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="6"
+                                                            Padding="8,2"
+                                                            CornerRadius="999"
+                                                            Background="{DynamicResource BrushCatalogKpiAccent}">
+                                                        <TextBlock FontSize="11"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="White"
+                                                                   Text="{Binding Tag}" />
+                                                    </Border>
+
+                                                    <rowbtn:SharedButtonRowDelete VerticalAlignment="Top"
+                                                                                  HorizontalAlignment="Right"
+                                                                                  Margin="4"
+                                                                                  Command="{Binding DataContext.DeletePhotoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                                  CommandParameter="{Binding}"
+                                                                                  ToolTip="Eliminar la foto"
+                                                                                  Visibility="{Binding DataContext.CanWork, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Button HorizontalAlignment="Left"
+                                        Command="{Binding AddPhotoCommand}"
+                                        Style="{StaticResource SharedButtonFormSecondary}"
+                                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Camera}"
+                                        Content="Agregar foto"
+                                        Visibility="{Binding CanAddPhoto, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Lo que el tecnico llena -->
+                    <StackPanel Grid.Column="2">
+
+                        <!-- Como va la orden, y lo que falta para poder cerrar -->
+                        <Border Margin="0,0,0,12"
+                                Padding="16,14"
+                                Style="{StaticResource SharedIndexPanel}"
+                                Visibility="{Binding ShowSteps, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <shared:SharedStepPill Margin="0,0,10,0" Text="Registrada" IsDone="True" />
+                                    <shared:SharedStepPill Margin="0,0,10,0" Text="En sitio" IsDone="{Binding IsStarted}" />
+                                    <shared:SharedStepPill Text="Cerrada" IsDone="{Binding IsCompleted}" />
+                                </StackPanel>
+
+                                <StackPanel Margin="0,12,0,0"
+                                            Visibility="{Binding ShowPending, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Para cerrar la visita falta:" />
+                                    <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                                        <shared:SharedStepPill Margin="0,0,10,0" Text="Un servicio" IsDone="{Binding HasService}" />
+                                        <shared:SharedStepPill Margin="0,0,10,0" Text="Comentario" IsDone="{Binding HasComment}" />
+                                        <shared:SharedStepPill Text="Foto del despues" IsDone="{Binding HasAfterPhoto}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- La visita -->
+                        <Border Margin="0,0,0,12" Padding="16,14" Style="{StaticResource SharedIndexPanel}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="14" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Style="{StaticResource SharedIndexName}" Text="Visita" />
+
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Tecnico" />
+                                        <ComboBox Margin="0,5,0,0"
+                                                  Style="{StaticResource SharedFormCombo}"
+                                                  IsEnabled="{Binding IsCompleted, Converter={StaticResource InverseBooleanConverter}}"
+                                                  ItemsSource="{Binding Technicians}"
+                                                  DisplayMemberPath="Name"
+                                                  SelectedValuePath="Value"
+                                                  SelectedValue="{Binding Entity.TechnicianId, Mode=TwoWay}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Programada" />
+                                        <Grid Margin="0,5,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="8" />
+                                                <ColumnDefinition Width="90" />
+                                            </Grid.ColumnDefinitions>
+                                            <DatePicker MinHeight="42"
+                                                        IsEnabled="{Binding IsCompleted, Converter={StaticResource InverseBooleanConverter}}"
+                                                        SelectedDate="{Binding ScheduledDate, Mode=TwoWay}"
+                                                        SelectedDateFormat="Short" />
+                                            <TextBox Grid.Column="2"
+                                                     MaxLength="5"
+                                                     Style="{StaticResource SharedFormBox}"
+                                                     IsEnabled="{Binding IsCompleted, Converter={StaticResource InverseBooleanConverter}}"
+                                                     Text="{Binding ScheduledTime, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="4">
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Otro estado" />
+                                        <ComboBox Margin="0,5,0,0"
+                                                  Style="{StaticResource SharedFormCombo}"
+                                                  IsEnabled="{Binding IsCompleted, Converter={StaticResource InverseBooleanConverter}}"
+                                                  ItemsSource="{Binding Statuses}"
+                                                  DisplayMemberPath="Name"
+                                                  SelectedValuePath="Value"
+                                                  SelectedValue="{Binding Entity.ScheduleStatus, Mode=TwoWay, Converter={StaticResource EnumToIntConverter}}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Grid.Row="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Razon del cliente" />
+                                        <TextBox Margin="0,5,0,0"
+                                                 MinHeight="82"
+                                                 AcceptsReturn="True"
+                                                 TextWrapping="Wrap"
+                                                 VerticalScrollBarVisibility="Auto"
+                                                 Style="{StaticResource SharedFormBox}"
+                                                 IsEnabled="False"
+                                                 Text="{Binding Entity.ClientReason}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Comentario tecnico" />
+                                        <TextBox Margin="0,5,0,0"
+                                                 MinHeight="82"
+                                                 MaxLength="512"
+                                                 AcceptsReturn="True"
+                                                 TextWrapping="Wrap"
+                                                 VerticalScrollBarVisibility="Auto"
+                                                 Style="{StaticResource SharedFormBox}"
+                                                 IsEnabled="{Binding CanWork}"
+                                                 Text="{Binding Entity.TechnicianComment, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="4">
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Recomendacion" />
+                                        <TextBox Margin="0,5,0,0"
+                                                 MinHeight="82"
+                                                 MaxLength="512"
+                                                 AcceptsReturn="True"
+                                                 TextWrapping="Wrap"
+                                                 VerticalScrollBarVisibility="Auto"
+                                                 Style="{StaticResource SharedFormBox}"
+                                                 IsEnabled="{Binding CanWork}"
+                                                 Text="{Binding Entity.Recommendation, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Guarda SOLO esta tarjeta: el recorrido, los servicios y las
+                                     fotos se guardan solos -->
+                                <Button Grid.Row="6"
+                                        HorizontalAlignment="Left"
+                                        Command="{Binding SaveCommand}"
+                                        Style="{StaticResource SharedButtonFormPrimary}"
+                                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.FloppyDisk}"
+                                        Content="Guardar"
+                                        Visibility="{Binding IsCompleted, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Lo que se le hizo al cliente, y lo que se le cobra -->
+                        <Border Padding="16,14"
+                                Style="{StaticResource SharedIndexPanel}"
+                                Visibility="{Binding ShowSteps, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel>
+                                <TextBlock Margin="0,0,0,10"
+                                           Style="{StaticResource SharedIndexName}"
+                                           Text="Servicios realizados" />
+
+                                <Grid Margin="0,0,0,12"
+                                      Visibility="{Binding CanWork, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <ComboBox Style="{StaticResource SharedFormCombo}"
+                                              ItemsSource="{Binding Categories}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="ServiceCategoryId"
+                                              SelectedValue="{Binding SelectedCategoryId, Mode=TwoWay}" />
+
+                                    <ComboBox Grid.Column="2"
+                                              Style="{StaticResource SharedFormCombo}"
+                                              ItemsSource="{Binding Services}"
+                                              DisplayMemberPath="ServiceName"
+                                              SelectedValuePath="ServiceClientId"
+                                              SelectedValue="{Binding SelectedServiceId, Mode=TwoWay}" />
+
+                                    <TextBox Grid.Column="4"
+                                             MaxLength="256"
+                                             Style="{StaticResource SharedFormBox}"
+                                             ToolTip="Detalle"
+                                             Text="{Binding DetailText, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Button Grid.Column="6"
+                                            Command="{Binding AddDetailCommand}"
+                                            Style="{StaticResource SharedButtonFormPrimary}"
+                                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                            Content="Agregar" />
+                                </Grid>
+
+                                <ItemsControl ItemsSource="{Binding Entity.Details}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ServiceClientName}" />
+                                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ServiceCategoryName}" />
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
+                                                    <TextBlock HorizontalAlignment="Right"
+                                                               Style="{StaticResource SharedIndexName}"
+                                                               Text="{Binding Total, StringFormat=N2}" />
+                                                    <TextBlock HorizontalAlignment="Right" Style="{StaticResource SharedIndexMeta}">
+                                                        <Run Text="{Binding Price, StringFormat=N2, Mode=OneWay}" />
+                                                        <Run Text="+" />
+                                                        <Run Text="{Binding TaxAmount, StringFormat=N2, Mode=OneWay}" />
+                                                    </TextBlock>
+                                                </StackPanel>
+
+                                                <rowbtn:SharedButtonRowDelete Grid.Column="2"
+                                                                              VerticalAlignment="Center"
+                                                                              Command="{Binding DataContext.DeleteDetailCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Quitar el servicio"
+                                                                              Visibility="{Binding DataContext.CanWork, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <!-- El total en una sola linea, al pie de la tarjeta -->
+                                <Grid Margin="0,10,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock VerticalAlignment="Center" Style="{StaticResource SharedIndexMeta}">
+                                        <Run Text="Subtotal" />
+                                        <Run Text="{Binding Entity.SubTotal, StringFormat=N2, Mode=OneWay}" />
+                                        <Run Text="· Impuesto" />
+                                        <Run Text="{Binding Entity.TotalTax, StringFormat=N2, Mode=OneWay}" />
+                                    </TextBlock>
+                                    <TextBlock Grid.Column="1"
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource BrushCatalogName}"
+                                               Text="{Binding Entity.Total, StringFormat=N2}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <shared:SharedLoading Grid.RowSpan="2" IsLoading="{Binding IsLoading}" />
+        </Grid>
+    </Border>
+</UserControl>

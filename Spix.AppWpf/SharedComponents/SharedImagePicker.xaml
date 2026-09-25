@@ -1,0 +1,76 @@
+<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedImagePicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             x:Name="Raiz">
+
+    <!-- Tomar la foto con la camara o subirla del disco, igual que el InputImageGeneral
+         de la web: la tarjeta, el circulo de 180 y los dos botones.
+
+         La camara corre dentro del navegador que ya trae la aplicacion, con el MISMO
+         getUserMedia de la web: no hace falta ninguna libreria nueva. Por eso el documento
+         se sirve desde el host propio (WebViewEnvironment) y no desde "about:blank": el
+         navegador solo entrega la camara a una pagina con origen seguro. -->
+    <Border Padding="20,18,20,22"
+            CornerRadius="16"
+            Background="{DynamicResource BrushPickerCardBack}"
+            BorderBrush="{DynamicResource BrushPickerCardBorder}"
+            BorderThickness="1">
+        <StackPanel>
+            <TextBlock HorizontalAlignment="Center"
+                       Margin="0,0,0,14"
+                       FontSize="17"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource BrushPickerTitle}"
+                       Text="{Binding Title, ElementName=Raiz}" />
+
+            <Grid Width="180" Height="180" HorizontalAlignment="Center">
+                <!-- La foto: la que ya tiene el registro, la recien tomada, o el icono -->
+                <shared:SharedAvatar x:Name="Vista"
+                                     Size="180"
+                                     Url="{Binding ImageUrl, ElementName=Raiz}"
+                                     Icon="{Binding Icon, ElementName=Raiz}" />
+
+                <!-- La camara en vivo, solo mientras se esta filmando -->
+                <Border x:Name="MarcoCamara"
+                        CornerRadius="90"
+                        Background="{DynamicResource BrushAvatarBack}"
+                        BorderBrush="{DynamicResource BrushAvatarBorder}"
+                        BorderThickness="2"
+                        Visibility="Collapsed">
+                    <wv2:WebView2 x:Name="Camara" />
+                </Border>
+            </Grid>
+
+            <TextBlock x:Name="Aviso"
+                       HorizontalAlignment="Center"
+                       Margin="0,10,0,0"
+                       MaxWidth="300"
+                       FontSize="12"
+                       Foreground="{DynamicResource BrushFormTextDanger}"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       Visibility="Collapsed" />
+
+            <StackPanel Margin="0,16,0,0"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                <!-- Con la camara apagada invita a encenderla; encendida, dispara -->
+                <Button x:Name="BotonCamara"
+                        Margin="0,0,10,0"
+                        Click="CamaraClick"
+                        Style="{StaticResource SharedButtonFormPrimary}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Camera}"
+                        Content="Camara" />
+
+                <Button Click="DiscoClick"
+                        Style="{StaticResource SharedButtonFormSecondary}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.FolderOpen}"
+                        Content="Disco" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

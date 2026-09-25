@@ -5,6 +5,48 @@
          Aqui NO se escribe ni un color: todos salen de Colors.xaml. Cada modulo solo
          arma sus columnas, asi las pantallas se ven iguales y se corrigen en un solo sitio. -->
 
+    <!-- La tarjeta blanca que envuelve TODA la pantalla: el boton Nuevo, el buscador,
+         la tabla y la paginacion. Antes esas tres cosas flotaban sueltas sobre el azul y
+         no parecian del mismo sitio. -->
+    <Style x:Key="SharedIndexShell" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BrushIndexCard}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="Effect" Value="{StaticResource SombraTarjeta}" />
+    </Style>
+
+    <!-- El panel de la tabla, DENTRO de esa tarjeta. Es el mismo panel del catalogo.
+         Va sin relleno porque la franja del encabezado lleva su propio redondeo
+         (SharedIndexHeaderBand) y encaja con la esquina. -->
+    <Style x:Key="SharedIndexPanel" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource BrushIndexCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogPanelBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Effect" Value="{StaticResource SombraCatalogo}" />
+        <!-- La sombra se dibuja fuera: se le reserva el sitio -->
+        <Setter Property="Margin" Value="0,0,8,8" />
+    </Style>
+
+    <!-- La franja azul del encabezado de la tabla.
+         Es un Border aparte, detras de los encabezados, porque el encabezado de un
+         DataGrid es una fila de cuadros y no hay forma de redondearle solo las puntas.
+         Asi la franja sigue la curva de la esquina del panel (11 = los 12 del panel
+         menos el borde de 1) y los encabezados solo pintan su texto encima. -->
+    <Style x:Key="SharedIndexHeaderBand" TargetType="Border">
+        <Setter Property="Height" Value="{DynamicResource IndexHeaderHeight}" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="CornerRadius" Value="11,11,0,0" />
+        <Setter Property="Background" Value="{DynamicResource BrushIndexHeaderBand}" />
+    </Style>
+
+    <!-- El pie del panel, donde vive la paginacion -->
+    <Style x:Key="SharedIndexPanelFoot" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushCatalogLine}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="10,8" />
+    </Style>
+
     <!-- La tarjeta que envuelve la tabla -->
     <Style x:Key="SharedIndexCard" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource BrushIndexCard}" />
@@ -18,6 +60,10 @@
     <!-- La tabla: sin reja, una linea fina por fila y resaltado al pasar -->
     <Style x:Key="SharedIndexGrid" TargetType="DataGrid">
         <Setter Property="AutoGenerateColumns" Value="False" />
+        <!-- Sin desplazamiento horizontal la tabla NUNCA se puede salir del panel:
+             si algo no cabe, la columna estrella se encoge en vez de empujar a las
+             demas hacia afuera y dejar el ultimo boton cortado. -->
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="CanUserAddRows" Value="False" />
         <Setter Property="CanUserDeleteRows" Value="False" />
         <Setter Property="CanUserResizeRows" Value="False" />
@@ -38,7 +84,9 @@
     </Style>
 
     <Style x:Key="SharedIndexHeader" TargetType="DataGridColumnHeader">
-        <Setter Property="Background" Value="{DynamicResource BrushIndexHeaderBand}" />
+        <!-- Transparente a proposito: el color lo pone SharedIndexHeaderBand, que va
+             detras y es quien lleva las esquinas redondeadas. -->
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource BrushIndexHeaderText}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeMeta}" />
         <Setter Property="FontWeight" Value="SemiBold" />
@@ -64,28 +112,37 @@
                                        Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource UpperCaseConverter}}"
                                        TextTrimming="CharacterEllipsis" />
 
-                            <!-- La flechita del orden: aparece solo en la columna ordenada -->
+                            <!-- La flecha esta SIEMPRE, no solo al ordenar: apagada dice
+                                 "esta columna se puede ordenar" y encendida dice por cual
+                                 esta ordenada y hacia donde. Asi el usuario descubre que
+                                 puede cambiar el orden sin tener que probarlo.
+                                 En las columnas que no se ordenan (la de los botones) no
+                                 aparece. -->
                             <TextBlock x:Name="SortArrow"
                                        Grid.Column="1"
-                                       Margin="6,0,0,0"
+                                       Margin="8,0,0,0"
                                        VerticalAlignment="Center"
                                        FontSize="{StaticResource FontSizeCaption}"
                                        Foreground="{DynamicResource BrushIndexHeaderText}"
-                                       Text="&#x25B2;"
-                                       Visibility="Collapsed" />
+                                       Opacity="0.4"
+                                       Text="&#x21C5;"
+                                       Visibility="{Binding Column.CanUserSort, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <!-- El hover va de PRIMERO para que el orden mande sobre el: asi la
+                             columna ordenada no se apaga al pasarle el mouse por encima.
+                             El titulo NO cambia de color: sobre la franja azul se perdia. -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="SortArrow" Property="Opacity" Value="0.85" />
+                        </Trigger>
                         <Trigger Property="SortDirection" Value="Ascending">
-                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
                             <Setter TargetName="SortArrow" Property="Text" Value="&#x25B2;" />
+                            <Setter TargetName="SortArrow" Property="Opacity" Value="1" />
                         </Trigger>
                         <Trigger Property="SortDirection" Value="Descending">
-                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
                             <Setter TargetName="SortArrow" Property="Text" Value="&#x25BC;" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource BrushIndexText}" />
+                            <Setter TargetName="SortArrow" Property="Opacity" Value="1" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -268,7 +325,19 @@
          Son el MISMO boton de los formularios y los modales, solo mas bajitos para que
          queden a la altura de la caja de busqueda. Toda la pinta sale de alla: aqui no
          se repite ni un color ni una plantilla. -->
-    <Style x:Key="SharedIndexNewButton" TargetType="Button" BasedOn="{StaticResource SharedButtonFormPrimary}">
+    <Style x:Key="SharedIndexPrimaryButton" TargetType="Button" BasedOn="{StaticResource SharedButtonFormPrimary}">
+        <Setter Property="Height" Value="38" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="14,0" />
+    </Style>
+
+    <!-- El de Nuevo es ese mismo: se deja con su nombre porque asi lo piden las pantallas -->
+    <Style x:Key="SharedIndexNewButton" TargetType="Button" BasedOn="{StaticResource SharedIndexPrimaryButton}">
+    </Style>
+
+    <!-- El de la barra que BORRA: la franja en rojo y el icono blanco, para que se vea
+         de lejos que no es una accion mas. Igual que el boton de borrar de la fila. -->
+    <Style x:Key="SharedIndexDangerButton" TargetType="Button" BasedOn="{StaticResource SharedButtonFormDanger}">
         <Setter Property="Height" Value="38" />
         <Setter Property="MinWidth" Value="0" />
         <Setter Property="Padding" Value="14,0" />
@@ -372,6 +441,37 @@
     <!-- El icono que va dentro de esos botones -->
     <Style x:Key="SharedIndexIcon" TargetType="Control">
         <Setter Property="Foreground" Value="{DynamicResource BrushIndexIcon}" />
+    </Style>
+
+    <!-- La barra de avance de una fila: cuanto se lleva de lo que falta.
+         Se pinta verde cuando llega al final. -->
+    <Style x:Key="SharedIndexProgress" TargetType="ProgressBar">
+        <Setter Property="Background" Value="{DynamicResource BrushCatalogLine}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogSelectedBar}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="3" ClipToBounds="True">
+                        <!-- El contenedor se estira y es el indicador el que va a la
+                             izquierda: WPF calcula su ancho contra el track, y si el
+                             contenedor no ocupa todo, la barra no avanza. -->
+                        <Grid>
+                            <Rectangle x:Name="PART_Track" />
+                            <Border x:Name="PART_Indicator"
+                                    HorizontalAlignment="Left"
+                                    Background="{TemplateBinding Foreground}"
+                                    CornerRadius="3" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Value" Value="100">
+                <Setter Property="Foreground" Value="{DynamicResource BrushCatalogStockOk}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <!-- El aviso de cuando no hay nada que mostrar -->

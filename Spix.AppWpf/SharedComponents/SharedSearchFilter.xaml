@@ -70,7 +70,7 @@
 
         <Button Grid.Column="2"
                 Command="{Binding SearchCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                Style="{StaticResource SharedIndexGhostButton}"
+                Style="{StaticResource SharedIndexPrimaryButton}"
                 ToolTip="Buscar"
                 svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
                 Content="Buscar" />

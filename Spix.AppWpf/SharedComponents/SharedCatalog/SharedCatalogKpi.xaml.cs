@@ -10,9 +10,10 @@ public partial class SharedCatalogKpi : UserControl
     public static readonly DependencyProperty LabelProperty =
         DependencyProperty.Register(nameof(Label), typeof(string), typeof(SharedCatalogKpi));
 
+    // Es object y no int porque algunos tableros muestran dinero, no un conteo.
+    // Asi la pantalla decide el formato con StringFormat y el indicador no se entera.
     public static readonly DependencyProperty ValueProperty =
-        DependencyProperty.Register(nameof(Value), typeof(int), typeof(SharedCatalogKpi),
-            new PropertyMetadata(0));
+        DependencyProperty.Register(nameof(Value), typeof(object), typeof(SharedCatalogKpi));
 
     public static readonly DependencyProperty AccentProperty =
         DependencyProperty.Register(nameof(Accent), typeof(Brush), typeof(SharedCatalogKpi));
@@ -26,9 +27,9 @@ public partial class SharedCatalogKpi : UserControl
         set => SetValue(LabelProperty, value);
     }
 
-    public int Value
+    public object? Value
     {
-        get => (int)GetValue(ValueProperty);
+        get => GetValue(ValueProperty);
         set => SetValue(ValueProperty, value);
     }
 

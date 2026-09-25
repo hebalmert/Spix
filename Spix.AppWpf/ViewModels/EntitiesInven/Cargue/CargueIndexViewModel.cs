@@ -1,26 +1,36 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
-using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 
 namespace Spix.AppWpf.ViewModels.EntitiesInven.Cargue;
 
 // Lista los cargues generados al cerrar compras de productos que manejan seriales.
-public partial class CargueIndexViewModel : PagedListViewModel<Spix.Domain.EntitiesInven.Cargue>
+//
+// Lee el MISMO endpoint que la web (cargueboard) y no la tabla en crudo: ese le devuelve
+// cada cargue con su avance ya contado por la base, que es lo que se pinta en la barra.
+public partial class CargueIndexViewModel : PagedListViewModel<CargueListItemDto>
 {
+    private const string BoardUrl = "api/v1/cargueboard";
+
     private readonly IRepository _repository;
     private readonly AlertService _alertService;
     private readonly HttpResponseHandler _responseHandler;
 
-    protected override string Endpoint => "api/v1/cargues";
+    protected override string Endpoint => BoardUrl;
+
+    //Los cuatro numeros de arriba: son de toda la corporacion, no de la pagina
+    [ObservableProperty]
+    private CargueSummaryDto? _summary;
 
     public event EventHandler<Guid>? DetailsRequested;
 
     public CargueIndexViewModel(
-        IPagedEntityService<Spix.Domain.EntitiesInven.Cargue> pagedEntityService,
+        IPagedEntityService<CargueListItemDto> pagedEntityService,
         IRepository repository,
         AlertService alertService,
         HttpResponseHandler responseHandler)
@@ -31,21 +41,23 @@ public partial class CargueIndexViewModel : PagedListViewModel<Spix.Domain.Entit
         _responseHandler = responseHandler;
     }
 
-    // Abre el detalle de cualquier cargue para revisar sus seriales y su estado.
-    [RelayCommand]
-    private void Details(Spix.Domain.EntitiesInven.Cargue? cargue)
+    // Despues de cada carga se vuelven a pedir los numeros: subir o borrar un cargue los cambia.
+    protected override async Task AfterLoadAsync()
     {
-        if (cargue is null)
+        var responseHttp = await _repository.GetAsync<CargueSummaryDto>($"{BoardUrl}/summary");
+
+        if (responseHttp.Error)
         {
+            //El tablero es informativo: si no llega, el listado sigue funcionando
             return;
         }
 
-        DetailsRequested?.Invoke(this, cargue.CargueId);
+        Summary = responseHttp.Response;
     }
 
-    // Abre la carga de MAC cuando aun hay seriales pendientes por registrar.
+    // Abre el detalle de cualquier cargue para revisar sus seriales y su estado.
     [RelayCommand]
-    private void UploadSerials(Spix.Domain.EntitiesInven.Cargue? cargue)
+    private void Details(CargueListItemDto? cargue)
     {
         if (cargue is null)
         {
@@ -57,7 +69,7 @@ public partial class CargueIndexViewModel : PagedListViewModel<Spix.Domain.Entit
 
     // Conserva la regla de Blazor: solo un cargue pendiente puede eliminarse.
     [RelayCommand]
-    private async Task DeleteAsync(Spix.Domain.EntitiesInven.Cargue? cargue)
+    private async Task DeleteAsync(CargueListItemDto? cargue)
     {
         if (cargue is null || cargue.Status != CargueType.Pendiente)
         {

@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
@@ -26,6 +26,11 @@ public abstract partial class SupplierFormViewModel : CrudFormViewModel<Supplier
 
     [ObservableProperty]
     private ObservableCollection<City> _cities = new();
+
+    //Mientras se llena el formulario, el combo de estados avisa de un cambio solo por
+    //seleccionar el valor que ya tenia el proveedor. Si no se ignora, ese evento borra la
+    //ciudad justo antes de mostrarla. Es el mismo caso que en Zonas.
+    private bool _cargando;
 
     protected override string BaseUrl => "api/v1/suppliers";
 
@@ -62,6 +67,8 @@ public abstract partial class SupplierFormViewModel : CrudFormViewModel<Supplier
     public async Task InitializeAsync()
     {
         IsLoading = true;
+        _cargando = true;
+
         try
         {
             var documentResponse = await _repository.GetAsync<List<DocumentType>>("api/v1/combosData/ComboDocumentType");
@@ -79,11 +86,19 @@ public abstract partial class SupplierFormViewModel : CrudFormViewModel<Supplier
         finally
         {
             IsLoading = false;
+            _cargando = false;
         }
     }
 
+    // Al cambiar de estado se limpia la ciudad y se piden las del estado nuevo.
+    // Solo cuando lo cambia el usuario: durante la carga no se toca nada.
     public async Task ChangeStateAsync(int stateId)
     {
+        if (_cargando)
+        {
+            return;
+        }
+
         Entity.StateId = stateId;
         Entity.CityId = 0;
         Cities = new ObservableCollection<City>();
@@ -101,8 +116,17 @@ public abstract partial class SupplierFormViewModel : CrudFormViewModel<Supplier
 
     public async Task LoadForEditAsync(Guid id)
     {
-        await LoadAsync(id);
-        await LoadCitiesAsync(Entity.StateId);
+        _cargando = true;
+
+        try
+        {
+            await LoadAsync(id);
+            await LoadCitiesAsync(Entity.StateId);
+        }
+        finally
+        {
+            _cargando = false;
+        }
     }
 }
 

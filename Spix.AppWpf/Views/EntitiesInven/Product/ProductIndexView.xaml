@@ -125,7 +125,6 @@
                             <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
                                                      CurrentPage="{Binding CurrentPage}"
                                                      TotalPages="{Binding TotalPages}"
-                                                     TotalRecords="{Binding TotalRecords}"
                                                      PageCommand="{Binding GoToPageCommand}" />
                         </Border>
 
@@ -251,7 +250,7 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Width="Auto" Header="" CanUserSort="False" CellStyle="{StaticResource SharedCatalogCellActions}">
+                                    <DataGridTemplateColumn Width="Auto" MinWidth="140" Header="" CanUserSort="False" CellStyle="{StaticResource SharedCatalogCellActions}">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
