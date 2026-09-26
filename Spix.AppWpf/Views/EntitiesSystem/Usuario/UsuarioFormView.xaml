@@ -1,0 +1,161 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSystem.Usuario.UsuarioFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="1120">
+
+    <!-- Los mismos campos del formulario de la web, en el mismo orden: quien es, como se
+         le ubica, con que entra al sistema y en que cargo.
+         El ancho sale de la cuenta: la tarjeta de la foto pide ~310, el separador 18 y
+         cada fila lleva DOS parejas de etiqueta+campo (150 + 200). -->
+    <Grid Margin="0,24,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="18" />
+            <ColumnDefinition Width="*" MinWidth="200" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- La foto del usuario, del disco o de la camara. Mientras no haya se ve el
+             carnet, igual que el AvatarImage de la web. -->
+        <shared:SharedImagePicker Grid.RowSpan="5"
+                                  VerticalAlignment="Top"
+                                  Title="Foto"
+                                  ImageUrl="{Binding Entity.ImageFullPath}"
+                                  Icon="{x:Static icons:FontAwesomeIcon.IdCard}"
+                                  ImageSelected="PhotoSelected" />
+
+        <Grid Grid.Row="0" Grid.Column="2" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Nombre" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MaxLength="50"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.FirstName, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Apellido" />
+            </Border>
+            <TextBox Grid.Column="4"
+                     MaxLength="50"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.LastName, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="2" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Documento" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MaxLength="15"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.Nro_Document, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Telefono" />
+            </Border>
+            <TextBox Grid.Column="4"
+                     MaxLength="25"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="2" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Direccion" />
+            </Border>
+            <!-- En la web es un area de texto: aqui se deja escribir en varias lineas -->
+            <TextBox Grid.Column="1"
+                     MinHeight="70"
+                     MaxLength="256"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Top"
+                     VerticalScrollBarVisibility="Auto"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.Address, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="3" Grid.Column="2" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Usuario" />
+            </Border>
+            <!-- En edicion el usuario de login no se cambia: la misma regla de la web -->
+            <TextBox Grid.Column="1"
+                     MaxLength="24"
+                     IsReadOnly="{Binding IsEditControl}"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.UserName, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Correo" />
+            </Border>
+            <TextBox Grid.Column="4"
+                     MaxLength="256"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.Email, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="4" Grid.Column="2" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Cargo" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MaxLength="50"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.Job, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Activo" />
+            </Border>
+            <Border Grid.Column="4" Style="{StaticResource SharedFormBoxBorder}">
+                <CheckBox Margin="14,0" VerticalAlignment="Center" IsChecked="{Binding Entity.Active}" Content="Activo" />
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

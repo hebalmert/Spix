@@ -52,6 +52,20 @@ public class CorporationSubscriptionFilter : IAsyncActionFilter
             return;
         }
 
+        //El software de PC es un derecho del plan. El token del escritorio viene marcado
+        //desde su propio login (v2), asi que si mas adelante le quitan ese derecho al plan
+        //se le corta el paso aqui, sin esperar a que el token venza. La web no trae esta
+        //marca y no se ve afectada.
+        bool esEscritorio = user.Claims.Any(x => x.Type == "Client" && x.Value == "Desktop");
+        if (esEscritorio && response.Result?.SoftwarePC != true)
+        {
+            context.Result = new ObjectResult("Tu plan no incluye el software de PC. Comunicate con tu proveedor para habilitarlo.")
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
+            return;
+        }
+
         await next();
     }
 

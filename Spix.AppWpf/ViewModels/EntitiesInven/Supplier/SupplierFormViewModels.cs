@@ -92,6 +92,18 @@ public abstract partial class SupplierFormViewModel : CrudFormViewModel<Supplier
 
     // Al cambiar de estado se limpia la ciudad y se piden las del estado nuevo.
     // Solo cuando lo cambia el usuario: durante la carga no se toca nada.
+    // La foto que entrega el selector, ya en el Base64 que recibe el Backend.
+    // Es el mismo dato venga del disco o de la camara: aqui no se distingue.
+    public void SetPhoto(string base64)
+    {
+        if (string.IsNullOrWhiteSpace(base64))
+        {
+            return;
+        }
+
+        Entity.ImgBase64 = base64;
+    }
+
     public async Task ChangeStateAsync(int stateId)
     {
         if (_cargando)

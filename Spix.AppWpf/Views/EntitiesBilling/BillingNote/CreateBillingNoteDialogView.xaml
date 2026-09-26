@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesBilling.BillingNote.CreateBillingNoteDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="620">
+
+    <!-- Una nota general por periodo: solo se elige el ano y el mes. La nota nace SIN
+         lanzar; la facturacion se dispara despues, desde su detalle.
+
+         Mover la fecha ARRASTRA el ano y el mes, igual que en la web. Cambiar el ano o el
+         mes a mano NO mueve la fecha: el servidor lo acepta asi. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="24" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" MinWidth="300" />
+        </Grid.ColumnDefinitions>
+
+        <Border Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Fecha" />
+        </Border>
+        <DatePicker Grid.Column="1"
+                    MinHeight="42"
+                    SelectedDate="{Binding DateBill, Mode=TwoWay}"
+                    SelectedDateFormat="Short" />
+
+        <Border Grid.Row="2" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Ano" />
+        </Border>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 MaxLength="4"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding YearNumber, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Border Grid.Row="4" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Mes" />
+        </Border>
+        <ComboBox Grid.Row="4" Grid.Column="1"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Months}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding SelectedMonth, Mode=TwoWay}" />
+
+        <shared:SharedModalActions Grid.Row="6" Grid.ColumnSpan="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="7" Grid.ColumnSpan="2" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

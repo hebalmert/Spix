@@ -1,0 +1,92 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate.ContractDocumentTemplateFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             MinWidth="880">
+
+    <!-- Los mismos campos del formulario de Blazor y en el mismo orden: nombre, tipo,
+         activo y el PDF. Los campos que se colocan ENCIMA del PDF no se tocan aqui:
+         van en el editor visual, con el boton de la mira del listado. -->
+    <Grid Margin="0,24,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Nombre" />
+            </Border>
+            <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Entity.Name, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Tipo" />
+            </Border>
+            <!-- La lista la arma el ViewModel: aqui solo se pinta -->
+            <ComboBox Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                      ItemsSource="{Binding DocumentTypes}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding Entity.DocumentType, Mode=TwoWay}" />
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Activo" />
+            </Border>
+            <Border Grid.Column="4" Style="{StaticResource SharedFormBoxBorder}">
+                <CheckBox Margin="14,0" VerticalAlignment="Center" IsChecked="{Binding Entity.Active}" Content="Activo" />
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="PDF" />
+            </Border>
+
+            <Button Grid.Column="1"
+                    Margin="0,0,12,0"
+                    Click="ElegirPdfClick"
+                    Style="{StaticResource SharedButtonFormSecondary}"
+                    ToolTip="Elegir el PDF del disco"
+                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.FolderOpen}"
+                    Content="Elegir PDF" />
+
+            <Border Grid.Column="2" Style="{StaticResource SharedFormBoxBorder}">
+                <TextBlock Margin="14,0"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SharedIndexMeta}"
+                           Text="{Binding PdfName}" />
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="3"
+                   Margin="0,6,0,0"
+                   TextWrapping="Wrap"
+                   Style="{StaticResource SharedIndexMeta}"
+                   Text="Las paginas se leen solas del PDF. Los campos (nombre, documento, firma...) se colocan sobre el PDF con el boton de la mira del listado." />
+    </Grid>
+</UserControl>

@@ -6,6 +6,9 @@ namespace Spix.AppServiceX.InterfacesSecure;
 public interface IAccountServiceX
 {
     Task<ActionResponse<TokenDTO>> LoginAsync(LoginDTO modelo);
+
+    //El login del software de PC: comprueba que el plan lo incluya y marca el token
+    Task<ActionResponse<TokenDTO>> LoginDesktopAsync(LoginDTO modelo);
     Task<ActionResponse<string>> CreateRefreshTokenAsync(string userName);
     Task<ActionResponse<RefreshSessionDTO>> RefreshTokenAsync(string refreshToken);
     Task RevokeRefreshTokenAsync(string refreshToken);

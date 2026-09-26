@@ -1,4 +1,4 @@
-using Spix.AppWpf.ViewModels.EntitiesInven.Supplier;
+﻿using Spix.AppWpf.ViewModels.EntitiesInven.Supplier;
 using System.Windows.Controls;
 
 namespace Spix.AppWpf.Views.EntitiesInven.Supplier;
@@ -9,6 +9,15 @@ public partial class SupplierFormView : UserControl
     public SupplierFormView()
     {
         InitializeComponent();
+    }
+
+    // La foto llega en el mismo Base64 venga del disco o de la camara
+    private void PhotoSelected(object? sender, string base64)
+    {
+        if (DataContext is SupplierFormViewModel viewModel)
+        {
+            viewModel.SetPhoto(base64);
+        }
     }
 
     private async void StateSelectionChanged(object sender, SelectionChangedEventArgs e)

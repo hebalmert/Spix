@@ -82,6 +82,21 @@
         <small class="text-muted">Peticiones por minuto que puede hacer cada empresa de este plan. 0 = sin limite.</small>
     </div>
 
+    <div class="mb-0 mt-3">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">
+                Software de PC
+            </span>
+            <div class="d-flex align-items-center ps-3">
+                <InputCheckbox class="form-check-input" @bind-Value="SoftPlan.SoftwarePC" />
+            </div>
+        </div>
+        <small class="text-muted">
+            Si se marca, las empresas de este plan pueden entrar con el software de escritorio.
+            Sin marcar, el escritorio les dice que su plan no lo incluye.
+        </small>
+    </div>
+
     <div class="mb-3">
         <div class="input-group">
             <span class="input-group-text" style="width: 150px">

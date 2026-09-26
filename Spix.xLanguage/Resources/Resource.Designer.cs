@@ -4849,6 +4849,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your plan does not include the PC software. Contact your provider to enable it..
+        /// </summary>
+        public static string Generic_PlanNoDesktop {
+            get {
+                return ResourceManager.GetString("Generic_PlanNoDesktop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The record was deleted, but the image was not removed.
         /// </summary>
         public static string Generic_RecordDeletedNoImage {

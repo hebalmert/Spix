@@ -1,0 +1,71 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractClient.ContractDocumentDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="900">
+
+    <!-- El documento y su firma.
+         El PDF lo arma el SERVIDOR y aqui solo se muestra, en el navegador que la
+         aplicacion ya trae. La firma va en un InkCanvas, que es nativo de WPF: no hace
+         falta traer el JavaScript de la firma de la web. -->
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border MinHeight="420"
+                CornerRadius="10"
+                Background="{DynamicResource BrushAvatarBack}"
+                BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                BorderThickness="1"
+                ClipToBounds="True">
+            <wv2:WebView2 x:Name="DocumentBrowser" />
+        </Border>
+
+        <!-- Solo mientras no este firmado -->
+        <StackPanel Grid.Row="2" Visibility="{Binding CanSign, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Firme en el recuadro" />
+
+            <Border Margin="0,6,0,0"
+                    Width="460" Height="140"
+                    HorizontalAlignment="Left"
+                    CornerRadius="8"
+                    Background="White"
+                    BorderBrush="{DynamicResource BrushFormFieldBorder}"
+                    BorderThickness="1"
+                    ClipToBounds="True">
+                <InkCanvas x:Name="SignaturePad" Background="White" />
+            </Border>
+
+            <Button Margin="0,10,0,0"
+                    HorizontalAlignment="Left"
+                    Click="ClearSignatureClick"
+                    Style="{StaticResource SharedButtonFormSecondary}"
+                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.RotateRight}"
+                    Content="Borrar la firma" />
+        </StackPanel>
+
+        <!-- Firmado: ya no se vuelve a firmar, solo se lee -->
+        <TextBlock Grid.Row="2"
+                   Style="{StaticResource SharedIndexMeta}"
+                   Text="Este documento ya esta firmado."
+                   Visibility="{Binding CanSign, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+
+        <!-- El comando de firmar vive en la pantalla, no en el ViewModel: necesita
+             los trazos del lienzo -->
+        <shared:SharedModalActions Grid.Row="4"
+                                   SaveText="Guardar la firma"
+                                   SaveCommand="{Binding SignCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                   CancelCommand="{Binding CancelCommand}"
+                                   ShowSave="{Binding CanSign}" />
+
+        <shared:SharedLoading Grid.RowSpan="5" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

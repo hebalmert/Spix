@@ -49,8 +49,12 @@ public class ServiceRequestRow
 
     public Brush StatusColor { get; }
 
-    // Una solicitud cerrada no se borra: es la misma regla de la web
-    public bool CanDelete => Item.ScheduleStatus != ScheduleStatus.Completed;
+    // Una solicitud CERRADA no se borra, y cerrada son las dos: la que se completo en
+    // sitio y la que se resolvio por telefono. Es la misma pareja que la orden de trabajo
+    // trata como cerrada para bloquear la edicion.
+    public bool CanDelete =>
+        Item.ScheduleStatus != ScheduleStatus.Completed &&
+        Item.ScheduleStatus != ScheduleStatus.PhoneResolved;
 
     public ServiceRequestRow(ServiceRequestDto item, IReadOnlyDictionary<int, string> estados)
     {

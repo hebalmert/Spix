@@ -1,0 +1,179 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.bynode.ReportByNodeIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Contratos por AP: de que antena cuelga cada cliente y cuanto genera ese punto.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no tienen botones.
+
+         No hay boton de Buscar: cambiar el AP o el estado vuelve a preguntar solo, igual
+         que en la web. -->
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Lo que se elige antes de ver el reporte -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="240" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" MinWidth="240" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Margin="2,0,0,6"
+                               Style="{StaticResource SharedIndexMeta}"
+                               Text="AP" />
+
+                    <!-- La lista viene armada del backend, con su neutro en la posicion 0 -->
+                    <ComboBox Style="{StaticResource SharedFormCombo}"
+                              ItemsSource="{Binding Nodes}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Value"
+                              SelectedValue="{Binding NodeId, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Margin="2,0,0,6"
+                               Style="{StaticResource SharedIndexMeta}"
+                               Text="Mostrar" />
+
+                    <ComboBox Style="{StaticResource SharedFormCombo}"
+                              ItemsSource="{Binding States}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Value"
+                              SelectedValue="{Binding StateId, Mode=TwoWay}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Lo que genera ese AP, solo cuando ya hay uno elegido -->
+            <UniformGrid Grid.Row="1"
+                         Columns="4"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Contratos"
+                                          Value="{Binding Contracts}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Mensual"
+                                          Value="{Binding MonthlyTotal, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Sin plan"
+                                          Value="{Binding WithoutPlan}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+            </UniformGrid>
+
+            <Border Grid.Row="2" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" MinWidth="260" Header="Cliente" SortMemberPath="ClientFullName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ContractText}" />
+
+                                                    <!-- La pastilla solo aparece cuando el contrato NO esta activo: cuando
+                                                         lo esta no hay nada que advertir -->
+                                                    <Border Height="20"
+                                                            Margin="8,0,0,0"
+                                                            Padding="8,0"
+                                                            CornerRadius="10"
+                                                            VerticalAlignment="Center"
+                                                            Background="{DynamicResource BrushIndexPillOffBack}"
+                                                            BorderBrush="{DynamicResource BrushIndexPillOffBorder}"
+                                                            BorderThickness="1"
+                                                            Visibility="{Binding InactiveText, Converter={StaticResource TextToVisibilityConverter}}">
+                                                        <TextBlock Style="{StaticResource SharedIndexMeta}"
+                                                                   Foreground="{DynamicResource BrushIndexPillOffText}"
+                                                                   Text="{Binding InactiveText}" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="200" Header="Zona" SortMemberPath="ZoneName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ZoneName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="200" Header="Plan" SortMemberPath="PlanName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding PlanName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="140" Header="Valor" SortMemberPath="PlanPrice">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding PlanPrice, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.TowerBroadcast}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="{Binding EmptyText}" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

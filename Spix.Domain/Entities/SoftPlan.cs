@@ -37,6 +37,10 @@ public class SoftPlan
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]
     public bool Active { get; set; }
 
+    // Si este plan da derecho a usar el software de escritorio (el de PC).
+    // Nace en false a proposito: un plan nuevo NO lo incluye hasta que se marque.
+    public bool SoftwarePC { get; set; }
+
     // Limite de peticiones al API por minuto, POR corporation de este plan.
     // 0 = sin limite. Editable desde el panel del plan (sin redesplegar).
     [Display(Name = nameof(Resource.RateLimitPerMinute), ResourceType = typeof(Resource))]

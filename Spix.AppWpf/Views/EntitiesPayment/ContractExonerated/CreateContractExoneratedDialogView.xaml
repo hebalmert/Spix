@@ -1,0 +1,23 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesPayment.ContractExonerated.CreateContractExoneratedDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Spix.AppWpf.Views.EntitiesPayment.ContractExonerated"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Nueva exoneracion. Arranca apuntando al MES SIGUIENTE con la fecha de hoy. -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <local:ContractExoneratedFormView />
+
+        <shared:SharedModalActions Grid.Row="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

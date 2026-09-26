@@ -93,9 +93,16 @@
                                 <DataGridTemplateColumn Width="*" Header="Proveedor" SortMemberPath="Name">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Name}" />
-                                                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Document}" />
+                                            <StackPanel Orientation="Horizontal">
+                                                <shared:SharedAvatar VerticalAlignment="Center"
+                                                                     Size="34"
+                                                                     Url="{Binding Photo}"
+                                                                     Icon="{x:Static icons:FontAwesomeIcon.Truck}" />
+
+                                                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Name}" />
+                                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Document}" />
+                                                </StackPanel>
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>

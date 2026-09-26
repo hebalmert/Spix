@@ -417,10 +417,10 @@ public class ServiceRequestService : IServiceRequestService
                 return new ActionResponse<ServiceRequestDto> { WasSuccess = false, Message = _localizer[nameof(Resource.Generic_IdNotFound)] };
             }
 
-            if (entity.ScheduleStatus == ScheduleStatus.Completed)
+            if (entity.ScheduleStatus.IsClosed())
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return Fail<ServiceRequestDto>("La solicitud completada no puede modificarse.");
+                return Fail<ServiceRequestDto>("La solicitud cerrada no puede modificarse.");
             }
 
             if (loggedTechnicianId.HasValue)
@@ -731,10 +731,10 @@ public class ServiceRequestService : IServiceRequestService
                 return new ActionResponse<bool> { WasSuccess = false, Message = _localizer[nameof(Resource.Generic_IdNotFound)] };
             }
 
-            if (entity.ScheduleStatus == ScheduleStatus.Completed)
+            if (entity.ScheduleStatus.IsClosed())
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return Fail<bool>("La solicitud completada no puede eliminarse.");
+                return Fail<bool>("La solicitud cerrada no puede eliminarse.");
             }
 
             var schedule = entity.ScheduleItem ?? await _context.ScheduleItems.FirstOrDefaultAsync(x => x.ServiceRequestId == entity.ServiceRequestId);

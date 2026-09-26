@@ -1,0 +1,241 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.commissions.ReportCommissionsIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Comisiones de contratistas: lo que se le causo a cada contratista entre dos fechas
+         y lo que se le queda debiendo.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no tienen botones.
+
+         No lleva paginador porque el endpoint devuelve el periodo completo: es una fila por
+         contratista, no por comision. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding SearchCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- El periodo y el boton: no busca solo, se busca cuando se pulsa -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Desde" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateStart, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Hasta" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateEnd, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <Button Grid.Column="4"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding SearchCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Buscar (F5)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
+                        Content="Buscar" />
+            </Grid>
+
+            <!-- Lo que se le debe a los contratistas: solo cuando hay algo que sumar -->
+            <UniformGrid Grid.Row="1"
+                         Columns="4"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Base"
+                                          Value="{Binding SumBaseAmount, StringFormat=N2}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Comision causada"
+                                          Value="{Binding SumTotal, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiAccent}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiAccent}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Pagado"
+                                          Value="{Binding SumPaid, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Label="Saldo"
+                                          Value="{Binding SumBalance, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+            </UniformGrid>
+
+            <Border Grid.Row="2" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" MinWidth="240" Header="Contratista" SortMemberPath="Name">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Name}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="120" Header="Comisiones" SortMemberPath="CommissionsText"
+                                                        HeaderStyle="{StaticResource SharedIndexHeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding CommissionsText}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="130" Header="Base" SortMemberPath="BaseAmount"
+                                                        HeaderStyle="{StaticResource SharedIndexHeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding BaseAmount, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="130" Header="Comision causada" SortMemberPath="Total"
+                                                        HeaderStyle="{StaticResource SharedIndexHeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding Total, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="130" Header="Pagado" SortMemberPath="Paid"
+                                                        HeaderStyle="{StaticResource SharedIndexHeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding Paid, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- El saldo es el dato que se viene a mirar: va resaltado -->
+                                <DataGridTemplateColumn Width="140" Header="Saldo" SortMemberPath="Balance"
+                                                        HeaderStyle="{StaticResource SharedIndexHeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding Balance, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.HandHoldingDollar}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="{Binding EmptyText}" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <!-- La fila de totales de la web. Aqui va en el pie porque el DataGrid no
+                         admite una fila que no sea un dato; los anchos son los de las columnas
+                         para que los numeros queden debajo de los suyos. -->
+                    <Border Grid.Row="1"
+                            Style="{StaticResource SharedIndexPanelFoot}"
+                            Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MinWidth="240" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="130" />
+                                <ColumnDefinition Width="130" />
+                                <ColumnDefinition Width="130" />
+                                <ColumnDefinition Width="140" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Margin="14,0" Style="{StaticResource SharedIndexName}" Text="Total" />
+
+                            <TextBlock Grid.Column="1"
+                                       Margin="14,0"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding SumCommissionsText}" />
+
+                            <TextBlock Grid.Column="2"
+                                       Margin="14,0"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding SumBaseAmount, StringFormat=N2}" />
+
+                            <TextBlock Grid.Column="3"
+                                       Margin="14,0"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding SumTotal, StringFormat=N2}" />
+
+                            <TextBlock Grid.Column="4"
+                                       Margin="14,0"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding SumPaid, StringFormat=N2}" />
+
+                            <TextBlock Grid.Column="5"
+                                       Margin="14,0"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding SumBalance, StringFormat=N2}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,58 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractControl.ContractQueueDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="680">
+
+    <!-- La Queue de velocidad NO se elige: se arma con lo que ya quedo configurado y al
+         guardarla el servidor la escribe en el MikroTik. Por eso todo esta en gris. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+            <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+            <RowDefinition Height="Auto" /><RowDefinition Height="12" />
+            <RowDefinition Height="Auto" /><RowDefinition Height="24" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" MinWidth="300" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Servidor" />
+        </Border>
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 IsEnabled="False"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.ServerName, Mode=OneWay}" />
+        <Border Grid.Row="2" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="IP del cliente" />
+        </Border>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 IsEnabled="False"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.IpCliente, Mode=OneWay}" />
+        <Border Grid.Row="4" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Plan" />
+        </Border>
+        <TextBox Grid.Row="4" Grid.Column="1"
+                 IsEnabled="False"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.PlanName, Mode=OneWay}" />
+        <Border Grid.Row="6" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Velocidad" />
+        </Border>
+        <TextBox Grid.Row="6" Grid.Column="1"
+                 IsEnabled="False"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.TotalVelocidad, Mode=OneWay}" />
+
+        <shared:SharedModalActions Grid.Row="8" Grid.ColumnSpan="2"
+                                   SaveText="Crear la Queue"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="9" Grid.ColumnSpan="2" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

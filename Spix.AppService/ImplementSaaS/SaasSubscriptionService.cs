@@ -243,6 +243,7 @@ public class SaasSubscriptionService : ISaasSubscriptionService
                         CorporationId = corporation.CorporationId,
                         SoftPlanId = corporation.SoftPlanId,
                         SoftPlanName = corporation.SoftPlan?.Name,
+                        SoftwarePC = corporation.SoftPlan?.SoftwarePC ?? false,
                         ValidUntilUtc = corporation.DateEnd,
                         DaysRemaining = Math.Max(0, (int)Math.Ceiling((corporation.DateEnd.Date - DateTime.UtcNow.Date).TotalDays)),
                         Message = legacyAccess ? null : "La suscripcion de la corporacion requiere renovacion."
@@ -267,6 +268,7 @@ public class SaasSubscriptionService : ISaasSubscriptionService
                     CorporationId = corporation.CorporationId,
                     SoftPlanId = subscription.SoftPlanId,
                     SoftPlanName = corporation.SoftPlan?.Name,
+                    SoftwarePC = corporation.SoftPlan?.SoftwarePC ?? false,
                     Status = subscription.Status,
                     ValidUntilUtc = validUntilUtc,
                     DaysRemaining = validUntilUtc.HasValue

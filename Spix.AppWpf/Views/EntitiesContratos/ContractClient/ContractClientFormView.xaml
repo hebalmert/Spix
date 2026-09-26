@@ -1,0 +1,185 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractClient.ContractClientFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="960">
+
+    <!-- El formulario del contrato, replicado del FormContractClient de la web.
+         Al elegir el cliente se copian su telefono y su direccion: el contrato nace con
+         los datos del cliente. El correo NO se edita, es el del cliente y es a donde le
+         llega la solicitud de firma. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" MinWidth="230" />
+            <ColumnDefinition Width="18" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" MinWidth="230" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Se escribe y caen los clientes que coinciden -->
+        <Border Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Cliente" />
+        </Border>
+        <shared:SharedSearchPicker Grid.Column="1"
+                                   Text="{Binding ClientFilter, Mode=TwoWay}"
+                                   Items="{Binding Clients}"
+                                   SearchCommand="{Binding SearchClientsCommand}"
+                                   SelectCommand="{Binding SelectClientCommand}">
+            <shared:SharedSearchPicker.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Margin="4" Style="{StaticResource SharedIndexName}" Text="{Binding Name}" />
+                </DataTemplate>
+            </shared:SharedSearchPicker.ItemTemplate>
+        </shared:SharedSearchPicker>
+
+        <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Contratista" />
+        </Border>
+        <ComboBox Grid.Column="4"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Contractors}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding Entity.ContractorId, Mode=TwoWay}" />
+
+        <Border Grid.Row="2" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Telefono" />
+        </Border>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 MaxLength="25"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Border Grid.Row="2" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Telefono 2" />
+        </Border>
+        <TextBox Grid.Row="2" Grid.Column="4"
+                 MaxLength="25"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.PhoneNumber2, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!-- El correo es el del cliente: aqui solo se ve -->
+        <Border Grid.Row="4" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Correo" />
+        </Border>
+        <StackPanel Grid.Row="4" Grid.Column="1">
+            <TextBox IsEnabled="False"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding ClientEmail, Mode=OneWay}" />
+            <TextBlock Margin="2,4,0,0"
+                       Style="{StaticResource SharedIndexMeta}"
+                       Text="Es a donde le llega la solicitud de firma"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Grid.Row="4" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Direccion" />
+        </Border>
+        <TextBox Grid.Row="4" Grid.Column="4"
+                 MinHeight="72"
+                 MaxLength="256"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 VerticalAlignment="Top"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.Address, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!-- Estado, ciudad y zona van en cascada -->
+        <Border Grid.Row="6" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estado" />
+        </Border>
+        <ComboBox Grid.Row="6" Grid.Column="1"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding States}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="StateId"
+                  SelectedValue="{Binding Entity.StateId, Mode=OneWay}"
+                  SelectionChanged="StateSelectionChanged" />
+
+        <Border Grid.Row="6" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Ciudad" />
+        </Border>
+        <ComboBox Grid.Row="6" Grid.Column="4"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Cities}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="CityId"
+                  SelectedValue="{Binding Entity.CityId, Mode=OneWay}"
+                  SelectionChanged="CitySelectionChanged" />
+
+        <Border Grid.Row="8" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Zona" />
+        </Border>
+        <ComboBox Grid.Row="8" Grid.Column="1"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Zones}"
+                  DisplayMemberPath="ZoneName"
+                  SelectedValuePath="ZoneId"
+                  SelectedValue="{Binding Entity.ZoneId, Mode=TwoWay}" />
+
+        <Border Grid.Row="8" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estrato" />
+        </Border>
+        <ComboBox Grid.Row="8" Grid.Column="4"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Stratums}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding Entity.EstratoSocialId, Mode=TwoWay}" />
+
+        <!-- El estado del contrato solo se toca mientras se esta armando -->
+        <Border Grid.Row="10" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estado del contrato" />
+        </Border>
+        <Grid Grid.Row="10" Grid.Column="1">
+            <ComboBox Style="{StaticResource SharedFormCombo}"
+                      ItemsSource="{Binding Statuses}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding StatusValue, Mode=TwoWay}"
+                      Visibility="{Binding StatusEditable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <StackPanel Visibility="{Binding StatusReadOnly, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Border MinHeight="42"
+                        Padding="14,0"
+                        Style="{StaticResource SharedFormBoxBorder}">
+                    <TextBlock VerticalAlignment="Center"
+                               Style="{StaticResource SharedIndexName}"
+                               Text="{Binding StatusText}" />
+                </Border>
+                <TextBlock Margin="2,4,0,0"
+                           Style="{StaticResource SharedIndexMeta}"
+                           Text="Ya esta operativo: el estado se cambia desde Control de contratos"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Top">
+            <Border MinHeight="42" Margin="0,0,12,0" Padding="14,0" Style="{StaticResource SharedFormBoxBorder}">
+                <CheckBox VerticalAlignment="Center"
+                          IsChecked="{Binding Entity.EquipoEmpres}"
+                          Content="Equipo de la empresa" />
+            </Border>
+            <Border MinHeight="42" Padding="14,0" Style="{StaticResource SharedFormBoxBorder}">
+                <CheckBox VerticalAlignment="Center"
+                          IsChecked="{Binding Entity.EnvoiceClient}"
+                          Content="Factura al cliente" />
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

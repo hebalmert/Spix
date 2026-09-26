@@ -1,0 +1,235 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractControl.ContractControlDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- La configuracion del servicio de UN contrato.
+         No es un formulario: es una lista de requisitos en cascada. A la izquierda quien
+         es y cuanto lleva; a la derecha las ocho piezas.
+         Las dos ultimas (Queue e IpBinding) solo existen si la corporacion usa HotSpot. -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="360" />
+            <ColumnDefinition Width="14" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== Izquierda: quien es, cuanto lleva y las acciones ===== -->
+        <Border Style="{StaticResource SharedIndexShell}">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel Visibility="{Binding HasContract, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Contrato" />
+                    <TextBlock Style="{StaticResource SharedIndexName}" FontSize="26" Text="{Binding Number}" />
+                    <TextBlock Style="{StaticResource SharedIndexName}" FontSize="15" Text="{Binding ClientName}" TextWrapping="Wrap" />
+
+                    <Border Margin="0,10,0,0"
+                            HorizontalAlignment="Left"
+                            Padding="10,4"
+                            CornerRadius="6"
+                            Background="{Binding StatusColor}">
+                        <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="White" Text="{Binding StatusText}" />
+                    </Border>
+
+                    <StackPanel Margin="0,14,0,0">
+                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ClientDocument}" TextWrapping="Wrap" />
+                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Phone}" />
+                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Email}" TextWrapping="Wrap" />
+                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Address}" TextWrapping="Wrap" />
+                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ContractorName}" TextWrapping="Wrap" />
+                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Created}" />
+                    </StackPanel>
+
+                    <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                        <shared:SharedFlag Margin="0,0,6,0" IsOn="{Binding HasEquipment}" />
+                        <TextBlock Margin="0,0,14,0" VerticalAlignment="Center" Style="{StaticResource SharedIndexMeta}" Text="Equipo empresa" />
+                        <shared:SharedFlag Margin="0,0,6,0" IsOn="{Binding HasInvoice}" />
+                        <TextBlock VerticalAlignment="Center" Style="{StaticResource SharedIndexMeta}" Text="Factura" />
+                    </StackPanel>
+
+                    <!-- Cuanto lleva configurado: el mismo anillo de la web -->
+                    <shared:SharedProgressRing Margin="0,18,0,0"
+                                               Done="{Binding DoneItems}"
+                                               Total="{Binding TotalItems}"
+                                               Caption="Configuracion" />
+
+                    <!-- Lo que falta, dicho por su nombre -->
+                    <ItemsControl Margin="0,12,0,0"
+                                  ItemsSource="{Binding Missing}"
+                                  Visibility="{Binding HasMissing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,4" Orientation="Horizontal">
+                                    <fa:FontAwesomeImage Width="11" Height="11"
+                                                         Margin="0,0,8,0"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{DynamicResource BrushCatalogKpiWarn}"
+                                                         Icon="{x:Static icons:FontAwesomeIcon.CircleExclamation}"
+                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                    <TextBlock VerticalAlignment="Center" Style="{StaticResource SharedIndexMeta}" Text="{Binding}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Margin="0,12,0,0"
+                                Orientation="Horizontal"
+                                Visibility="{Binding IsComplete, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <fa:FontAwesomeImage Width="12" Height="12"
+                                             Margin="0,0,8,0"
+                                             VerticalAlignment="Center"
+                                             Foreground="{DynamicResource BrushCatalogKpiOk}"
+                                             Icon="{x:Static icons:FontAwesomeIcon.CircleCheck}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                        <TextBlock VerticalAlignment="Center" Style="{StaticResource SharedIndexMeta}" Text="Todo configurado" />
+                    </StackPanel>
+
+                    <!-- Activar solo aparece mientras el contrato esta en configuracion -->
+                    <Button Margin="0,18,0,0"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding ActivateCommand}"
+                            Style="{StaticResource SharedButtonFormSuccess}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.CircleCheck}"
+                            Content="Activar el contrato"
+                            Visibility="{Binding CanActivate, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                    <!-- Estado y Editar comparten linea. El estado NO va en rojo: cambiarlo
+                         es parte del trabajo normal, no algo que haya que temer. -->
+                    <UniformGrid Columns="2" Margin="0,8,0,0">
+                        <Button Margin="0,0,8,0"
+                                Command="{Binding ChangeStateCommand}"
+                                Style="{StaticResource SharedButtonFormSuccess}"
+                                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                Content="Estado" />
+
+                        <Button Command="{Binding EditCommand}"
+                                Style="{StaticResource SharedButtonFormPrimary}"
+                                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}"
+                                Content="Editar" />
+                    </UniformGrid>
+
+                    <Button Margin="0,8,0,0"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding BackCommand}"
+                            Style="{StaticResource SharedButtonFormSecondary}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
+                            Content="Volver" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- ===== Derecha: las piezas del servicio ===== -->
+        <Border Grid.Column="2" Style="{StaticResource SharedIndexShell}">
+            <Grid>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Style="{StaticResource SharedIndexName}" FontSize="16" Text="Configuracion del servicio" />
+                        <TextBlock Margin="0,2,0,14"
+                                   Style="{StaticResource SharedIndexMeta}"
+                                   Text="Lo que ya esta escrito en el MikroTik queda bloqueado: para cambiarlo, primero quite la Queue y el IpBinding." />
+
+                        <!-- 1. Red -->
+                        <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="1 · Red" />
+                        <UniformGrid Columns="2" Margin="0,0,0,16">
+                            <shared:SharedConfigCard Margin="0,0,12,0"
+                                                     Title="Servidor Gateway"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Server}"
+                                                     IsDone="{Binding HasServer}"
+                                                     Value="{Binding ServerName}"
+                                                     CanRemove="{Binding CanChangeServer}"
+                                                     LockTip="{Binding LockTip}"
+                                                     AddTip="Asignar el servidor"
+                                                     AddCommand="{Binding SetServerCommand}"
+                                                     RemoveCommand="{Binding RemoveServerCommand}" />
+
+                            <shared:SharedConfigCard Title="IP del cliente"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.NetworkWired}"
+                                                     IsDone="{Binding HasIp}"
+                                                     Value="{Binding IpText}"
+                                                     CanRemove="{Binding CanChangeIp}"
+                                                     LockTip="{Binding LockTip}"
+                                                     AddTip="Asignar la IP"
+                                                     AddCommand="{Binding SetIpCommand}"
+                                                     RemoveCommand="{Binding RemoveIpCommand}" />
+                        </UniformGrid>
+
+                        <shared:SharedConfigCard Margin="0,0,0,16"
+                                                 Title="Nodo de acceso"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.TowerBroadcast}"
+                                                 IsDone="{Binding HasNode}"
+                                                 Value="{Binding NodeName}"
+                                                 AddTip="Asignar el nodo"
+                                                 AddCommand="{Binding SetNodeCommand}"
+                                                 RemoveCommand="{Binding RemoveNodeCommand}" />
+
+                        <!-- 2. Servicio y equipo -->
+                        <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="2 · Servicio y equipo" />
+                        <shared:SharedConfigCard Margin="0,0,0,12"
+                                                 Title="Plan del cliente"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.Gauge}"
+                                                 IsDone="{Binding HasPlan}"
+                                                 Value="{Binding PlanName}"
+                                                 CanRemove="{Binding CanChangePlan}"
+                                                 LockTip="{Binding LockTip}"
+                                                 AddTip="Asignar el plan"
+                                                 AddCommand="{Binding SetPlanCommand}"
+                                                 RemoveCommand="{Binding RemovePlanCommand}" />
+
+                        <UniformGrid Columns="2" Margin="0,0,0,16">
+                            <shared:SharedConfigCard Margin="0,0,12,0"
+                                                     Title="MAC del equipo"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Microchip}"
+                                                     IsDone="{Binding HasMac}"
+                                                     Value="{Binding MacText}"
+                                                     CanRemove="{Binding CanChangeMac}"
+                                                     LockTip="{Binding LockTipMac}"
+                                                     AddTip="Asignar el equipo"
+                                                     AddCommand="{Binding SetMacCommand}"
+                                                     RemoveCommand="{Binding RemoveMacCommand}" />
+
+                            <!-- La unica con tres botones: ademas de cambiar y quitar,
+                                 deja ver el punto en el mapa -->
+                            <shared:SharedConfigCard Title="Ubicacion"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.LocationDot}"
+                                                     IsDone="{Binding HasMap}"
+                                                     Value="{Binding MapText}"
+                                                     AddTip="Cargar la ubicacion"
+                                                     AddCommand="{Binding SetMapCommand}"
+                                                     ViewCommand="{Binding ViewMapCommand}"
+                                                     EditCommand="{Binding EditMapCommand}"
+                                                     RemoveCommand="{Binding RemoveMapCommand}" />
+                        </UniformGrid>
+
+                        <!-- 3. MikroTik HotSpot: solo si la corporacion lo usa -->
+                        <StackPanel Visibility="{Binding UseHotSpot, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="3 · MikroTik HotSpot" />
+
+                            <shared:SharedConfigCard Margin="0,0,0,12"
+                                                     Title="Queue de velocidad"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Gauge}"
+                                                     IsDone="{Binding HasQueue}"
+                                                     Value="{Binding QueueText}"
+                                                     AddTip="Crear la queue"
+                                                     AddCommand="{Binding SetQueueCommand}"
+                                                     RemoveCommand="{Binding RemoveQueueCommand}" />
+
+                            <shared:SharedConfigCard Title="IpBinding de acceso"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Lock}"
+                                                     IsDone="{Binding HasBind}"
+                                                     Value="{Binding BindText}"
+                                                     AddTip="Crear el IpBinding"
+                                                     AddCommand="{Binding SetBindCommand}"
+                                                     EditCommand="{Binding EditBindCommand}"
+                                                     RemoveCommand="{Binding RemoveBindCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

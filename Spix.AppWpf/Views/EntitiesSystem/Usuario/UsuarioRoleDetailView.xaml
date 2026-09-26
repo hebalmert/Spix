@@ -1,0 +1,128 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSystem.Usuario.UsuarioRoleDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Los roles de UN usuario: la ruta hija de la web hecha pantalla.
+         Arriba de quien son, y debajo la lista con agregar y quitar. -->
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="14" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- De quien son los roles -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <shared:SharedAvatar VerticalAlignment="Center"
+                                     Size="44"
+                                     Url="{Binding UsuarioPhoto}"
+                                     Icon="{x:Static icons:FontAwesomeIcon.IdCard}" />
+
+                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource SharedIndexName}" FontSize="18" Text="{Binding UsuarioName}" />
+                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding UsuarioDocument}" />
+                </StackPanel>
+            </StackPanel>
+
+            <Grid Grid.Row="2" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding NewCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Agregar un rol"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                        Content="Nuevo" />
+
+                <Button Grid.Column="2"
+                        Command="{Binding BackCommand}"
+                        Style="{StaticResource SharedButtonFormSecondary}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
+                        Content="Volver" />
+            </Grid>
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid x:Name="RolesGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" Header="Rol" SortMemberPath="RoleName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding RoleName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="70" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Eliminar" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.UserGear}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="Este usuario todavia no tiene roles" />
+                            <Button Margin="0,14,0,0"
+                                    HorizontalAlignment="Center"
+                                    Command="{Binding NewCommand}"
+                                    Style="{StaticResource SharedIndexNewButton}"
+                                    ToolTip="Agregar el primero"
+                                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                    Content="Agregar el primero" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 TotalRecords="{Binding TotalRecords}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

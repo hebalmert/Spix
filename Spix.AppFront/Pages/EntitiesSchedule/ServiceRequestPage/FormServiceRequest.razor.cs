@@ -52,7 +52,9 @@ public partial class FormServiceRequest
 
         if (IsEditControl)
         {
-            IsCompleted = Model.ScheduleStatus == ScheduleStatus.Completed;
+            //Cerrada son las dos: completada en sitio y resuelta por telefono. Con
+            //solo Completed, una resuelta por telefono se abria editable.
+            IsCompleted = Model.ScheduleStatus.IsClosed();
             Detail = new() { ServiceRequestId = Model.ServiceRequestId };
         }
     }
@@ -424,8 +426,7 @@ public partial class FormServiceRequest
             Model.Recommendation = responseHttp.Response.Recommendation;
         }
 
-        IsCompleted = Model.ScheduleStatus == ScheduleStatus.Completed ||
-                      Model.ScheduleStatus == ScheduleStatus.PhoneResolved;
+        IsCompleted = Model.ScheduleStatus.IsClosed();
 
         await InvokeAsync(StateHasChanged);
     }

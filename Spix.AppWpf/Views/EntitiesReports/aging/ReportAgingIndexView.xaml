@@ -1,0 +1,161 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.aging.ReportAgingIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Cartera por antiguedad: la plata que falta por cobrar, repartida por lo vieja que es
+         la nota.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no tienen botones.
+         Tampoco tiene filtros: es la foto de hoy, lo unico que se puede hacer es volver a
+         preguntar. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1"
+                        Width="38" Height="38"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Actualizar (F5)">
+                    <fa:FontAwesomeImage Width="14" Height="14"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+            </Grid>
+
+            <!-- La escalera de la cartera: mientras mas a la derecha, mas dificil de cobrar -->
+            <UniformGrid Grid.Row="1"
+                         Columns="5"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="{Binding BalanceLabel}"
+                                          Value="{Binding Balance, StringFormat=N2}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="{Binding CurrentLabel}"
+                                          Value="{Binding Current, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="{Binding Days30Label}"
+                                          Value="{Binding Days30, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiAccent}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiAccent}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="{Binding Days60Label}"
+                                          Value="{Binding Days60, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiWarnText}" />
+                <catalog:SharedCatalogKpi Label="{Binding Days90Label}"
+                                          Value="{Binding Days90, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+            </UniformGrid>
+
+            <!-- Los que mas deben: la lista corta, para salir a cobrar -->
+            <TextBlock Grid.Row="2"
+                       Margin="2,0,0,8"
+                       Style="{StaticResource SharedIndexName}"
+                       Text="Los que mas deben" />
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                    <DataGrid ItemsSource="{Binding Rows}"
+                              Style="{StaticResource SharedIndexGrid}"
+                              ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                              RowStyle="{StaticResource SharedIndexRow}"
+                              CellStyle="{StaticResource SharedIndexCell}">
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="*" MinWidth="240" Header="Cliente" SortMemberPath="ClientFullName">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ContractText}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="200" Header="Zona" SortMemberPath="ZoneName">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ZoneName}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="110" Header="Notas" SortMemberPath="Notes">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   Style="{StaticResource SharedIndexMeta}"
+                                                   Text="{Binding Notes, StringFormat=N0}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="110" Header="Dias" SortMemberPath="Days">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   Style="{StaticResource SharedIndexMeta}"
+                                                   Text="{Binding Days, StringFormat=N0}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="140" Header="Monto" SortMemberPath="Balance">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   Style="{StaticResource SharedIndexName}"
+                                                   Text="{Binding Balance, StringFormat=N2}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                        <fa:FontAwesomeImage Width="26" Height="26"
+                                             HorizontalAlignment="Center"
+                                             Foreground="{DynamicResource BrushIndexMeta}"
+                                             Icon="{x:Static icons:FontAwesomeIcon.ClockRotateLeft}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                        <TextBlock Margin="0,12,0,0"
+                                   Style="{StaticResource SharedIndexEmpty}"
+                                   Text="No hay cartera pendiente por cobrar" />
+                    </StackPanel>
+
+                    <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

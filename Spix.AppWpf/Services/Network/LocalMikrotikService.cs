@@ -28,7 +28,8 @@ public class LocalMikrotikService : ILocalMikrotikService
     public async Task<LocalMikrotikCommandResult> ExecuteAsync(
         Server server,
         Action<MK> action,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        TimeSpan? timeout = null)
     {
         var validationMessage = GetValidationMessage(server);
         if (!string.IsNullOrWhiteSpace(validationMessage))
@@ -43,7 +44,7 @@ public class LocalMikrotikService : ILocalMikrotikService
         try
         {
             var connectionTask = Task.Run(() => ConnectAndExecute(server, action), CancellationToken.None);
-            bool wasConnected = await connectionTask.WaitAsync(ConnectionTimeout, cancellationToken);
+            bool wasConnected = await connectionTask.WaitAsync(timeout ?? ConnectionTimeout, cancellationToken);
 
             return wasConnected
                 ? new LocalMikrotikCommandResult

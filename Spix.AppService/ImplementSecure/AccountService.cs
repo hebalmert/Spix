@@ -46,7 +46,9 @@ public class AccountService : IAccountService
         _imgOption = ImgOption.Value;
     }
 
-    public async Task<ActionResponse<TokenDTO>> LoginAsync(LoginDTO modelo)
+    // desdeEscritorio lo manda SOLO el login del software de PC (v2). La web no lo pasa y
+    // por eso su comportamiento no cambia en nada.
+    public async Task<ActionResponse<TokenDTO>> LoginAsync(LoginDTO modelo, bool desdeEscritorio = false)
     {
         string? imgUsuario = string.Empty;
         string? ImagenDefault = _imgOption.ImgNoImage;
@@ -97,6 +99,27 @@ public class AccountService : IAccountService
                     };
                 }
 
+                //El software de PC va por plan: si el plan no lo incluye, no se entrega token.
+                //Se mira aqui, donde ya se miran la corporacion y el vencimiento, para que
+                //todas las razones de "no puedes entrar" vivan juntas.
+                if (desdeEscritorio)
+                {
+                    var planPc = await _context.SoftPlans
+                        .AsNoTracking()
+                        .Where(x => x.SoftPlanId == CheckCorporation.SoftPlanId)
+                        .Select(x => x.SoftwarePC)
+                        .FirstOrDefaultAsync();
+
+                    if (!planPc)
+                    {
+                        return new ActionResponse<TokenDTO>
+                        {
+                            WasSuccess = false,
+                            Message = _localizer[nameof(Resource.Generic_PlanNoDesktop)]
+                        };
+                    }
+                }
+
                 //Cada tipo de usuario guarda su foto en su propio contenedor
                 string? contenedorFoto = user.UserFrom switch
                 {
@@ -122,7 +145,7 @@ public class AccountService : IAccountService
             return new ActionResponse<TokenDTO>
             {
                 WasSuccess = true,
-                Result = await BuildToken(user, imgUsuario!)
+                Result = await BuildToken(user, imgUsuario!, desdeEscritorio)
             };
         }
 
@@ -341,7 +364,7 @@ public class AccountService : IAccountService
         return response;
     }
 
-    private async Task<TokenDTO> BuildToken(User user, string? imgUsuario)
+    private async Task<TokenDTO> BuildToken(User user, string? imgUsuario, bool desdeEscritorio = false)
     {
         string NomCompa;
         string? LogoCompa;
@@ -380,6 +403,13 @@ public class AccountService : IAccountService
         if (RolUsuario == null && user.CorporationId.HasValue)
         {
             claims.Add(new Claim("CorporateId", user.CorporationId.Value.ToString()));
+        }
+
+        //De donde salio el token. El filtro de suscripcion lo lee en CADA peticion para
+        //cortarle el paso al escritorio si despues le quitan el plan de PC.
+        if (desdeEscritorio)
+        {
+            claims.Add(new Claim("Client", "Desktop"));
         }
 
         // Agregar los roles del usuario a los claims

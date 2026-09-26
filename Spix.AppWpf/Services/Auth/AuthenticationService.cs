@@ -8,7 +8,10 @@ namespace Spix.AppWpf.Services.Auth;
 // Ejecuta el mismo endpoint de acceso que utiliza el frontend Blazor.
 public class AuthenticationService : IAuthenticationService
 {
-    private const string LoginUrl = "api/v1/accounts/Login";
+    //El escritorio entra por SU PROPIO login (v2): alli se comprueba que el plan de la
+    //corporacion incluya el software de PC y el token queda marcado como de escritorio.
+    //La web sigue entrando por el de v1, que no se toco.
+    private const string LoginUrl = "api/v2/accounts/Login";
 
     private readonly IRepository _repository;
     private readonly IUserSessionService _sessionService;

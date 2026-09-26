@@ -1,0 +1,41 @@
+<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedProgressRing"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Raiz">
+
+    <!-- El avance de la configuracion, como el anillo de la web: se ve de un vistazo
+         cuanto falta sin tener que leer un numero.
+         El arco se dibuja en el codigo porque WPF no trae un anillo de progreso. -->
+    <StackPanel HorizontalAlignment="Center">
+        <Grid x:Name="Lienzo" Width="132" Height="132" HorizontalAlignment="Center">
+            <!-- El aro de fondo: lo que todavia falta -->
+            <Ellipse Stroke="{DynamicResource BrushCatalogKpiBorder}" StrokeThickness="12" />
+
+            <!-- El arco de lo ya configurado -->
+            <Path x:Name="Arco"
+                  StrokeThickness="12"
+                  StrokeStartLineCap="Round"
+                  StrokeEndLineCap="Round" />
+
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock x:Name="Numero"
+                           HorizontalAlignment="Center"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource BrushCatalogName}" />
+                <TextBlock x:Name="Porcentaje"
+                           HorizontalAlignment="Center"
+                           FontSize="12"
+                           Foreground="{DynamicResource BrushCatalogMeta}" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock x:Name="Titulo"
+                   Margin="0,10,0,0"
+                   HorizontalAlignment="Center"
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   Foreground="{DynamicResource BrushCatalogName}"
+                   Text="{Binding Caption, ElementName=Raiz}" />
+    </StackPanel>
+</UserControl>

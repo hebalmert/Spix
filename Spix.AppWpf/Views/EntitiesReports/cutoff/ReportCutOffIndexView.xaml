@@ -1,0 +1,204 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.cutoff.ReportCutOffIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Efectividad del corte: cuantos contratos se cortaron en el periodo y cuantos
+         pagaron por eso, y en que zonas respondieron mejor.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no tienen botones.
+         Los dos endpoints devuelven el periodo completo, no paginan: por eso el pie del
+         panel lleva los totales en lugar de la paginacion. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding SearchCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- El periodo y el boton: no se busca solo al cambiar una fecha -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Desde" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateStart, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Hasta" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateEnd, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <Button Grid.Column="4"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding SearchCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Buscar (F5)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
+                        Content="Buscar" />
+            </Grid>
+
+            <!-- Cuantos se cortaron y cuantos reaccionaron -->
+            <UniformGrid Grid.Row="1"
+                         Columns="5"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="{Binding CutLabel}"
+                                          Value="{Binding Cut, StringFormat=N0}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="{Binding RecoveredLabel}"
+                                          Value="{Binding Recovered, StringFormat=N0}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Efectividad"
+                                          Value="{Binding RateText}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Reactivados"
+                                          Value="{Binding Reactivated, StringFormat=N0}" />
+                <catalog:SharedCatalogKpi Label="{Binding StillDownLabel}"
+                                          Value="{Binding StillDown, StringFormat=N0}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiWarnText}" />
+            </UniformGrid>
+
+            <TextBlock Grid.Row="2"
+                       Margin="2,0,0,8"
+                       Style="{StaticResource SharedIndexCanvasMeta}"
+                       Text="Donde se corto mas y donde respondieron mejor" />
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" MinWidth="240" Header="Zona" SortMemberPath="Name">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Name}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="130" Header="Cortados" SortMemberPath="Cut">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding Cut, StringFormat=N0}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="150" Header="Recuperados" SortMemberPath="Recovered">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding Recovered, StringFormat=N0}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="160" Header="Monto" SortMemberPath="Amount">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding Amount, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.PlugCircleXmark}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="No hay cortes en el periodo" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <!-- El total de la web vive aqui y no como ultima fila: una fila de mas
+                         en la tabla se ordenaria junto con las zonas y dejaria de ser total -->
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MinWidth="240" />
+                                <ColumnDefinition Width="130" />
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="160" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Margin="8,0,0,0" Style="{StaticResource SharedIndexName}" Text="Total" />
+
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding TotalCut, StringFormat=N0}" />
+
+                            <TextBlock Grid.Column="2"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding TotalRecovered, StringFormat=N0}" />
+
+                            <TextBlock Grid.Column="3"
+                                       Margin="0,0,8,0"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding TotalAmount, StringFormat=N2}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

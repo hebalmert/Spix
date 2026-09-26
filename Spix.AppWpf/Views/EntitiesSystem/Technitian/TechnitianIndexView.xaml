@@ -1,0 +1,202 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSystem.Technitian.TechnitianIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Tecnicos: replicado del index de Blazor, con la UI del escritorio.
+         La foto sale con el icono de tecnico cuando no tiene ninguna, igual que el
+         AvatarImage de la web. El reloj consulta la auditoria y el sobre reenvia el correo
+         de activacion: ese solo aparece con el tecnico activo. -->
+    <UserControl.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding NewCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Crear un tecnico (Ctrl+N)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                        Content="Nuevo" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Width="38" Height="38"
+                            Margin="0,0,8,0"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource SharedIndexIconButtonEdit}"
+                            ToolTip="Actualizar (F5)">
+                        <fa:FontAwesomeImage Width="14" Height="14"
+                                             Foreground="{DynamicResource BrushIndexIconEdit}"
+                                             Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    </Button>
+
+                    <shared:SharedExportButton Margin="0,0,10,0"
+                                               Items="{Binding Items}"
+                                               FileName="tecnicos" />
+
+                    <shared:SharedSearchFilter SearchText="{Binding Filter}"
+                                               SearchCommand="{Binding SearchCommand}"
+                                               ClearCommand="{Binding ClearSearchCommand}" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Grid.Row="1"
+                       Margin="0,0,0,10"
+                       Style="{StaticResource SharedCatalogMessage}"
+                       Text="{Binding Message}"
+                       Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <Border Grid.Row="2" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <!-- La franja azul del encabezado: va detras de la tabla para que sus
+                             esquinas de arriba sigan la curva del panel -->
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid x:Name="ItemsGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding EditCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.Columns>
+                                <!-- La foto, el nombre y el usuario van juntos, como en la web -->
+                                <DataGridTemplateColumn Width="*" Header="Tecnico" SortMemberPath="FullName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <shared:SharedAvatar VerticalAlignment="Center"
+                                                                     Size="34"
+                                                                     Url="{Binding ImageFullPath}"
+                                                                     Icon="{x:Static icons:FontAwesomeIcon.UserGear}" />
+
+                                                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding FullName}" />
+                                                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding UserName}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="160" Header="Telefono" SortMemberPath="PhoneNumber">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding PhoneNumber}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="260" Header="Correo" SortMemberPath="Email">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Email}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="140" Header="Estado" SortMemberPath="Active">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <shared:SharedStatePill IsOn="{Binding Active}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <!-- Los datos de auditoria no ocupan columna: se consultan aqui -->
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.AuditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Icon="{x:Static icons:FontAwesomeIcon.ClockRotateLeft}"
+                                                                            ToolTip="Auditoria del registro" />
+
+                                                <!-- Un tecnico inactivo no tiene cuenta que activar -->
+                                                <rowbtn:SharedButtonRowSuccess Command="{Binding DataContext.ResendActivationEmailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                               CommandParameter="{Binding}"
+                                                                               Icon="{x:Static icons:FontAwesomeIcon.Envelope}"
+                                                                               ToolTip="Reenviar el correo de activacion"
+                                                                               Visibility="{Binding Active, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Editar" />
+
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Eliminar" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.UserGear}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="Todavia no hay tecnicos" />
+                            <Button Margin="0,14,0,0"
+                                    HorizontalAlignment="Center"
+                                    Command="{Binding NewCommand}"
+                                    Style="{StaticResource SharedIndexNewButton}"
+                                    ToolTip="Crear el primero"
+                                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                                    Content="Crear el primero" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 TotalRecords="{Binding TotalRecords}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

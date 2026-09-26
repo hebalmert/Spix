@@ -24,6 +24,38 @@ using Spix.AppWpf.Views.EntitiesNet.Node;
 using Spix.AppWpf.Views.EntitiesNet.NodeMap;
 using Spix.AppWpf.Views.EntitiesNet.Server;
 using Spix.AppWpf.Views.EntitiesSchedule;
+using Spix.AppWpf.Views.EntitiesContratos.ContractClient;
+using Spix.AppWpf.Views.EntitiesContratos.ContractControl;
+using Spix.AppWpf.Views.EntitiesPayment.ContractExonerated;
+using Spix.AppWpf.Views.EntitiesPayment.ContractorCxC;
+using Spix.AppWpf.Views.EntitiesPayment.CxCBill;
+using Spix.AppWpf.Views.EntitiesPayment.PrePayment;
+using Spix.AppWpf.Views.EntitiesBilling.BillingNote;
+using Spix.AppWpf.Views.EntitiesBilling.BillingNoteOne;
+using Spix.AppWpf.Views.EntitiesReports.collections;
+using Spix.AppWpf.Views.EntitiesReports.aging;
+using Spix.AppWpf.Views.EntitiesReports.commissions;
+using Spix.AppWpf.Views.EntitiesReports.audit;
+using Spix.AppWpf.Views.EntitiesReports.contracts;
+using Spix.AppWpf.Views.EntitiesReports.services;
+using Spix.AppWpf.Views.EntitiesReports.cutoff;
+using Spix.AppWpf.Views.EntitiesReports.churn;
+using Spix.AppWpf.Views.EntitiesReports.activecontracts;
+using Spix.AppWpf.Views.EntitiesReports.byzone;
+using Spix.AppWpf.Views.EntitiesReports.bynode;
+using Spix.AppWpf.Views.EntitiesReports.byserver;
+using Spix.AppWpf.Views.EntitiesReports.serials;
+using Spix.AppWpf.Views.EntitiesSystem.Usuario;
+using Spix.AppWpf.Views.EntitiesSystem.Contractor;
+using Spix.AppWpf.Views.EntitiesSystem.Technitian;
+using Spix.AppWpf.Views.EntitiesBilling.Sell;
+using Spix.AppWpf.Views.EntitiesPayment.TechnicianCollection;
+using Spix.AppWpf.Views.EntitiesContratos.Activation;
+using Spix.AppWpf.Views.EntitiesContratos.ContractExempt;
+using Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate;
+using Spix.AppWpf.Views.EntitiesContratos.ContractSuspended;
+using Spix.AppWpf.Views.EntitiesContratos.RunSuspended;
+using Spix.AppWpf.Views.EntitiesContratos.ContractSuspendedAudit;
 using Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest;
 using Spix.AppWpf.Views.EntitiesOper.Client;
 using Spix.AppWpf.Views.EntitiesMK.ConnectionMikrotikControl;
@@ -37,12 +69,17 @@ namespace Spix.AppWpf;
 public partial class MainWindow : Window
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly LanguageService _languageService;
+
+    //Como volver a levantar la pantalla que se esta viendo, para cuando cambia el idioma
+    private Func<UserControl>? _rehacerVista;
     private readonly MainWindowViewModel _viewModel;
 
     public MainWindow(
         MainWindowViewModel viewModel,
         IServiceProvider serviceProvider,
-        NavigationService navigationService)
+        NavigationService navigationService,
+        LanguageService languageService)
     {
         InitializeComponent();
         _viewModel = viewModel;
@@ -50,6 +87,10 @@ public partial class MainWindow : Window
 
         //Las pantallas que se abren desde una fila (la orden de trabajo) entran por aqui
         navigationService.Requested += AtenderNavegacion;
+
+        //El idioma arranca en ingles, que es lo que responde el Backend por defecto
+        _languageService = languageService;
+        LanguageText.Text = _languageService.Current.ToUpperInvariant();
         //El boton muestra en que tema esta parado
         ThemeIcon.Icon = AppearanceService.IsLight ? FontAwesomeIcon.Sun : FontAwesomeIcon.Moon;
 
@@ -318,7 +359,192 @@ public partial class MainWindow : Window
     // la ventana principal es la unica que sabe pintar.
     private void AtenderNavegacion(object? sender, NavigationRequest peticion)
     {
-        ShowView(peticion.View, peticion.Title, peticion.Subtitle);
+        _rehacerVista = peticion.Build;
+
+        ShowView(peticion.Build(), peticion.Title, peticion.Subtitle);
+    }
+
+    // Abre el seguimiento de los contratos operativos.
+    private void ShowContractControlClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractControlIndexView>("Control de contratos", "Operaciones / Control de contratos");
+    }
+
+    // Abre el registro de las suspensiones, con lo que se suspendio y lo que ya se reactivo.
+    private void ShowContractSuspendedClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractSuspendedIndexView>("Contratos suspendidos", "Operaciones / Contratos suspendidos");
+    }
+
+    // Le devuelve el servicio a los que se cortaron y ya pagaron, equipo por equipo.
+    private void ShowActivationClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ActivationIndexView>("Reactivacion", "Operaciones / Reactivacion");
+    }
+
+    // Quien le devolvio el servicio a quien y cuando: solo consulta.
+    private void ShowContractSuspendedAuditClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractSuspendedAuditIndexView>("Auditoria de activaciones", "Operaciones / Auditoria de activaciones");
+    }
+
+    //===================== Finanzas =====================
+
+    // Lo que se le facturo a cada cliente: solo consulta.
+    private void ShowSellsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<SellIndexView>("Facturas", "Finanzas / Facturas");
+    }
+
+    // El cuadre con quien recoge la plata en la calle: solo consulta.
+    private void ShowTechnicianCollectionsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<TechnicianCollectionIndexView>("Cobro tecnico", "Finanzas / Cobro tecnico");
+    }
+
+    // Contratos que mantienen el servicio sin que se les cobre.
+    private void ShowContractExemptClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractExemptIndexView>("Exoneracion fija", "Finanzas / Exoneracion fija");
+    }
+
+    // La exoneracion de UN mes: tiene vencimiento, a diferencia de la fija.
+    private void ShowContractExoneratedClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractExoneratedIndexView>("Exoneracion del mes", "Finanzas / Exoneracion del mes");
+    }
+
+    // Lo que el cliente paga por adelantado y se descuenta al facturar.
+    private void ShowPrePaymentsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<PrePaymentIndexView>("Pagos adelantados", "Finanzas / Pagos adelantados");
+    }
+
+    // La facturacion masiva del mes: de aqui nacen las cuentas por cobrar.
+    private void ShowBillingNotesClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<BillingNoteIndexView>("Notas de cobro", "Finanzas / Notas de cobro");
+    }
+
+    // Lo mismo, pero para un solo contrato.
+    private void ShowBillingNoteOnesClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<BillingNoteOneIndexView>("Nota individual", "Finanzas / Nota individual");
+    }
+
+    // La caja: lo que cada cliente debe y lo que se le ha recibido.
+    private void ShowCxCBillsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<CxCBillIndexView>("Cuentas por cobrar", "Finanzas / Cuentas por cobrar");
+    }
+
+    // Lo que se le debe a cada contratista por los pagos que recaudo.
+    private void ShowContractorCxCClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractorCxCIndexView>("Pagos a contratistas", "Finanzas / Pagos a contratistas");
+    }
+
+    // El corte masivo por falta de pago: le quita el acceso a los que deben.
+    private void ShowRunSuspendedClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<RunSuspendedIndexView>("Corte general", "Finanzas / Corte general");
+    }
+
+    //===================== Reportes =====================
+    //Todos son de sola lectura: consultan y pintan, no escriben nada.
+
+    private void ShowReportCollectionsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportCollectionsIndexView>("Recaudo del periodo", "Reportes / Recaudo del periodo");
+    }
+
+    private void ShowReportAgingClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportAgingIndexView>("Cartera por antiguedad", "Reportes / Cartera por antiguedad");
+    }
+
+    private void ShowReportCommissionsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportCommissionsIndexView>("Comisiones de contratistas", "Reportes / Comisiones de contratistas");
+    }
+
+    private void ShowReportAuditClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportAuditIndexView>("Bitacora del dinero", "Reportes / Bitacora del dinero");
+    }
+
+    private void ShowReportContractsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportContractsIndexView>("Contratos del periodo", "Reportes / Contratos del periodo");
+    }
+
+    private void ShowReportServicesClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportServicesIndexView>("Servicios del periodo", "Reportes / Servicios del periodo");
+    }
+
+    private void ShowReportCutOffClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportCutOffIndexView>("Efectividad del corte", "Reportes / Efectividad del corte");
+    }
+
+    private void ShowReportChurnClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportChurnIndexView>("Fuera de servicio", "Reportes / Fuera de servicio");
+    }
+
+    private void ShowReportActiveContractsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportActiveContractsIndexView>("Contratos activos", "Reportes / Contratos activos");
+    }
+
+    private void ShowReportByZoneClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportByZoneIndexView>("Contratos por zona", "Reportes / Contratos por zona");
+    }
+
+    private void ShowReportByNodeClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportByNodeIndexView>("Contratos por AP", "Reportes / Contratos por AP");
+    }
+
+    private void ShowReportByServerClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportByServerIndexView>("Contratos por servidor", "Reportes / Contratos por servidor");
+    }
+
+    private void ShowReportSerialsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportSerialsIndexView>("Inventario de seriales", "Reportes / Inventario de seriales");
+    }
+
+    //===================== Sistema =====================
+
+    private void ShowUsuariosClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<UsuarioIndexView>("Usuarios", "Sistema / Usuarios");
+    }
+
+    private void ShowContractorsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractorIndexView>("Contratistas", "Sistema / Contratistas");
+    }
+
+    private void ShowTechnitiansClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<TechnitianIndexView>("Tecnicos", "Sistema / Tecnicos");
+    }
+
+    // Las plantillas PDF del contrato y del consentimiento, con sus campos colocados.
+    private void ShowContractDocumentTemplatesClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractDocumentTemplateIndexView>("Plantillas PDF", "Configuracion / Plantillas PDF");
+    }
+
+    // Abre los contratos de los clientes.
+    private void ShowContractsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ContractClientIndexView>("Contratos", "Operaciones / Contratos");
     }
 
     // Abre las visitas tecnicas del cliente.
@@ -331,6 +557,8 @@ public partial class MainWindow : Window
     private void ShowView<TView>(string title, string subtitle, FontAwesomeIcon? icon = null)
         where TView : UserControl
     {
+        _rehacerVista = () => _serviceProvider.GetRequiredService<TView>();
+
         ShowView(_serviceProvider.GetRequiredService<TView>(), title, subtitle, icon);
     }
 
@@ -348,6 +576,21 @@ public partial class MainWindow : Window
         PageTitleText.Text = title;
         PageSubtitleText.Text = subtitle;
         PageGlyph.Icon = icon ?? FontAwesomeIcon.TableList;
+    }
+
+    // El idioma en que responde el Backend. Los combos, los estados y los mensajes de
+    // error los manda el servidor ya traducidos, asi que al cambiarlo hay que volver a
+    // levantar la pantalla para que los pida de nuevo.
+    private void ToggleLanguageClick(object sender, RoutedEventArgs e)
+    {
+        _languageService.Toggle();
+
+        LanguageText.Text = _languageService.Current.ToUpperInvariant();
+
+        if (_rehacerVista is not null)
+        {
+            MainContent.Content = _rehacerVista();
+        }
     }
 
     // Tema claro u oscuro para toda la aplicacion, en caliente

@@ -1,0 +1,163 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesPayment.ContractorCxC.CreateContractorCxCDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="860">
+
+    <!-- Armar la cuenta por pagar: se elige el contratista y se marcan las comisiones que
+         se le agrupan.
+
+         La lista de contratistas solo trae los que TIENEN comisiones pendientes: si alguien
+         no aparece es porque no se le debe nada. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Contratista" />
+        </Border>
+        <ComboBox Grid.Row="0" Grid.Column="1"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Contractors}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding ContractorId, Mode=TwoWay}" />
+
+        <!-- Ese contratista no tiene nada pendiente: hay que decirlo -->
+        <TextBlock Grid.Row="1" Grid.Column="1"
+                   Margin="2,10,0,0"
+                   Style="{StaticResource SharedIndexMeta}"
+                   Text="Ese contratista no tiene comisiones pendientes."
+                   Visibility="{Binding ShowNothingPending, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <Grid Grid.Row="2" Grid.ColumnSpan="2"
+              Margin="0,14,0,0"
+              Visibility="{Binding HasPending, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Margin="0,0,12,0"
+                        Command="{Binding SelectAllCommand}"
+                        Content="Agregar todas las pendientes"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SharedIndexMeta}"
+                           Text="{Binding SelectedText}" />
+
+                <TextBlock Grid.Column="3"
+                           VerticalAlignment="Center"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource BrushCatalogKpiAccent}"
+                           Text="{Binding Total, StringFormat=N2}" />
+            </Grid>
+
+            <Border Grid.Row="1" MinHeight="180" MaxHeight="320" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                    <DataGrid ItemsSource="{Binding Pending}"
+                              Style="{StaticResource SharedIndexGrid}"
+                              ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                              RowStyle="{StaticResource SharedIndexRow}"
+                              CellStyle="{StaticResource SharedIndexCell}">
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="40" Header="" CanUserSort="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="*" MinWidth="200" Header="Cliente" SortMemberPath="ClientFullName">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ContractText}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="180" Header="Nota" SortMemberPath="CollectionNote">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding CollectionNote}" />
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateCreatedText}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="130" Header="Base recibida" SortMemberPath="BaseAmount">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   Style="{StaticResource SharedIndexMeta}"
+                                                   Text="{Binding BaseAmount, StringFormat=N2}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="80" Header="%" SortMemberPath="RateText">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   Style="{StaticResource SharedIndexMeta}"
+                                                   Text="{Binding RateText}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="130" Header="Comision" SortMemberPath="Total">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   Style="{StaticResource SharedIndexName}"
+                                                   Text="{Binding Total, StringFormat=N2}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <shared:SharedModalActions Grid.Row="3" Grid.ColumnSpan="2"
+                                   Margin="0,20,0,0"
+                                   SaveText="Guardar"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="4" Grid.ColumnSpan="2" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,25 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractControl.ContractMapViewDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sharedMap="clr-namespace:Spix.AppWpf.SharedComponents.SharedMap"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="900">
+
+    <!-- Donde quedo el cliente y, si el nodo tiene coordenadas, tambien el nodo: asi se ve
+         de un vistazo a que distancia esta de su AP. Solo se mira. -->
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Height="480" CornerRadius="10" ClipToBounds="True">
+            <sharedMap:SharedMapViewer x:Name="MapViewer" />
+        </Border>
+
+        <shared:SharedModalActions Grid.Row="2"
+                                   ShowSave="False"
+                                   CancelCommand="{Binding CloseCommand}" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,219 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesPayment.ContractorCxC.ContractorCxCIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Pagos a contratistas: lo que se le debe a cada uno por los pagos que recaudo.
+
+         Es el espejo de la cuenta por cobrar, pero del lado de la plata que SALE. La
+         comision no se crea aqui: se causa sola al recaudar una nota de cobro. Aqui se
+         agrupan las pendientes en una cuenta y se le abona contra ella. -->
+    <UserControl.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <UniformGrid Columns="4"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Comisiones pendientes"
+                                          Value="{Binding Pending}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Monto pendiente"
+                                          Value="{Binding PendingTotal, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Cuentas abiertas"
+                                          Value="{Binding OpenNotes}" />
+                <catalog:SharedCatalogKpi Label="Saldo por pagar"
+                                          Value="{Binding OpenBalance, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+            </UniformGrid>
+
+            <Grid Grid.Row="1" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding NewCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Armar una cuenta por pagar (Ctrl+N)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                        Content="Nueva cuenta" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Width="38" Height="38"
+                            Margin="0,0,8,0"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource SharedIndexIconButtonEdit}"
+                            ToolTip="Actualizar (F5)">
+                        <fa:FontAwesomeImage Width="14" Height="14"
+                                             Foreground="{DynamicResource BrushIndexIconEdit}"
+                                             Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    </Button>
+
+                    <shared:SharedSearchFilter SearchText="{Binding Filter}"
+                                               SearchCommand="{Binding SearchCommand}"
+                                               ClearCommand="{Binding ClearSearchCommand}" />
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="2" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid x:Name="ItemsGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding CommissionsCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="170" Header="Cuenta" SortMemberPath="NoteNumber">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding NoteNumber}" />
+                                                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateNoteText}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="*" MinWidth="220" Header="Contratista" SortMemberPath="ContractorName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ContractorName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="120" Header="Estado" SortMemberPath="StatusText">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border HorizontalAlignment="Left"
+                                                    Padding="10,4"
+                                                    CornerRadius="6"
+                                                    Background="{Binding StatusColor}">
+                                                <TextBlock FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="White"
+                                                           Text="{Binding StatusText}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="130" Header="Total" SortMemberPath="Total">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding Total, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="130" Header="Saldo" SortMemberPath="Balance">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding Balance, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="190" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <!-- Las comisiones y los abonos se consultan siempre, tambien en las anuladas -->
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.CommissionsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Icon="{x:Static icons:FontAwesomeIcon.ListCheck}"
+                                                                            ToolTip="Comisiones de la cuenta" />
+
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.PaymentsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Icon="{x:Static icons:FontAwesomeIcon.Receipt}"
+                                                                            ToolTip="Abonos de la cuenta" />
+
+                                                <!-- Abonar y anular piden lo mismo: que siga abierta y con saldo -->
+                                                <rowbtn:SharedButtonRowSuccess Command="{Binding DataContext.PayCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                               CommandParameter="{Binding}"
+                                                                               Icon="{x:Static icons:FontAwesomeIcon.MoneyBillWave}"
+                                                                               ToolTip="Registrar pago"
+                                                                               Visibility="{Binding CanPay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.CancelCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Anular la cuenta"
+                                                                              Visibility="{Binding CanPay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.MoneyBillTransfer}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="No hay cuentas por pagar para mostrar" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

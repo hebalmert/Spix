@@ -1,0 +1,132 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesPayment.ContractorCxC.ContractorCxCPayDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="700">
+
+    <!-- Abonarle al contratista.
+
+         A diferencia del cobro al cliente, aqui SI hay abonos parciales: se propone el
+         saldo completo y se puede bajar. El monto nunca pasa del saldo ni baja de cero. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Margin="0,0,0,14"
+                Padding="14,10"
+                CornerRadius="12"
+                Background="{DynamicResource BrushCatalogCard}"
+                BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ContractorName}" />
+                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateNoteText}" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource BrushCatalogKpiAccent}"
+                           Text="{Binding NoteNumber}" />
+            </Grid>
+        </Border>
+
+        <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,16">
+            <catalog:SharedCatalogKpi Margin="0,0,10,0"
+                                      Label="Total"
+                                      Value="{Binding Total, StringFormat=N2}" />
+            <catalog:SharedCatalogKpi Margin="0,0,10,0"
+                                      Label="Monto a pagar"
+                                      Value="{Binding Payment, StringFormat=N2}"
+                                      Accent="{DynamicResource BrushCatalogKpiOk}"
+                                      ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+            <catalog:SharedCatalogKpi Label="Saldo"
+                                      Value="{Binding Rest, StringFormat=N2}"
+                                      Accent="{DynamicResource BrushCatalogKpiBad}"
+                                      ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+        </UniformGrid>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,14">
+            <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="MONTO A PAGAR" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox HorizontalContentAlignment="Right"
+                         Style="{StaticResource SharedFormBox}"
+                         Text="{Binding Payment, StringFormat=N2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+
+                <Button Grid.Column="1"
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Command="{Binding SetFullBalanceCommand}"
+                        Content="Saldo completo"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Margin="0,0,0,14">
+            <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="MODO DE PAGO" />
+
+            <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetModeCommand}"
+                        CommandParameter="Cash"
+                        Content="Efectivo"
+                        Tag="{Binding IsCash}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetModeCommand}"
+                        CommandParameter="Card"
+                        Content="Tarjeta"
+                        Tag="{Binding IsCard}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button Command="{Binding SetModeCommand}"
+                        CommandParameter="Transfer"
+                        Content="Transferencia"
+                        Tag="{Binding IsTransfer}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+            </StackPanel>
+
+            <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="REFERENCIA" />
+
+            <TextBox Margin="0,0,0,12"
+                     MaxLength="50"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Reference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="DETALLE" />
+
+            <TextBox MinHeight="60"
+                     AcceptsReturn="True"
+                     MaxLength="256"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Detail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Top" />
+        </StackPanel>
+
+        <shared:SharedModalActions Grid.Row="4"
+                                   SaveText="Guardar"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="5" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

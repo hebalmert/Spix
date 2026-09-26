@@ -1,0 +1,173 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractSuspendedAudit.ContractSuspendedAuditIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Auditoria de contratos activados: quien le devolvio el servicio a quien y cuando.
+         Es de SOLA CONSULTA, no escribe nada y no toca el equipo.
+
+         Se filtra por un rango de fechas; cambiar cualquiera de las dos vuelve a consultar.
+         El unico boton de fila lleva al detalle del contrato, y desde alli se vuelve aqui. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="0,0,8,0"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource SharedIndexMeta}"
+                               Text="Fecha inicial" />
+
+                    <DatePicker Width="130"
+                                MinHeight="38"
+                                Margin="0,0,14,0"
+                                VerticalAlignment="Center"
+                                SelectedDate="{Binding StartDate, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+
+                    <TextBlock Margin="0,0,8,0"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource SharedIndexMeta}"
+                               Text="Fecha final" />
+
+                    <DatePicker Width="130"
+                                MinHeight="38"
+                                VerticalAlignment="Center"
+                                SelectedDate="{Binding EndDate, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <Button Grid.Column="2"
+                        Width="38" Height="38"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Consultar (F5)">
+                    <fa:FontAwesomeImage Width="14" Height="14"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+            </Grid>
+
+            <Border Grid.Row="1" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid x:Name="ItemsGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding OpenContractCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="170" Header="Fecha" SortMemberPath="DateModifiedText">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateModifiedText}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="190" Header="Usuario" SortMemberPath="UserByName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding UserByName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="140" Header="Cedula" SortMemberPath="ClientDocument">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ClientDocument}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="*" MinWidth="200" Header="Cliente" SortMemberPath="ClientFullName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="110" Header="Contrato" SortMemberPath="ControlContrato">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ControlContrato}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="90" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.OpenContractCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Icon="{x:Static icons:FontAwesomeIcon.Sliders}"
+                                                                            ToolTip="Ir al control del contrato" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.ClipboardCheck}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="No hay reactivaciones en este rango" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <TextBlock HorizontalAlignment="Left"
+                                   Style="{StaticResource SharedIndexMeta}"
+                                   Text="{Binding CountText}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

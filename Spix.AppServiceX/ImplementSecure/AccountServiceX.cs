@@ -15,6 +15,8 @@ public class AccountServiceX : IAccountServiceX
     }
 
     public async Task<ActionResponse<TokenDTO>> LoginAsync(LoginDTO modelo) => await _accountService.LoginAsync(modelo);
+
+    public async Task<ActionResponse<TokenDTO>> LoginDesktopAsync(LoginDTO modelo) => await _accountService.LoginAsync(modelo, desdeEscritorio: true);
     public async Task<ActionResponse<string>> CreateRefreshTokenAsync(string userName) => await _accountService.CreateRefreshTokenAsync(userName);
     public async Task<ActionResponse<RefreshSessionDTO>> RefreshTokenAsync(string refreshToken) => await _accountService.RefreshTokenAsync(refreshToken);
     public async Task RevokeRefreshTokenAsync(string refreshToken) => await _accountService.RevokeRefreshTokenAsync(refreshToken);

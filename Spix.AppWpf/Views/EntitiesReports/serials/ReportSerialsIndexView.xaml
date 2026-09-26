@@ -1,0 +1,174 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.serials.ReportSerialsIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Inventario de seriales: cuantos equipos hay de cada producto y donde estan.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no tienen botones.
+
+         El tablero cuenta TODOS los seriales de la corporacion y la tabla los reparte por
+         producto, asi que arriba y abajo tienen que dar lo mismo: el pie repite la suma de
+         la tabla para poder comprobarlo de un vistazo, igual que en la web. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Donde estan los equipos, solo cuando el tablero llego bien -->
+            <UniformGrid Columns="4"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Total de seriales"
+                                          Value="{Binding SummaryTotalText}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Disponibles en bodega"
+                                          Value="{Binding SummaryAvailableText}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Instalados en clientes"
+                                          Value="{Binding SummaryOperativeText}" />
+                <catalog:SharedCatalogKpi Label="Averiados"
+                                          Value="{Binding SummaryDamagedText}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+            </UniformGrid>
+
+            <!-- El reporte no tiene filtros: lo unico que se puede hacer es volver a pedirlo -->
+            <Grid Grid.Row="1" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1"
+                        Width="38" Height="38"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Actualizar (F5)">
+                    <fa:FontAwesomeImage Width="14" Height="14"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+            </Grid>
+
+            <Border Grid.Row="2" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" MinWidth="240" Header="Producto" SortMemberPath="ProductName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ProductName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Se ordena por el numero y se pinta el texto: el texto solo
+                                     sirve para leerlo, ordenarlo dejaria el 9 despues del 100 -->
+                                <DataGridTemplateColumn Width="150" Header="Disponibles" SortMemberPath="Available">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding AvailableText}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="150" Header="Instalados" SortMemberPath="Operative">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding OperativeText}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="150" Header="Averiados" SortMemberPath="Damaged">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding DamagedText}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="150" Header="Total" SortMemberPath="Total">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding TotalText}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.Barcode}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="No hay seriales para mostrar" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <!-- El pie lleva el renglon de totales de la web. No hay paginacion
+                         porque el reporte llega completo en una sola peticion. -->
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Style="{StaticResource SharedIndexMeta}"
+                                       Text="{Binding SummaryProductsText}" />
+
+                            <TextBlock Grid.Column="1"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding TotalsText}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

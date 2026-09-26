@@ -1,4 +1,4 @@
-using FontAwesome.Net.Generators;
+﻿using FontAwesome.Net.Generators;
 using System.Windows;
 using System.Windows.Media;
 
@@ -25,6 +25,23 @@ public static class FormButton
     public static readonly DependencyProperty AccentProperty =
         DependencyProperty.RegisterAttached("Accent", typeof(Brush), typeof(FormButton),
             new PropertyMetadata(null));
+
+    // Boton de SOLO icono: se queda nada mas con el cuadro de color. Se usa donde el
+    // sitio manda y el globo explica que hace, como en las tarjetas de configuracion del
+    // contrato, que tienen dos botones por tarjeta y ocho tarjetas.
+    public static readonly DependencyProperty IconOnlyProperty =
+        DependencyProperty.RegisterAttached("IconOnly", typeof(bool), typeof(FormButton),
+            new PropertyMetadata(false));
+
+    public static void SetIconOnly(DependencyObject elemento, bool valor)
+    {
+        elemento.SetValue(IconOnlyProperty, valor);
+    }
+
+    public static bool GetIconOnly(DependencyObject elemento)
+    {
+        return (bool)elemento.GetValue(IconOnlyProperty);
+    }
 
     public static void SetIcon(DependencyObject elemento, FontAwesomeIcon valor)
     {

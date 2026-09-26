@@ -1,0 +1,193 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.contracts.ReportContractsIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Contratos del periodo: los que entraron entre dos fechas y lo que sumaron a la
+         facturacion mensual.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no llevan botones.
+
+         No hay paginacion porque el backend devuelve la lista completa de planes del
+         periodo; el pie lleva la fila de totales. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding SearchCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- El periodo y el boton: nada se recarga solo, se busca al pulsar -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Desde" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateStart, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Hasta" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateEnd, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <Button Grid.Column="4"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding SearchCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Buscar (F5)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
+                        Content="Buscar" />
+            </Grid>
+
+            <!-- El tablero, solo despues de la primera busqueda -->
+            <UniformGrid Grid.Row="1"
+                         Columns="4"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Contratos nuevos"
+                                          Value="{Binding NewContracts}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Instalados"
+                                          Value="{Binding Installed}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Mensual agregado"
+                                          Value="{Binding MonthlyTotal, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiWarnText}" />
+                <catalog:SharedCatalogKpi Label="Por instalar"
+                                          Value="{Binding Pending}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+            </UniformGrid>
+
+            <!-- El titulo del cuadro: dice que se esta mirando, que planes se llevaron -->
+            <StackPanel Grid.Row="2" Margin="2,0,0,8" Orientation="Horizontal">
+                <fa:FontAwesomeImage Width="13" Height="13"
+                                     Margin="0,0,7,0"
+                                     VerticalAlignment="Center"
+                                     Foreground="{DynamicResource BrushIndexMeta}"
+                                     Icon="{x:Static icons:FontAwesomeIcon.LayerGroup}"
+                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="Planes mas contratados" />
+            </StackPanel>
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" MinWidth="240" Header="Plan" SortMemberPath="Name">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Name}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="140" Header="Veces" SortMemberPath="Times">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding Times, StringFormat=N0}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="170" Header="Mensual" SortMemberPath="MonthlyTotal">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding MonthlyTotal, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.FileSignature}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="{Binding EmptyText}" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <!-- La fila de totales del cuadro. Repite los anchos de las columnas para
+                         que cada suma caiga debajo de la suya. -->
+                    <Border Grid.Row="1"
+                            Style="{StaticResource SharedIndexPanelFoot}"
+                            Visibility="{Binding HasPlans, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid Margin="14,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="170" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Style="{StaticResource SharedIndexName}" Text="Total" />
+
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding TotalTimes, StringFormat=N0}" />
+
+                            <TextBlock Grid.Column="2"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding TotalMonthly, StringFormat=N2}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

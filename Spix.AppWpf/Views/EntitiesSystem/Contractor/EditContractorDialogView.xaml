@@ -1,0 +1,33 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSystem.Contractor.EditContractorDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:local="clr-namespace:Spix.AppWpf.Views.EntitiesSystem.Contractor"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="850">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <local:ContractorFormView />
+
+        <shared:SharedModalActions Grid.Row="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}">
+            <!-- El boton propio de este modal: reenviar el correo de activacion -->
+            <shared:SharedModalActions.Extra>
+                <Button Command="{Binding ResendActivationEmailCommand}"
+                        Style="{StaticResource SharedButtonFormSuccess}"
+                        IsEnabled="{Binding Entity.CreateAccount}"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Envelope}"
+                        Content="Reenviar correo" />
+            </shared:SharedModalActions.Extra>
+        </shared:SharedModalActions>
+
+        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,130 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesBilling.Sell.SellDetailDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="720">
+
+    <!-- De que se compone la factura: el plan del mes y las solicitudes de servicio.
+
+         OJO con los numeros, que no son los mismos arriba y abajo: los renglones muestran
+         el valor UNITARIO y el pie muestra los totales de la factura. Hoy coincide porque
+         la cantidad siempre es 1, pero se deja igual que la web a proposito. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- La cabeza: de quien es la factura y cual es -->
+        <Border Margin="0,0,0,14"
+                Padding="14,10"
+                CornerRadius="12"
+                Background="{DynamicResource BrushCatalogCard}"
+                BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding HeaderText}" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource BrushCatalogKpiAccent}"
+                           Text="{Binding InvoiceNumber}" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" MinHeight="140" Style="{StaticResource SharedIndexPanel}">
+            <Grid>
+                <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                <DataGrid ItemsSource="{Binding Lines}"
+                          Style="{StaticResource SharedIndexGrid}"
+                          ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                          RowStyle="{StaticResource SharedIndexRow}"
+                          CellStyle="{StaticResource SharedIndexCell}">
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="*" MinWidth="240" Header="Concepto" SortMemberPath="Concept">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SharedIndexName}"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding Concept}" />
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding OriginName}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="120" Header="Sub total" SortMemberPath="UnitPrice">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource SharedIndexMeta}"
+                                               Text="{Binding UnitPrice, StringFormat=N2}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="110" Header="Tax" SortMemberPath="TaxAmount">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource SharedIndexMeta}"
+                                               Text="{Binding TaxAmount, StringFormat=N2}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="130" Header="Total" SortMemberPath="Price">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource SharedIndexName}"
+                                               Text="{Binding Price, StringFormat=N2}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <!-- El pie: los totales de la factura completa -->
+        <StackPanel Grid.Row="2"
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+            <TextBlock Margin="0,0,18,0" VerticalAlignment="Center" Style="{StaticResource SharedIndexMeta}">
+                <Run Text="Sub total  " /><Run FontWeight="Bold" Text="{Binding SubTotal, StringFormat=N2, Mode=OneWay}" />
+            </TextBlock>
+
+            <TextBlock Margin="0,0,18,0" VerticalAlignment="Center" Style="{StaticResource SharedIndexMeta}">
+                <Run Text="Tax  " /><Run FontWeight="Bold" Text="{Binding TotalTax, StringFormat=N2, Mode=OneWay}" />
+            </TextBlock>
+
+            <TextBlock VerticalAlignment="Center"
+                       FontSize="15"
+                       Foreground="{DynamicResource BrushCatalogKpiAccent}">
+                <Run Text="Total  " /><Run FontSize="18" FontWeight="Bold" Text="{Binding Total, StringFormat=N2, Mode=OneWay}" />
+            </TextBlock>
+        </StackPanel>
+
+        <shared:SharedModalActions Grid.Row="3"
+                                   Margin="0,20,0,0"
+                                   ShowSave="False"
+                                   CancelCommand="{Binding CancelCommand}" />
+    </Grid>
+</UserControl>

@@ -87,7 +87,7 @@
                             <Button Click="ShowRegistersClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Consecutivos" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractDocumentTemplatesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Plantillas PDF" />
                             </Button>
                             <Button Click="ShowEmailProvidersClick" Style="{StaticResource ShellSubMenuItem}">
@@ -221,10 +221,10 @@
                             <Button Click="ShowClientsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Clientes" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractControlClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Control de contratos" />
                             </Button>
                             <Button Click="ShowServiceRequestsClick" Style="{StaticResource ShellSubMenuItem}">
@@ -233,13 +233,13 @@
                             <Button Click="ShowScheduleClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Agenda" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractSuspendedClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos suspendidos" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowActivationClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Reactivacion" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractSuspendedAuditClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Auditoria de activaciones" />
                             </Button>
                         </StackPanel>
@@ -262,34 +262,34 @@
                         </Button>
 
                         <StackPanel x:Name="FinanceMenu" Margin="30,0,14,8" Visibility="Collapsed">
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowBillingNotesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Notas de cobro" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowBillingNoteOnesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Nota individual" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowPrePaymentsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Pagos adelantados" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractExemptClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Exoneracion fija" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractExoneratedClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Exoneracion del mes" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowSellsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Facturas" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowCxCBillsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Cuentas por cobrar" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowTechnicianCollectionsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Cobro tecnico" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowRunSuspendedClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Corte general" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractorCxCClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Pagos a contratistas" />
                             </Button>
                         </StackPanel>
@@ -312,43 +312,43 @@
                         </Button>
 
                         <StackPanel x:Name="ReportsMenu" Margin="30,0,14,8" Visibility="Collapsed">
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportCollectionsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Recaudo del periodo" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportAgingClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Cartera por antiguedad" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportCommissionsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Comisiones de contratistas" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportAuditClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Bitacora del dinero" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportContractsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos del periodo" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportServicesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Servicios del periodo" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportCutOffClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Efectividad del corte" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportChurnClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Fuera de servicio" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportActiveContractsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos activos" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportByZoneClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos por zona" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportByNodeClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos por AP" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportByServerClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos por servidor" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowReportSerialsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Inventario de seriales" />
                             </Button>
                         </StackPanel>
@@ -371,13 +371,13 @@
                         </Button>
 
                         <StackPanel x:Name="SystemMenu" Margin="30,0,14,8" Visibility="Collapsed">
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowUsuariosClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Usuarios" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowContractorsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratistas" />
                             </Button>
-                            <Button IsEnabled="False" Style="{StaticResource ShellSubMenuItem}" ToolTip="Este modulo todavia no esta en el escritorio">
+                            <Button Click="ShowTechnitiansClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Tecnicos" />
                             </Button>
                         </StackPanel>
@@ -422,6 +422,22 @@
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                         <!-- Aspecto: tema claro/oscuro y que tan apretadas van las tablas -->
+                        <!-- El idioma en que responde el Backend: EN por defecto -->
+                        <Button x:Name="LanguageButton"
+                                Width="36" Height="36"
+                                Margin="0,0,4,0"
+                                Click="ToggleLanguageClick"
+                                Style="{StaticResource ShellIconButton}"
+                                ToolTip="Cambiar entre espanol e ingles">
+                            <TextBlock x:Name="LanguageText"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="#AAB7C9"
+                                       Text="EN" />
+                        </Button>
+
                         <Button x:Name="ThemeButton"
                                 Width="36" Height="36"
                                 Margin="0,0,4,0"

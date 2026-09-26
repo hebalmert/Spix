@@ -1,0 +1,194 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.RunSuspended.RunSuspendedIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Corte general: suspende los contratos que deben, equipo por equipo.
+
+         El periodo es solo una etiqueta: el corte NO filtra la deuda por mes, toma
+         cualquier nota con saldo para que nadie quede navegando debiendo.
+
+         El trabajo de verdad esta en el DETALLE: alli se revisa y se ejecuta. -->
+    <UserControl.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <UniformGrid Columns="4"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Suspendidos hoy"
+                                          Value="{Binding Suspended}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Con deuda"
+                                          Value="{Binding Debtors}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Deuda total"
+                                          Value="{Binding DebtTotal, StringFormat=N2}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Label="Cortes por ejecutar"
+                                          Value="{Binding PendingRuns}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}" />
+            </UniformGrid>
+
+            <Grid Grid.Row="1" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding NewCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Crear un corte (Ctrl+N)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                        Content="Nuevo corte" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Width="38" Height="38"
+                            Margin="0,0,8,0"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource SharedIndexIconButtonEdit}"
+                            ToolTip="Actualizar (F5)">
+                        <fa:FontAwesomeImage Width="14" Height="14"
+                                             Foreground="{DynamicResource BrushIndexIconEdit}"
+                                             Icon="{x:Static icons:FontAwesomeIcon.ArrowsRotate}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                    </Button>
+
+                    <shared:SharedSearchFilter SearchText="{Binding Filter}"
+                                               SearchCommand="{Binding SearchCommand}"
+                                               ClearCommand="{Binding ClearSearchCommand}" />
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="2" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid x:Name="ItemsGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding DetailCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=ItemsGrid}" />
+                            </DataGrid.InputBindings>
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" MinWidth="200" Header="Periodo" SortMemberPath="PeriodText">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding PeriodText}" />
+                                                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateText}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="140" Header="Estado" SortMemberPath="StatusText">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border HorizontalAlignment="Left"
+                                                    Padding="10,4"
+                                                    CornerRadius="6"
+                                                    Background="{Binding StatusColor}">
+                                                <TextBlock FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="White"
+                                                           Text="{Binding StatusText}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="*" MinWidth="180" Header="Ejecutado por" SortMemberPath="UserByName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding UserByName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="150" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <!-- El detalle se ve siempre: es donde se revisa y se ejecuta -->
+                                                <rowbtn:SharedButtonRowSuccess Command="{Binding DataContext.DetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                               CommandParameter="{Binding}"
+                                                                               Icon="{x:Static icons:FontAwesomeIcon.ListCheck}"
+                                                                               ToolTip="Detalle del corte" />
+
+                                                <!-- Un corte ya ejecutado no se toca -->
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Editar"
+                                                                            Visibility="{Binding CanEdit, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Eliminar"
+                                                                              Visibility="{Binding CanEdit, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.Ban}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="No hay cortes para mostrar" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesBilling.BillingNote.EditBillingNoteDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="620">
+
+    <!-- Editar el periodo de la nota general.
+
+         Si entre tanto alguien la lanzo, la nota queda congelada: los campos se bloquean y
+         el boton de guardar desaparece. El servidor lo rechaza igual, pero esperar al error
+         para enterarse es peor. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="24" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" MinWidth="300" />
+        </Grid.ColumnDefinitions>
+
+        <Border Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Fecha" />
+        </Border>
+        <DatePicker Grid.Column="1"
+                    MinHeight="42"
+                    IsEnabled="{Binding CanEdit}"
+                    SelectedDate="{Binding DateBill, Mode=TwoWay}"
+                    SelectedDateFormat="Short" />
+
+        <Border Grid.Row="2" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Ano" />
+        </Border>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 MaxLength="4"
+                 IsEnabled="{Binding CanEdit}"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding YearNumber, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Border Grid.Row="4" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Mes" />
+        </Border>
+        <ComboBox Grid.Row="4" Grid.Column="1"
+                  IsEnabled="{Binding CanEdit}"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Months}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding SelectedMonth, Mode=TwoWay}" />
+
+        <Border Grid.Row="6" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Lanzada" />
+        </Border>
+        <TextBox Grid.Row="6" Grid.Column="1"
+                 IsEnabled="False"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding CreatedText, Mode=OneWay}" />
+
+        <Border Grid.Row="8" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Fecha lanzada" />
+        </Border>
+        <TextBox Grid.Row="8" Grid.Column="1"
+                 IsEnabled="False"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding DateCreatedText, Mode=OneWay}" />
+
+        <shared:SharedModalActions Grid.Row="10" Grid.ColumnSpan="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}"
+                                   ShowSave="{Binding CanEdit}" />
+
+        <shared:SharedLoading Grid.RowSpan="11" Grid.ColumnSpan="2" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

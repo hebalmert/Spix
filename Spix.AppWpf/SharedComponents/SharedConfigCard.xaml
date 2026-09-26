@@ -1,0 +1,107 @@
+<UserControl x:Class="Spix.AppWpf.SharedComponents.SharedConfigCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             x:Name="Raiz">
+
+    <!-- Una pieza de la configuracion del servicio de un contrato.
+         Se repite ocho veces en el detalle, asi que vive aqui una sola vez.
+
+         OJO con los botones, que es donde esta la regla de negocio:
+         una pieza NO SE CAMBIA, se quita y se vuelve a agregar. Por eso el boton de
+         agregar solo existe mientras la pieza falta, y el de quitar solo cuando ya esta.
+         Si el contrato ya tiene Queue o IpBinding, quitar queda BLOQUEADO con candado:
+         esas piezas ya estan escritas en el MikroTik.
+
+         Ver y Editar son excepciones de dos tarjetas (la Ubicacion y el IpBinding): si no
+         se les da comando, no aparecen.
+
+         El reparto es a dos columnas: a la izquierda lo que se LEE y a la derecha lo que
+         se HACE. -->
+    <Border CornerRadius="12"
+            Background="{DynamicResource BrushCatalogCard}"
+            BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+            BorderThickness="1"
+            Effect="{StaticResource SombraCatalogo}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border x:Name="Barra" CornerRadius="11,0,0,11" />
+
+            <Grid Grid.Column="1" Margin="14,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Izquierda: que pieza es y que quedo configurado -->
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:FontAwesomeImage x:Name="Glifo"
+                                             Width="16" Height="16"
+                                             Margin="0,0,10,0"
+                                             VerticalAlignment="Center"
+                                             Foreground="{DynamicResource BrushCatalogKpiAccent}"
+                                             IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+
+                        <TextBlock VerticalAlignment="Center"
+                                   Style="{StaticResource SharedIndexName}"
+                                   Text="{Binding Title, ElementName=Raiz}" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="Dato"
+                               Margin="26,6,0,0"
+                               Style="{StaticResource SharedIndexMeta}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!-- Derecha: el estado y, debajo, lo que se puede hacer -->
+                <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                    <Border x:Name="Estado"
+                            HorizontalAlignment="Right"
+                            Padding="9,3"
+                            CornerRadius="999">
+                        <TextBlock x:Name="EstadoTexto"
+                                   FontSize="11"
+                                   FontWeight="SemiBold" />
+                    </Border>
+
+                    <StackPanel Margin="0,10,0,0" HorizontalAlignment="Right" Orientation="Horizontal">
+                        <!-- Mientras la pieza falta: agregar -->
+                        <Button x:Name="BotonAgregar"
+                                Margin="0,0,8,0"
+                                Command="{Binding AddCommand, ElementName=Raiz}"
+                                Style="{StaticResource SharedButtonFormIconPrimary}"
+                                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}" />
+
+                        <!-- Solo la Ubicacion: ver el punto en el mapa -->
+                        <Button x:Name="BotonVer"
+                                Margin="0,0,8,0"
+                                Command="{Binding ViewCommand, ElementName=Raiz}"
+                                Style="{StaticResource SharedButtonFormIconSuccess}"
+                                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Map}" />
+
+                        <!-- Solo la Ubicacion y el IpBinding: se editan sin quitarlos -->
+                        <Button x:Name="BotonEditar"
+                                Margin="0,0,8,0"
+                                Command="{Binding EditCommand, ElementName=Raiz}"
+                                Style="{StaticResource SharedButtonFormIconPrimary}"
+                                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.PenToSquare}" />
+
+                        <!-- Con la pieza puesta: quitar. Bloqueado si ya esta en el MikroTik -->
+                        <Button x:Name="BotonQuitar"
+                                Command="{Binding RemoveCommand, ElementName=Raiz}"
+                                Style="{StaticResource SharedButtonFormIconDanger}"
+                                svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

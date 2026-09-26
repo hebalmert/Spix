@@ -524,6 +524,9 @@ namespace Spix.AppBacken.Migrations
                     b.Property<int>("RateLimitPerMinute")
                         .HasColumnType("int");
 
+                    b.Property<bool>("SoftwarePC")
+                        .HasColumnType("bit");
+
                     b.HasKey("SoftPlanId");
 
                     b.HasIndex("Name")

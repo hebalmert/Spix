@@ -138,7 +138,8 @@
                                                 <ButtonGeneric Icon="fa fa-clock-rotate-left"
                                                                TooTip="@Localizer["Audit_Tip"]"
                                                                OnClick="() => ShowAuditAsync(item)" />
-                                                @if (item.ScheduleStatus != ScheduleStatus.Completed)
+                                                @* Cerrada es cerrada: ni la completada en sitio ni la resuelta por telefono se borran *@
+                                                @if (!item.ScheduleStatus.IsClosed())
                                                 {
                                                     <AuthorizeView Roles="Administrator, Auxiliar">
                                                         <Authorized>

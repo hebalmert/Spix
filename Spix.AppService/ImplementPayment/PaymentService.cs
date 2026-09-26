@@ -1081,9 +1081,11 @@ public class PaymentService : IPaymentService
             if (user == null)
                 return AuthFail<ExoneratedSummaryDto>();
 
+            //Solo las vigentes, igual que el listado: una exoneracion retirada (DateEnded)
+            //no esta pendiente de facturar y no puede seguir contando aqui
             var pendientes = _context.ContractExonerateds
                 .AsNoTracking()
-                .Where(x => x.CorporationId == user.CorporationId && !x.Billed);
+                .Where(x => x.CorporationId == user.CorporationId && !x.Billed && x.DateEnded == null);
 
             //Una sola pasada para los tres numeros de lo pendiente
             var summary = await pendientes

@@ -1,0 +1,193 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesPayment.ContractExonerated.ContractExoneratedFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="900">
+
+    <!-- Los mismos campos del formulario de la web, en el mismo orden: la fecha, el
+         contrato que se busca por nombre, la foto de ese contrato y el periodo que se
+         exonera.
+
+         Todo lo que sale del contrato es de SOLA LECTURA: el servidor relee el plan y
+         recalcula el impuesto, el subtotal y el total, mande el escritorio lo que mande.
+
+         Este mismo formulario sirve para el alta y para la edicion; el bloque de facturado
+         solo lo enciende la edicion. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Fecha del registro y buscador del contrato -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" MinWidth="160" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="2*" MinWidth="280" />
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Fecha" />
+            </Border>
+            <DatePicker Grid.Column="1"
+                        MinHeight="42"
+                        SelectedDate="{Binding DateExonerated, Mode=TwoWay}"
+                        SelectedDateFormat="Short" />
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Cliente" />
+            </Border>
+            <shared:SharedSearchPicker Grid.Column="4"
+                                       Text="{Binding SearchText, Mode=TwoWay}"
+                                       Items="{Binding Candidates}"
+                                       SearchCommand="{Binding SearchCommand}"
+                                       SelectCommand="{Binding SelectCommand}">
+                <shared:SharedSearchPicker.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="4,6">
+                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+                            <TextBlock Style="{StaticResource SharedIndexMeta}">
+                                <Run Text="Contrato" />
+                                <Run Text="{Binding ControlContrato, Mode=OneWay}" />
+                                <Run Text="·" />
+                                <Run Text="{Binding ZoneName, Mode=OneWay}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </shared:SharedSearchPicker.ItemTemplate>
+            </shared:SharedSearchPicker>
+
+            <!-- Que este buscando, o que no haya ninguno, hay que DECIRLO: en silencio se
+                 ve igual que un buscador que no funciona -->
+            <TextBlock Grid.Row="1" Grid.Column="4"
+                       Margin="2,6,0,0"
+                       Style="{StaticResource SharedIndexMeta}"
+                       Text="Buscando..."
+                       Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <TextBlock Grid.Row="1" Grid.Column="4"
+                       Margin="2,6,0,0"
+                       Style="{StaticResource SharedIndexMeta}"
+                       Text="No hay contratos activos que coincidan."
+                       Visibility="{Binding NoResults, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+
+        <!-- La foto del contrato elegido: solo se mira -->
+        <UniformGrid Grid.Row="2" Columns="2"
+                     Visibility="{Binding HasContract, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                      Label="Contrato"
+                                      Value="{Binding SelectedContract.ControlContrato}" />
+            <catalog:SharedCatalogKpi Label="Direccion"
+                                      Value="{Binding SelectedContract.Address}" />
+        </UniformGrid>
+
+        <UniformGrid Grid.Row="4" Columns="3"
+                     Visibility="{Binding HasContract, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                      Label="Ciudad"
+                                      Value="{Binding SelectedContract.CityName}" />
+            <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                      Label="Zona"
+                                      Value="{Binding SelectedContract.ZoneName}" />
+            <catalog:SharedCatalogKpi Label="Telefono"
+                                      Value="{Binding SelectedContract.PhoneNumber}" />
+        </UniformGrid>
+
+        <!-- El dinero del plan. En la edicion son los montos CONGELADOS el dia que se
+             programo, no los del plan de hoy. -->
+        <UniformGrid Grid.Row="6" Columns="4"
+                     Visibility="{Binding HasContract, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                      Label="Plan"
+                                      Value="{Binding SelectedContract.PlanName}" />
+            <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                      Label="Tax"
+                                      Value="{Binding SelectedContract.TaxRate, StringFormat=N2}" />
+            <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                      Label="Sub"
+                                      Value="{Binding SelectedContract.PlanPrice, StringFormat=N2}" />
+            <catalog:SharedCatalogKpi Label="Total"
+                                      Value="{Binding SelectedContract.PlanPriceWithTax, StringFormat=N2}"
+                                      Accent="{DynamicResource BrushCatalogKpiOk}"
+                                      ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+        </UniformGrid>
+
+        <!-- El periodo que se exonera: lo unico que decide el usuario ademas del contrato -->
+        <Grid Grid.Row="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" MinWidth="160" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="2*" MinWidth="280" />
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Ano" />
+            </Border>
+            <TextBox Grid.Column="1"
+                     MaxLength="4"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding YearNumber, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Mes" />
+            </Border>
+            <ComboBox Grid.Column="4"
+                      Style="{StaticResource SharedFormCombo}"
+                      ItemsSource="{Binding Months}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding SelectedMonth, Mode=TwoWay}" />
+        </Grid>
+
+        <!-- Solo en la edicion: si la facturacion ya la consumio y cuando -->
+        <Grid Grid.Row="10"
+              Visibility="{Binding ShowBilled, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" MinWidth="160" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="2*" MinWidth="280" />
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Facturado" />
+            </Border>
+            <Border Grid.Column="1" Style="{StaticResource SharedFormBoxBorder}">
+                <CheckBox Margin="14,0"
+                          VerticalAlignment="Center"
+                          IsEnabled="False"
+                          IsChecked="{Binding Billed, Mode=OneWay}" />
+            </Border>
+
+            <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Fecha" />
+            </Border>
+            <TextBox Grid.Column="4"
+                     IsReadOnly="True"
+                     IsEnabled="False"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding DateBilledText, Mode=OneWay}" />
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,13 +1,25 @@
 ﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Supplier.SupplierFormView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             MinWidth="860">
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="1120">
+
+    <!-- El ancho sale de la cuenta, no a ojo: la tarjeta de la foto pide ~310, el
+         separador 18, y cada fila lleva DOS parejas de etiqueta+campo (150 + 200
+         cada una) = 718. Con los 860 de antes a cada campo le quedaban 85 px y
+         salian mordidos. -->
 
     <!-- Los mismos campos del formulario de Blazor, en el mismo orden y agrupados por
          tema: quien es, con que documento, como se le ubica y donde queda.
          Todas las filas son iguales: etiqueta a la izquierda y campo al lado. Antes unas
          eran asi y otras ponian la etiqueta encima, y por eso se veia desordenado. -->
     <Grid Margin="0,24,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="18" />
+            <ColumnDefinition Width="*" MinWidth="200" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -16,13 +28,22 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,0,0,14">
+        <!-- La foto del proveedor, del disco o de la camara. Mientras no haya,
+             se ve el camion, igual que el AvatarImage de la web. -->
+        <shared:SharedImagePicker Grid.RowSpan="5"
+                                  VerticalAlignment="Top"
+                                  Title="Foto"
+                                  ImageUrl="{Binding Entity.ImageFullPath}"
+                                  Icon="{x:Static icons:FontAwesomeIcon.Truck}"
+                                  ImageSelected="PhotoSelected" />
+
+        <Grid Grid.Row="0" Grid.Column="2" Margin="0,0,0,14">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -37,13 +58,13 @@
                      Text="{Binding Entity.ContactName, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
 
-        <Grid Grid.Row="1" Margin="0,0,0,14">
+        <Grid Grid.Row="1" Grid.Column="2" Margin="0,0,0,14">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -61,13 +82,13 @@
                      Text="{Binding Entity.Document, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,0,0,14">
+        <Grid Grid.Row="2" Grid.Column="2" Margin="0,0,0,14">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -82,13 +103,13 @@
                      Text="{Binding Entity.Email, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
 
-        <Grid Grid.Row="3" Margin="0,0,0,14">
+        <Grid Grid.Row="3" Grid.Column="2" Margin="0,0,0,14">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -110,13 +131,13 @@
                       SelectedValue="{Binding Entity.CityId, Mode=TwoWay}" />
         </Grid>
 
-        <Grid Grid.Row="4" Margin="0,0,0,14">
+        <Grid Grid.Row="4" Grid.Column="2" Margin="0,0,0,14">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
                 <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="200" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">

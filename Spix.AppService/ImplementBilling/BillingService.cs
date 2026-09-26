@@ -967,13 +967,16 @@ public class BillingService : IBillingService
                 }
             }
 
+            //DateEnded == null: una exoneracion retirada NO descuenta. Sin esta condicion
+            //se seguia aplicando el descuento de algo que el usuario ya habia quitado.
             var exonerated = await _context.ContractExonerateds
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.CorporationId == corporationId &&
                                           x.ContractClientId == note.ContractClientId &&
                                           x.YearNumber == note.YearNumber &&
                                           x.MonthType == note.MonthType &&
-                                          !x.Billed);
+                                          !x.Billed &&
+                                          x.DateEnded == null);
 
             dto.ServicesTotal = dto.Services.Sum(x => x.Price);
             dto.Total = dto.PlanPrice + dto.ServicesTotal;
@@ -1275,12 +1278,14 @@ public class BillingService : IBillingService
         }
 
         var total = sell.SellDetails.Sum(x => x.TotalPrice);
+        //La misma condicion que la revision previa: una exoneracion retirada no descuenta
         var preExonerated = await _context.ContractExonerateds.FirstOrDefaultAsync(x =>
             x.CorporationId == corporationId &&
             x.ContractClientId == contract.ContractClientId &&
             x.YearNumber == yearNumber &&
             x.MonthType == monthType &&
-            !x.Billed);
+            !x.Billed &&
+            x.DateEnded == null);
 
         if (preExonerated != null && prePayment != null)
             return Fail<bool>($"El contrato {contract.ControlContrato} tiene exoneracion y pago adelantado para el mismo mes.");

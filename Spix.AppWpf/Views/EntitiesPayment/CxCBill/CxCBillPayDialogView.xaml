@@ -1,0 +1,148 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesPayment.CxCBill.CxCBillPayDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="700">
+
+    <!-- Recibir el dinero de una nota.
+
+         El recaudo es SIEMPRE total: se elige el modo de pago y, si aplica, un porcentaje
+         de descuento, y la nota queda en cero. Por eso el tile del saldo siempre marca 0.
+
+         Un descuento sin explicacion no se guarda: es plata que se deja de cobrar. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Margin="0,0,0,14"
+                Padding="14,10"
+                CornerRadius="12"
+                Background="{DynamicResource BrushCatalogCard}"
+                BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientName}" />
+                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding HeaderText}" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource BrushCatalogKpiAccent}"
+                           Text="{Binding CollectionNote}" />
+            </Grid>
+        </Border>
+
+        <!-- Las cuatro cifras se recalculan en vivo al tocar un porcentaje -->
+        <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,16">
+            <catalog:SharedCatalogKpi Margin="0,0,10,0"
+                                      Label="Deuda"
+                                      Value="{Binding Debt, StringFormat=N2}" />
+            <catalog:SharedCatalogKpi Margin="0,0,10,0"
+                                      Label="Descuento"
+                                      Value="{Binding DiscountAmount, StringFormat=N2}"
+                                      Accent="{DynamicResource BrushCatalogKpiWarn}"
+                                      ValueBrush="{DynamicResource BrushCatalogKpiWarnText}" />
+            <catalog:SharedCatalogKpi Margin="0,0,10,0"
+                                      Label="A recibir"
+                                      Value="{Binding PaymentAmount, StringFormat=N2}"
+                                      Accent="{DynamicResource BrushCatalogKpiOk}"
+                                      ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+            <catalog:SharedCatalogKpi Label="Saldo que queda"
+                                      Value="{Binding Balance, StringFormat=N2}" />
+        </UniformGrid>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,14">
+            <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="MODO DE PAGO" />
+
+            <StackPanel Orientation="Horizontal">
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetModeCommand}"
+                        CommandParameter="Cash"
+                        Content="Efectivo"
+                        Tag="{Binding IsCash}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetModeCommand}"
+                        CommandParameter="Card"
+                        Content="Tarjeta"
+                        Tag="{Binding IsCard}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button
+                        Command="{Binding SetModeCommand}"
+                        CommandParameter="Transfer"
+                        Content="Transferencia"
+                        Tag="{Binding IsTransfer}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Margin="0,0,0,14">
+            <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="DESCUENTO" />
+
+            <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetDiscountCommand}"
+                        CommandParameter="0"
+                        Content="Ninguno"
+                        Tag="{Binding IsDiscount0}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetDiscountCommand}"
+                        CommandParameter="25"
+                        Content="25%"
+                        Tag="{Binding IsDiscount25}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetDiscountCommand}"
+                        CommandParameter="50"
+                        Content="50%"
+                        Tag="{Binding IsDiscount50}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button Margin="0,0,8,0"
+                        Command="{Binding SetDiscountCommand}"
+                        CommandParameter="75"
+                        Content="75%"
+                        Tag="{Binding IsDiscount75}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+                <Button
+                        Command="{Binding SetDiscountCommand}"
+                        CommandParameter="100"
+                        Content="100%"
+                        Tag="{Binding IsDiscount100}"
+                        Style="{StaticResource SharedCatalogChipButton}" />
+            </StackPanel>
+
+            <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="DETALLE" />
+
+            <TextBox MinHeight="64"
+                     AcceptsReturn="True"
+                     MaxLength="256"
+                     Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Detail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Top"
+                     ToolTip="Motivo del descuento, numero de recibo, lo que valga la pena recordar." />
+        </StackPanel>
+
+        <shared:SharedModalActions Grid.Row="4"
+                                   SaveText="Guardar"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="5" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

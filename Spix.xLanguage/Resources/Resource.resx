@@ -256,6 +256,9 @@
   <data name="Generic_NullException" xml:space="preserve">
     <value>Tried to access a null value</value>
   </data>
+  <data name="Generic_PlanNoDesktop" xml:space="preserve">
+    <value>Your plan does not include the PC software. Contact your provider to enable it.</value>
+  </data>
   <data name="Generic_PlanExpired" xml:space="preserve">
     <value>Your plan has expired, please renew your account</value>
   </data>

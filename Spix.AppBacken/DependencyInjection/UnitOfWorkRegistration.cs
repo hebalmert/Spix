@@ -1,4 +1,5 @@
 ﻿using Spix.AppService.ImplementContratos;
+using Spix.AppService.ImplementContratos.ImplementContractControl;
 using Spix.AppService.ImplementEmails;
 using Spix.AppService.ImplementEntitiesData;
 using Spix.AppService.ImplementEntitiesGen;
@@ -205,6 +206,15 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IRunSuspendedService, RunSuspendedService>();
             services.AddScoped<IReportOperationServiceX, ReportOperationServiceX>();
             services.AddScoped<IReportOperationService, ReportOperationService>();
+            //v2: lo que el escritorio necesita para configurar el MikroTik en local
+            services.AddScoped<IContractMkSetupServiceX, ContractMkSetupServiceX>();
+            services.AddScoped<IContractMkSetupService, ContractMkSetupService>();
+            services.AddScoped<IContractSuspendedMkServiceX, ContractSuspendedMkServiceX>();
+            services.AddScoped<IContractSuspendedMkService, ContractSuspendedMkService>();
+            services.AddScoped<IActivationMkServiceX, ActivationMkServiceX>();
+            services.AddScoped<IActivationMkService, ActivationMkService>();
+            services.AddScoped<IRunSuspendedMkServiceX, RunSuspendedMkServiceX>();
+            services.AddScoped<IRunSuspendedMkService, RunSuspendedMkService>();
             services.AddScoped<IReportServiceX, ReportServiceX>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<Spix.AppServiceX.InterfacesInven.IReportInventoryServiceX, Spix.AppServiceX.ImplementInven.ReportInventoryServiceX>();

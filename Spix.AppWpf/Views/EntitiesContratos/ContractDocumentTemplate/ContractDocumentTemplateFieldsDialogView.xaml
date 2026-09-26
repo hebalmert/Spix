@@ -1,0 +1,253 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate.ContractDocumentTemplateFieldsDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="1220">
+
+    <!-- El editor visual de coordenadas, igual que en la web:
+         a la izquierda se elige el campo y se afina, a la derecha se hace clic sobre el PDF.
+         El PDF lo dibuja pdf.js dentro del navegador embebido. -->
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="330" />
+            <ColumnDefinition Width="18" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                   Margin="0,0,0,12"
+                   Style="{StaticResource SharedIndexName}"
+                   Text="{Binding TemplateName}" />
+
+        <!-- Panel izquierdo: tipos de campo, lista de lo colocado y el detalle del elegido -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="1. Elija el campo" />
+
+                <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding FieldTypes}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- La marca del campo que se esta colocando -->
+                                <Border Grid.Column="0"
+                                        Width="4"
+                                        CornerRadius="2"
+                                        Background="{DynamicResource BrushFormSuccess}"
+                                        Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                <Button Grid.Column="1"
+                                        Margin="6,0,0,0"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{Binding DataContext.StartPlacingCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}"
+                                        IsEnabled="{Binding DataContext.CanPlace, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        Style="{StaticResource SharedButtonFormSecondary}"
+                                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Crosshairs}"
+                                        Content="{Binding Name}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Margin="0,12,0,0" Style="{StaticResource SharedIndexMeta}" Text="2. Haga clic en el PDF donde va" />
+                <TextBlock Margin="0,4,0,0"
+                           TextWrapping="Wrap"
+                           Style="{StaticResource SharedIndexMeta}"
+                           Text="Arrastre los recuadros para moverlos. La firma se estira desde la esquina." />
+
+                <TextBlock Margin="0,16,0,0" Style="{StaticResource SharedIndexName}" Text="{Binding PlacedCountText}" />
+
+                <TextBlock Margin="0,6,0,0"
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource BrushCatalogKpiWarnText}"
+                           Style="{StaticResource SharedIndexMeta}"
+                           Text="Falta la firma: sin ella el cliente no podra firmar."
+                           Visibility="{Binding MissingSignature, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding PlacedFields}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{Binding DataContext.SelectRowCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource SharedButtonFormSecondary}"
+                                        Content="{Binding TypeName}"
+                                        ToolTip="{Binding PageText}" />
+
+                                <!-- Mirando la prueba no se quitan campos, igual que en la web -->
+                                <rowbtn:SharedButtonRowDelete Grid.Column="1"
+                                                              Margin="6,0,0,0"
+                                                              Command="{Binding DataContext.RemoveFieldCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                              CommandParameter="{Binding}"
+                                                              ToolTip="Quitar el campo"
+                                                              Visibility="{Binding DataContext.CanPlace, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- El detalle del campo elegido: pagina, tamano y coordenadas -->
+                <StackPanel Margin="0,16,0,0"
+                            Visibility="{Binding HasSelectedField, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding SelectedField.TypeName}" />
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Pagina" />
+                        </Border>
+                        <ComboBox Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                                  ItemsSource="{Binding Pages}"
+                                  SelectedItem="{Binding SelectedField.PageNumber, Mode=TwoWay}" />
+                    </Grid>
+
+                    <Grid Margin="0,8,0,0"
+                          Visibility="{Binding IsSignatureSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Ancho" />
+                        </Border>
+                        <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                                 Text="{Binding SelectedField.Width, UpdateSourceTrigger=LostFocus}" />
+                    </Grid>
+
+                    <Grid Margin="0,8,0,0"
+                          Visibility="{Binding IsSignatureSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Alto" />
+                        </Border>
+                        <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                                 Text="{Binding SelectedField.Height, UpdateSourceTrigger=LostFocus}" />
+                    </Grid>
+
+                    <Grid Margin="0,8,0,0"
+                          Visibility="{Binding IsTextSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Letra" />
+                        </Border>
+                        <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                                 Text="{Binding SelectedField.FontSize, UpdateSourceTrigger=LostFocus}" />
+                    </Grid>
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="X" />
+                        </Border>
+                        <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                                 Text="{Binding SelectedField.PositionX, UpdateSourceTrigger=LostFocus}" />
+                    </Grid>
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Y" />
+                        </Border>
+                        <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                                 Text="{Binding SelectedField.PositionY, UpdateSourceTrigger=LostFocus}" />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Panel derecho: la barra y el PDF -->
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Margin="0,0,8,0"
+                            Command="{Binding ShowEditorCommand}"
+                            IsEnabled="{Binding IsPreview}"
+                            Style="{StaticResource SharedButtonFormSecondary}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Crosshairs}"
+                            Content="Colocar campos" />
+
+                    <Button Command="{Binding ShowPreviewCommand}"
+                            Style="{StaticResource SharedButtonFormPrimary}"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Eye}"
+                            Content="Ver con datos de prueba" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Margin="14,0,0,0"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SharedIndexMeta}"
+                           Text="{Binding PlacingText}"
+                           Visibility="{Binding HasPlacing, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <TextBlock Grid.Column="2"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SharedIndexMeta}"
+                           Text="{Binding PageCountText}" />
+            </Grid>
+
+            <Border Grid.Row="1"
+                    MinHeight="480"
+                    CornerRadius="10"
+                    Background="{DynamicResource BrushAvatarBack}"
+                    BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                    BorderThickness="1"
+                    ClipToBounds="True">
+                <wv2:WebView2 x:Name="EditorBrowser" />
+            </Border>
+        </Grid>
+
+        <shared:SharedModalActions Grid.Row="3" Grid.ColumnSpan="3"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="4" Grid.ColumnSpan="3" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

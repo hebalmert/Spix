@@ -39,9 +39,14 @@ public class HttpResponseHandler
                 return true;
 
             case HttpStatusCode.Forbidden:
+                //Cuando el servidor explica el motivo se muestra TAL CUAL: por aqui llega
+                //tambien el corte por plan ("tu plan no incluye el software de PC"), y
+                //decir solo "no tienes permisos" mandaria al usuario a buscar donde no es.
                 await _alertService.WarningAsync(
                     "Acceso restringido",
-                    "No tienes permisos para realizar esta operacion.");
+                    string.IsNullOrWhiteSpace(errorMessage)
+                        ? "No tienes permisos para realizar esta operacion."
+                        : errorMessage);
                 return true;
 
             case HttpStatusCode.PaymentRequired:

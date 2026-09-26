@@ -1,0 +1,143 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesPayment.ContractorCxC.ContractorCxCCommissionsDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="880">
+
+    <!-- De que se compone la cuenta: las comisiones que se le agruparon.
+
+         La comision se muestra por su valor ORIGINAL, no por el saldo: al pagar la cuenta
+         el saldo queda en cero y se perderia el dato. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Margin="0,0,0,14"
+                Padding="14,10"
+                CornerRadius="12"
+                Background="{DynamicResource BrushCatalogCard}"
+                BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ContractorName}" />
+                    <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateNoteText}" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource BrushCatalogKpiAccent}"
+                           Text="{Binding NoteNumber}" />
+            </Grid>
+        </Border>
+
+        <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,14">
+            <catalog:SharedCatalogKpi Margin="0,0,10,0"
+                                      Label="Total"
+                                      Value="{Binding Total, StringFormat=N2}" />
+            <catalog:SharedCatalogKpi Margin="0,0,10,0"
+                                      Label="Abonado"
+                                      Value="{Binding Paid, StringFormat=N2}"
+                                      Accent="{DynamicResource BrushCatalogKpiOk}"
+                                      ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+            <catalog:SharedCatalogKpi Label="Saldo"
+                                      Value="{Binding Balance, StringFormat=N2}"
+                                      Accent="{DynamicResource BrushCatalogKpiBad}"
+                                      ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+        </UniformGrid>
+
+        <Border Grid.Row="2" MinHeight="160" Style="{StaticResource SharedIndexPanel}">
+            <Grid>
+                <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                <DataGrid ItemsSource="{Binding Rows}"
+                          Style="{StaticResource SharedIndexGrid}"
+                          ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                          RowStyle="{StaticResource SharedIndexRow}"
+                          CellStyle="{StaticResource SharedIndexCell}">
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="*" MinWidth="200" Header="Cliente" SortMemberPath="ClientFullName">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding ContractText}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="190" Header="Detalle de la nota" SortMemberPath="CollectionNote">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding CollectionNote}" />
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding DateCreatedText}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="130" Header="Base recibida" SortMemberPath="BaseAmount">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource SharedIndexMeta}"
+                                               Text="{Binding BaseAmount, StringFormat=N2}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="80" Header="Tasa" SortMemberPath="RateText">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource SharedIndexMeta}"
+                                               Text="{Binding RateText}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="130" Header="Comision" SortMemberPath="Total">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource SharedIndexName}"
+                                               Text="{Binding Total, StringFormat=N2}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="3" Style="{StaticResource SharedIndexPanelFoot}">
+            <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                     CurrentPage="{Binding CurrentPage}"
+                                     TotalPages="{Binding TotalPages}"
+                                     PageCommand="{Binding GoToPageCommand}" />
+        </Border>
+
+        <shared:SharedModalActions Grid.Row="4"
+                                   Margin="0,20,0,0"
+                                   ShowSave="False"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="5" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

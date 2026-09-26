@@ -26,26 +26,33 @@ public class NavigationService
     public void Show<TView>(string title, string subtitle, Action<TView>? preparar = null)
         where TView : UserControl
     {
-        var vista = _serviceProvider.GetRequiredService<TView>();
+        //Se entrega la RECETA y no la vista ya hecha: al cambiar el idioma la ventana
+        //vuelve a llamarla para levantar una pantalla nueva, que pide sus datos otra vez.
+        UserControl Armar()
+        {
+            var vista = _serviceProvider.GetRequiredService<TView>();
 
-        preparar?.Invoke(vista);
+            preparar?.Invoke(vista);
 
-        Requested?.Invoke(this, new NavigationRequest(vista, title, subtitle));
+            return vista;
+        }
+
+        Requested?.Invoke(this, new NavigationRequest(Armar, title, subtitle));
     }
 }
 
 // Lo que la ventana principal necesita para presentar una pantalla
 public class NavigationRequest
 {
-    public UserControl View { get; }
+    public Func<UserControl> Build { get; }
 
     public string Title { get; }
 
     public string Subtitle { get; }
 
-    public NavigationRequest(UserControl view, string title, string subtitle)
+    public NavigationRequest(Func<UserControl> build, string title, string subtitle)
     {
-        View = view;
+        Build = build;
         Title = title;
         Subtitle = subtitle;
     }

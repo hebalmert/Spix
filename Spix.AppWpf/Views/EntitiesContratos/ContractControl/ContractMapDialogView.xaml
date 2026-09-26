@@ -1,0 +1,55 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractControl.ContractMapDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="680">
+
+    <!-- Donde quedo instalado el servicio.
+         El campo de arriba acepta las coordenadas pegadas tal como las copia el mapa
+         ("4.60971, -74.08175"): es como se hace en la practica. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="24" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" MinWidth="300" />
+        </Grid.ColumnDefinitions>
+
+        <Border Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Coordenadas" />
+        </Border>
+        <StackPanel Grid.Column="1">
+            <TextBox Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Coordinates, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Margin="2,4,0,0"
+                       Style="{StaticResource SharedIndexMeta}"
+                       Text="Puede pegarlas juntas, como las copia el mapa"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Grid.Row="2" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Latitud" />
+        </Border>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.Latitude, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Border Grid.Row="4" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Longitud" />
+        </Border>
+        <TextBox Grid.Row="4" Grid.Column="1"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="{Binding Entity.Longitude, UpdateSourceTrigger=PropertyChanged}" />
+
+        <shared:SharedModalActions Grid.Row="6" Grid.ColumnSpan="2"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+    </Grid>
+</UserControl>

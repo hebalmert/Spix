@@ -206,6 +206,17 @@
     <SolidColorBrush x:Key="BrushScheduleUnknown" Color="#6C757D" />
     <!-- La cita manual de la agenda puede no traer estatus: cae en el azul del sistema -->
     <SolidColorBrush x:Key="BrushScheduleManual" Color="#16305E" />
+
+    <!-- El estado del contrato, los mismos colores del StatusBadge de la web -->
+    <SolidColorBrush x:Key="BrushContractDraft" Color="#0D6EFD" />
+    <SolidColorBrush x:Key="BrushContractPendingApproval" Color="#FD7E14" />
+    <SolidColorBrush x:Key="BrushContractInProgress" Color="#0DCAF0" />
+    <SolidColorBrush x:Key="BrushContractActive" Color="#198754" />
+    <SolidColorBrush x:Key="BrushContractExempt" Color="#20C997" />
+    <SolidColorBrush x:Key="BrushContractSuspended" Color="#DC3545" />
+    <SolidColorBrush x:Key="BrushContractCancelled" Color="#B02A37" />
+    <SolidColorBrush x:Key="BrushContractTerminated" Color="#6F42C1" />
+    <SolidColorBrush x:Key="BrushContractUnknown" Color="#6C757D" />
     <LinearGradientBrush x:Key="BrushAvatarBack" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="#F2F7FF" Offset="0" />
         <GradientStop Color="#DFEAFF" Offset="1" />

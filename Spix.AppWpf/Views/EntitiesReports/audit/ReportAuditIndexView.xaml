@@ -1,0 +1,191 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.audit.ReportAuditIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Bitacora del dinero: cada movimiento que quedo anotado, del mas nuevo al mas viejo.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no tienen botones.
+         No hay tablero porque la web tampoco lo tiene: aqui solo se lee el renglon. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding SearchCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- El periodo, el tipo de movimiento y el boton de Buscar -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" MinWidth="240" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Desde" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateStart, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Hasta" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateEnd, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="4">
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Movimiento" />
+
+                    <!-- La lista viene armada del backend, con su neutro en la posicion 0 -->
+                    <ComboBox Style="{StaticResource SharedFormCombo}"
+                              ItemsSource="{Binding Events}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Value"
+                              SelectedValue="{Binding EventType, Mode=TwoWay}" />
+                </StackPanel>
+
+                <Button Grid.Column="6"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding SearchCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Buscar (F5)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
+                        Content="Buscar" />
+            </Grid>
+
+            <!-- El texto libre busca por cliente, detalle o usuario: lo filtra el backend -->
+            <Grid Grid.Row="1" Margin="0,0,0,14">
+                <shared:SharedSearchFilter HorizontalAlignment="Right"
+                                           SearchText="{Binding Filter}"
+                                           SearchCommand="{Binding SearchCommand}"
+                                           ClearCommand="{Binding ClearSearchCommand}" />
+            </Grid>
+
+            <Border Grid.Row="2" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="120" Header="Fecha" SortMemberPath="DateEventText">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding DateEventText}" />
+                                                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding TimeEventText}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="180" Header="Movimiento" SortMemberPath="EventName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border HorizontalAlignment="Left"
+                                                    Padding="10,4"
+                                                    CornerRadius="11"
+                                                    BorderThickness="1"
+                                                    Background="{DynamicResource BrushCatalogChipBack}"
+                                                    BorderBrush="{DynamicResource BrushCatalogChipBorder}">
+                                                <TextBlock FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource BrushCatalogChipText}"
+                                                           Text="{Binding EventName}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="220" Header="Cliente" SortMemberPath="ClientFullName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ClientFullName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="*" MinWidth="240" Header="Detalle" SortMemberPath="Detail">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}"
+                                                       TextWrapping="Wrap"
+                                                       Text="{Binding Detail}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="170" Header="Usuario" SortMemberPath="UserByName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding UserByName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="130" Header="Monto" SortMemberPath="Total">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding Total, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.ClipboardList}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="No hay movimientos en este periodo" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

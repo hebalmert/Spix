@@ -82,7 +82,7 @@ public class ServiceRequestPhotoService : IServiceRequestPhotoService
                 return Fail<ServiceRequestPhotoDto>(_localizer["Visit_NotStarted"]);
             }
 
-            if (request.ScheduleStatus == ScheduleStatus.Completed)
+            if (request.ScheduleStatus.IsClosed())
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return Fail<ServiceRequestPhotoDto>(_localizer["Photo_ClosedOrder"]);
@@ -161,7 +161,7 @@ public class ServiceRequestPhotoService : IServiceRequestPhotoService
                 return Fail<bool>(_localizer[nameof(Resource.Generic_IdNotFound)]);
             }
 
-            if (photo.ServiceRequest!.ScheduleStatus == ScheduleStatus.Completed)
+            if (photo.ServiceRequest!.ScheduleStatus.IsClosed())
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return Fail<bool>(_localizer["Photo_ClosedOrder"]);

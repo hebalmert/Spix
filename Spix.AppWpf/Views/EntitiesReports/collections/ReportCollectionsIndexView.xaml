@@ -1,0 +1,236 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.collections.ReportCollectionsIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Recaudo del periodo: lo que entro entre dos fechas, como entro y quien lo recogio.
+
+         Los tres bloques comparten el mismo rango de fechas porque asi se cierra el dia.
+
+         Es de SOLA LECTURA: no hay crear, editar ni borrar, y las filas no llevan botones.
+         La tabla no pagina: el backend devuelve una sola fila por persona. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding SearchCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" MinHeight="180" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- El periodo: hoy, esta semana, el mes... lo que se pida -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Desde" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateStart, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Margin="2,0,0,6" Style="{StaticResource SharedIndexMeta}" Text="Hasta" />
+                    <DatePicker Width="140"
+                                MinHeight="38"
+                                SelectedDate="{Binding DateEnd, Mode=TwoWay}"
+                                SelectedDateFormat="Short" />
+                </StackPanel>
+
+                <Button Grid.Column="4"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding SearchCommand}"
+                        Style="{StaticResource SharedIndexNewButton}"
+                        ToolTip="Buscar (F5)"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
+                        Content="Buscar" />
+            </Grid>
+
+            <!-- Lo que entro y como entro. Lo exonerado va aparte: no es plata que entro,
+                 pero explica por que la nota quedo en cero. -->
+            <StackPanel Grid.Row="1"
+                        Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Margin="2,0,0,10"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Style="{StaticResource SharedIndexName}"
+                           Text="Lo que entro" />
+
+                <UniformGrid Columns="6" Margin="0,0,0,14">
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Cobros"
+                                              Value="{Binding Collections}" />
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Total recogido"
+                                              Value="{Binding Total, StringFormat=N2}"
+                                              Accent="{DynamicResource BrushCatalogKpiAccent}"
+                                              ValueBrush="{DynamicResource BrushCatalogKpiAccent}" />
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Efectivo"
+                                              Value="{Binding Cash, StringFormat=N2}"
+                                              Accent="{DynamicResource BrushCatalogKpiOk}"
+                                              ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Tarjeta y transferencia"
+                                              Value="{Binding Bank, StringFormat=N2}" />
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Pago adelantado"
+                                              Value="{Binding PrePayment, StringFormat=N2}" />
+                    <catalog:SharedCatalogKpi Label="Exonerado"
+                                              Value="{Binding Discount, StringFormat=N2}"
+                                              Accent="{DynamicResource BrushCatalogKpiBad}"
+                                              ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+                </UniformGrid>
+            </StackPanel>
+
+            <TextBlock Grid.Row="2"
+                       Margin="2,0,0,10"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       Style="{StaticResource SharedIndexName}"
+                       Text="Quien lo recogio" />
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" MinWidth="240" Header="Recibido por" SortMemberPath="Name">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Name}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="140" Header="Cobros" SortMemberPath="Collections">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexMeta}"
+                                                       Text="{Binding Collections, StringFormat=N0}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="170" Header="Total recogido" SortMemberPath="Total">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock HorizontalAlignment="Right"
+                                                       Style="{StaticResource SharedIndexName}"
+                                                       Text="{Binding Total, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Rows, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.HandHoldingDollar}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="{Binding EmptyText}" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <!-- La fila de totales vive en el pie y no en la tabla: asi no se
+                         ordena ni se confunde con una persona. Las tres columnas llevan
+                         los mismos anchos de arriba para que los numeros queden alineados. -->
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MinWidth="240" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="170" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Margin="10,0,0,0"
+                                       FontWeight="SemiBold"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="Total" />
+
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       Style="{StaticResource SharedIndexMeta}"
+                                       Text="{Binding CollectorsCount, StringFormat=N0}" />
+
+                            <TextBlock Grid.Column="2"
+                                       Margin="0,0,10,0"
+                                       HorizontalAlignment="Right"
+                                       FontWeight="SemiBold"
+                                       Style="{StaticResource SharedIndexName}"
+                                       Text="{Binding CollectorsTotal, StringFormat=N2}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Lo que se emitio en el mismo periodo: sirve para comparar lo cobrado con
+                 lo facturado sin salir de la pantalla. -->
+            <StackPanel Grid.Row="4"
+                        Margin="0,14,0,0"
+                        Visibility="{Binding HasNotes, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Margin="2,0,0,10"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Style="{StaticResource SharedIndexName}"
+                           Text="Notas emitidas en el periodo" />
+
+                <UniformGrid Columns="4">
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Notas"
+                                              Value="{Binding Notes}" />
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Monto emitido"
+                                              Value="{Binding Issued, StringFormat=N2}" />
+                    <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                              Label="Monto cobrado"
+                                              Value="{Binding Collected, StringFormat=N2}"
+                                              Accent="{DynamicResource BrushCatalogKpiOk}"
+                                              ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                    <catalog:SharedCatalogKpi Label="Monto por cobrar"
+                                              Value="{Binding Pending, StringFormat=N2}"
+                                              Accent="{DynamicResource BrushCatalogKpiBad}"
+                                              ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+                </UniformGrid>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

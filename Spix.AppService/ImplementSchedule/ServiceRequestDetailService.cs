@@ -71,10 +71,10 @@ public class ServiceRequestDetailService : IServiceRequestDetailService
                 return Fail<ServiceRequestDetailDto>(_localizer["Visit_NotStarted"]);
             }
 
-            if (request.ScheduleStatus == ScheduleStatus.Completed)
+            if (request.ScheduleStatus.IsClosed())
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return Fail<ServiceRequestDetailDto>("La solicitud completada no puede modificarse.");
+                return Fail<ServiceRequestDetailDto>("La solicitud cerrada no puede modificarse.");
             }
 
             if (request.Billed)
@@ -155,10 +155,10 @@ public class ServiceRequestDetailService : IServiceRequestDetailService
                 return new ActionResponse<bool> { WasSuccess = false, Message = _localizer[nameof(Resource.Generic_IdNotFound)] };
             }
 
-            if (detail.ServiceRequest!.ScheduleStatus == ScheduleStatus.Completed)
+            if (detail.ServiceRequest!.ScheduleStatus.IsClosed())
             {
                 await _transactionManager.RollbackTransactionAsync();
-                return Fail<bool>("La solicitud completada no puede modificarse.");
+                return Fail<bool>("La solicitud cerrada no puede modificarse.");
             }
 
             if (detail.ServiceRequest.Billed)
