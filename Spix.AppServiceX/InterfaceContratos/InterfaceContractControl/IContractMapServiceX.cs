@@ -1,4 +1,4 @@
-using Spix.Domain.EntitiesContratos;
+﻿using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.ModelUtility;
 
 namespace Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
@@ -9,7 +9,7 @@ public interface IContractMapServiceX
 
     Task<ActionResponse<ContractMap>> AddAsync(ContractMap modelo, string username);
 
-    Task<ActionResponse<ContractMap>> UpdateAsync(ContractMap modelo);
+    Task<ActionResponse<ContractMap>> UpdateAsync(ContractMap modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

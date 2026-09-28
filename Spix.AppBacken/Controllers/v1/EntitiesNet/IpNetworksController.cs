@@ -30,6 +30,26 @@ public class IpNetworksController : ControllerBase
         _localizer = localizer;
     }
 
+    //La IP local del PPPoE se elige de una lista propia: ver ComboLocalPppAsync
+    [HttpGet("loadComboLocalPpp/{serverId}")]
+    public async Task<IActionResult> GetComboLocalPppAsync([FromRoute] Guid serverId)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _unitOfWork.ComboLocalPppAsync(userClaimsInfo.UserName, serverId);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
     [HttpGet("loadCombo/{id?}")]
     public async Task<IActionResult> GetComboAsync([FromRoute] Guid? id = null)
     {

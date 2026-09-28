@@ -1,4 +1,4 @@
-@page "/my-bills"
+﻿@page "/my-bills"
 @layout MainLayout
 @attribute [Authorize(Roles = "Client")]
 
@@ -62,7 +62,7 @@
                             <Body>
                                 @foreach (var item in Bills!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowDetailsAsync(item.SellId)">
                                         <td>
                                             <div class="idx-name">@item.InvoiceNumber</div>
                                             <div class="idx-meta">@item.DateSell.ToString("dd/MM/yyyy")</div>
@@ -93,7 +93,7 @@
                                             }
                                         </td>
                                         <td style="text-align:right">@item.Total.ToString("N2")</td>
-                                        <td style="text-align:right">
+                                        <td @ondblclick:stopPropagation style="text-align:right">
                                             <div class="idx-actions">
                                                 <ButtonGeneric OnClick="() => ShowDetailsAsync(item.SellId)"
                                                                TooTip="@Localizer["MyBill_Details"]"

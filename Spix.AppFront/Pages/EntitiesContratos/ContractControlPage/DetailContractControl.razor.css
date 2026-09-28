@@ -357,6 +357,7 @@
     min-width: 0;
 }
 
+
 .cc-name {
     font-size: 14px;
     font-weight: 700;
@@ -487,6 +488,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.cc-facts-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .cc-facts-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
 }
@@ -529,6 +534,7 @@
         position: static;
     }
 
+    .cc-facts-4,
     .cc-facts-5 {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
@@ -538,6 +544,7 @@
     .cc-grid,
     .cc-facts-2,
     .cc-facts-3,
+    .cc-facts-4,
     .cc-facts-5 {
         grid-template-columns: 1fr;
     }

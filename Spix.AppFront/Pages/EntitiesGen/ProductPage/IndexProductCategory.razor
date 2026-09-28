@@ -4,7 +4,13 @@
 
 <div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-1">@Localizer[nameof(Resource.ProductCategory)]</h3>
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-boxes-stacked"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.ProductCategoryIdx_Title)]</h3>
+                <p>@Localizer[nameof(Resource.ProductCategoryIdx_Subtitle)]</p>
+            </div>
+        </div>
         <p class="pc-sub">Elija una categoria a la izquierda y trabaje sus productos a la derecha.</p>
 
         @* Resumen de la categoria seleccionada *@

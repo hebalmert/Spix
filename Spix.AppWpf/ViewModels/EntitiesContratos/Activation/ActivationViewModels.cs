@@ -1,10 +1,11 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Network;
 using Spix.AppWpf.SharedServices;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EntitiesContractDTO;
+using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
 
@@ -323,11 +324,65 @@ public partial class ActivationIndexViewModel : ObservableObject
         var problemas = new List<ActivationIssueDto>();
 
         //===== Las ordenes al equipo, por la red LAN =====
-        //Sin HotSpot no se toca el equipo: el lote se da por bueno y solo cambia el estado
+        //Sin control en el equipo no se toca nada: el lote solo cambia de estado
 
-        if (!datos.UsaHotSpot)
+        if (!datos.UsaControl)
         {
             aceptados.AddRange(datos.Bindings.Select(x => x.ContractClientId));
+        }
+        else if (datos.Control == MikrotikControlType.PPPoE)
+        {
+            foreach (var grupo in datos.Credenciales.GroupBy(x => x.ServerId))
+            {
+                var credenciales = grupo.ToList();
+
+                var serverPpp = new Server
+                {
+                    ServerId = credenciales[0].ServerId,
+                    ServerName = credenciales[0].ServerName,
+                    Usuario = credenciales[0].Usuario,
+                    Clave = credenciales[0].Clave,
+                    ApiPort = credenciales[0].ApiPort,
+                    IpNetwork = new IpNetwork { Ip = credenciales[0].ServerIp }
+                };
+
+                var esperaPpp = TimeSpan.FromSeconds(
+                    EsperaBaseSegundos + EsperaPorContratoSegundos * credenciales.Count);
+
+                var resultadoPpp = await _mikrotikService.ExecuteAsync(serverPpp, mikrotik =>
+                {
+                    foreach (var credencial in credenciales)
+                    {
+                        //Al que falle se le anota el problema y se sigue con los demas, igual
+                        //que hace HotSpot: el que no quede se resuelve por Suspendidos.
+                        try
+                        {
+                            LocalPppoeCommands.SetAccess(mikrotik,
+                                credencial.MikrotikId!,
+                                credencial.UsuarioPppoe!,
+                                credencial.IpCliente!,
+                                enabled: true);
+
+                            aceptados.Add(credencial.ContractClientId);
+                        }
+                        catch (Exception ex)
+                        {
+                            problemas.Add(new ActivationIssueDto
+                            {
+                                ControlContrato = credencial.ControlContrato,
+                                ClientFullName = credencial.ClientFullName ?? string.Empty,
+                                Reason = ex.Message
+                            });
+                        }
+                    }
+                }, timeout: esperaPpp);
+
+                if (!resultadoPpp.WasExecuted)
+                {
+                    await _alertService.ErrorAsync("No se pudo conectar con MikroTik", resultadoPpp.Message);
+                    return null;
+                }
+            }
         }
         else
         {

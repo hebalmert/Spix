@@ -7,6 +7,12 @@ namespace Spix.AppService.InterfacesInven;
 
 public interface ICargueDetailsService
 {
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboCategoriesAsync(string username);
+
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboProductsAsync(string username, Guid productCategoryId);
+
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboMacsAsync(string username, Guid productId, Guid? id = null);
+
     Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, Guid? id = null);
 
     Task<ActionResponse<IEnumerable<CargueDetail>>> GetAsync(PaginationDTO pagination, string email);

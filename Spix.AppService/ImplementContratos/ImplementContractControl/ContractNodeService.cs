@@ -59,6 +59,10 @@ public class ContractNodeService : IContractNodeService
             var modelo = await _context.ContractNodes.AsNoTracking()
                 .Include(x => x.Node)
                     .ThenInclude(x => x!.IpNetwork)
+                .Include(x => x.Node)
+                    .ThenInclude(x => x!.Frecuency)
+                .Include(x => x.Node)
+                    .ThenInclude(x => x!.Channel)
                 .FirstOrDefaultAsync(c => c.ContractClientId == id && c.ContractClient!.CorporationId == user.CorporationId);
 
             if (modelo?.Node != null)
@@ -104,6 +108,36 @@ public class ContractNodeService : IContractNodeService
                 };
             }
 
+            //El contrato tiene que ser de SU corporacion. Recibir el username no alcanza:
+            //sin esto, con el id de un contrato ajeno se le agrega una pieza a otra empresa.
+            var contratoOk = await _context.ContractClients.AnyAsync(x =>
+                x.ContractClientId == modelo.ContractClientId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!contratoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractNode>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            var recursoOk = await _context.Nodes.AnyAsync(x =>
+                x.NodeId == modelo.NodeId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!recursoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractNode>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
             _context.ContractNodes.Add(modelo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
@@ -121,12 +155,26 @@ public class ContractNodeService : IContractNodeService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var dataRemove = await _context.ContractNodes.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la pieza tiene que ser de un contrato de SU corporacion.
+            //Con FindAsync(id) cualquiera que conociera el id borraba la pieza de otra empresa.
+            var dataRemove = await _context.ContractNodes
+                .FirstOrDefaultAsync(x => x.ContractNodeId == id &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
             if (dataRemove == null)
             {
                 return new ActionResponse<bool>

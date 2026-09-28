@@ -85,6 +85,36 @@ public class ContractPlanService : IContractPlanService
                 };
             }
 
+            //El contrato tiene que ser de SU corporacion. Recibir el username no alcanza:
+            //sin esto, con el id de un contrato ajeno se le agrega una pieza a otra empresa.
+            var contratoOk = await _context.ContractClients.AnyAsync(x =>
+                x.ContractClientId == modelo.ContractClientId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!contratoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractPlan>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            var recursoOk = await _context.Plans.AnyAsync(x =>
+                x.PlanId == modelo.PlanId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!recursoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractPlan>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
             _context.ContractPlans.Add(modelo);
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
@@ -102,12 +132,26 @@ public class ContractPlanService : IContractPlanService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var dataRemove = await _context.ContractPlans.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la pieza tiene que ser de un contrato de SU corporacion.
+            //Con FindAsync(id) cualquiera que conociera el id borraba la pieza de otra empresa.
+            var dataRemove = await _context.ContractPlans
+                .FirstOrDefaultAsync(x => x.ContractPlanId == id &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
             if (dataRemove == null)
             {
                 return new ActionResponse<bool>

@@ -39,13 +39,13 @@
                     <tbody>
                         @foreach (var item in Transfers!)
                         {
-                            <tr>
+                            <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.TransferId, true)">
                                 <td>@item.DateTransfer.ToString("dd/MM/yyyy")</td>
                                 <td>@item.NroTransfer</td>
                                 <td>@item.FromStorageName</td>
                                 <td>@item.ToStorageName</td>
                                 <td>@item.Status.ToString()</td>
-                                <td class="text-center">
+                                <td @ondblclick:stopPropagation class="text-center">
                                     @if (item.Status == TransferType.Pendiente)
                                     {
                                         <button class="btn btn-sm btn-dark"

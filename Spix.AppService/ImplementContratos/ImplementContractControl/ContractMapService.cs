@@ -84,6 +84,22 @@ public class ContractMapService : IContractMapService
                 };
             }
 
+            //El contrato tiene que ser de SU corporacion. Recibir el username no alcanza:
+            //sin esto, con el id de un contrato ajeno se le agrega una pieza a otra empresa.
+            var contratoOk = await _context.ContractClients.AnyAsync(x =>
+                x.ContractClientId == modelo.ContractClientId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!contratoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractMap>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
             var exists = await _context.ContractMaps.AnyAsync(x => x.ContractClientId == modelo.ContractClientId);
             if (exists)
             {
@@ -112,12 +128,27 @@ public class ContractMapService : IContractMapService
         }
     }
 
-    public async Task<ActionResponse<ContractMap>> UpdateAsync(ContractMap modelo)
+    public async Task<ActionResponse<ContractMap>> UpdateAsync(ContractMap modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var current = await _context.ContractMaps.FindAsync(modelo.ContractMapId);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractMap>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la ubicacion tiene que ser de un contrato de SU corporacion
+            var current = await _context.ContractMaps
+                .FirstOrDefaultAsync(x => x.ContractMapId == modelo.ContractMapId &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
+
             if (current == null)
             {
                 await _transactionManager.RollbackTransactionAsync();
@@ -147,12 +178,26 @@ public class ContractMapService : IContractMapService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var dataRemove = await _context.ContractMaps.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la pieza tiene que ser de un contrato de SU corporacion.
+            //Con FindAsync(id) cualquiera que conociera el id borraba la pieza de otra empresa.
+            var dataRemove = await _context.ContractMaps
+                .FirstOrDefaultAsync(x => x.ContractMapId == id &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
             if (dataRemove == null)
             {
                 await _transactionManager.RollbackTransactionAsync();

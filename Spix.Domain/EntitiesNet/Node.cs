@@ -5,6 +5,7 @@ using Spix.Domain.EntitiesGen;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesNet;
 
@@ -28,6 +29,7 @@ public class Node
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Operation), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int OperationId { get; set; }
 
     [MaxLength(17, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
@@ -59,6 +61,7 @@ public class Node
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Mark), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public Guid MarkId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]

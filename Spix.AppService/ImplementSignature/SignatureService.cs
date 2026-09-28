@@ -1539,6 +1539,12 @@ public class SignatureService : ISignatureService
             .AsNoTracking()
             .Include(x => x.Client)
             .ThenInclude(x => x!.DocumentType)
+
+            //Lo que piden los campos del PDF: el plan (que existe desde que se crea el
+            //contrato) y las piezas de la instalacion (que pueden no existir todavia si se
+            //firma antes de instalar; en ese caso el campo sale vacio).
+            .Include(x => x.ContractPlans!)
+                .ThenInclude(x => x.Plan)
             .FirstOrDefaultAsync(x => x.ContractClientId == contractClientId && x.ClientId == client.ClientId);
     }
 
@@ -1627,6 +1633,12 @@ public class SignatureService : ISignatureService
             .AsNoTracking()
             .Include(x => x.Client)
             .ThenInclude(x => x!.DocumentType)
+
+            //Lo que piden los campos del PDF: el plan (que existe desde que se crea el
+            //contrato) y las piezas de la instalacion (que pueden no existir todavia si se
+            //firma antes de instalar; en ese caso el campo sale vacio).
+            .Include(x => x.ContractPlans!)
+                .ThenInclude(x => x.Plan)
             .FirstOrDefaultAsync(x => x.ContractClientId == contractClientId && x.CorporationId == corporationId);
 
     private async Task<ContractDocumentTemplate?> GetTemplateWithFieldsAsync(Guid templateId, int corporationId) =>
@@ -1689,6 +1701,9 @@ public class SignatureService : ISignatureService
         //Direccion del contrato (donde se presta el servicio); si no tiene, la del cliente
         var address = string.IsNullOrWhiteSpace(contract.Address) ? client?.Address : contract.Address;
 
+        //El plan: existe desde que se crea el contrato, asi que estos cuatro siempre salen
+        var plan = contract.ContractPlans?.FirstOrDefault()?.Plan;
+
         return new Dictionary<string, string?>
         {
             [nameof(ContractDocumentFieldType.FullName)] = fullName,
@@ -1697,7 +1712,16 @@ public class SignatureService : ISignatureService
             [nameof(ContractDocumentFieldType.Date)] = DateTime.UtcNow.ToString("MM/dd/yyyy"),
             [nameof(ContractDocumentFieldType.Address)] = address,
             [nameof(ContractDocumentFieldType.Email)] = client?.Email,
-            [nameof(ContractDocumentFieldType.PrintName)] = printName
+            [nameof(ContractDocumentFieldType.PrintName)] = printName,
+
+            [nameof(ContractDocumentFieldType.ContractNumber)] = contract.ControlContrato.ToString(),
+            [nameof(ContractDocumentFieldType.DateTime)] = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm"),
+
+            [nameof(ContractDocumentFieldType.PlanName)] = plan?.PlanName,
+            [nameof(ContractDocumentFieldType.SpeedDown)] = plan?.VelocidadDown,
+            [nameof(ContractDocumentFieldType.SpeedUp)] = plan?.VelocidadUp,
+            [nameof(ContractDocumentFieldType.MonthlyPrice)] = plan?.PrecioconImpuesto?.ToString("N2"),
+
         };
     }
 
@@ -1731,6 +1755,16 @@ public class SignatureService : ISignatureService
             [nameof(ContractDocumentFieldType.Address)] = "Calle 10 # 20-30 Barrio Centro",
             [nameof(ContractDocumentFieldType.Email)] = "cliente@correo.com",
             [nameof(ContractDocumentFieldType.PrintName)] = "Cliente Prueba",
+
+            [nameof(ContractDocumentFieldType.ContractNumber)] = "1024",
+            [nameof(ContractDocumentFieldType.DateTime)] = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm"),
+
+            [nameof(ContractDocumentFieldType.PlanName)] = "Plan 20 Megas",
+            [nameof(ContractDocumentFieldType.SpeedDown)] = "20M",
+            [nameof(ContractDocumentFieldType.SpeedUp)] = "5M",
+            [nameof(ContractDocumentFieldType.MonthlyPrice)] = "65.000,00",
+
+
             ["SignatureTest"] = "Firma Test"
         };
 

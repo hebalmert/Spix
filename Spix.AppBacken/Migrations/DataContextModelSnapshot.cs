@@ -1444,6 +1444,29 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("ContractNodes");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractOlt", b =>
+                {
+                    b.Property<Guid>("ContractOltId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OltId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ContractOltId");
+
+                    b.HasIndex("ContractClientId")
+                        .IsUnique();
+
+                    b.HasIndex("OltId");
+
+                    b.ToTable("ContractOlts");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractPlan", b =>
                 {
                     b.Property<Guid>("ContractPlanId")
@@ -1459,12 +1482,74 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasKey("ContractPlanId");
 
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("ContractClientId", "PlanId")
+                    b.HasIndex("ContractClientId")
                         .IsUnique();
 
+                    b.HasIndex("PlanId");
+
                     b.ToTable("ContractPlans");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractPppoe", b =>
+                {
+                    b.Property<Guid>("ContractPppoeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("Clave")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("ContractClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IpCliente")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("IpNetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IpServer")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MikrotikId")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<int>("PppoeAccessState")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProfileName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("ServerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ServerName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Usuario")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ContractPppoeId");
+
+                    b.HasIndex("ContractClientId")
+                        .IsUnique();
+
+                    b.HasIndex("IpNetId");
+
+                    b.HasIndex("ServerId", "Usuario")
+                        .IsUnique();
+
+                    b.ToTable("ContractPppoes");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractQue", b =>
@@ -1539,10 +1624,10 @@ namespace Spix.AppBacken.Migrations
 
                     b.HasKey("ContractServerId");
 
-                    b.HasIndex("ServerId");
-
-                    b.HasIndex("ContractClientId", "ServerId")
+                    b.HasIndex("ContractClientId")
                         .IsUnique();
+
+                    b.HasIndex("ServerId");
 
                     b.ToTable("ContractServers");
                 });
@@ -3137,27 +3222,6 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("TransferDetails");
                 });
 
-            modelBuilder.Entity("Spix.Domain.EntitiesMK.ConnectionMikrotikControl", b =>
-                {
-                    b.Property<Guid>("ConnectionMikrotikControlId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.Property<int>("CorporationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MikrotikControlType")
-                        .HasColumnType("int");
-
-                    b.HasKey("ConnectionMikrotikControlId");
-
-                    b.HasIndex("CorporationId")
-                        .IsUnique();
-
-                    b.ToTable("ConnectionMikrotikControls");
-                });
-
             modelBuilder.Entity("Spix.Domain.EntitiesMK.QueueParent", b =>
                 {
                     b.Property<Guid>("QueueParentId")
@@ -3417,6 +3481,77 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("Nodes");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesNet.Olt", b =>
+                {
+                    b.Property<Guid>("OltId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Clave")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("IpNetworkId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("decimal(12,7)");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("decimal(12,7)");
+
+                    b.Property<Guid>("MarkId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MarkModelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OltName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PortCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PortSpeed")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("Usuario")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<Guid>("ZoneId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("OltId");
+
+                    b.HasIndex("CorporationId");
+
+                    b.HasIndex("IpNetworkId");
+
+                    b.HasIndex("MarkId");
+
+                    b.HasIndex("MarkModelId");
+
+                    b.HasIndex("ZoneId");
+
+                    b.HasIndex("OltName", "CorporationId")
+                        .IsUnique();
+
+                    b.ToTable("Olts");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesNet.Server", b =>
                 {
                     b.Property<Guid>("ServerId")
@@ -3435,17 +3570,47 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
+                    b.Property<int>("ControlMk")
+                        .HasColumnType("int");
+
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
 
                     b.Property<Guid>("IpNetworkId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("LanName")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
                     b.Property<Guid>("MarkId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("MarkModelId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MkIdentity")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("PppLocalIpNetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PppProfileMkId")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("PppProfileName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PppServerMkId")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("PppServiceName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ServerName")
                         .IsRequired()
@@ -3458,7 +3623,6 @@ namespace Spix.AppBacken.Migrations
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("WanName")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
@@ -3472,6 +3636,8 @@ namespace Spix.AppBacken.Migrations
                     b.HasIndex("MarkId");
 
                     b.HasIndex("MarkModelId");
+
+                    b.HasIndex("PppLocalIpNetId");
 
                     b.HasIndex("ZoneId");
 
@@ -5556,6 +5722,25 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Node");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractOlt", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany("ContractOlts")
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesNet.Olt", "Olt")
+                        .WithMany("ContractOlts")
+                        .HasForeignKey("OltId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("Olt");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractPlan", b =>
                 {
                     b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
@@ -5573,6 +5758,33 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ContractClient");
 
                     b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractPppoe", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesContratos.ContractClient", "ContractClient")
+                        .WithMany("ContractPppoes")
+                        .HasForeignKey("ContractClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesNet.IpNet", "IpNet")
+                        .WithMany("ContractPppoes")
+                        .HasForeignKey("IpNetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesNet.Server", "Server")
+                        .WithMany("ContractPppoes")
+                        .HasForeignKey("ServerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ContractClient");
+
+                    b.Navigation("IpNet");
+
+                    b.Navigation("Server");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesContratos.ContractQue", b =>
@@ -6298,17 +6510,6 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Transfer");
                 });
 
-            modelBuilder.Entity("Spix.Domain.EntitiesMK.ConnectionMikrotikControl", b =>
-                {
-                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
-                        .WithMany()
-                        .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Corporation");
-                });
-
             modelBuilder.Entity("Spix.Domain.EntitiesMK.QueueParent", b =>
                 {
                     b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
@@ -6448,6 +6649,49 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Zone");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesNet.Olt", b =>
+                {
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesNet.IpNetwork", "IpNetwork")
+                        .WithMany()
+                        .HasForeignKey("IpNetworkId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesGen.Mark", "Mark")
+                        .WithMany()
+                        .HasForeignKey("MarkId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesGen.MarkModel", "MarkModel")
+                        .WithMany()
+                        .HasForeignKey("MarkModelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesGen.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Corporation");
+
+                    b.Navigation("IpNetwork");
+
+                    b.Navigation("Mark");
+
+                    b.Navigation("MarkModel");
+
+                    b.Navigation("Zone");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesNet.Server", b =>
                 {
                     b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
@@ -6474,6 +6718,11 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Spix.Domain.EntitiesNet.IpNetwork", "PppLocalIpNet")
+                        .WithMany()
+                        .HasForeignKey("PppLocalIpNetId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Spix.Domain.EntitiesGen.Zone", "Zone")
                         .WithMany("Servers")
                         .HasForeignKey("ZoneId")
@@ -6487,6 +6736,8 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("Mark");
 
                     b.Navigation("MarkModel");
+
+                    b.Navigation("PppLocalIpNet");
 
                     b.Navigation("Zone");
                 });
@@ -7105,7 +7356,11 @@ namespace Spix.AppBacken.Migrations
 
                     b.Navigation("ContractNodes");
 
+                    b.Navigation("ContractOlts");
+
                     b.Navigation("ContractPlans");
+
+                    b.Navigation("ContractPppoes");
 
                     b.Navigation("ContractQues");
 
@@ -7279,6 +7534,8 @@ namespace Spix.AppBacken.Migrations
 
                     b.Navigation("ContractIps");
 
+                    b.Navigation("ContractPppoes");
+
                     b.Navigation("ContractQues");
                 });
 
@@ -7294,9 +7551,16 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ContractNodes");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesNet.Olt", b =>
+                {
+                    b.Navigation("ContractOlts");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesNet.Server", b =>
                 {
                     b.Navigation("ContractBinds");
+
+                    b.Navigation("ContractPppoes");
 
                     b.Navigation("ContractQues");
 

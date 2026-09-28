@@ -5,6 +5,7 @@ using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesOper;
 
@@ -26,6 +27,7 @@ public class Client
     public string LastName { get; set; } = null!;
 
     [Display(Name = nameof(Resource.DocumentType), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public Guid DocumentTypeId { get; set; }
 
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]

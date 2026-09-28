@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.DomainLogic.EntitiesContractDTO;
@@ -515,6 +515,12 @@ public partial class ContractDocumentTemplateFieldsViewModel : ObservableObject
             ContractDocumentFieldType.Address => "Direccion",
             ContractDocumentFieldType.Email => "Correo",
             ContractDocumentFieldType.PrintName => "Nombre imprenta",
+            ContractDocumentFieldType.ContractNumber => "No. contrato",
+            ContractDocumentFieldType.DateTime => "Fecha y hora",
+            ContractDocumentFieldType.PlanName => "Plan",
+            ContractDocumentFieldType.SpeedDown => "Velocidad bajada",
+            ContractDocumentFieldType.SpeedUp => "Velocidad subida",
+            ContractDocumentFieldType.MonthlyPrice => "Valor mensual",
             _ => fieldType.ToString()
         };
     }

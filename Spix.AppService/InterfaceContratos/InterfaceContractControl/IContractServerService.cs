@@ -1,4 +1,4 @@
-using Spix.Domain.EntitiesContratos;
+﻿using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.ModelUtility;
 
 namespace Spix.AppService.InterfaceContratos.InterfaceContractControl;
@@ -9,5 +9,5 @@ public interface IContractServerService
 
     Task<ActionResponse<ContractServer>> AddAsync(ContractServer modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

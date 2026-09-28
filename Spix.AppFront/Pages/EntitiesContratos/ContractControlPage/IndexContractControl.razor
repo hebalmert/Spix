@@ -83,7 +83,7 @@
                             <Body>
                                 @foreach (var item in ContractClients!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.ContractClientId, true)">
                                         <td><span class="idx-name">@item.ControlContrato</span></td>
                                         <td>@item.Client!.FirstName @item.Client.LastName</td>
                                         <td>
@@ -99,8 +99,15 @@
                                         <td>
                                             <StatusBadge Value="@item.ContractState" />
                                         </td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
+                                                @* Como trabaja el equipo de este contrato: P de PPPoE, H de HotSpot.
+                                                   Es el mismo boton de la fila, con la letra en morado en vez del icono. *@
+                                                <ButtonLetter Letter="@MkLetra(item.ControlMk)"
+                                                              TooTip="@MkNombre(item.ControlMk)"
+                                                              Style="font-size: 15px; font-weight: 800; color: #6f42c1;" />
+                                                <span class="mk-sep"></span>
+
                                                 @* Los datos de auditoria no ocupan columna: se consultan aqui *@
                                                 <ButtonGeneric Icon="fa fa-clock-rotate-left"
                                                                TooTip="@Localizer["Audit_Tip"]"

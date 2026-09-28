@@ -97,11 +97,13 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<IpNetwork> IpNetworks => Set<IpNetwork>();
     public DbSet<IpNet> IpNets => Set<IpNet>();
     public DbSet<Node> Nodes => Set<Node>();
+
+    //La OLT: el gemelo del Nodo para los clientes de fibra
+    public DbSet<Olt> Olts => Set<Olt>();
     public DbSet<Server> Servers => Set<Server>();
 
     //EntitiesMK
 
-    public DbSet<ConnectionMikrotikControl> ConnectionMikrotikControls => Set<ConnectionMikrotikControl>();
     public DbSet<QueueParent> QueueParents => Set<QueueParent>();
     public DbSet<QueueType> QueueTypes => Set<QueueType>();
 
@@ -119,9 +121,11 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<ContractServer> ContractServers => Set<ContractServer>();
     public DbSet<ContractPlan> ContractPlans => Set<ContractPlan>();
     public DbSet<ContractNode> ContractNodes => Set<ContractNode>();
+    public DbSet<ContractOlt> ContractOlts => Set<ContractOlt>();
     public DbSet<ContractMap> ContractMaps => Set<ContractMap>();
     public DbSet<ContractQue> ContractQues => Set<ContractQue>();
     public DbSet<ContractBind> ContractBinds => Set<ContractBind>();
+    public DbSet<ContractPppoe> ContractPppoes => Set<ContractPppoe>();
     public DbSet<ContractClient> ContractClients => Set<ContractClient>();
     public DbSet<ContractSuspendedAudit> ContractSuspendedAudits => Set<ContractSuspendedAudit>();
     public DbSet<RunSuspended> RunSuspendeds => Set<RunSuspended>();

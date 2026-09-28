@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
@@ -24,10 +24,10 @@ public partial class FormPlan
     private Tax? SelectedTax;
     private List<GuidItemModel>? Taxes;
 
-    private IntItemModel? SelectedUserTypeUp = new();
+    //Las listas de unidades (k, M, G). No hay una variable "seleccionada": el <select>
+    //lee la propiedad del modelo y el @onchange la actualiza, que es lo que hace que al
+    //editar se vea la unidad guardada y no siempre la primera.
     private List<IntItemModel>? ListUserTypeUp = new();
-
-    private IntItemModel? SelectedUserTypeDown = new();
     private List<IntItemModel>? ListUserTypeDown = new();
 
     [Parameter, EditorRequired] public Plan Plan { get; set; } = null!;

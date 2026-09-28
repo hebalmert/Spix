@@ -61,7 +61,7 @@ var response = await _technitianService.GetAsync(pagination, userClaimsInfo.User
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
 
         [HttpPost]
@@ -101,7 +101,7 @@ var response = await _technitianService.GetAsync(pagination, userClaimsInfo.User
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
     }
 }

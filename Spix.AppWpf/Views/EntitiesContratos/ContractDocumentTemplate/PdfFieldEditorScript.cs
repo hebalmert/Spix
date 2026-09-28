@@ -1,4 +1,4 @@
-namespace Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate;
+﻿namespace Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate;
 
 // El editor visual de campos, el MISMO de la web (Spix.AppFront/wwwroot/jslib/pdfFieldEditor.js).
 //
@@ -29,7 +29,13 @@ public static class PdfFieldEditorScript
                 4: "09/12/2026",
                 6: "Calle 10 # 20-30 Barrio Centro",
                 7: "cliente@correo.com",
-                8: "Cliente Prueba"
+                8: "Cliente Prueba",
+                9: "1024",
+                10: "09/12/2026 14:35",
+                11: "Plan 20 Megas",
+                12: "20M",
+                13: "5M",
+                14: "65.000,00"
             };
 
             let state = null;

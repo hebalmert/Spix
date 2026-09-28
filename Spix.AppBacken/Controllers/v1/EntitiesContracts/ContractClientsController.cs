@@ -123,7 +123,10 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+
+            //BadRequest y no NotFound: un fallo de validacion no es un recurso que no
+            //existe, y con 404 el front pinta su mensaje generico y PIERDE el del servicio.
+            return BadRequest(response.Message);
         }
 
         [HttpDelete("{id}")]
@@ -134,7 +137,7 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
     }
 }

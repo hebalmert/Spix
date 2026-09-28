@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
+using Spix.DomainLogic.EnumTypes;
 using Spix.AppFront.Pages.EntitiesContratos.ContracIDPicPage;
 using Spix.AppFront.Pages.EntitiesContratos.ContractClientPage;
 using Spix.Domain.EntitiesContratos;
@@ -174,4 +175,21 @@ public partial class IndexContractControl
 
         await _modalService.ShowAsync(typeof(ContractAuditModal), parametros);
     }
+
+    //La letra y el texto del globito segun como trabaje el equipo del contrato. El color
+    //es el mismo para las dos; un contrato sin servidor todavia no es ninguna y sale un guion.
+    private static string MkLetra(MikrotikControlType control) => control switch
+    {
+        MikrotikControlType.PPPoE => "P",
+        MikrotikControlType.HotSpot => "H",
+        _ => "-"
+    };
+
+    private string MkNombre(MikrotikControlType control) => control switch
+    {
+        MikrotikControlType.PPPoE => "PPPoE",
+        MikrotikControlType.HotSpot => "HotSpot",
+        _ => Localizer["Contract_NoServerYet"]
+    };
+
 }

@@ -52,6 +52,7 @@ public class IpNet
     public ICollection<ContractIp>? ContractIps { get; set; }
     public ICollection<ContractQue>? ContractQues { get; set; }
     public ICollection<ContractBind>? ContractBinds { get; set; }
+    public ICollection<ContractPppoe>? ContractPppoes { get; set; }
 
     //Limpia lo que escribe el usuario: deja solo digitos y puntos, y si vienen solo digitos arma los cuatro octetos
     private static string? Normalize(string? value)

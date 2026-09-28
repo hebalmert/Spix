@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
@@ -6,6 +6,7 @@ using Spix.Domain.EntitiesGen;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using Spix.DomainLogic.Validations;
 namespace Spix.AppFront.Pages.EntitiesGen.ProductPage;
 
 public partial class FormProduct
@@ -67,8 +68,8 @@ public partial class FormProduct
     {
         if (Guid.TryParse(e.Value?.ToString(), out var markId))
         {
-            Product.MarkId = markId;
-            Product.MarkModelId = Guid.Empty;
+            Product.MarkId = ComboValue.OrNull(markId);
+            Product.MarkModelId = null;
             await LoadMarkModelsAsync(markId);
         }
     }
@@ -77,7 +78,7 @@ public partial class FormProduct
     {
         if (Guid.TryParse(e.Value?.ToString(), out var markModelId))
         {
-            Product.MarkModelId = markModelId;
+            Product.MarkModelId = ComboValue.OrNull(markModelId);
         }
     }
 

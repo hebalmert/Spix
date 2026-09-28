@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
@@ -6,11 +6,14 @@ using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
+using Microsoft.Extensions.Localization;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesContratos.ContractDocumentTemplatePage;
 
 public partial class IndexContractDocumentTemplate
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;

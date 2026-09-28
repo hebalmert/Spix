@@ -12,15 +12,15 @@
 
     <!-- Botón Buscar -->
     <div class="col-auto">
-        <button class="btn btn-gradient-primary d-flex align-items-center gap-2" @onclick="OnfilterApply">
-            <i class="fa fa-search"></i> @Localizer["Search"]
+        <button class="btn-gradient-blue" @onclick="OnfilterApply">
+            <i class="fa fa-search"></i><span>@Localizer["Search"]</span>
         </button>
     </div>
 
     <!-- Botón Limpiar -->
     <div class="col-auto">
-        <button class="btn btn-gradient-black d-flex align-items-center gap-2" @onclick="ClearFilter">
-            <i class="fa fa-refresh"></i> @Localizer["Clear"]
+        <button class="btn-gradient-dark" @onclick="ClearFilter">
+            <i class="fa fa-refresh"></i><span>@Localizer["Clear"]</span>
         </button>
     </div>
 

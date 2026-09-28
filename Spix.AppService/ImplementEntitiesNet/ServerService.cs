@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Extensions;
 using Spix.AppInfra.Transactions;
@@ -9,10 +10,13 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EntitiesNetDTO;
+using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 using Spix.xLanguage.Resources;
 using Spix.xNetwork.IpHelper;
+using Spix.xNetwork.MkHelper;
 
 namespace Spix.AppService.ImplementEntitiesNet;
 
@@ -26,6 +30,7 @@ public class ServerService : IServerService
     private readonly ITransactionManager _transactionManager;
     private readonly IUserHelper _userHelper;
     private readonly IIpControl _ipControl;
+    private readonly IEnumMultilLanguageService _enumMultilLanguageService;
     private readonly IStringLocalizer _localizer;
     private readonly HttpErrorHandler _httpErrorHandler;
 
@@ -36,6 +41,7 @@ public class ServerService : IServerService
         IUserHelper userHelper,
         HttpErrorHandler httpErrorHandler,
         IIpControl ipControl,
+        IEnumMultilLanguageService enumMultilLanguageService,
         IStringLocalizer localizer)
     {
         _context = context;
@@ -43,8 +49,19 @@ public class ServerService : IServerService
         _transactionManager = transactionManager;
         _userHelper = userHelper;
         _ipControl = ipControl;
+        _enumMultilLanguageService = enumMultilLanguageService;
         _localizer = localizer;
         _httpErrorHandler = httpErrorHandler;
+    }
+
+    //Como puede trabajar un equipo. La lista se arma ACA, con los nombres traducidos y el
+    //neutro en la posicion 0: el front solo pone value y @onchange.
+    public ActionResponse<IEnumerable<IntItemModel>> ControlTypesCombo()
+    {
+        var list = _enumMultilLanguageService
+            .GetEnumSelectList<MikrotikControlType>(nameof(Resource.Select_ControlType));
+
+        return Success<IEnumerable<IntItemModel>>(list);
     }
 
     //Servidores activos para elegir: solo id y nombre. Con id incluye el que ya tiene el contrato.
@@ -59,7 +76,7 @@ public class ServerService : IServerService
                 .AsNoTracking()
                 .Where(x => x.CorporationId == corporationId && (x.Active || x.ServerId == id))
                 .OrderBy(x => x.ServerName)
-                .Select(x => new Server { ServerId = x.ServerId, ServerName = x.ServerName })
+                .Select(x => new Server { ServerId = x.ServerId, ServerName = x.ServerName, ControlMk = x.ControlMk })
                 .ToListAsync();
 
             if (id == null)
@@ -142,6 +159,8 @@ public class ServerService : IServerService
                 {
                     ServerId = x.ServerId,
                     ServerName = x.ServerName,
+                    ControlMk = x.ControlMk,
+                    PppoeReady = x.PppServerMkId != null,
                     ZoneName = x.Zone!.ZoneName,
                     Ip = x.IpNetwork!.Ip,
                     Active = x.Active,
@@ -241,6 +260,89 @@ public class ServerService : IServerService
             var name = modelo.ServerName.Trim();
             if (await NameExistsAsync(name, corporationId.Value, current.ServerId)) return await FailRollbackAsync<Server>(_localizer["Server_NameRepeated", name]);
 
+            //Un equipo ya alistado en el MikroTik no cambia de interfaz ni de IP local: el
+            //servidor PPPoE y el perfil ya estan escritos con esos valores, asi que la base
+            //mostraria una cosa y el router tendria otra.
+            if (current.PppServerMkId != null &&
+                (modelo.LanName != current.LanName || modelo.PppLocalIpNetId != current.PppLocalIpNetId))
+            {
+                return await FailRollbackAsync<Server>(_localizer["Server_PppoeLocked"]);
+            }
+
+            //La IP local del PPPoE tiene que ser de SU corporacion y estar activa. NO se
+            //exige que este libre: el caso mas comun es la IP de gestion del PROPIO equipo,
+            //que por definicion esta tomada por el. Exigir que estuviera libre dejaba fuera
+            //justo el caso normal.
+            //
+            //Tampoco se marca como asignada al crear el servidor PPPoE: esta IP sale del
+            //pozo de RED y los contratos sacan la suya del pozo de CLIENTES, asi que nunca
+            //se le puede entregar a nadie.
+            if (modelo.PppLocalIpNetId != null && modelo.PppLocalIpNetId != current.PppLocalIpNetId)
+            {
+                var ipOkLocal = await _context.IpNetworks.AnyAsync(x =>
+                    x.IpNetworkId == modelo.PppLocalIpNetId &&
+                    x.CorporationId == corporationId &&
+                    x.Active);
+
+                if (!ipOkLocal) return await FailRollbackAsync<Server>(_localizer["Net_IpNotAvailable"]);
+
+                //Que la IP sea de otro equipo NO se bloquea aqui: el combo la muestra
+                //diciendo de quien es y el operador confirma en pantalla. Si dijo que si,
+                //el servidor no tiene por que volver a negarse.
+            }
+
+            //Cambiar como trabaja el equipo con clientes ya provisionados deja los espejos
+            //huerfanos: ip-bindings o secrets que nadie volveria a tocar. Se bloquea.
+            if (modelo.ControlMk != current.ControlMk)
+            {
+                var provisionado = await _context.ContractBinds.AnyAsync(x => x.ServerId == current.ServerId) ||
+                                   await _context.ContractPppoes.AnyAsync(x => x.ServerId == current.ServerId) ||
+                                   await _context.ContractQues.AnyAsync(x => x.ServerId == current.ServerId) ||
+                                   current.PppServerMkId != null;
+
+                if (provisionado) return await FailRollbackAsync<Server>(_localizer["Server_ControlMkInUse"]);
+            }
+
+            //Cambiar la IP de gestion de un equipo YA PROVISIONADO es legitimo: los routers
+            //cambian de IP. Pero los MikrotikId guardados apuntan a filas de ESE equipo, asi
+            //que hay que comprobar que del otro lado siga estando el mismo.
+            if (modelo.IpNetworkId != current.IpNetworkId)
+            {
+                var provisionadoEnEquipo = await _context.ContractBinds.AnyAsync(x => x.ServerId == current.ServerId) ||
+                                           await _context.ContractPppoes.AnyAsync(x => x.ServerId == current.ServerId) ||
+                                           await _context.ContractQues.AnyAsync(x => x.ServerId == current.ServerId) ||
+                                           current.PppServerMkId != null;
+
+                if (provisionadoEnEquipo)
+                {
+                    //Sin identidad aprendida no hay con que comparar: que el operador pruebe
+                    //la conexion primero, que es lo que la aprende.
+                    if (string.IsNullOrWhiteSpace(current.MkIdentity))
+                    {
+                        return await FailRollbackAsync<Server>(_localizer["Server_IdentityUnknown"]);
+                    }
+
+                    var ipNueva = await _context.IpNetworks
+                        .AsNoTracking()
+                        .Where(x => x.IpNetworkId == modelo.IpNetworkId)
+                        .Select(x => x.Ip)
+                        .FirstOrDefaultAsync();
+
+                    var identidadNueva = LeerIdentidad(ipNueva, modelo.ApiPort, modelo.Usuario,
+                        string.IsNullOrWhiteSpace(modelo.Clave) ? current.Clave : modelo.Clave);
+
+                    if (identidadNueva == null)
+                    {
+                        return await FailRollbackAsync<Server>(_localizer[nameof(Resource.Mikrotik_Connection_Error)]);
+                    }
+
+                    if (!string.Equals(identidadNueva, current.MkIdentity, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return await FailRollbackAsync<Server>(_localizer["Server_IdentityMismatch", current.MkIdentity, identidadNueva]);
+                    }
+                }
+            }
+
             //Si cambio la IP se suelta la anterior; si es la misma, solo se actualiza el nombre
             var ipOk = await _ipControl.AssignAsync(modelo.IpNetworkId, current.IpNetworkId, name, corporationId.Value);
             if (!ipOk) return await FailRollbackAsync<Server>(_localizer["Net_IpNotAvailable"]);
@@ -278,10 +380,16 @@ public class ServerService : IServerService
 
             var inUse = await _context.ContractServers.AnyAsync(x => x.ServerId == id) ||
                         await _context.ContractBinds.AnyAsync(x => x.ServerId == id) ||
+                        await _context.ContractPppoes.AnyAsync(x => x.ServerId == id) ||
                         await _context.ContractQues.AnyAsync(x => x.ServerId == id) ||
                         await _context.QueueParents.AnyAsync(x => x.ServerId == id) ||
                         await _context.ContractSuspendeds.AnyAsync(x => x.ServerId == id);
             if (inUse) return await FailRollbackAsync<bool>(_localizer["Server_InUse", current.ServerName]);
+
+            //Y tampoco se borra un equipo que sigue teniendo su servidor PPPoE escrito en el
+            //MikroTik: la fila desapareceria de la base y el router quedaria configurado, sin
+            //nadie que sepa que ese perfil y ese servidor PPPoE son de Spix.
+            if (current.PppServerMkId != null) return await FailRollbackAsync<bool>(_localizer["Server_PppoeProvisioned", current.ServerName]);
 
             //Persistencia
             await _ipControl.ReleaseAsync(current.IpNetworkId, corporationId.Value);
@@ -298,6 +406,64 @@ public class ServerService : IServerService
         }
     }
 
+    //Le pregunta al equipo como se llama. null si no se pudo hablar con el.
+    //
+    //Es la misma orden que usa la pantalla de probar conexion. Se lee aca y no por el
+    //servicio de conexiones para no invertir la dependencia entre los dos.
+    private static string? LeerIdentidad(string? ip, int puerto, string usuario, string clave)
+    {
+        if (string.IsNullOrWhiteSpace(ip)) return null;
+
+        MK? mikrotik = null;
+
+        try
+        {
+            mikrotik = new MK(ip, puerto);
+
+            if (!mikrotik.Login(usuario, clave)) return null;
+
+            mikrotik.Send("/system/identity/print");
+            mikrotik.Send("=.proplist=name", true);
+
+            foreach (var sentence in mikrotik.Read())
+            {
+                if (sentence.StartsWith("!trap")) return null;
+
+                if (!sentence.StartsWith("!re")) continue;
+
+                var partes = sentence.Split('=');
+
+                for (int i = 1; i + 1 < partes.Length; i += 2)
+                {
+                    if (partes[i].Equals("name", StringComparison.OrdinalIgnoreCase) &&
+                        !string.IsNullOrWhiteSpace(partes[i + 1]))
+                    {
+                        return partes[i + 1];
+                    }
+                }
+            }
+
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            if (mikrotik != null)
+            {
+                try
+                {
+                    mikrotik.Close();
+                }
+                catch
+                {
+                }
+            }
+        }
+    }
+
     //Los datos que el usuario puede cambiar. La clave vacia no pisa la guardada.
     private static void CopyFields(Server from, Server to, bool isNew)
     {
@@ -305,6 +471,9 @@ public class ServerService : IServerService
         to.IpNetworkId = from.IpNetworkId;
         to.Usuario = from.Usuario;
         to.WanName = from.WanName;
+        to.LanName = from.LanName;
+        to.ControlMk = from.ControlMk;
+        to.PppLocalIpNetId = from.PppLocalIpNetId;
         to.ApiPort = from.ApiPort;
         to.MarkId = from.MarkId;
         to.MarkModelId = from.MarkModelId;

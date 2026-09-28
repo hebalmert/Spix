@@ -43,26 +43,28 @@ public class ContractMapsController : ControllerBase
         if (response.WasSuccess)
             return Ok(response.Result);
 
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 
     [HttpPut]
     public async Task<ActionResult<ContractMap>> PutAsync(ContractMap modelo)
     {
-        var response = await _serverUnitOfWork.UpdateAsync(modelo);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _serverUnitOfWork.UpdateAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
             return Ok(response.Result);
 
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> DeleteAsync(Guid id)
     {
-        var response = await _serverUnitOfWork.DeleteAsync(id);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _serverUnitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
         if (response.WasSuccess)
             return Ok(response.Result);
 
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 }

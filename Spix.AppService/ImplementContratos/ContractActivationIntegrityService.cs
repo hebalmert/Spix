@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppService.InterfaceContratos;
@@ -10,7 +10,7 @@ using Spix.xNetwork.MkHelper;
 
 namespace Spix.AppService.ImplementContratos;
 
-public class ContractActivationIntegrityService : IContractActivationIntegrityService
+public partial class ContractActivationIntegrityService : IContractActivationIntegrityService
 {
     private const string HotSpotRequirementsMessage = "No se puede cambiar el contrato a Active o Suspended porque la corporacion usa MikroTik HotSpot y el contrato no tiene Contract Queue e IpBinding configurados.";
     private const string ContractBindRequiredMessage = "No se puede cambiar el contrato a Active o Suspended porque la corporacion usa MikroTik HotSpot y el contrato no tiene IpBinding configurado.";
@@ -25,15 +25,10 @@ public class ContractActivationIntegrityService : IContractActivationIntegritySe
         _localizer = localizer;
     }
 
-    public async Task<ActionResponse<bool>> ValidateAsync(Guid contractClientId, int corporationId)
+    //Lo que HotSpot exige de un contrato. Quien decide si aplica es ValidateAsync, en el
+    //archivo .Access.cs: aca ya se sabe que el equipo trabaja con HotSpot.
+    private async Task<ActionResponse<bool>> ValidateHotSpotAsync(Guid contractClientId)
     {
-        var usesHotSpotControl = await UsesHotSpotControlAsync(corporationId);
-
-        if (!usesHotSpotControl)
-        {
-            return Success();
-        }
-
         var hasContractBind = await _context.ContractBinds
             .AsNoTracking()
             .AnyAsync(x => x.ContractClientId == contractClientId);
@@ -58,14 +53,6 @@ public class ContractActivationIntegrityService : IContractActivationIntegritySe
         }
 
         return Success();
-    }
-
-    public async Task<bool> UsesHotSpotControlAsync(int corporationId)
-    {
-        return await _context.ConnectionMikrotikControls
-            .AsNoTracking()
-            .AnyAsync(x => x.CorporationId == corporationId &&
-                           x.MikrotikControlType == MikrotikControlType.HotSpot);
     }
 
     public async Task<ActionResponse<bool>> ActivateHotSpotBindingsAsync(ContractClient contract)

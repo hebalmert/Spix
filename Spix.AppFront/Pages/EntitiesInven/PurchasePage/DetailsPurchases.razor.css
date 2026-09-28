@@ -1,4 +1,7 @@
-﻿/* Los totales de la factura */
+﻿/* Los totales de la factura.
+   Es la misma tarjeta de los KPI del resto de la app (.pc-kpi en Marcas y en las
+   categorias): blanca, barra de color de 6px a la izquierda, radio 12 y sombra
+   solida. Antes solo la llevaba el Total y los otros dos quedaban planos. */
 .pu-totals {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -7,16 +10,17 @@
 }
 
 .pu-total {
+    padding: 12px 14px;
     border: 1px solid #e6ecf6;
+    border-left: 6px solid #2c5fad;
     border-radius: 12px;
-    background: #f7f9fd;
-    padding: 10px 14px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
 }
 
+    /* El Total manda: se queda con el azul oscuro para que no compita con los otros dos */
     .pu-total.is-main {
-        border-left: 6px solid #16305e;
-        background: #ffffff;
-        box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+        border-left-color: #16305e;
     }
 
 .pu-tile-label {
@@ -30,7 +34,8 @@
     font-weight: 700;
 }
 
-/* Acciones: Cerrar se va a la derecha */
+/* Acciones. Los botones son los compartidos (AnchorFormBack, ButtonFormNew,
+   ButtonFormGreen), asi que aqui ya no se define su aspecto: solo donde van. */
 .pu-actions {
     display: flex;
     flex-wrap: wrap;
@@ -38,31 +43,12 @@
     margin-bottom: 22px;
 }
 
-.pu-btn {
-    flex: none;
-    width: 120px;
-    background: #ffffff;
-    border: 1px solid #cfd8ea;
-    color: #16305e;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .18);
-}
-
-    .pu-btn:hover {
-        background: #f3f6fc;
-        color: #16305e;
-    }
-
-.pu-btn-close {
+/* Cerrar se va a la derecha, separado, para no pulsarlo por error.
+   La clase va en el envoltorio y no en el boton porque el CSS aislado de la pagina
+   no alcanza el marcado de un componente hijo. */
+.pu-close-wrap {
     margin-left: auto;
-    border-color: #198754;
-    color: #198754;
 }
-
-    .pu-btn-close:hover {
-        background: #e5f4ea;
-        color: #146c43;
-    }
 
 /* Marca de los productos que abren cargue de seriales */
 .pu-tag {

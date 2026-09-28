@@ -147,6 +147,14 @@ public class PlanService : IPlanService
                 Value = (int)c
             }).ToList();
 
+            //El neutro en la posicion 0. Sin el, un plan nuevo mostraba "k" en pantalla
+            //mientras el modelo guardaba 0, que no es un valor valido del enum.
+            list.Insert(0, new IntItemModel
+            {
+                Name = _localizer[nameof(Resource.Select_Unit)],
+                Value = 0
+            });
+
             return new ActionResponse<IEnumerable<IntItemModel>>
             {
                 WasSuccess = true,
@@ -168,6 +176,14 @@ public class PlanService : IPlanService
                 Name = c.ToString(),
                 Value = (int)c
             }).ToList();
+
+            //El neutro en la posicion 0. Sin el, un plan nuevo mostraba "k" en pantalla
+            //mientras el modelo guardaba 0, que no es un valor valido del enum.
+            list.Insert(0, new IntItemModel
+            {
+                Name = _localizer[nameof(Resource.Select_Unit)],
+                Value = 0
+            });
 
             return new ActionResponse<IEnumerable<IntItemModel>>
             {

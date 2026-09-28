@@ -130,9 +130,11 @@
             </div>
         </div>
 
-        <!-- Imagen -->
+        <!-- Imagen. El mismo componente de Tecnicos, Clientes y Contratistas: si el
+             proveedor no tiene foto pinta un icono local, y no la imagen "NoImage" de
+             Azure, que era lo que hacia ver Crear y Editar como dos pantallas distintas. -->
         <div class="col-md-12 mb-4 text-center">
-            <InputImage ImageSelected="ImageSelected" ImageUrl="@ImageUrl" />
+            <InputImageGeneral ImageSelected="ImageSelected" ImageUrl="@ImageUrl" PlaceholderIcon="fa fa-truck" />
         </div>
     </div>
 

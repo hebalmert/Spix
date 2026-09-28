@@ -2,6 +2,7 @@
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.Entities;
 
@@ -50,6 +51,7 @@ public class Manager
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Corporation), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int CorporationId { get; set; }
 
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]

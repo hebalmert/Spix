@@ -29,7 +29,7 @@
                             <tbody>
                                 @foreach (var item in CargueDetails!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.CargueDetailId, true)">
                                         <td>@item.MacWlan</td>
                                         <td>@item.Comment</td>
                                         <td>
@@ -49,7 +49,7 @@
                                                     break;
                                             }
                                         </td>
-                                        <td class="text-center">
+                                        <td @ondblclick:stopPropagation class="text-center">
                                             @if (item.Status != SerialStateType.Operativo)
                                             {
                                                 <button class="btn btn-sm btn-dark"

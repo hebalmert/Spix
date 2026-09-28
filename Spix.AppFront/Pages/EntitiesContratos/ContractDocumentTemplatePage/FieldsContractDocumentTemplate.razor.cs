@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Spix.AppFront.GenericModel;
@@ -92,7 +92,7 @@ public partial class FieldsContractDocumentTemplate : IAsyncDisposable
             //El JS del editor lo carga este modal al abrirse; no esta en index.html.
             //El ?v= es obligatorio: sin el, el importmap de .NET 10 lo cambia por el nombre con huella
             //(pdfFieldEditor.xxxx.js), que no existe porque en Spix hosted la huella esta apagada (404).
-            editorScript ??= await JS.InvokeAsync<IJSObjectReference>("import", "./jslib/pdfFieldEditor.js?v=20260913");
+            editorScript ??= await JS.InvokeAsync<IJSObjectReference>("import", "./jslib/pdfFieldEditor.js?v=20260926");
 
             dotNetRef ??= DotNetObjectReference.Create(this);
             await JS.InvokeAsync<int>("spixPdfFieldEditor.load", HostId, base64, dotNetRef, readOnly);
@@ -346,6 +346,12 @@ public partial class FieldsContractDocumentTemplate : IAsyncDisposable
             ContractDocumentFieldType.Address => "Direccion",
             ContractDocumentFieldType.Email => "Correo",
             ContractDocumentFieldType.PrintName => "Nombre imprenta",
+            ContractDocumentFieldType.ContractNumber => "No. contrato",
+            ContractDocumentFieldType.DateTime => "Fecha y hora",
+            ContractDocumentFieldType.PlanName => "Plan",
+            ContractDocumentFieldType.SpeedDown => "Velocidad bajada",
+            ContractDocumentFieldType.SpeedUp => "Velocidad subida",
+            ContractDocumentFieldType.MonthlyPrice => "Valor mensual",
             _ => fieldType.ToString()
         };
 
@@ -360,6 +366,12 @@ public partial class FieldsContractDocumentTemplate : IAsyncDisposable
             ContractDocumentFieldType.Address => "fa fa-location-dot",
             ContractDocumentFieldType.Email => "fa fa-envelope",
             ContractDocumentFieldType.PrintName => "fa fa-pen",
+            ContractDocumentFieldType.ContractNumber => "fa fa-hashtag",
+            ContractDocumentFieldType.DateTime => "fa fa-clock",
+            ContractDocumentFieldType.PlanName => "fa fa-box",
+            ContractDocumentFieldType.SpeedDown => "fa fa-download",
+            ContractDocumentFieldType.SpeedUp => "fa fa-upload",
+            ContractDocumentFieldType.MonthlyPrice => "fa fa-money-bill",
             _ => "fa fa-font"
         };
 

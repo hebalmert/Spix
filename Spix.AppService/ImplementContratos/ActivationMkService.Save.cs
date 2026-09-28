@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
@@ -74,8 +74,23 @@ public partial class ActivationMkService
 
             var contractIds = contracts.Select(x => x.ContractClientId).ToList();
 
-            //El tipo del binding tambien queda en la base, igual que lo dejo el equipo
-            if (await _contractActivationIntegrityService.UsesHotSpotControlAsync(corporationId))
+            //El espejo del estado queda en la base, igual que lo dejo el equipo.
+            //Se resuelve por el SERVIDOR del lote, no por la corporacion.
+            var control = await _contractActivationIntegrityService.ResolveControlByServerAsync(serverId);
+
+            if (control == MikrotikControlType.PPPoE)
+            {
+                var credenciales = await _context.ContractPppoes
+                    .Where(x => x.ServerId == serverId && contractIds.Contains(x.ContractClientId))
+                    .ToListAsync();
+
+                foreach (var credencial in credenciales)
+                {
+                    credencial.PppoeAccessState = PppoeAccessState.Activo;
+                }
+            }
+
+            if (control == MikrotikControlType.HotSpot)
             {
                 var bypassed = await _context.HotSpotTypes
                     .AsNoTracking()

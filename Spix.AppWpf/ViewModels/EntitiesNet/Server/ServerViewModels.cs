@@ -163,6 +163,19 @@ public partial class ServerIndexViewModel : PagedListViewModel<ServerListItemDto
 
         await _modalService.ShowAsync<ServerMikrotikDialogView>("Conexion MikroTik", parameters);
     }
+
+    [RelayCommand]
+    private async Task DetailAsync(ServerListItemDto? server)
+    {
+        if (server == null) return;
+        var parameters = new Dictionary<string, object>
+        {
+            ["Id"] = server.ServerId,
+            ["Ip"] = server.Ip ?? string.Empty
+        };
+        await _modalService.ShowAsync<ServerDetailDialogView>("Configurar servidor", parameters);
+        await LoadAsync(CurrentPage);
+    }
 }
 
 // Comparte los selects y las validaciones del formulario de servidores.
@@ -239,11 +252,6 @@ public abstract partial class ServerFormViewModel : CrudFormViewModel<ServerEnti
         if (string.IsNullOrWhiteSpace(Entity.Usuario) || string.IsNullOrWhiteSpace(Entity.Clave))
         {
             return "Debes ingresar el usuario y la clave MikroTik.";
-        }
-
-        if (string.IsNullOrWhiteSpace(Entity.WanName))
-        {
-            return "Debes ingresar el nombre de la interfaz WAN.";
         }
 
         if (Entity.ApiPort <= 0)

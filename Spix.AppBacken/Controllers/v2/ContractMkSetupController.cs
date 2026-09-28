@@ -204,4 +204,58 @@ public class ContractMkSetupController : ControllerBase
             return StatusCode(500, _localizer["Generic_ServerError"].Value);
         }
     }
+
+    [HttpGet("pppoe/{contractClientId}")]
+    public async Task<IActionResult> GetPppoeSetupAsync(Guid contractClientId)
+    {
+        try
+        {
+            var userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            return ResponseHelper.Format(await _unitOfWork.GetPppoeSetupAsync(contractClientId, userClaimsInfo.UserName));
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_ServerError"].Value);
+        }
+    }
+
+    [HttpPost("pppoe")]
+    public async Task<IActionResult> SavePppoeAsync(ContractPppoeLocalSaveDTO datos)
+    {
+        try
+        {
+            var userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            return ResponseHelper.Format(await _unitOfWork.SavePppoeAsync(datos, userClaimsInfo.UserName));
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_ServerError"].Value);
+        }
+    }
+
+    [HttpDelete("pppoe/{credentialId}")]
+    public async Task<IActionResult> RemovePppoeAsync(Guid credentialId)
+    {
+        try
+        {
+            var userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            return ResponseHelper.Format(await _unitOfWork.RemovePppoeAsync(credentialId, userClaimsInfo.UserName));
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_ServerError"].Value);
+        }
+    }
 }

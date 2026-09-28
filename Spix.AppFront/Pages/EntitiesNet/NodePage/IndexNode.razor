@@ -23,22 +23,22 @@
         @* El tablero: lo cuenta la base, sobre todos los equipos *@
         @if (Summary is not null)
         {
-            <div class="net-board">
-                <div class="net-tile">
-                    <div class="net-tile-label">@Localizer["Net_Total"]</div>
-                    <div class="net-tile-value">@Summary.Total.ToString("N0")</div>
+            <div class="idx-board">
+                <div class="idx-tile">
+                    <div class="idx-tile-label">@Localizer["Net_Total"]</div>
+                    <div class="idx-tile-value">@Summary.Total.ToString("N0")</div>
                 </div>
-                <div class="net-tile is-on">
-                    <div class="net-tile-label">@Localizer["Net_Active"]</div>
-                    <div class="net-tile-value">@Summary.Active.ToString("N0")</div>
+                <div class="idx-tile is-green">
+                    <div class="idx-tile-label">@Localizer["Net_Active"]</div>
+                    <div class="idx-tile-value">@Summary.Active.ToString("N0")</div>
                 </div>
-                <div class="net-tile is-off">
-                    <div class="net-tile-label">@Localizer["Net_Inactive"]</div>
-                    <div class="net-tile-value">@Summary.Inactive.ToString("N0")</div>
+                <div class="idx-tile is-amber">
+                    <div class="idx-tile-label">@Localizer["Net_Inactive"]</div>
+                    <div class="idx-tile-value">@Summary.Inactive.ToString("N0")</div>
                 </div>
-                <div class="net-tile is-used">
-                    <div class="net-tile-label">@Localizer["Net_Clients"]</div>
-                    <div class="net-tile-value">@Summary.Clients.ToString("N0")</div>
+                <div class="idx-tile is-purple">
+                    <div class="idx-tile-label">@Localizer["Net_Clients"]</div>
+                    <div class="idx-tile-value">@Summary.Clients.ToString("N0")</div>
                 </div>
             </div>
         }
@@ -88,7 +88,7 @@
                             <Body>
                                 @foreach (var item in Nodes!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.NodeId, true)">
                                         <td><span class="idx-name">@item.NodesName</span></td>
                                         <td>@item.OperationName</td>
                                         <td>@item.ZoneName</td>
@@ -99,7 +99,7 @@
                                                 @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
                                             </span>
                                         </td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonGeneric OnClick="() => ShowMapAsync(item)"
                                                                TooTip="@Localizer["Map_Map"]"

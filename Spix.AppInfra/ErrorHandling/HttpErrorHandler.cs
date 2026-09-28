@@ -100,9 +100,15 @@ public class HttpErrorHandler
                 {
                     errorMessage = _localizer[nameof(Resource.Db_Duplicate)];
                 }
-                else if (innerMsg.Contains("foreign key") || innerMsg.Contains("reference"))
+                else if (innerMsg.Contains("reference"))
                 {
+                    //Borrando un padre que tiene hijos
                     errorMessage = _localizer[nameof(Resource.Db_Reference)];
+                }
+                else if (innerMsg.Contains("foreign key"))
+                {
+                    //Insertando o actualizando hacia un padre que no existe: combo sin elegir
+                    errorMessage = _localizer[nameof(Resource.Db_ForeignKeyMissing)];
                 }
                 else if (innerMsg.Contains("concurrency"))
                 {
@@ -148,7 +154,8 @@ public class HttpErrorHandler
             foreach (object error in errorItems)
             {
                 object? numberValue = error.GetType().GetProperty("Number")?.GetValue(error);
-                if (numberValue is int number && TryGetSqlErrorMessage(number, out errorMessage))
+                object? messageValue = error.GetType().GetProperty("Message")?.GetValue(error);
+                if (numberValue is int number && TryGetSqlErrorMessage(number, messageValue as string ?? "", out errorMessage))
                 {
                     return true;
                 }
@@ -156,7 +163,7 @@ public class HttpErrorHandler
         }
 
         object? exceptionNumberValue = exception.GetType().GetProperty("Number")?.GetValue(exception);
-        if (exceptionNumberValue is int exceptionNumber && TryGetSqlErrorMessage(exceptionNumber, out errorMessage))
+        if (exceptionNumberValue is int exceptionNumber && TryGetSqlErrorMessage(exceptionNumber, exception.Message, out errorMessage))
         {
             return true;
         }
@@ -165,12 +172,20 @@ public class HttpErrorHandler
         return true;
     }
 
-    private bool TryGetSqlErrorMessage(int sqlErrorNumber, out string? errorMessage)
+    private bool TryGetSqlErrorMessage(int sqlErrorNumber, string sqlMessage, out string? errorMessage)
     {
         errorMessage = sqlErrorNumber switch
         {
             2601 or 2627 => _localizer[nameof(Resource.Db_Duplicate)].Value,
-            547 => _localizer[nameof(Resource.Db_Reference)].Value,
+
+            //El 547 cubre DOS casos que no se parecen en nada para el usuario: borrar un
+            //padre que tiene hijos (el motor dice REFERENCE) e insertar o actualizar
+            //apuntando a un padre que no existe (dice FOREIGN KEY), que es un combo que
+            //se fue vacio. El texto del motor es lo unico que los separa.
+            547 => sqlMessage.Contains("REFERENCE", StringComparison.OrdinalIgnoreCase)
+                ? _localizer[nameof(Resource.Db_Reference)].Value
+                : _localizer[nameof(Resource.Db_ForeignKeyMissing)].Value,
+
             1205 => _localizer["Db_Deadlock"].Value,
             -2 => _localizer["Generic_Timeout"].Value,
             4060 or 18456 => _localizer["Db_LoginFail"].Value,

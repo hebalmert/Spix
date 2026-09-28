@@ -89,7 +89,7 @@
                             <Body>
                                 @foreach (var item in IpNetworks!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.IpNetworkId, true)">
                                         <td><span class="idx-name">@item.Ip</span></td>
                                         <td>@item.Description</td>
                                         <td class="text-center">
@@ -101,7 +101,7 @@
                                         <td class="text-center">
                                             <i class="idx-flag @(item.Excluded ? "fa fa-circle-check is-on" : "fa fa-minus is-off")"></i>
                                         </td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonEdit OnClick="() => ShowModalAsync(item.IpNetworkId, true)" />
                                                 <ButtonDelete OnClick="() => DeleteAsync(item.IpNetworkId)" />

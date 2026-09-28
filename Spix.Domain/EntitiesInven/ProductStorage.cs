@@ -1,6 +1,7 @@
 ﻿using Spix.Domain.Entities;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesInven;
 
@@ -16,10 +17,12 @@ public class ProductStorage
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.State), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int StateId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.City), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int CityId { get; set; }
 
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]

@@ -7,6 +7,7 @@ using Spix.AppInfra.Mappings;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesMk;
+using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.MkDTOs;
 using Spix.DomainLogic.ModelUtility;
 using Spix.xLanguage.Resources;
@@ -14,7 +15,7 @@ using Spix.xNetwork.MkHelper;
 
 namespace Spix.AppService.ImplementMk;
 
-public class MkConnectionService : IMkConnectionService
+public partial class MkConnectionService : IMkConnectionService
 {
     private readonly DataContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -51,8 +52,11 @@ public class MkConnectionService : IMkConnectionService
                 };
             }
 
-            // 1. Obtener datos del servidor desde la BD (como antes)
-            var server = await _context.Servers.Include(x => x.IpNetwork).FirstOrDefaultAsync(x => x.ServerId == serverId);
+            // 1. Obtener datos del servidor desde la BD, SIEMPRE dentro de su corporacion
+            var server = await _context.Servers
+                .Include(x => x.IpNetwork)
+                .FirstOrDefaultAsync(x => x.ServerId == serverId &&
+                                          x.CorporationId == user.CorporationId);
             if (server == null)
             {
                 return new ActionResponse<MkConnectionResultDTO>
@@ -86,18 +90,31 @@ public class MkConnectionService : IMkConnectionService
             var PrimerRegistro = listArray.FirstOrDefault();
             var NameServidor = PrimerRegistro!.Substring(9);
 
-            // 5. Obtener IP Bindings
-            mikrotik.Send("/ip/hotspot/ip-binding/getall");
-            mikrotik.Send("/ip/hotspot/ip-binding/print");
-            mikrotik.Send("=.proplist=address", true);
-            List<string> list = new List<string>();
-            foreach (var item in mikrotik.Read())
+            // 5. Contar lo que corresponda: un equipo PPPoE no tiene ip-bindings y uno de
+            //    HotSpot no tiene secrets. Contar lo otro daria cero con la conexion perfecta.
+            if (server.ControlMk == MikrotikControlType.PPPoE)
             {
-                list.Add(item);
+                mikrotik.Send("/ppp/secret/print");
+                mikrotik.Send("=.proplist=.id,name", true);
             }
-            var bindings = list.Count;
+            else
+            {
+                mikrotik.Send("/ip/hotspot/ip-binding/getall");
+                mikrotik.Send("/ip/hotspot/ip-binding/print");
+                mikrotik.Send("=.proplist=address", true);
+            }
+
+            var bindings = mikrotik.Read().Count(x => x.StartsWith("!re"));
 
             mikrotik.Close();
+
+            // 6. Se aprende la identidad del equipo. Es lo que despues permite cambiarle la
+            //    IP de gestion comprobando que del otro lado siga estando el MISMO router.
+            if (!string.IsNullOrWhiteSpace(NameServidor) && server.MkIdentity != NameServidor)
+            {
+                server.MkIdentity = NameServidor.Length > 50 ? NameServidor.Substring(0, 50) : NameServidor;
+                await _context.SaveChangesAsync();
+            }
 
             // 7. Crear DTO de respuesta
             var dto = new MkConnectionResultDTO

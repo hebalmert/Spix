@@ -25,6 +25,10 @@ public partial class ProductStockModal
     public List<ProductStock>? ProductStocks { get; set; }
     public Product? Product { get; set; }
 
+    //El total se suma aqui con lo que ya llego: no hace falta pedirselo al backend
+    //ni agregarle un endpoint. Son pocas bodegas por producto.
+    private decimal TotalStock => ProductStocks?.Sum(x => x.Stock) ?? 0;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadStock();

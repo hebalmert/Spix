@@ -43,21 +43,6 @@
     }
 
 /* Botones del detalle: blancos, borde suave, una sola palabra */
-.cg-btn {
-    flex: none;
-    width: 120px;
-    background: #ffffff;
-    border: 1px solid #cfd8ea;
-    color: #16305e;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .18);
-}
-
-    .cg-btn:hover {
-        background: #f3f6fc;
-        color: #16305e;
-    }
-
 /* Tarjeta de avance */
 .cg-progress-card {
     border: 1px solid #e6ecf6;

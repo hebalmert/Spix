@@ -9,5 +9,5 @@ public interface IContractMacService
 
     Task<ActionResponse<ContractMac>> AddAsync(ContractMac modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

@@ -1,0 +1,14 @@
+@* El mismo boton de fila de ButtonGeneric / ButtonEdit, pero adentro va una LETRA en vez
+   de un icono. Es otro componente plano y no una variante del de icono, porque el contenido
+   del boton es lo unico que cambia y mezclarlo llenaria de condicionales al otro. *@
+<button type="@Type" class="@CssClass" @onclick="@OnClick" title="@TooTip" style="@Style">
+    @Letter
+</button>
+@code {
+    [Parameter] public string Letter { get; set; } = "?";
+    [Parameter] public string CssClass { get; set; } = "btn-mini";
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string? TooTip { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public string? Style { get; set; } = "font-size: 15px; font-weight: 800;";
+}

@@ -120,21 +120,66 @@ public class ContractQueService : IContractQueService
                 };
             }
 
+            //TODO dentro de la corporacion del usuario, y comprobado ANTES de tocar el equipo.
+            //Sin esto, con los ids de otra empresa se le escribe un queue a su MikroTik.
             var conContract = await _context.ContractClients
                 .AsNoTracking()
                 .Include(x => x.ContractPlans)
-                .FirstOrDefaultAsync(x => x.ContractClientId == modelo.ContractClientId);
-            var conCliente = await _context.Clients.
-                FirstOrDefaultAsync(x => x.ClientId == conContract!.ClientId);
+                .FirstOrDefaultAsync(x => x.ContractClientId == modelo.ContractClientId &&
+                                          x.CorporationId == user.CorporationId);
+
+            if (conContract == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractQue>
+                {
+                    WasSuccess = false,
+                    Result = modelo,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            //El queue va en EL equipo del contrato y sobre LA IP del contrato, no en otros de
+            //la misma empresa: el queue padre es por (Plan, Servidor) y la lista de IPs del
+            //padre se arma con los contratos de ese servidor. Un queue en otro equipo
+            //descuadra el reuso de los dos.
+            var equipoDelContrato = await _context.ContractServers
+                .AsNoTracking()
+                .AnyAsync(x => x.ContractClientId == modelo.ContractClientId &&
+                               x.ServerId == modelo.ServerId);
+
+            var ipDelContrato = await _context.ContractIps
+                .AsNoTracking()
+                .AnyAsync(x => x.ContractClientId == modelo.ContractClientId &&
+                               x.IpNetId == modelo.IpNetId);
+
+            if (!equipoDelContrato || !ipDelContrato)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractQue>
+                {
+                    WasSuccess = false,
+                    Result = modelo,
+                    Message = _localizer["Contract_ServerMismatch"]
+                };
+            }
+
+            //El cliente sale del contrato ya validado, asi que no hace falta filtrarlo aparte
+            var conCliente = await _context.Clients
+                .FirstOrDefaultAsync(x => x.ClientId == conContract.ClientId);
             var conServer = await _context.Servers
                 .AsNoTracking()
-                .Include(x => x.IpNetwork).FirstOrDefaultAsync(x => x.ServerId == modelo.ServerId);
+                .Include(x => x.IpNetwork)
+                .FirstOrDefaultAsync(x => x.ServerId == modelo.ServerId &&
+                                          x.CorporationId == user.CorporationId);
             var conIpClient = await _context.IpNets
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.IpNetId == modelo.IpNetId);
+                .FirstOrDefaultAsync(x => x.IpNetId == modelo.IpNetId &&
+                                          x.CorporationId == user.CorporationId);
             var conPlan = await _context.Plans
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.PlanId == modelo.PlanId);
+                .FirstOrDefaultAsync(x => x.PlanId == modelo.PlanId &&
+                                          x.CorporationId == user.CorporationId);
 
             if (conContract == null ||
                 conCliente == null ||
@@ -411,12 +456,26 @@ public class ContractQueService : IContractQueService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var dataRemove = await _context.ContractQues.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la pieza tiene que ser de un contrato de SU corporacion.
+            //Con FindAsync(id) cualquiera que conociera el id borraba la pieza de otra empresa.
+            var dataRemove = await _context.ContractQues
+                .FirstOrDefaultAsync(x => x.ContractQueId == id &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
             if (dataRemove == null)
             {
                 return new ActionResponse<bool>

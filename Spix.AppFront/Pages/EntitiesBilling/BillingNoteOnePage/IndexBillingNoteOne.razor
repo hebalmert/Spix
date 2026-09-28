@@ -1,4 +1,4 @@
-@page "/billingnoteones"
+﻿@page "/billingnoteones"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -74,7 +74,7 @@
                             <Body>
                                 @foreach (var item in BillingNoteOnes!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowDetailsAsync(item.BillingNoteOneId)">
                                         <td>
                                             <div class="idx-name">@item.Client?.FirstName @item.Client?.LastName</div>
                                             <div class="idx-meta">
@@ -96,7 +96,7 @@
                                                 <span class="idx-pill is-off">@Localizer["BillingNote_Pending"]</span>
                                             }
                                         </td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonGeneric OnClick="() => ShowDetailsAsync(item.BillingNoteOneId)"
                                                                TooTip="@Localizer["CxC_Details"]"

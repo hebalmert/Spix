@@ -51,17 +51,18 @@ public class ContractMacsController : ControllerBase
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> DeleteAsync(Guid id)
     {
-        var response = await _serverUnitOfWork.DeleteAsync(id);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _serverUnitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 }

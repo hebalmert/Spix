@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesContratos;
-using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -24,27 +23,94 @@ public partial class FormContractMac
     [Parameter, EditorRequired] public bool IsEditControl { get; set; }
     [Parameter] public bool IsSaving { get; set; }
 
-
+    private List<GuidItemModel>? Categories = new();
+    private List<GuidItemModel>? Products = new();
     private List<GuidItemModel>? ListMacs = new();
+
+    //Los dos primeros escalones solo sirven para llegar a la MAC: no se guardan en el contrato
+    private Guid SelectedCategoryId;
+    private Guid SelectedProductId;
+
     private string BaseView = "/contractcontrol";
-    private string BaseComboMacs = "/api/v1/cargueDetails/loadCombo";
+    private string BaseComboCategories = "/api/v1/cargueDetails/comboCategories";
+    private string BaseComboProducts = "/api/v1/cargueDetails/comboProducts";
+    private string BaseComboMacs = "/api/v1/cargueDetails/comboMacs";
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadMacs();
+        await LoadCategories();
     }
 
-    private async Task LoadMacs()
+    private async Task LoadCategories()
     {
-        var responseHttp2 = await _repository.GetAsync<List<GuidItemModel>>($"{BaseComboMacs}");
-        bool errorHandler2 = await _responseHandler.HandleErrorAsync(responseHttp2);
-        if (errorHandler2)
+        var responseHttp = await _repository.GetAsync<List<GuidItemModel>>($"{BaseComboCategories}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             _navigationManager.NavigateTo($"{BaseView}");
             return;
         }
-        ListMacs = responseHttp2.Response;
 
+        Categories = responseHttp.Response;
+    }
+
+    //Al cambiar de categoria se olvidan el equipo y la MAC: eran de la categoria anterior
+    private async Task CategoryChanged(ChangeEventArgs e)
+    {
+        SelectedCategoryId = Guid.TryParse(e.Value?.ToString(), out var categoryId) ? categoryId : Guid.Empty;
+        SelectedProductId = Guid.Empty;
+        ContractMac.CargueDetailId = Guid.Empty;
+        Products = new();
+        ListMacs = new();
+
+        if (SelectedCategoryId == Guid.Empty)
+        {
+            return;
+        }
+
+        await LoadProducts(SelectedCategoryId);
+    }
+
+    private async Task LoadProducts(Guid productCategoryId)
+    {
+        var responseHttp = await _repository.GetAsync<List<GuidItemModel>>($"{BaseComboProducts}/{productCategoryId}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            _navigationManager.NavigateTo($"{BaseView}");
+            return;
+        }
+
+        Products = responseHttp.Response;
+    }
+
+    private async Task ProductChanged(ChangeEventArgs e)
+    {
+        SelectedProductId = Guid.TryParse(e.Value?.ToString(), out var productId) ? productId : Guid.Empty;
+        ContractMac.CargueDetailId = Guid.Empty;
+        ListMacs = new();
+
+        if (SelectedProductId == Guid.Empty)
+        {
+            return;
+        }
+
+        await LoadMacs(SelectedProductId);
+    }
+
+    private async Task LoadMacs(Guid productId)
+    {
+        //Al editar se pide con el id para que la suya venga en la lista aunque este tomada
+        var url = IsEditControl
+            ? $"{BaseComboMacs}/{productId}/{ContractMac.CargueDetailId}"
+            : $"{BaseComboMacs}/{productId}";
+
+        var responseHttp = await _repository.GetAsync<List<GuidItemModel>>(url);
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            _navigationManager.NavigateTo($"{BaseView}");
+            return;
+        }
+
+        ListMacs = responseHttp.Response;
     }
 
     private void MacsChanged(ChangeEventArgs e)

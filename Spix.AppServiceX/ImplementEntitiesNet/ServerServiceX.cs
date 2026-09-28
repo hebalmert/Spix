@@ -2,6 +2,7 @@
 using Spix.AppServiceX.InterfaceEntitiesNet;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EntitiesNetDTO;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -15,6 +16,8 @@ public class ServerServiceX : IServerServiceX
     {
         _serverService = serverService;
     }
+
+    public ActionResponse<IEnumerable<IntItemModel>> ControlTypesCombo() => _serverService.ControlTypesCombo();
 
     public async Task<ActionResponse<IEnumerable<Server>>> ComboAsync(string username, Guid? id = null) => await _serverService.ComboAsync(username, id);
 

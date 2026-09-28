@@ -1,3 +1,5 @@
+﻿using Spix.DomainLogic.EnumTypes;
+
 namespace Spix.DomainLogic.EntitiesContractDTO;
 
 // Un contrato del lote que hay que tocar en el equipo para devolverle el acceso.
@@ -48,11 +50,18 @@ public class ActivationMkSetupDTO
     // El tipo que deja pasar el trafico: es lo contrario de lo que pone el corte
     public string? TipoBypassed { get; set; }
 
-    // Si la corporacion no controla el acceso por HotSpot no se toca el equipo:
-    // el lote se da por bueno y solo cambia el estado
-    public bool UsaHotSpot { get; set; }
+    // Como trabaja el EQUIPO de este lote. Antes era un bool por corporacion, asi que PPPoE
+    // caia en la misma rama que Ninguno: se daban por reactivados sin tocar el equipo.
+    public MikrotikControlType Control { get; set; } = MikrotikControlType.Ninguno;
+
+    public bool UsaHotSpot => Control == MikrotikControlType.HotSpot;
+
+    public bool UsaControl => Control != MikrotikControlType.Ninguno;
 
     public List<ActivationMkBindingDTO> Bindings { get; set; } = new();
+
+    // Las credenciales PPPoE del lote, con los datos de conexion de su equipo
+    public List<CortePppoeDTO> Credenciales { get; set; } = new();
 
     public string? Blocked { get; set; }
 

@@ -18,6 +18,8 @@ public class IpNetworkServiceX : IIpNetworkServiceX
 
     public async Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string username, Guid? id = null) => await _ipNetworkService.ComboAsync(username, id);
 
+    public async Task<ActionResponse<IEnumerable<IpNetwork>>> ComboLocalPppAsync(string username, Guid serverId) => await _ipNetworkService.ComboLocalPppAsync(username, serverId);
+
     public async Task<ActionResponse<IpSummaryDto>> GetSummaryAsync(string username) => await _ipNetworkService.GetSummaryAsync(username);
 
     public async Task<ActionResponse<IEnumerable<IpNetwork>>> GetAsync(PaginationDTO pagination, string username) => await _ipNetworkService.GetAsync(pagination, username);

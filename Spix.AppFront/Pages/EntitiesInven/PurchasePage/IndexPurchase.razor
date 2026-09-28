@@ -1,4 +1,4 @@
-@page "/purchases"
+﻿@page "/purchases"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 @using Spix.DomainLogic.EnumTypes
@@ -73,7 +73,7 @@
                             <Body>
                                 @foreach (var item in Purchases!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.PurchaseId, true)">
                                         <td>
                                             <div class="idx-name">@item.NroPurchase</div>
                                             <div class="idx-meta">@item.FacuraDate.ToString("dd/MM/yyyy")</div>
@@ -83,7 +83,7 @@
                                         <td>@item.ProductStorage?.StorageName</td>
                                         <td style="text-align:right">@item.TotalCompra.ToString("N2")</td>
                                         <td><PurchaseStatusBadge Value="@item.Status" /></td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonGeneric OnClick="() => ShowDetailsAsync(item.PurchaseId)" TooTip="@Localizer["Purchase_Details"]" Icon="fa fa-table-list" />
                                                 @* Una compra cerrada ya movio inventario: no se edita ni se borra *@

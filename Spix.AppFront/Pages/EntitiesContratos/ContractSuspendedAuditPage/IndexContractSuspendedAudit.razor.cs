@@ -1,12 +1,15 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Spix.AppFront.Helper;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.HttpService;
+using Microsoft.Extensions.Localization;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesContratos.ContractSuspendedAuditPage;
 
 public partial class IndexContractSuspendedAudit
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private HttpResponseHandler _responseHandler { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;

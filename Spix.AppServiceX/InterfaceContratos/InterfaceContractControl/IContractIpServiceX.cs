@@ -9,5 +9,5 @@ public interface IContractIpServiceX
 
     Task<ActionResponse<ContractIp>> AddAsync(ContractIp modelo, string username);
 
-    Task<ActionResponse<bool>> DeleteAsync(Guid id);
+    Task<ActionResponse<bool>> DeleteAsync(Guid id, string username);
 }

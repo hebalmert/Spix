@@ -3,6 +3,7 @@ using Spix.DomainLogic.EnumTypes;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesInven;
 
@@ -26,12 +27,14 @@ public class Transfer
     [Display(Name = nameof(Resource.FromStorage), ResourceType = typeof(Resource))]
     public string? FromStorageName { get; set; }
 
+    [ComboRequired]
     public Guid FromProductStorageId { get; set; }
 
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.ToStorage), ResourceType = typeof(Resource))]
     public string? ToStorageName { get; set; }
 
+    [ComboRequired]
     public Guid ToProductStorageId { get; set; }
 
     [Display(Name = nameof(Resource.Status), ResourceType = typeof(Resource))]

@@ -18,35 +18,46 @@
             }
             else
             {
-                <div class="stock-summary">
-                    <span>@Product?.ProductName</span>
-                </div>
+                @* El producto y su total. La tabla de abajo ya no repite la columna
+                   Producto: este modal es de uno solo. *@
+                <div class="stock-card">
+                    <span class="stock-card-icon"><i class="fa fa-box"></i></span>
 
-                <div class="stock-list" role="list">
-                    <div class="stock-list-header">
-                        <span>@Localizer[nameof(Resource.Product)]</span>
-                        <span>@Localizer[nameof(Resource.Storage)]</span>
-                        <span>@Localizer[nameof(Resource.Stock)]</span>
+                    <div class="stock-card-text">
+                        <b>@Product?.ProductName</b>
                     </div>
 
-                    @if (ProductStocks is not null && ProductStocks.Any())
-                    {
+                    <div class="stock-card-total">
+                        <small>@Localizer[nameof(Resource.Total)]</small>
+                        <b class="@(TotalStock == 0 ? "is-zero" : null)">@TotalStock.ToString("N2")</b>
+                    </div>
+                </div>
+
+                @if (ProductStocks is not null && ProductStocks.Any())
+                {
+                    <div class="stock-list" role="list">
+                        <div class="stock-list-header">
+                            <span>@Localizer[nameof(Resource.Storage)]</span>
+                            <span>@Localizer[nameof(Resource.Stock)]</span>
+                        </div>
+
                         @foreach (var item in ProductStocks)
                         {
                             <div class="stock-list-row" role="listitem">
-                                <span>@item.Product?.ProductName</span>
                                 <span>@item.ProductStorage?.StorageName</span>
                                 <span>@item.Stock.ToString("N2")</span>
                             </div>
                         }
-                    }
-                    else
-                    {
-                        <div class="stock-empty-state" role="alert">
-                            <i class="fa fa-info-circle"></i> @Localizer["NoRecordsFound"]
-                        </div>
-                    }
-                </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="stock-empty-state" role="alert">
+                        <span class="stock-empty-icon"><i class="fa fa-box-open"></i></span>
+                        <b>@Localizer[nameof(Resource.Stock_EmptyTitle)]</b>
+                        <small>@Localizer[nameof(Resource.Stock_EmptyHint)]</small>
+                    </div>
+                }
             }
         </div>
     </div>

@@ -4,7 +4,7 @@
     <DataAnnotationsValidator />
 
     @* ---------- 1. Contrato ---------- *@
-    <p class="cc-section">@Localizer[nameof(Resource.Contract)]</p>
+    <p class="cc-section">@Localizer[nameof(Resource.Commercial)]</p>
     <div class="row g-2">
         <div class="col-12 col-md-6">
             <GenericSelectWrapper Tmodel="GuidItemModel" Items="Contractors">
@@ -30,10 +30,60 @@
                                     ValueText="@ValueText"
                                     OnSelected="OnClientSelected" />
         </div>
+
+        @* El plan: categoria y plan anidados, porque el plan cuelga de una categoria.
+           Es una condicion COMERCIAL, por eso vive aqui y no en el detalle tecnico. *@
+        <div class="col-12">
+            <div class="cc-plan-box">
+                <div class="row g-2">
+                    <div class="col-12 col-md-6">
+                        <GenericSelectWrapper Tmodel="PlanCategory" Items="PlanCategories">
+                            <Body>
+                                <div class="input-group">
+                                    <span class="input-group-text cc-label-sm">@Localizer[nameof(Resource.PlanCategory)]</span>
+                                    <select class="form-select" value="@ContractClient.PlanCategoryId" @onchange="PlanCategoryChanged">
+                                        @foreach (var item in PlanCategories!)
+                                        {
+                                            <option value="@item.PlanCategoryId">@item.PlanCategoryName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </Body>
+                        </GenericSelectWrapper>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text cc-label-sm">@Localizer[nameof(Resource.Plan)]</span>
+                            <select class="form-select" value="@ContractClient.PlanId" @onchange="PlanChanged">
+                                @foreach (var item in Plans!)
+                                {
+                                    <option value="@item.PlanId">@item.PlanName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                @if (SelectedPlan is not null)
+                {
+                    <div class="cc-plan-facts">
+                        <span><i class="fa fa-gauge-high"></i> @SelectedPlan.VelocidadTotal</span>
+                        <span><i class="fa fa-money-bill"></i> @SelectedPlan.PrecioconImpuesto</span>
+                        <span><i class="fa fa-users"></i> @Localizer[nameof(Resource.TasaRehuso)] @SelectedPlan.TasaReuso</span>
+                    </div>
+                }
+
+                @if (PlanMissing)
+                {
+                    <div class="text-danger small mt-1">@Localizer[nameof(Resource.Select_Plan)]</div>
+                }
+            </div>
+        </div>
     </div>
 
     @* ---------- 2. Contacto ---------- *@
-    <p class="cc-section">@Localizer[nameof(Resource.Phone)]</p>
+    <p class="cc-section">@Localizer[nameof(Resource.Contact)]</p>
     <div class="row g-2">
         <div class="col-12 col-md-6">
             <div class="input-group">
@@ -77,7 +127,7 @@
     </div>
 
     @* ---------- 3. Ubicacion ---------- *@
-    <p class="cc-section">@Localizer[nameof(Resource.Zone)]</p>
+    <p class="cc-section">@Localizer[nameof(Resource.Location)]</p>
     <div class="row g-2">
         <div class="col-12 col-md-4">
             <GenericSelectWrapper Tmodel="State" Items="States">

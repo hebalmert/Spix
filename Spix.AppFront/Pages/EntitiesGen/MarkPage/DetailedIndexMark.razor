@@ -4,8 +4,13 @@
 
 <div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-1">@Localizer[nameof(Resource.MarkEquipment)]</h3>
-        <p class="pc-sub">Elija una marca a la izquierda y trabaje sus modelos a la derecha.</p>
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-tags"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.MarkIdx_Title)]</h3>
+                <p>@Localizer[nameof(Resource.MarkIdx_Subtitle)]</p>
+            </div>
+        </div>
 
         @* Resumen de la marca seleccionada *@
         <div class="pc-kpis">

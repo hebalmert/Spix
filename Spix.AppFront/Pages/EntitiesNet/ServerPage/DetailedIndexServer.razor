@@ -1,0 +1,354 @@
+﻿@page "/servers"
+@page "/servers/detailed"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.EnumTypes
+
+@* Servidores a la izquierda, el alistamiento del equipo elegido a la derecha.
+
+   El panel derecho es una cascada: conexion -> interfaz de clientes -> IP local -> servidor
+   PPPoE. Cada paso con candado hasta que el anterior este listo, para que el operador no
+   pueda provisionar contratos sobre un equipo a medio armar.
+
+   Las tarjetas de PPPoE son un componente aparte del resto, no el mismo con condicionales. *@
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-server"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.Server_Title)]</h3>
+                <p>@Localizer[nameof(Resource.ServerIdx_Subtitle)]</p>
+            </div>
+        </div>
+
+        <div class="pc-kpis">
+            <div class="pc-kpi">
+                <small>@Localizer["Server_Title"]</small>
+                <b>@(Servers?.Count ?? 0)</b>
+            </div>
+            <div class="pc-kpi is-ok">
+                <small>PPPoE</small>
+                <b>@PppoeCount</b>
+            </div>
+            <div class="pc-kpi">
+                <small>HotSpot</small>
+                <b>@HotSpotCount</b>
+            </div>
+            <div class="pc-kpi is-warn">
+                <small>@Localizer["Net_Clients"]</small>
+                <b>@ClientsCount</b>
+            </div>
+        </div>
+
+        <div class="pc-layout">
+
+            @* ================= Servidores ================= *@
+            <section class="pc-panel">
+                <header class="pc-panel-head">
+                    <b>@Localizer["Server_Title"]</b>
+                    <ButtonFormNew OnClick="() => ShowModalCreateServerAsync()"
+                                   TooTip="@Localizer[nameof(Resource.New)]"
+                                   Style="width:120px" />
+                </header>
+
+                <div class="pc-search">
+                    <AutoCompleteFilter ApplyFilter="SetFilterValue" Placeholder="Buscar servidor..." />
+                </div>
+
+                <GenericList MyList="Servers">
+                    <Body>
+                        @foreach (var item in Servers!)
+                        {
+                            <div class="pc-cat @(SelectedServerId == item.ServerId ? "is-selected" : null)"
+                                 @onclick="() => SelectServerAsync(item.ServerId)">
+                                <div>
+                                    <div class="pc-cat-name">@item.ServerName</div>
+                                    <div class="pc-cat-meta">
+                                        <span>@item.Ip</span>
+                                        <span>@item.Clients @Localizer["Net_Clients"]</span>
+                                        <span class="pc-pill @(item.ControlMk == MikrotikControlType.Ninguno ? "is-off" : "is-on")">
+                                            @ControlName(item.ControlMk)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="pc-cat-tools">
+                                    <ButtonEdit OnClick="() => ShowModalEditServerAsync(item.ServerId)" />
+                                    <ButtonDelete OnClick="() => DeleteServerAsync(item.ServerId)" />
+                                </div>
+                            </div>
+                        }
+                    </Body>
+                </GenericList>
+
+                <div class="pc-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            </section>
+
+            @* ================= Alistamiento del equipo ================= *@
+            <section class="pc-panel">
+                <header class="pc-panel-head">
+                    <b>
+                        <i class="fa fa-server"></i>
+                        @(Selected?.ServerName ?? Localizer[nameof(Resource.Server)])
+                    </b>
+                </header>
+
+                @if (Selected is null)
+                {
+                    <div class="pc-empty">
+                        <span class="pc-empty-glyph"><i class="fa fa-hand-pointer"></i></span>
+                        <strong>Elija un servidor</strong>
+                        <span>@Localizer[nameof(Resource.Accordion_EmptyHint)]</span>
+                    </div>
+                }
+                else if (IsLoadingDetail)
+                {
+                    <div class="pc-empty">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">@Localizer["Loading"]</span>
+                        </div>
+                        <span>@Localizer["Loading"]...</span>
+                    </div>
+                }
+                else
+                {
+                    @* ---- Conexion: de aca salen las interfaces del equipo ---- *@
+                    <div class="sv-conn @(Connected == true ? "is-on" : Connected == false ? "is-bad" : null)">
+                        <span class="sv-conn-state">
+                            <i class="fa @(Connected == true ? "fa-circle-check" : Connected == false ? "fa-circle-exclamation" : "fa-plug")"></i>
+                            @ConnectionText
+                        </span>
+
+                        @if (Connected == true)
+                        {
+                            <div class="sv-conn-data">
+                                <small>@Localizer[nameof(Resource.Server_MkName)]</small>
+                                <b>@MkName</b>
+                            </div>
+
+                            @* El numero solo sale cuando significa algo: en Ninguno no
+                               cuenta nada util, y un 0 suelto solo confunde. *@
+                            @if (MkCountLabel is not null)
+                            {
+                                <div class="sv-conn-data">
+                                    <small>@MkCountLabel</small>
+                                    <b>@MkCount</b>
+                                </div>
+                            }
+                        }
+                        else if (Connected == false)
+                        {
+                            <span class="sv-conn-hint">@Localizer[nameof(Resource.Server_ConnHint)]</span>
+                        }
+
+                        <div class="pc-actions">
+                            @* El ping prueba la RED, antes que el API: distingue "no llega
+                               el equipo" de "el usuario del API esta mal". *@
+                            <ButtonFormGreen OnClick="ShowPingAsync"
+                                             CssClass="btn-gradient-green is-sm"
+                                             Icon="fa fa-crosshairs"
+                                             TooTip="Ping" />
+
+                            @* Solo dice si el equipo responde. NO trae interfaces: probar
+                               la conexion diez veces no tiene por que recargarlas diez
+                               veces. Eso lo hace su propio boton, en el bloque de abajo. *@
+                            <ButtonFormGreen OnClick="ProbarConexionAsync"
+                                             CssClass="btn-gradient-green is-sm"
+                                             Icon="fa fa-plug"
+                                             TooTip="@Localizer[nameof(Resource.Server_TestConn)]" />
+                        </div>
+                    </div>
+
+                    @* ================= Lo que se GUARDA =================
+                       Las interfaces y como trabaja el equipo. El boton vive aqui, junto
+                       a los campos que guarda: en la cabecera del panel quedaba lejos y
+                       no se sabia a que se referia. *@
+                    <div class="sv-box">
+                        <div class="sv-box-head">
+                            <span>@Localizer[nameof(Resource.Server_BoxConfig)]</span>
+
+                            <span class="sv-box-tools">
+                                @* Vive aqui y no arriba porque es lo que LLENA estos dos
+                                   combos. Se pulsa una vez, no cada vez que se prueba la
+                                   conexion. *@
+                                <ButtonFormGreen OnClick="LoadInterfacesAsync"
+                                                 CssClass="btn-gradient-green is-sm"
+                                                 Icon="fa fa-download"
+                                                 TooTip="@Localizer[nameof(Resource.Server_LoadMk)]" />
+
+                                <ButtonFormSaveOnClick OnClick="SaveSelectedAsync"
+                                                       CssClass="btn-gradient-blue is-sm"
+                                                       Disabled="@(!HayCambios)"
+                                                       Style="min-width:0" />
+                            </span>
+                        </div>
+
+                        <div class="sv-box-body">
+
+                    @* ---- Las dos interfaces del equipo ---- *@
+                    @if (Interfaces is null)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-2">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width:170px">@Localizer[nameof(Resource.WanName)]</span>
+                                    <span class="form-control">@(string.IsNullOrWhiteSpace(Selected.WanName) ? "--" : Selected.WanName)</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width:170px">@Localizer[nameof(Resource.LanName)]</span>
+                                    <span class="form-control">@(string.IsNullOrWhiteSpace(Selected.LanName) ? "--" : Selected.LanName)</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted">Pruebe la conexion para elegir las interfaces desde el equipo.</small>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-2">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width:170px">@Localizer[nameof(Resource.WanName)]</span>
+                                    <select class="form-select" value="@Selected.WanName" @onchange="WanChanged">
+                                        @foreach (var item in Interfaces!)
+                                        {
+                                            <option value="@item.Name">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width:170px">@Localizer[nameof(Resource.LanName)]</span>
+                                    <select class="form-select" value="@Selected.LanName" @onchange="LanChanged">
+                                        @foreach (var item in Interfaces!)
+                                        {
+                                            <option value="@item.Name">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @* ---- Como trabaja el equipo ---- *@
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-2">
+                            <GenericSelectWrapper Tmodel="IntItemModel" Items="ControlTypes">
+                                <Body>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="width:170px">@Localizer[nameof(Resource.MikrotikControl)]</span>
+                                        <select class="form-select" value="@((int)Selected.ControlMk)" @onchange="ControlChanged">
+                                            @foreach (var item in ControlTypes!)
+                                            {
+                                                <option value="@item.Value">@item.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </Body>
+                            </GenericSelectWrapper>
+                        </div>
+
+                        @if (ControlMkLocked)
+                        {
+                            <div class="col-12 col-md-6 mb-2">
+                                <small class="text-muted">
+                                    <i class="fa fa-lock"></i>
+                                    @Localizer[nameof(Resource.Server_ControlMkInUse)]
+                                </small>
+                            </div>
+                        }
+                    </div>
+
+                        </div>
+                    </div>
+
+                    @* ================= Lo que se CREA en el equipo =================
+                       Estos campos no se guardan por su cuenta: son la entrada del boton
+                       Crear, que guarda y despues escribe en la MikroTik. *@
+                    @if (Selected.ControlMk == MikrotikControlType.PPPoE)
+                    {
+                        <div class="sv-box is-ppp">
+                            <div class="sv-box-head">
+                                <span>@Localizer[nameof(Resource.Server_BoxPppoe)]</span>
+
+                                <span class="sv-box-tools">
+                                    <span class="pc-pill @(PppoeReady ? "is-on" : "is-off")">@PppoeText</span>
+
+                                    @* Morado: no es guardar ni aprobar, es dejar el equipo
+                                       listo. Se hace una sola vez por servidor. *@
+                                    @if (!PppoeReady)
+                                    {
+                                        <ButtonFormPurple OnClick="CreatePppoeServerAsync"
+                                                          CssClass="btn-gradient-purple is-sm"
+                                                          TooTip="Crear servidor PPPoE" />
+                                    }
+                                    else
+                                    {
+                                        @* Deshacer, para rehacerlo con otra IP local.
+                                           El backend se niega si hay contratos pegados. *@
+                                        <ButtonFormRed OnClick="DeletePppoeServerAsync"
+                                                       CssClass="btn-gradient-red is-sm"
+                                                       Icon="fa fa-trash"
+                                                       TooTip="@Localizer[nameof(Resource.Server_PppoeDelete)]" />
+                                    }
+                                </span>
+                            </div>
+
+                        <div class="sv-box-body">
+
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-2">
+                                <GenericSelectWrapper Tmodel="IpNetwork" Items="LocalIps">
+                                    <Body>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="width:170px">@Localizer[nameof(Resource.PppLocalIp)]</span>
+                                            <select class="form-select" value="@LocalIpValue" @onchange="LocalIpChanged">
+                                                @foreach (var item in LocalIps!)
+                                                {
+                                                    <option value="@item.IpNetworkId">@item.Ip</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </Body>
+                                </GenericSelectWrapper>
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-2">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="width:170px">@Localizer[nameof(Resource.PppServiceName)]</span>
+                                    <input class="form-control" value="@ServiceNameInput" @onchange="ServiceNameChanged"
+                                           disabled="@PppoeReady" />
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!PppoeReady && PppoeBlockedReason is not null)
+                        {
+                            <div class="pc-empty" role="alert">
+                                <span class="pc-empty-glyph"><i class="fa fa-lock"></i></span>
+                                <strong>Falta un paso</strong>
+                                <span>@PppoeBlockedReason</span>
+                            </div>
+                        }
+
+                        </div>
+                        </div>
+                    }
+
+                    <div class="pc-panel-foot pc-count">
+                        @SelectedClients @Localizer["Net_Clients"]
+                    </div>
+                }
+            </section>
+
+        </div>
+    </div>
+</div>

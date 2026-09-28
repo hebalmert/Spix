@@ -1,18 +1,69 @@
-﻿<EditForm Model="ContractMac" OnValidSubmit="OnSubmit">
+@* La MAC del equipo del cliente, en cascada: Categoria equipo -> Equipo -> MAC.
+
+   Antes era una sola lista con TODAS las MAC libres. Con compras de antenas inalambricas y
+   de ONU de fibra eso ya no sirve: hay que poder llegar a la MAC del tipo de equipo que le
+   toca a este contrato. Las tres listas salen armadas del backend y solo traen lo que tiene
+   seriales disponibles, asi que no aparece una categoria ni un equipo sin MAC libres. *@
+<EditForm Model="ContractMac" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
-    <GenericSelectWrapper Tmodel="GuidItemModel" Items="ListMacs">
-        <Body>
-        <div class="input-group">
-            <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.MAC)]</span>
-            <select class="form-select" value="@ContractMac?.CargueDetailId" @onchange="MacsChanged">
-                @foreach (var item in ListMacs!)
-                {
-                    <option value="@item.Value">@item.Name</option>
-                }
-            </select>
+
+    <div class="row mb-2">
+        <div class="col-12">
+            <GenericSelectWrapper Tmodel="GuidItemModel" Items="Categories">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.ProductCategory)]</span>
+                    <select class="form-select" value="@SelectedCategoryId" @onchange="CategoryChanged">
+                        @foreach (var item in Categories!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
         </div>
-        </Body>
-    </GenericSelectWrapper>
+    </div>
+
+    @* El equipo: entre parentesis cuantas MAC libres le quedan *@
+    <div class="row mb-2">
+        <div class="col-12">
+            <GenericSelectWrapper Tmodel="GuidItemModel" Items="Products">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer["ContractMac_Equipment"]</span>
+                    <select class="form-select" value="@SelectedProductId" @onchange="ProductChanged"
+                            disabled="@(SelectedCategoryId == Guid.Empty)">
+                        @foreach (var item in Products!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-12">
+            <GenericSelectWrapper Tmodel="GuidItemModel" Items="ListMacs">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.MAC)]</span>
+                    <select class="form-select" value="@ContractMac?.CargueDetailId" @onchange="MacsChanged"
+                            disabled="@(SelectedProductId == Guid.Empty)">
+                        @foreach (var item in ListMacs!)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+            <ValidationMessage For="@(() => ContractMac.CargueDetailId)" />
+        </div>
+    </div>
 
     <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-5">

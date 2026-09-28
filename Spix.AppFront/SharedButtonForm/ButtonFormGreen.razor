@@ -1,5 +1,5 @@
 ﻿@* Boton de accion afirmativa: activar, aprobar, confirmar. Plano, como el resto de la familia. *@
-<button type="@Type" class="@CssClass" style="@Style" @onclick="@OnClick" title="@TooTip">
+<button type="@Type" class="@CssClass" style="@Style" @onclick="@OnClick" title="@TooTip" disabled="@Disabled">
     <i class="@Icon" style="margin-right:5px;"></i><span>@TooTip</span>
 </button>
 
@@ -10,4 +10,8 @@
     [Parameter] public string? TooTip { get; set; }
     [Parameter] public string Type { get; set; } = "button";
     [Parameter] public string? Style { get; set; }
+
+    //Para las acciones que se lanzan una sola vez (un escaner que ya esta grabando).
+    //Nace en false, asi que los usos que ya existian no cambian.
+    [Parameter] public bool Disabled { get; set; }
 }

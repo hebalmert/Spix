@@ -1,4 +1,4 @@
-// Editor visual de campos para Plantillas PDF.
+﻿// Editor visual de campos para Plantillas PDF.
 // Dibuja las paginas con pdf.js y encima los recuadros de los campos. Blazor manda la lista de campos
 // (setFields) y el editor avisa cada accion del usuario (PlaceField, MoveField, SelectField).
 // Coordenadas en puntos PDF medidas desde la esquina superior izquierda, igual que PdfSharp al llenar el PDF.
@@ -13,7 +13,13 @@
         4: "09/12/2026",
         6: "Calle 10 # 20-30 Barrio Centro",
         7: "cliente@correo.com",
-        8: "Cliente Prueba"
+        8: "Cliente Prueba",
+        9: "1024",
+        10: "09/12/2026 14:35",
+        11: "Plan 20 Megas",
+        12: "20M",
+        13: "5M",
+        14: "65.000,00"
     };
 
     let state = null;

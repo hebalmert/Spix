@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +26,66 @@ public class CargueDetailsController : ControllerBase
     {
         _cargueDetailsUnitOfWork = cargueDetailsUnitOfWork;
         _localizer = localizer;
+    }
+
+    //La cascada de ContractMac: Categoria equipo -> Equipo -> MAC. Son tres endpoints aparte
+    //porque loadCombo (la lista plana de MAC) la sigue usando el escritorio.
+
+    [HttpGet("comboCategories")]
+    public async Task<IActionResult> GetComboCategoriesAsync()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _cargueDetailsUnitOfWork.ComboCategoriesAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    [HttpGet("comboProducts/{productCategoryId}")]
+    public async Task<IActionResult> GetComboProductsAsync(Guid productCategoryId)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _cargueDetailsUnitOfWork.ComboProductsAsync(userClaimsInfo.UserName, productCategoryId);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    [HttpGet("comboMacs/{productId}/{id?}")]
+    public async Task<IActionResult> GetComboMacsAsync(Guid productId, [FromRoute] Guid? id = null)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _cargueDetailsUnitOfWork.ComboMacsAsync(userClaimsInfo.UserName, productId, id);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpGet("loadCombo/{id?}")]

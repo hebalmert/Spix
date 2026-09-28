@@ -64,7 +64,7 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
 
         [HttpDelete("{id}")]
@@ -75,7 +75,7 @@ namespace Spix.AppBack.Controllers.v1.EntitiesContracts
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
     }
 }

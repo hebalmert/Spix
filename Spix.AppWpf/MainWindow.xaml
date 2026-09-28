@@ -183,9 +183,6 @@
                             <Button Click="ShowIpNetworksClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="IP de red" />
                             </Button>
-                            <Button Click="ShowConnectionMikrotikControlsClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Control Mikrotik" />
-                            </Button>
                             <Button Click="ShowQueueTypesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Queue Types" />
                             </Button>

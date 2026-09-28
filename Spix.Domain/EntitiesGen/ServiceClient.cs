@@ -2,6 +2,7 @@
 using Spix.Domain.EntitiesContratos;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesGen;
 
@@ -26,15 +27,18 @@ public class ServiceClient
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [DisplayFormat(DataFormatString = "{0:C2}")]
     [Display(Name = nameof(Resource.Cost_Price), ResourceType = typeof(Resource))]
+    [Range(0, double.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public decimal Costo { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Tax), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public Guid TaxId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [DisplayFormat(DataFormatString = "{0:C2}")]
     [Display(Name = nameof(Resource.Price), ResourceType = typeof(Resource))]
+    [Range(0, double.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public decimal Price { get; set; }
 
     [Display(Name = "Activo")]

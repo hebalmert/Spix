@@ -6,6 +6,7 @@ using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
+using System.Globalization;
 
 namespace Spix.AppFront.Pages.EntitiesInven.PurchasePage;
 
@@ -32,6 +33,32 @@ public partial class FormPurchaseDetails
 
     //Si el producto lleva seriales, la cantidad va entera (el cargue pide una MAC por unidad)
     private bool WithSerials;
+
+    //El costo unitario se muestra con separadores de miles, igual que los totales de
+    //abajo. Mientras el campo tiene el foco se muestra sin ellos, porque con las comas
+    //no se puede escribir.
+    private bool EditandoCosto;
+
+    private string UnitCostText => EditandoCosto
+        ? PurchaseDetail.UnitCost.ToString("0.00", CultureInfo.CurrentCulture)
+        : PurchaseDetail.UnitCost.ToString("N2", CultureInfo.CurrentCulture);
+
+    private void UnitCostChanged(ChangeEventArgs e)
+    {
+        EditandoCosto = false;
+
+        //Se leen con la MISMA cultura con la que se pintan: si se formatea en una y se
+        //lee en otra, 1,512,605.00 se vuelve basura. Los separadores se quitan a mano
+        //por si vienen de un copiar y pegar.
+        var cultura = CultureInfo.CurrentCulture;
+        var texto = (e.Value?.ToString() ?? string.Empty)
+            .Replace(cultura.NumberFormat.NumberGroupSeparator, string.Empty)
+            .Trim();
+
+        PurchaseDetail.UnitCost = decimal.TryParse(texto, NumberStyles.Number, cultura, out var valor)
+            ? valor
+            : 0;
+    }
 
     protected override async Task OnInitializedAsync()
     {

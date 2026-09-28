@@ -111,6 +111,54 @@ public class ContractServerService : IContractServerService
                 };
             }
 
+            //El contrato Y el equipo tienen que ser de la corporacion del usuario. Sin esto
+            //se puede atar el contrato de una empresa al MikroTik de otra sabiendo los ids.
+            var contratoOk = await _context.ContractClients.AnyAsync(x =>
+                x.ContractClientId == modelo.ContractClientId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!contratoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractServer>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            //Un contrato vive en UN equipo. Si ya tiene uno, primero hay que quitarlo, que
+            //es lo que ya obliga el DeleteAsync de aca mismo.
+            //
+            //Sin esto un contrato podia quedar atado a un equipo HotSpot y a otro PPPoE, y el
+            //tipo de control que resuelve el sistema seria cualquiera de los dos.
+            var yaTieneServidor = await _context.ContractServers.AnyAsync(x =>
+                x.ContractClientId == modelo.ContractClientId);
+
+            if (yaTieneServidor)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractServer>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Contract_AlreadyHasServer"]
+                };
+            }
+
+            var servidorOk = await _context.Servers.AnyAsync(x =>
+                x.ServerId == modelo.ServerId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!servidorOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractServer>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Server_Not_Found)]
+                };
+            }
+
             _context.ContractServers.Add(modelo);
 
             await _transactionManager.SaveChangesAsync();
@@ -129,12 +177,26 @@ public class ContractServerService : IContractServerService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var dataRemove = await _context.ContractServers.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la relacion tiene que ser de su corporacion
+            var dataRemove = await _context.ContractServers
+                .FirstOrDefaultAsync(x => x.ContractServerId == id &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
+
             if (dataRemove == null)
             {
                 return new ActionResponse<bool>
@@ -144,8 +206,12 @@ public class ContractServerService : IContractServerService
                 };
             }
 
+            //Tambien la credencial PPPoE: es la pieza de acceso de los equipos PPPoE, igual
+            //que el IpBinding lo es de los de HotSpot. Sin esto se le podria quitar el
+            //servidor a un contrato que ya tiene su secret escrito en el equipo.
             var hasHotSpotDependencies = await _context.ContractQues.AnyAsync(x => x.ContractClientId == dataRemove.ContractClientId)
-                || await _context.ContractBinds.AnyAsync(x => x.ContractClientId == dataRemove.ContractClientId);
+                || await _context.ContractBinds.AnyAsync(x => x.ContractClientId == dataRemove.ContractClientId)
+                || await _context.ContractPppoes.AnyAsync(x => x.ContractClientId == dataRemove.ContractClientId);
             if (hasHotSpotDependencies)
             {
                 await _transactionManager.RollbackTransactionAsync();

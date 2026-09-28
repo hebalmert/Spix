@@ -5,7 +5,13 @@
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">@Localizer[nameof(Resource.UserSetting)]</h3>
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-users"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.UsuarioIdx_Title)]</h3>
+                <p>@Localizer[nameof(Resource.UsuarioIdx_Subtitle)]</p>
+            </div>
+        </div>
 
         <!-- Botón + Filtro -->
         <div class="row align-items-center mb-3">
@@ -38,7 +44,7 @@
                         <tbody>
                             @foreach (var item in Usuarios!)
                             {
-                                <tr>
+                                <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.UsuarioId, true)">
                                     <td>
                                         <AvatarImage Url="@item.ImageFullPath" Icon="fa fa-id-badge" Size="90" Alt="@($"{item.FirstName} {item.LastName}")" />
                                     </td>
@@ -62,7 +68,7 @@
                                                            Icon="fa fa-envelope" />
                                         }
                                     </td>
-                                    <td style="width:1px;">
+                                    <td @ondblclick:stopPropagation style="width:1px;">
                                         <ButtonEdit OnClick="() => ShowModalAsync(item.UsuarioId, true)" />
                                     </td>
 

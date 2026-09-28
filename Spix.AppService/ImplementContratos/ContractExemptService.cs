@@ -229,28 +229,12 @@ public class ContractExemptService : IContractExemptService
                 return Fail<bool>(_localizer["Exempt_OnlyActive"]);
             }
 
-            bool usaHotSpot = await _contractActivationIntegrityService.UsesHotSpotControlAsync(contract.CorporationId);
-
-            if (usaHotSpot)
+            //2. Con el acceso dando servicio. Como se comprueba depende de como trabaje el
+            //   equipo: en HotSpot es el IpBinding en bypassed, en PPPoE el secret habilitado.
+            if (!await _contractActivationIntegrityService.IsServiceOnAsync(contractClientId))
             {
-                //2. Con el acceso dando servicio: IpBinding presente y en bypassed
-                var bind = await _context.ContractBinds
-                    .AsNoTracking()
-                    .Where(x => x.ContractClientId == contractClientId)
-                    .Select(x => new { x.HotSpotTypeId })
-                    .FirstOrDefaultAsync();
-
-                var hotSpotBypassed = await _context.HotSpotTypes
-                    .AsNoTracking()
-                    .Where(x => x.Active && x.TypeName == "bypassed")
-                    .Select(x => x.HotSpotTypeId)
-                    .FirstOrDefaultAsync();
-
-                if (bind == null || bind.HotSpotTypeId != hotSpotBypassed)
-                {
-                    await _transactionManager.RollbackTransactionAsync();
-                    return Fail<bool>(_localizer["Exempt_NeedsBypassed"]);
-                }
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<bool>(_localizer["Exempt_NeedsBypassed"]);
             }
 
             //3. El contrato pasa a Exonerado

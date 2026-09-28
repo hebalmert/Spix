@@ -1,0 +1,15 @@
+﻿@* Boton de accion especial: provisionar, dejar un equipo listo. No es guardar (azul)
+   ni aprobar (verde): es una accion que se hace una sola vez y cambia el equipo. *@
+<button type="@Type" class="@CssClass" style="@Style" @onclick="@OnClick" title="@TooTip" disabled="@Disabled">
+    <i class="@Icon" style="margin-right:5px;"></i><span>@TooTip</span>
+</button>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "fa fa-wand-magic-sparkles";
+    [Parameter] public string CssClass { get; set; } = "btn-gradient-purple";
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string? TooTip { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public string? Style { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+}

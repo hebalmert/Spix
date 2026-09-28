@@ -39,4 +39,55 @@ public class MkConnectionsController : ControllerBase
         }
         return NotFound(response.Message);
     }
+
+    //Las interfaces del equipo, ya listas para pintar y con el neutro en la posicion 0
+    [HttpGet("interfaces/{id}")]
+    public async Task<IActionResult> Interfaces(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+        var response = await _mkConnection.InterfacesComboAsync(id, userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
+    //Crea el servidor PPPoE y su perfil en el equipo. Una sola vez por servidor.
+    //Deshace la configuracion PPPoE del equipo. El Service se niega si hay contratos.
+    [HttpDelete("pppoeserver/{id}")]
+    public async Task<IActionResult> DeletePppoeServer(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+        var response = await _mkConnection.DeletePppoeServerAsync(id, userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
+    [HttpPost("pppoeserver/{id}")]
+    public async Task<IActionResult> CreatePppoeServer(Guid id, [FromQuery] string? serviceName)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        if (userClaimsInfo == null)
+        {
+            return BadRequest("Erro en el sistema de Usuarios");
+        }
+        var response = await _mkConnection.CreatePppoeServerAsync(id, serviceName, userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
 }

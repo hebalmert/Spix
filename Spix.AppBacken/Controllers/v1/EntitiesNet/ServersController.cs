@@ -29,6 +29,25 @@ public class ServersController : ControllerBase
         _localizer = localizer;
     }
 
+    //Los tipos de Control Mikrotik, traducidos y con el neutro, armados en el backend
+    [HttpGet("controlTypes")]
+    public IActionResult GetControlTypes()
+    {
+        try
+        {
+            var response = _unitOfWork.ControlTypesCombo();
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
     [HttpGet("loadCombo/{id?}")]
     public async Task<IActionResult> GetComboAsync([FromRoute] Guid? id = null)
     {

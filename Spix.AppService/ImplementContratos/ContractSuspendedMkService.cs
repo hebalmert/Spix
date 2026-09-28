@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -81,11 +81,46 @@ public partial class ContractSuspendedMkService : IContractSuspendedMkService
             }
 
             datos.NombreCliente = $"{contract.Client?.FirstName} {contract.Client?.LastName} - ({contract.ControlContrato})";
-            datos.UsaHotSpot = await _contractActivationIntegrityService.UsesHotSpotControlAsync(contract.CorporationId);
+            //Como trabaja el EQUIPO del contrato, no la corporacion
+            datos.Control = await _contractActivationIntegrityService.ResolveControlAsync(contractClientId);
 
-            //Sin HotSpot no hay nada que escribir en el equipo: solo cambia el estado
-            if (!datos.UsaHotSpot)
+            //Sin control en el equipo no hay nada que escribir: solo cambia el estado
+            if (!datos.UsaControl)
             {
+                return Ok(datos);
+            }
+
+            //===== PPPoE: se deshabilita el secret y se tumba la sesion, todo en el WPF =====
+            if (datos.Control == MikrotikControlType.PPPoE)
+            {
+                var credencial = await _context.ContractPppoes
+                    .AsNoTracking()
+                    .Include(x => x.Server!)
+                        .ThenInclude(x => x.IpNetwork)
+                    .FirstOrDefaultAsync(x => x.ContractClientId == contractClientId);
+
+                if (credencial?.Server?.IpNetwork?.Ip == null ||
+                    string.IsNullOrWhiteSpace(credencial.MikrotikId) ||
+                    string.IsNullOrWhiteSpace(credencial.Usuario) ||
+                    string.IsNullOrWhiteSpace(credencial.IpCliente))
+                {
+                    datos.Blocked = _localizer[nameof(Resource.Pppoe_CredentialIncomplete)];
+                    return Ok(datos);
+                }
+
+                datos.Credencial = new SuspendPppoeDTO
+                {
+                    ServerId = credencial.ServerId,
+                    ServerName = credencial.Server.ServerName,
+                    ServerIp = credencial.Server.IpNetwork.Ip,
+                    Usuario = credencial.Server.Usuario,
+                    Clave = credencial.Server.Clave,
+                    ApiPort = credencial.Server.ApiPort,
+                    MikrotikId = credencial.MikrotikId,
+                    UsuarioPppoe = credencial.Usuario,
+                    IpCliente = credencial.IpCliente
+                };
+
                 return Ok(datos);
             }
 
@@ -201,7 +236,7 @@ public partial class ContractSuspendedMkService : IContractSuspendedMkService
 
             //La misma validacion de integridad que corre la web antes de devolver el servicio
             var integridad = await _contractActivationIntegrityService.ValidateAsync(
-                contract.ContractClientId, contract.CorporationId);
+                contract.ContractClientId);
 
             if (!integridad.WasSuccess)
             {
@@ -209,11 +244,32 @@ public partial class ContractSuspendedMkService : IContractSuspendedMkService
                 return Ok(datos);
             }
 
-            datos.UsaHotSpot = await _contractActivationIntegrityService.UsesHotSpotControlAsync(contract.CorporationId);
+            datos.Control = await _contractActivationIntegrityService.ResolveControlAsync(contractClientId);
 
-            if (!datos.UsaHotSpot)
+            if (!datos.UsaControl)
             {
                 return Ok(datos);
+            }
+
+            //En PPPoE el MkIndex guardado al suspender es el .id del /ppp/secret, asi que la
+            //reactivacion usa el mismo camino. Lo que falta es el usuario y la IP, que se
+            //necesitan para tumbar la sesion y para comprobar que sea la suya.
+            if (datos.Control == MikrotikControlType.PPPoE)
+            {
+                var credencial = await _context.ContractPppoes
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.ContractClientId == contractClientId);
+
+                if (credencial == null ||
+                    string.IsNullOrWhiteSpace(credencial.Usuario) ||
+                    string.IsNullOrWhiteSpace(credencial.IpCliente))
+                {
+                    datos.Blocked = _localizer[nameof(Resource.Pppoe_CredentialIncomplete)];
+                    return Ok(datos);
+                }
+
+                datos.UsuarioPppoe = credencial.Usuario;
+                datos.IpCliente = credencial.IpCliente;
             }
 
             //El id y el servidor que quedaron guardados al suspender: asi no depende de lo

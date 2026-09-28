@@ -1,4 +1,4 @@
-@page "/productstorages"
+﻿@page "/productstorages"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
@@ -57,7 +57,7 @@
                             <Body>
                                 @foreach (var item in ProductStorages!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.ProductStorageId, true)">
                                         <td>
                                             <div class="idx-name">@item.StorageName</div>
                                             <div class="idx-meta"><i class="fa fa-location-dot"></i> @item.CityName · @item.StateName</div>
@@ -70,7 +70,7 @@
                                                 @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
                                             </span>
                                         </td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonEdit OnClick="() => ShowModalAsync(item.ProductStorageId, true)" />
                                                 @* Con existencias no se borra: el backend lo explica si ya tuvo movimientos *@

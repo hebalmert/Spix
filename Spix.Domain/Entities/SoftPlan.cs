@@ -15,18 +15,23 @@ public class SoftPlan
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Price), ResourceType = typeof(Resource))]
+    [Range(0, double.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public decimal Price { get; set; }
 
+    [Range(0, double.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public decimal? AnnualPrice { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Months), ResourceType = typeof(Resource))]
+    [Range(1, 120, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public int Meses { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Max_Clients), ResourceType = typeof(Resource))]
+    [Range(1, int.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public int ClientsCount { get; set; }
 
+    [Range(0, int.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public int DisplayOrder { get; set; }
 
     public bool IsRecommended { get; set; }
@@ -44,6 +49,7 @@ public class SoftPlan
     // Limite de peticiones al API por minuto, POR corporation de este plan.
     // 0 = sin limite. Editable desde el panel del plan (sin redesplegar).
     [Display(Name = nameof(Resource.RateLimitPerMinute), ResourceType = typeof(Resource))]
+    [Range(0, int.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public int RateLimitPerMinute { get; set; }
 
     //Releaciones

@@ -140,10 +140,14 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                <DataGridTemplateColumn Width="Auto" MinWidth="220" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.DetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Icon="{x:Static icons:FontAwesomeIcon.Sliders}"
+                                                                            ToolTip="Configurar control y PPPoE" />
                                                 <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.CheckMikrotikCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                                             CommandParameter="{Binding}"
                                                                             Icon="{x:Static icons:FontAwesomeIcon.Server}"

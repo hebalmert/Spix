@@ -6,16 +6,73 @@
     min-height: 10rem;
 }
 
-.stock-summary {
-    color: #212529;
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+/* ---------- La ficha del producto ----------
+   Antes el nombre era un texto suelto de 1.15rem que flotaba sin decir que era.
+   Ahora es una ficha con el icono, el nombre, la descripcion y el total a la
+   derecha, en el mismo azul gris de la zebra de los formularios. */
+.stock-card {
+    align-items: center;
+    background: #eef3fb;
+    border: 1px solid #dbe6f8;
+    border-radius: 8px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
 }
 
+.stock-card-icon {
+    align-items: center;
+    background: #2c5fad;
+    border-radius: 9px;
+    color: #fff;
+    display: flex;
+    flex: 0 0 38px;
+    font-size: 17px;
+    height: 38px;
+    justify-content: center;
+}
+
+.stock-card-text {
+    flex: 1;
+    min-width: 0;
+}
+
+    .stock-card-text b {
+        color: #16305e;
+        display: block;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+.stock-card-total {
+    text-align: right;
+}
+
+    .stock-card-total small {
+        color: #5b6b85;
+        display: block;
+        font-size: 11px;
+    }
+
+    .stock-card-total b {
+        color: #16305e;
+        font-size: 19px;
+        font-weight: 500;
+    }
+
+        /* En cero no se resalta: no hay nada que mirar */
+        .stock-card-total b.is-zero {
+            color: #8a96ab;
+        }
+
+/* ---------- La tabla ----------
+   Dos columnas, no tres: la de Producto se quito porque repetia el mismo nombre
+   en cada fila, y ese nombre ya vive arriba en la ficha. */
 .stock-list {
-    border: 1px solid #dee2e6;
-    background: #fff;
+    border: 1px solid #dbe6f8;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .stock-list-header,
@@ -23,48 +80,73 @@
     align-items: center;
     display: grid;
     gap: 1rem;
-    grid-template-columns: minmax(12rem, 1fr) minmax(12rem, 1fr) 8rem;
+    grid-template-columns: 1fr 7rem;
+    padding: 11px 14px;
 }
 
+/* La cabecera iba en negro (#212529) y peleaba con el azul del encabezado del
+   modal. Pasa al azul gris de la zebra, para que todo sea una sola familia. */
 .stock-list-header {
-    background: #212529;
-    color: #fff;
-    font-weight: 700;
-    padding: 0.8rem 1rem;
-}
-
-.stock-list-header span:last-child,
-.stock-list-row span:last-child {
-    text-align: center;
+    background: #dbe6f8;
+    color: #16305e;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 9px 14px;
 }
 
 .stock-list-row {
-    border-bottom: 1px solid #edf0f2;
-    min-height: 3.1rem;
-    padding: 0.65rem 1rem;
+    border-top: 1px solid #eef3fb;
+    color: #16305e;
+    font-size: 13px;
 }
 
-.stock-list-row:last-child {
-    border-bottom: 0;
+    /* La cabecera es el hijo 1, asi que las filas son 2, 3, 4...
+       Rayar los impares deja sin fondo la PRIMERA fila, que es lo que se espera. */
+    .stock-list-row:nth-child(odd) {
+        background: #f7f9fd;
+    }
+
+.stock-list-header span:last-child,
+.stock-list-row span:last-child {
+    text-align: right;
 }
 
+.stock-list-row span:last-child {
+    font-weight: 500;
+}
+
+/* ---------- Sin existencias ----------
+   Antes era una linea gris con un icono minusculo. */
 .stock-empty-state {
-    align-items: center;
-    color: #6c757d;
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-    min-height: 4.5rem;
-    padding: 1rem;
+    border: 1px dashed #cdd9ee;
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
 }
 
-@media (max-width: 768px) {
-    .stock-list {
-        overflow-x: auto;
-    }
+.stock-empty-icon {
+    align-items: center;
+    background: #eef3fb;
+    border-radius: 50%;
+    color: #8ab4f8;
+    display: inline-flex;
+    font-size: 19px;
+    height: 44px;
+    justify-content: center;
+    margin-bottom: 10px;
+    width: 44px;
+}
 
-    .stock-list-header,
-    .stock-list-row {
-        min-width: 38rem;
-    }
+.stock-empty-state b {
+    color: #16305e;
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.stock-empty-state small {
+    color: #5b6b85;
+    display: block;
+    font-size: 12px;
+    margin-top: 3px;
 }

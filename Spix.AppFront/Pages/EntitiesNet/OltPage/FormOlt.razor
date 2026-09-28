@@ -1,0 +1,275 @@
+@* El formulario de la OLT, compartido por Crear y Editar.
+
+   Mismo molde que FormNode: etiquetas de 150px, filas de a dos y un separador por bloque
+   (equipo / acceso / puertos / ubicacion). Sin lo inalambrico, que aqui no aplica: en su
+   lugar lleva cuantos puertos PON tiene y a que velocidad va cada uno. *@
+<EditForm Model="Olt" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+
+    <!-- Nombre de la OLT (fila completa) -->
+    <div class="row mb-2">
+        <div class="col-12">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Olt)]
+                </span>
+                <InputText class="form-control" @bind-Value="Olt.OltName" />
+            </div>
+            <ValidationMessage For="@(() => Olt.OltName)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Marca + Modelo -->
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="Mark" Items="Marks">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Mark)]</span>
+                    <select class="form-select" value="@Olt.MarkId" @onchange="MarkChanged">
+                        @foreach (var item in Marks!)
+                        {
+                            <option value="@item.MarkId">@item.MarkName</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+            <ValidationMessage For="@(() => Olt.MarkId)" />
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="MarkModel" Items="MarkModels">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Model)]</span>
+                    <select class="form-select" value="@Olt.MarkModelId" @onchange="MarkModelChanged">
+                        @foreach (var item in MarkModels!)
+                        {
+                            <option value="@item.MarkModelId">@item.MarkModelName</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+            <ValidationMessage For="@(() => Olt.MarkModelId)" />
+        </div>
+    </div>
+
+    <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+    @* Como entrarle al equipo. Spix NO se conecta: solo queda registrado. *@
+    <div class="row">
+        <!-- IP de red + Usuario -->
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="IpNetwork" Items="IpNetworks">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.IpNetwork)]</span>
+                    <select class="form-select" value="@Olt.IpNetworkId" @onchange="IpNetworkChanged">
+                        @foreach (var item in IpNetworks!)
+                        {
+                            <option value="@item.IpNetworkId">@item.Ip</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+            <ValidationMessage For="@(() => Olt.IpNetworkId)" />
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.User)]
+                </span>
+                <InputText class="form-control"
+                           name="olt_username"
+                           autocomplete="new-password"
+                           @bind-Value="Olt.Usuario" />
+            </div>
+            <ValidationMessage For="@(() => Olt.Usuario)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Clave: fila completa porque lleva el boton del ojo -->
+        <div class="col-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Password)]
+                </span>
+                <InputText class="form-control"
+                           name="olt_clave"
+                           placeholder="@(IsEditControl ? Localizer["Net_KeepPassword"] : null)"
+                           autocomplete="new-password"
+                           type="@(showClave ? "text" : "password")"
+                           @bind-Value="Olt.Clave" />
+                <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
+                    <i class="fa @(showClave ? "fa-eye-slash" : "fa-eye")"></i>
+                </button>
+            </div>
+            <ValidationMessage For="@(() => Olt.Clave)" />
+        </div>
+    </div>
+
+    <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+    @* Los puertos: lo propio de una OLT *@
+    <div class="row">
+        <!-- Puertos PON + Velocidad por puerto -->
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.OltPorts)]
+                </span>
+                <InputNumber class="form-control" @bind-Value="Olt.PortCount" />
+            </div>
+            <ValidationMessage For="@(() => Olt.PortCount)" />
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.OltPortSpeed)]
+                </span>
+                <InputText class="form-control" placeholder="1G, 2.5G, 10G" @bind-Value="Olt.PortSpeed" />
+            </div>
+            <ValidationMessage For="@(() => Olt.PortSpeed)" />
+        </div>
+    </div>
+
+    <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Map_Coordinates)]
+                </span>
+                <input class="form-control"
+                       placeholder="25.82370270482433, -80.38556718743175"
+                       value="@CoordinatesText"
+                       @onchange="CoordinatesChanged" />
+            </div>
+        </div>
+
+        <!-- Latitud -->
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Latitude)]
+                </span>
+                <InputNumber class="form-control" @bind-Value="Olt.Latitude" />
+            </div>
+            <ValidationMessage For="@(() => Olt.Latitude)" />
+        </div>
+
+        <!-- Longitud -->
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Longitude)]
+                </span>
+                <InputNumber class="form-control" @bind-Value="Olt.Longitude" />
+            </div>
+            <ValidationMessage For="@(() => Olt.Longitude)" />
+        </div>
+    </div>
+
+    <!-- SEPARADOR -->
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+    @* Donde esta instalada: estado y ciudad solo encadenan hasta la zona *@
+    <div class="row">
+        <!-- Estado + Ciudad -->
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="State" Items="States">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.State)]</span>
+                    <select class="form-select" value="@Olt.StateId" @onchange="StateChanged">
+                        @foreach (var item in States!)
+                        {
+                            <option value="@item.StateId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="City" Items="Cities">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.City)]</span>
+                    <select class="form-select" value="@Olt.CityId" @onchange="CityChanged">
+                        @foreach (var item in Cities!)
+                        {
+                            <option value="@item.CityId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Zona + Activo -->
+        <div class="col-12 col-md-6 mb-2">
+            <GenericSelectWrapper Tmodel="Zone" Items="Zones">
+                <Body>
+                <div class="input-group">
+                    <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Zone)]</span>
+                    <select class="form-select" value="@Olt.ZoneId" @onchange="ZoneChanged">
+                        @foreach (var item in Zones!)
+                        {
+                            <option value="@item.ZoneId">@item.ZoneName</option>
+                        }
+                    </select>
+                </div>
+                </Body>
+            </GenericSelectWrapper>
+            <ValidationMessage For="@(() => Olt.ZoneId)" />
+        </div>
+
+        <div class="col-12 col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text" style="width:150px">
+                    @Localizer[nameof(Resource.Active)]
+                </span>
+                <div class="d-flex align-items-center ps-3">
+                    <InputCheckbox @bind-Value="Olt.Active" class="form-check-input me-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="mb-4 d-flex justify-content-center gap-2 mt-2">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+
+</EditForm>

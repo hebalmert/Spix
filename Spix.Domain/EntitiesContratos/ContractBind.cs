@@ -2,6 +2,7 @@
 using Spix.Domain.EntitiesInven;
 using Spix.Domain.EntitiesNet;
 using System.ComponentModel.DataAnnotations;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesContratos;
 
@@ -32,6 +33,7 @@ public class ContractBind
     [Required(ErrorMessage = "El Campo {0} es Requerido")]
     [Range(1, double.MaxValue, ErrorMessage = "Debe Seleccionar un {0}")]
     [Display(Name = "Tipo Acceso")]
+    [ComboRequired]
     public int HotSpotTypeId { get; set; }
 
 

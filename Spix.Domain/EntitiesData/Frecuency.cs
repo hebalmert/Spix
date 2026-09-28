@@ -14,6 +14,7 @@ public class Frecuency
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Frequency), ResourceType = typeof(Resource))]
+    [Range(1, 100000, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public int FrecuencyName { get; set; }
 
     [Display(Name = nameof(Resource.Active), ResourceType = typeof(Resource))]

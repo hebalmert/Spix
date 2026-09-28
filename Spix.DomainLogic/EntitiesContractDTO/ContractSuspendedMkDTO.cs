@@ -1,3 +1,5 @@
+﻿using Spix.DomainLogic.EnumTypes;
+
 namespace Spix.DomainLogic.EntitiesContractDTO;
 
 // Un IpBinding que hay que tocar en el equipo para suspender. Trae con el los datos de
@@ -25,6 +27,30 @@ public class SuspendBindingDTO
     public string? MacCliente { get; set; }
 }
 
+// La credencial PPPoE del contrato. Solo hay una por contrato, garantizado por indice.
+public class SuspendPppoeDTO
+{
+    public Guid ServerId { get; set; }
+
+    public string? ServerName { get; set; }
+
+    public string? ServerIp { get; set; }
+
+    public string? Usuario { get; set; }
+
+    public string? Clave { get; set; }
+
+    public int ApiPort { get; set; }
+
+    // El .id del /ppp/secret: todo lo que Spix creo se toca por su id
+    public string? MikrotikId { get; set; }
+
+    // Con el usuario se busca la sesion viva; con la IP se comprueba que sea la suya
+    public string? UsuarioPppoe { get; set; }
+
+    public string? IpCliente { get; set; }
+}
+
 // Todo lo que el ESCRITORIO necesita para suspender un contrato en el equipo.
 //
 // El escritorio habla con el MikroTik por la red LAN, porque el cliente puede no tener IP
@@ -40,8 +66,15 @@ public class SuspendMkSetupDTO
 
     public List<SuspendBindingDTO> Bindings { get; set; } = new();
 
-    // Si la corporacion no usa HotSpot no se toca el equipo: solo cambia el estado
-    public bool UsaHotSpot { get; set; }
+    // Como trabaja el EQUIPO del contrato. Antes era un bool por corporacion, asi que PPPoE
+    // caia en la misma rama que Ninguno y el contrato quedaba Suspendido navegando.
+    public MikrotikControlType Control { get; set; } = MikrotikControlType.Ninguno;
+
+    public bool UsaHotSpot => Control == MikrotikControlType.HotSpot;
+
+    public bool UsaControl => Control != MikrotikControlType.Ninguno;
+
+    public SuspendPppoeDTO? Credencial { get; set; }
 
     public string? Blocked { get; set; }
 
@@ -69,7 +102,17 @@ public class ReactivateMkSetupDTO
     // Al reactivar vuelve a bypassed: el cliente pasa sin portal
     public string? TipoBypassed { get; set; }
 
-    public bool UsaHotSpot { get; set; }
+    public MikrotikControlType Control { get; set; } = MikrotikControlType.Ninguno;
+
+    public bool UsaHotSpot => Control == MikrotikControlType.HotSpot;
+
+    public bool UsaControl => Control != MikrotikControlType.Ninguno;
+
+    // En PPPoE el MkIndex guardado es el .id del /ppp/secret. Para tumbar la sesion hace
+    // falta ademas el usuario, y la IP para comprobar que la sesion sea la suya.
+    public string? UsuarioPppoe { get; set; }
+
+    public string? IpCliente { get; set; }
 
     public string? Blocked { get; set; }
 

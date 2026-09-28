@@ -17,6 +17,12 @@ public class CargueDetailsServiceX : ICargueDetailsServiceX
         _cargueDetailsService = cargueDetailsService;
     }
 
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboCategoriesAsync(string username) => await _cargueDetailsService.ComboCategoriesAsync(username);
+
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboProductsAsync(string username, Guid productCategoryId) => await _cargueDetailsService.ComboProductsAsync(username, productCategoryId);
+
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboMacsAsync(string username, Guid productId, Guid? id = null) => await _cargueDetailsService.ComboMacsAsync(username, productId, id);
+
     public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, Guid? id = null) => await _cargueDetailsService.ComboAsync(username, id);
 
     public async Task<ActionResponse<IEnumerable<CargueDetail>>> GetAsync(PaginationDTO pagination, string email) => await _cargueDetailsService.GetAsync(pagination, email);

@@ -105,16 +105,8 @@
     </div>
 
     <div class="row">
-        <!-- WanName + ApiPort -->
-        <div class="col-12 col-md-6 mb-2">
-            <div class="input-group">
-                <span class="input-group-text" style="width:150px">
-                    @Localizer[nameof(Resource.WanName)]
-                </span>
-                <InputText class="form-control" @bind-Value="Server.WanName" />
-            </div>
-        </div>
-
+        <!-- ApiPort. Las interfaces (internet y clientes) se eligen en el detalle del
+             servidor, leyendolas del propio equipo: aca todavia no se sabe si se puede entrar. -->
         <div class="col-12 col-md-6 mb-2">
             <div class="input-group">
                 <span class="input-group-text" style="width:150px">

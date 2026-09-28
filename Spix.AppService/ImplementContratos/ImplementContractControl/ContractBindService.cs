@@ -123,19 +123,62 @@ public class ContractBindService : IContractBindService
                 };
             }
 
+            //El equipo, la IP y el contrato tienen que ser de la corporacion del usuario, y
+            //se comprueba ANTES de escribirle al MikroTik: si no, con los ids de otra empresa
+            //se le escribe un binding a su router y solo despues falla algo.
             var conServer = await _context.Servers
                 .AsNoTracking()
-                .Include(x => x.IpNetwork).FirstOrDefaultAsync(x => x.ServerId == modelo.ServerId);
+                .Include(x => x.IpNetwork)
+                .FirstOrDefaultAsync(x => x.ServerId == modelo.ServerId &&
+                                          x.CorporationId == user.CorporationId);
             var conIpClient = await _context.IpNets
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.IpNetId == modelo.IpNetId);
+                .FirstOrDefaultAsync(x => x.IpNetId == modelo.IpNetId &&
+                                          x.CorporationId == user.CorporationId);
             var conCliente = await _context.ContractClients
                 .AsNoTracking()
-                .Include(x => x.Client).FirstOrDefaultAsync(x => x.ContractClientId == modelo!.ContractClientId);
+                .Include(x => x.Client)
+                .FirstOrDefaultAsync(x => x.ContractClientId == modelo!.ContractClientId &&
+                                          x.CorporationId == user.CorporationId);
             var conMac = await _context.CargueDetails
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.CargueDetailId == modelo.CargueDetailId);
+                .FirstOrDefaultAsync(x => x.CargueDetailId == modelo.CargueDetailId &&
+                                          x.CorporationId == user.CorporationId);
             var typehot = await _context.HotSpotTypes.FindAsync(modelo.HotSpotTypeId);
+
+            //Si algo no es de su corporacion se corta aca, SIN haber tocado el equipo
+            //Y tiene que ser EL equipo y LA IP que el contrato tiene asignados, no otros de
+            //la misma empresa: el sistema resuelve el tipo de control por ContractServer, asi
+            //que un binding en otro equipo quedaria fuera de todos los lotes.
+            var equipoDelContrato = await _context.ContractServers
+                .AsNoTracking()
+                .AnyAsync(x => x.ContractClientId == modelo.ContractClientId &&
+                               x.ServerId == modelo.ServerId);
+
+            var ipDelContrato = await _context.ContractIps
+                .AsNoTracking()
+                .AnyAsync(x => x.ContractClientId == modelo.ContractClientId &&
+                               x.IpNetId == modelo.IpNetId);
+
+            if (!equipoDelContrato || !ipDelContrato)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Contract_ServerMismatch"]
+                };
+            }
+
+            if (conServer == null || conIpClient == null || conCliente == null || conMac == null || typehot == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
 
             ////////////////////////////////////////////////////////////
             var dato = new
@@ -210,7 +253,7 @@ public class ContractBindService : IContractBindService
         }
     }
 
-    public async Task<ActionResponse<ContractBind>> UpdateAsync(ContractBind modelo)
+    public async Task<ActionResponse<ContractBind>> UpdateAsync(ContractBind modelo, string username)
     {
         if (modelo.ContractBindId == Guid.Empty ||
             modelo.ContractClientId == Guid.Empty ||
@@ -230,7 +273,21 @@ public class ContractBindService : IContractBindService
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var data = await _context.ContractBinds.FindAsync(modelo.ContractBindId);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: el binding tiene que ser de un contrato de SU corporacion
+            var data = await _context.ContractBinds
+                .FirstOrDefaultAsync(x => x.ContractBindId == modelo.ContractBindId &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
+
             if (data == null)
             {
                 return new ActionResponse<ContractBind>
@@ -240,8 +297,46 @@ public class ContractBindService : IContractBindService
                 };
             }
 
-            data.ContractClientId = modelo.ContractClientId;
-            data.ServerId = modelo.ServerId;
+            //El equipo y el contrato NO se cambian en una edicion.
+            //
+            //El MikrotikId guardado es el id de una fila DE ESE router. Si se aceptara otro
+            //ServerId, el set de mas abajo se ejecutaria en el router nuevo contra un id que
+            //alli le pertenece a otro registro, y le reescribiria el binding a otro cliente.
+            //Mudar un binding de equipo es borrarlo y volverlo a crear.
+            if (modelo.ServerId != data.ServerId || modelo.ContractClientId != data.ContractClientId)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["ContractBind_ServerCannotChange"]
+                };
+            }
+
+            //La IP y la MAC pueden cambiar, pero tienen que ser las que el contrato tiene
+            //asignadas. La IP viaja al router como address y to-address del binding: si se
+            //aceptara cualquier IP de la empresa, se le escribiria en el equipo la IP de otro
+            //cliente. Es la misma comprobacion que hace el alta.
+            var ipDelContrato = await _context.ContractIps
+                .AsNoTracking()
+                .AnyAsync(x => x.ContractClientId == data.ContractClientId &&
+                               x.IpNetId == modelo.IpNetId);
+
+            var macDelContrato = await _context.ContractMacs
+                .AsNoTracking()
+                .AnyAsync(x => x.ContractClientId == data.ContractClientId &&
+                               x.CargueDetailId == modelo.CargueDetailId);
+
+            if (!ipDelContrato || !macDelContrato)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = _localizer["Contract_ServerMismatch"]
+                };
+            }
+
             data.IpNetId = modelo.IpNetId;
             data.CargueDetailId = modelo.CargueDetailId;
             data.HotSpotTypeId = modelo.HotSpotTypeId;
@@ -249,38 +344,58 @@ public class ContractBindService : IContractBindService
             data.IpServer = modelo.IpServer;
             data.IpCliente = modelo.IpCliente;
             data.MacCliente = modelo.MacCliente;
-            data.MikrotikId = modelo.MikrotikId;
+
+            //El MikrotikId tampoco se acepta del modelo: lo escribio Spix al crear.
 
             _context.ContractBinds.Update(data);
             await _transactionManager.SaveChangesAsync();
 
 
+            //Todo dentro de la corporacion del usuario, y comprobado antes de tocar el equipo
             var conServer = await _context.Servers
                 .AsNoTracking()
-                .Include(x => x.IpNetwork).FirstOrDefaultAsync(x => x.ServerId == modelo.ServerId);
+                .Include(x => x.IpNetwork)
+                .FirstOrDefaultAsync(x => x.ServerId == modelo.ServerId &&
+                                          x.CorporationId == user.CorporationId);
             var conIpClient = await _context.IpNets
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.IpNetId == modelo.IpNetId);
+                .FirstOrDefaultAsync(x => x.IpNetId == modelo.IpNetId &&
+                                          x.CorporationId == user.CorporationId);
             var conCliente = await _context.ContractClients
                 .AsNoTracking()
-                .Include(x => x.Client).FirstOrDefaultAsync(x => x.ContractClientId == modelo!.ContractClientId);
+                .Include(x => x.Client)
+                .FirstOrDefaultAsync(x => x.ContractClientId == modelo!.ContractClientId &&
+                                          x.CorporationId == user.CorporationId);
             var conMac = await _context.CargueDetails
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.CargueDetailId == modelo.CargueDetailId);
+                .FirstOrDefaultAsync(x => x.CargueDetailId == modelo.CargueDetailId &&
+                                          x.CorporationId == user.CorporationId);
             var typehot = await _context.HotSpotTypes.FindAsync(modelo.HotSpotTypeId);
+
+            if (conServer == null || conIpClient == null || conCliente == null || conMac == null || typehot == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractBind>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
 
             ////////////////////////////////////////////////////////////
             var dato = new
             {
-                nameserver = conServer!.ServerName,
+                nameserver = conServer.ServerName,
                 ipservidor = conServer.IpNetwork!.Ip,
                 us = conServer.Usuario,
                 pss = conServer.Clave,
                 puerto = conServer.ApiPort,
-                ipcliente = conIpClient!.Ip,
-                nomCliente = $"{conCliente!.Client!.FirstName} {conCliente!.Client!.LastName} - ({conCliente.ControlContrato})",
-                macCliente = $"{conMac!.MacWlan}",
-                idIpBinding = modelo.MikrotikId
+                ipcliente = conIpClient.Ip,
+                nomCliente = $"{conCliente.Client!.FirstName} {conCliente.Client!.LastName} - ({conCliente.ControlContrato})",
+                macCliente = $"{conMac.MacWlan}",
+
+                //El id guardado, no el del modelo
+                idIpBinding = data.MikrotikId
             };
 
             ////////////////////////////////////////////////////////////
@@ -336,12 +451,26 @@ public class ContractBindService : IContractBindService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var dataRemove = await _context.ContractBinds.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la pieza tiene que ser de un contrato de SU corporacion.
+            //Con FindAsync(id) cualquiera que conociera el id borraba la pieza de otra empresa.
+            var dataRemove = await _context.ContractBinds
+                .FirstOrDefaultAsync(x => x.ContractBindId == id &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
             if (dataRemove == null)
             {
                 return new ActionResponse<bool>

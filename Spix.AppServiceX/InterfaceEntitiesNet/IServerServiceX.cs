@@ -1,5 +1,6 @@
 ﻿using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EntitiesNetDTO;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -7,6 +8,8 @@ namespace Spix.AppServiceX.InterfaceEntitiesNet;
 
 public interface IServerServiceX
 {
+    ActionResponse<IEnumerable<IntItemModel>> ControlTypesCombo();
+
     Task<ActionResponse<IEnumerable<Server>>> ComboAsync(string username, Guid? id = null);
 
     Task<ActionResponse<NetSummaryDto>> GetSummaryAsync(string username);

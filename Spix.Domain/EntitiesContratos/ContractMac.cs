@@ -1,4 +1,5 @@
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.Validations;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,6 +16,7 @@ public class ContractMac
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.MAC), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public Guid CargueDetailId { get; set; }
 
     public virtual ContractClient? ContractClient { get; set; }

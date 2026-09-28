@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Network;
 using Spix.AppWpf.SharedServices;
@@ -501,8 +501,8 @@ public partial class RunSuspendedDetailDialogViewModel : ObservableObject
             return new CorteRunResultDto();
         }
 
-        //Sin IpBinding no hay como quitarles el acceso: se reportan y no se tocan
-        if (datos.UsaHotSpot && datos.SinEquipo)
+        //Sin servidor asignado no hay como quitarles el acceso: se reportan y no se tocan
+        if (datos.UsaControl && datos.SinEquipo)
         {
             foreach (var contrato in datos.Contracts)
             {
@@ -513,13 +513,64 @@ public partial class RunSuspendedDetailDialogViewModel : ObservableObject
         }
 
         //===== Las ordenes al equipo, por la red LAN =====
-        //Sin HotSpot no se toca el equipo: el lote se da por bueno y solo cambia el estado
+        //Sin control en el equipo no se toca nada: el lote solo cambia de estado
 
         var cortados = new List<Guid>();
 
-        if (!datos.UsaHotSpot)
+        if (!datos.UsaControl)
         {
             cortados.AddRange(datos.Contracts.Select(x => x.ContractClientId));
+        }
+        else if (datos.Control == MikrotikControlType.PPPoE)
+        {
+            //Se prueba TODO equipo antes de escribir en ninguno, igual que en HotSpot
+            foreach (var grupo in datos.Credenciales.GroupBy(x => x.ServerId))
+            {
+                var prueba = await _mikrotikService.CheckConnectionAsync(ArmarServidorPppoe(grupo.First()));
+
+                if (!prueba.WasConnected)
+                {
+                    await _alertService.ErrorAsync("No se puede continuar con el corte general",
+                        $"El equipo {grupo.First().ServerName} no responde o esta fuera de linea.");
+
+                    return null;
+                }
+            }
+
+            //Una conexion por equipo, y dentro todos sus contratos
+            foreach (var grupo in datos.Credenciales.GroupBy(x => x.ServerId))
+            {
+                var credenciales = grupo.ToList();
+                var aceptados = new List<Guid>();
+
+                var espera = TimeSpan.FromSeconds(
+                    EsperaBaseSegundos + EsperaPorContratoSegundos * credenciales.Count);
+
+                var resultado = await _mikrotikService.ExecuteAsync(ArmarServidorPppoe(credenciales[0]), mikrotik =>
+                {
+                    foreach (var credencial in credenciales)
+                    {
+                        //EL ORDEN IMPORTA: primero se deshabilita el secret, para que no pueda
+                        //volver a autenticar, y DESPUES se tumba la sesion viva. Al reves el
+                        //router del cliente reconecta en segundos y no se corto nada.
+                        LocalPppoeCommands.SetAccess(mikrotik,
+                            credencial.MikrotikId!,
+                            credencial.UsuarioPppoe!,
+                            credencial.IpCliente!,
+                            enabled: false);
+
+                        aceptados.Add(credencial.ContractClientId);
+                    }
+                }, timeout: espera);
+
+                if (!resultado.WasExecuted)
+                {
+                    await _alertService.ErrorAsync($"Ejecutar corte · {credenciales[0].ServerName}", resultado.Message);
+                    return null;
+                }
+
+                cortados.AddRange(aceptados);
+            }
         }
         else
         {
@@ -594,6 +645,16 @@ public partial class RunSuspendedDetailDialogViewModel : ObservableObject
 
         return guardar.Response ?? new CorteRunResultDto();
     }
+
+    private static Server ArmarServidorPppoe(CortePppoeDTO credencial) => new()
+    {
+        ServerId = credencial.ServerId,
+        ServerName = credencial.ServerName,
+        Usuario = credencial.Usuario,
+        Clave = credencial.Clave,
+        ApiPort = credencial.ApiPort,
+        IpNetwork = new IpNetwork { Ip = credencial.ServerIp }
+    };
 
     private static Server ArmarServidor(CorteMkBindingDTO binding) => new()
     {

@@ -2,6 +2,7 @@
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.Entities;
 
@@ -44,10 +45,12 @@ public class Corporation
 
     [Required]
     [Display(Name = nameof(Resource.Country), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int CountryId { get; set; }
 
     [Required]
     [Display(Name = nameof(Resource.Plan), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int SoftPlanId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]

@@ -1,0 +1,44 @@
+﻿@* La credencial PPPoE: el operador solo pone usuario y clave.
+
+   El servidor y el perfil NO se eligen aca: salen del contrato y del equipo, que ya los
+   tienen definidos. Por eso van de solo lectura.
+
+   La IP del cliente tampoco se muestra: se asigna en ContractIp, que es su sitio. Aqui
+   solo repetia un dato que vive en otra tarjeta. *@
+<EditForm Model="ContractPppoe" OnValidSubmit="HandleValidSubmitAsync">
+    <DataAnnotationsValidator />
+
+    <div class="input-group mb-2">
+        <span class="input-group-text" style="width:150px">Servidor</span>
+        <InputText class="form-control" @bind-Value="ContractPppoe.ServerName" readonly />
+    </div>
+
+    <div class="input-group mb-2">
+        <span class="input-group-text" style="width:150px">Perfil</span>
+        <InputText class="form-control" @bind-Value="ContractPppoe.ProfileName" readonly />
+    </div>
+
+    <div class="input-group mb-2">
+        <span class="input-group-text" style="width:150px">Usuario PPPoE</span>
+        <InputText class="form-control" @bind-Value="ContractPppoe.Usuario" />
+        <button type="button" class="btn btn-outline-secondary" @onclick="ProponerUsuario"
+                title="Usar el numero del contrato">
+            <i class="fa fa-hashtag"></i>
+        </button>
+    </div>
+    <ValidationMessage For="@(() => ContractPppoe.Usuario)" />
+
+    <div class="input-group">
+        <span class="input-group-text" style="width:150px">Clave PPPoE</span>
+        <InputText class="form-control" @bind-Value="ContractPppoe.Clave" />
+        <button type="button" class="btn btn-outline-secondary" @onclick="GenerarClave" title="Generar una clave">
+            <i class="fa fa-dice"></i>
+        </button>
+    </div>
+    <ValidationMessage For="@(() => ContractPppoe.Clave)" />
+
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

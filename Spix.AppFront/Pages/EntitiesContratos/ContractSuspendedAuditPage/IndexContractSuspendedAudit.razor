@@ -1,4 +1,4 @@
-@page "/contractsuspendedaudits"
+﻿@page "/contractsuspendedaudits"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
@@ -6,7 +6,13 @@
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3>Auditoria de Contratos Activados</h3>
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-clipboard-check"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.ContractSuspendedAudit_Title)]</h3>
+                <p>@Localizer[nameof(Resource.ContractSuspendedAudit_Subtitle)]</p>
+            </div>
+        </div>
 
         <div class="row g-2 align-items-end mb-3">
             <div class="col-12 col-md-4">

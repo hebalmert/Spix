@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Server.ServerDetailDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="700" MaxWidth="800">
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Servidor"/>
+        </Border>
+        <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                 IsReadOnly="True" Text="{Binding Selected.ServerName}"/>
+
+        <Border Grid.Row="2" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Control MikroTik"/>
+        </Border>
+        <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding ControlTypes}" DisplayMemberPath="Name" SelectedValuePath="Value"
+                  SelectedValue="{Binding ControlTypeValue, Mode=TwoWay}"/>
+
+        <Border Grid.Row="4" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Interfaz internet"/>
+        </Border>
+        <ComboBox Grid.Row="4" Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Interfaces}" DisplayMemberPath="Text" SelectedValuePath="Name"
+                  SelectedValue="{Binding WanName, Mode=TwoWay}"/>
+
+        <Border Grid.Row="6" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Interfaz clientes"/>
+        </Border>
+        <ComboBox Grid.Row="6" Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Interfaces}" DisplayMemberPath="Text" SelectedValuePath="Name"
+                  SelectedValue="{Binding LanName, Mode=TwoWay}"/>
+
+        <Border Grid.Row="8" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="IP local PPPoE"/>
+        </Border>
+        <ComboBox Grid.Row="8" Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding LocalIps}" DisplayMemberPath="Ip" SelectedValuePath="IpNetworkId"
+                  SelectedValue="{Binding LocalIpId, Mode=TwoWay}"
+                  IsEnabled="{Binding IsPppoe}"/>
+
+        <Border Grid.Row="10" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Nombre servicio"/>
+        </Border>
+        <TextBox Grid.Row="10" Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                 MaxLength="50" IsEnabled="{Binding CanProvision}"
+                 Text="{Binding ServiceName, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="12" Grid.ColumnSpan="2" Text="{Binding ConnectionText}"
+                   TextWrapping="Wrap" Foreground="{DynamicResource BrushIndexMeta}"/>
+
+        <StackPanel Grid.Row="14" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <Button Width="190" Margin="0,0,12,0" Command="{Binding CheckConnectionCommand}"
+                    Style="{StaticResource SharedButtonFormSecondary}" Content="Probar conexion"/>
+            <Button Width="210" Command="{Binding ProvisionCommand}"
+                    Style="{StaticResource SharedButtonFormPrimary}" Content="Crear servidor PPPoE"
+                    Visibility="{Binding CanProvision, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Button Width="210" Command="{Binding RemovePppoeCommand}"
+                    Style="{StaticResource SharedButtonFormDanger}" Content="Eliminar servidor PPPoE"
+                    Visibility="{Binding CanRemove, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </StackPanel>
+
+        <shared:SharedModalActions Grid.Row="16" Grid.ColumnSpan="2"
+                                   SaveText="Guardar configuracion"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CloseCommand}"/>
+        <shared:SharedLoading Grid.RowSpan="17" Grid.ColumnSpan="2" IsLoading="{Binding IsLoading}"/>
+    </Grid>
+</UserControl>

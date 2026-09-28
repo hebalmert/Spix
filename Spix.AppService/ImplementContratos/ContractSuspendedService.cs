@@ -276,31 +276,34 @@ public class ContractSuspendedService : IContractSuspendedService
                 return Fail<bool>(_localizer["Suspend_OnlyActive"]);
             }
 
-            bool usaHotSpot = await _contractActivationIntegrityService.UsesHotSpotControlAsync(contract.CorporationId);
-
-            if (usaHotSpot)
+            //2. Con el acceso dando servicio. En HotSpot es el IpBinding en bypassed, en
+            //   PPPoE el secret habilitado: la comprobacion la elige el tipo del equipo.
+            if (!await _contractActivationIntegrityService.IsServiceOnAsync(contractClientId))
             {
-                //2. Con el acceso dando servicio: IpBinding presente y en bypassed
-                var bind = await _context.ContractBinds
-                    .AsNoTracking()
-                    .Where(x => x.ContractClientId == contractClientId)
-                    .Select(x => new { x.HotSpotTypeId })
-                    .FirstOrDefaultAsync();
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<bool>(_localizer["Suspend_NeedsBypassed"]);
+            }
 
-                var hotSpotBypassed = await _context.HotSpotTypes
-                    .AsNoTracking()
-                    .Where(x => x.Active && x.TypeName == "bypassed")
-                    .Select(x => x.HotSpotTypeId)
-                    .FirstOrDefaultAsync();
+            //3. Se le quita el acceso en el equipo.
+            //
+            //   HotSpot conserva su codigo local (SuspendOnMikrotikAsync deja el binding en
+            //   regular con la version corta del set). PPPoE va por el servicio de integridad,
+            //   que hace el secret mas el corte de la sesion viva. No se escribe una tercera
+            //   copia de las mismas dos ordenes.
+            var controlContrato = await _contractActivationIntegrityService.ResolveControlAsync(contractClientId);
 
-                if (bind == null || bind.HotSpotTypeId != hotSpotBypassed)
+            if (controlContrato == MikrotikControlType.HotSpot)
+            {
+                var suspension = await SuspendOnMikrotikAsync(contract);
+                if (!suspension.WasSuccess)
                 {
                     await _transactionManager.RollbackTransactionAsync();
-                    return Fail<bool>(_localizer["Suspend_NeedsBypassed"]);
+                    return Fail<bool>(suspension.Message!);
                 }
-
-                //3. Se bloquea el acceso en el equipo (deja el binding en regular)
-                var suspension = await SuspendOnMikrotikAsync(contract);
+            }
+            else if (controlContrato == MikrotikControlType.PPPoE)
+            {
+                var suspension = await _contractActivationIntegrityService.SuspendAsync(contract);
                 if (!suspension.WasSuccess)
                 {
                     await _transactionManager.RollbackTransactionAsync();
@@ -362,24 +365,33 @@ public class ContractSuspendedService : IContractSuspendedService
             }
 
             var integrityResponse = await _contractActivationIntegrityService.ValidateAsync(
-                contract.ContractClientId,
-                contract.CorporationId);
+                contract.ContractClientId);
             if (!integrityResponse.WasSuccess)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return Fail<ContractSuspendedDTO>(integrityResponse.Message!);
             }
 
-            bool usesHotSpotControl = await _contractActivationIntegrityService
-                .UsesHotSpotControlAsync(contract.CorporationId);
+            //Igual que al suspender: HotSpot conserva su reactivacion local por MkIndex y
+            //PPPoE va por el servicio de integridad.
+            var controlReactivar = await _contractActivationIntegrityService.ResolveControlAsync(contract.ContractClientId);
 
-            if (usesHotSpotControl)
+            if (controlReactivar == MikrotikControlType.HotSpot)
             {
                 var activateBindingsResponse = await ReactivateOnMikrotikAsync(contract);
                 if (!activateBindingsResponse.WasSuccess)
                 {
                     await _transactionManager.RollbackTransactionAsync();
                     return Fail<ContractSuspendedDTO>(activateBindingsResponse.Message!);
+                }
+            }
+            else if (controlReactivar == MikrotikControlType.PPPoE)
+            {
+                var activarPppoe = await _contractActivationIntegrityService.ActivateAsync(contract);
+                if (!activarPppoe.WasSuccess)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return Fail<ContractSuspendedDTO>(activarPppoe.Message!);
                 }
             }
 

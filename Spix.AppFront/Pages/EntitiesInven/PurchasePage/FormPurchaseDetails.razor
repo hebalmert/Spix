@@ -54,7 +54,17 @@
     <div class="mb-2">
         <div class="input-group">
             <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.UnitCost)]</span>
-            <InputNumber class="form-control" @bind-Value="PurchaseDetail.UnitCost" />
+            @* Va como texto y NO como InputNumber a proposito: un <input type="number">
+               del navegador no admite separadores de miles, y 151260.50 de corrido no
+               hay quien lo lea. Al salir del campo se formatea igual que los totales de
+               aqui abajo; mientras se escribe se muestra sin separadores, porque con
+               ellos no se puede teclear. *@
+            <input class="form-control"
+                   type="text"
+                   inputmode="decimal"
+                   value="@UnitCostText"
+                   @onfocus="() => EditandoCosto = true"
+                   @onchange="UnitCostChanged" />
         </div>
         <ValidationMessage For="@(() => PurchaseDetail.UnitCost)" />
     </div>

@@ -58,7 +58,6 @@ using Spix.AppWpf.Views.EntitiesContratos.RunSuspended;
 using Spix.AppWpf.Views.EntitiesContratos.ContractSuspendedAudit;
 using Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest;
 using Spix.AppWpf.Views.EntitiesOper.Client;
-using Spix.AppWpf.Views.EntitiesMK.ConnectionMikrotikControl;
 using Spix.AppWpf.Views.EntitiesMK.QueueType;
 using System.Windows;
 using System.Windows.Controls;
@@ -317,12 +316,6 @@ public partial class MainWindow : Window
     private void ShowIpNetworksClick(object sender, RoutedEventArgs e)
     {
         ShowView<IpNetworkIndexView>("IP Red", "Network / IP Red");
-    }
-
-    // Abre el tipo de control MikroTik configurado para la corporacion.
-    private void ShowConnectionMikrotikControlsClick(object sender, RoutedEventArgs e)
-    {
-        ShowView<ConnectionMikrotikControlIndexView>("Control MikroTik", "Network / Control MikroTik");
     }
 
     // Abre el listado de tipos de Queue usados por la configuracion MikroTik.

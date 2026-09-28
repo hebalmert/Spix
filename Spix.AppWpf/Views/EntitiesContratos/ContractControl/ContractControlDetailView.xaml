@@ -10,7 +10,7 @@
     <!-- La configuracion del servicio de UN contrato.
          No es un formulario: es una lista de requisitos en cascada. A la izquierda quien
          es y cuanto lleva; a la derecha las ocho piezas.
-         Las dos ultimas (Queue e IpBinding) solo existen si la corporacion usa HotSpot. -->
+         Queue y acceso dependen del tipo de control del servidor asignado. -->
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="360" />
@@ -129,7 +129,7 @@
                         <TextBlock Style="{StaticResource SharedIndexName}" FontSize="16" Text="Configuracion del servicio" />
                         <TextBlock Margin="0,2,0,14"
                                    Style="{StaticResource SharedIndexMeta}"
-                                   Text="Lo que ya esta escrito en el MikroTik queda bloqueado: para cambiarlo, primero quite la Queue y el IpBinding." />
+                                   Text="Para cambiar servidor, IP o plan, primero quite la Queue y el acceso MikroTik." />
 
                         <!-- 1. Red -->
                         <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="1 · Red" />
@@ -203,9 +203,8 @@
                                                      RemoveCommand="{Binding RemoveMapCommand}" />
                         </UniformGrid>
 
-                        <!-- 3. MikroTik HotSpot: solo si la corporacion lo usa -->
-                        <StackPanel Visibility="{Binding UseHotSpot, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="3 · MikroTik HotSpot" />
+                        <StackPanel Visibility="{Binding UseMikrotik, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="{Binding ControlTitle}" />
 
                             <shared:SharedConfigCard Margin="0,0,0,12"
                                                      Title="Queue de velocidad"
@@ -217,6 +216,7 @@
                                                      RemoveCommand="{Binding RemoveQueueCommand}" />
 
                             <shared:SharedConfigCard Title="IpBinding de acceso"
+                                                     Visibility="{Binding UseHotSpot, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                      Icon="{x:Static icons:FontAwesomeIcon.Lock}"
                                                      IsDone="{Binding HasBind}"
                                                      Value="{Binding BindText}"
@@ -224,6 +224,16 @@
                                                      AddCommand="{Binding SetBindCommand}"
                                                      EditCommand="{Binding EditBindCommand}"
                                                      RemoveCommand="{Binding RemoveBindCommand}" />
+
+                            <shared:SharedConfigCard Title="Credencial PPPoE"
+                                                     Visibility="{Binding UsePppoe, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                     Icon="{x:Static icons:FontAwesomeIcon.Key}"
+                                                     IsDone="{Binding HasPppoe}"
+                                                     Value="{Binding PppoeText}"
+                                                     AddTip="Crear la credencial"
+                                                     AddCommand="{Binding SetPppoeCommand}"
+                                                     EditCommand="{Binding EditPppoeCommand}"
+                                                     RemoveCommand="{Binding RemovePppoeCommand}" />
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>

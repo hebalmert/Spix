@@ -15,7 +15,7 @@ public class Tax
     [Display(Name = nameof(Resource.Tax), ResourceType = typeof(Resource))]
     public string TaxName { get; set; } = null!;
 
-    [Range(0, 99, ErrorMessage = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Range(0, 99, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Column(TypeName = "decimal(5,2)")]
     [Display(Name = nameof(Resource.Rate), ResourceType = typeof(Resource))]

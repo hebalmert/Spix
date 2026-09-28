@@ -102,12 +102,13 @@
                     </div>
                 </div>
 
-                @* ----- 1. Red ----- *@
+                @* ----- 1. Servidor: es lo primero porque de el sale como trabaja el equipo -----
+                     Segun su control, mas abajo se pide Nodo (inalambrico) u OLT (fibra). *@
                 <div class="cc-group">
-                    <p class="cc-group-title"><span class="cc-group-num">1</span>Red</p>
+                    <p class="cc-group-title"><span class="cc-group-num">1</span>Servidor</p>
                     <div class="cc-grid">
 
-                        <div class="cc-item @StateClass(HasServer)">
+                        <div class="cc-item cc-full @StateClass(HasServer)">
                             <div class="cc-item-top">
                                 <div class="cc-ico"><i class="fa fa-server"></i></div>
                                 <div class="cc-info">
@@ -142,7 +143,19 @@
                                     }
                                 </div>
                             </div>
+                            @if (!HasServer)
+                            {
+                                <div class="cc-hint"><i class="fa fa-circle-info"></i> Elija el servidor primero: de su control depende si el cliente entra por Nodo inalambrico o por OLT de fibra.</div>
+                            }
                         </div>
+
+                    </div>
+                </div>
+
+                @* ----- 2. Red: por donde entra el cliente ----- *@
+                <div class="cc-group">
+                    <p class="cc-group-title"><span class="cc-group-num">2</span>Red</p>
+                    <div class="cc-grid">
 
                         <div class="cc-item @StateClass(HasIp)">
                             <div class="cc-item-top">
@@ -181,6 +194,46 @@
                             </div>
                         </div>
 
+                        <div class="cc-item @StateClass(HasMac)">
+                            <div class="cc-item-top">
+                                <div class="cc-ico"><i class="fa fa-gears"></i></div>
+                                <div class="cc-info">
+                                    <div class="cc-name">Mac Equipo <span class="cc-state"><i class="@StateIcon(HasMac)"></i> @StateText(HasMac)</span></div>
+                                    @if (HasMac)
+                                    {
+                                        <div class="cc-data">@ContractMac!.CargueDetail?.MacWlan</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="cc-data cc-empty">Sin MAC asignada</div>
+                                    }
+                                </div>
+                                <div class="cc-acts">
+                                    @if (!HasMac)
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractMacsAsyn(ContractClient!.ContractClientId)">
+                                            <i class="fa fa-plus"></i>Agregar
+                                        </button>
+                                    }
+                                    else if (HasContractBind)
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-lock" disabled title="Elimine IpBinding Acceso primero">
+                                            <i class="fa fa-lock"></i>Quitar
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractMacAsync(ContractMac!.ContractMacId)">
+                                            <i class="fa fa-trash"></i>Quitar
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        @* Nodo u OLT, nunca los dos: lo decide el control del servidor *@
+                        @if (UsaHotSpot)
+                        {
                         <div class="cc-item cc-full @StateClass(HasNode)">
                             <div class="cc-item-top">
                                 <div class="cc-ico"><i class="fa fa-tower-broadcast"></i></div>
@@ -208,19 +261,60 @@
                             </div>
                             @if (HasNode)
                             {
-                                <div class="cc-facts cc-facts-2">
+                                <div class="cc-facts cc-facts-4">
                                     <div class="cc-fact"><small>Nodo</small><b>@ContractNode!.Node?.NodesName</b></div>
+                                    <div class="cc-fact"><small>Frecuencia</small><b>@ContractNode.Node?.Frecuency?.FrecuencyName</b></div>
+                                    <div class="cc-fact"><small>Canal</small><b>@ContractNode.Node?.Channel?.ChannelName</b></div>
                                     <div class="cc-fact"><small>IP de red</small><b>@ContractNode.Node?.IpNetwork?.Ip</b></div>
                                 </div>
                             }
                         </div>
+                        }
+
+                        @if (UsaPppoe)
+                        {
+                        <div class="cc-item cc-full @StateClass(HasOlt)">
+                            <div class="cc-item-top">
+                                <div class="cc-ico"><i class="fa fa-network-wired"></i></div>
+                                <div class="cc-info">
+                                    <div class="cc-name">OLT Acceso <span class="cc-state"><i class="@StateIcon(HasOlt)"></i> @StateText(HasOlt)</span></div>
+                                    @if (!HasOlt)
+                                    {
+                                        <div class="cc-data cc-empty">Sin OLT asignada</div>
+                                    }
+                                </div>
+                                <div class="cc-acts">
+                                    @if (!HasOlt)
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractOltsAsyn(ContractClient!.ContractClientId)">
+                                            <i class="fa fa-plus"></i>Agregar OLT
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractOltAsync(ContractOlt!.ContractOltId)">
+                                            <i class="fa fa-trash"></i>Quitar
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            @if (HasOlt)
+                            {
+                                <div class="cc-facts cc-facts-3">
+                                    <div class="cc-fact"><small>OLT</small><b>@ContractOlt!.Olt?.OltName</b></div>
+                                    <div class="cc-fact"><small>IP de red</small><b>@ContractOlt.Olt?.IpNetwork?.Ip</b></div>
+                                    <div class="cc-fact"><small>Puertos</small><b>@ContractOlt.Olt?.PortCount @ContractOlt.Olt?.PortSpeed</b></div>
+                                </div>
+                            }
+                        </div>
+                        }
 
                     </div>
                 </div>
 
-                @* ----- 2. Servicio y equipo ----- *@
+                @* ----- 3. Servicio y ubicacion ----- *@
                 <div class="cc-group">
-                    <p class="cc-group-title"><span class="cc-group-num">2</span>Servicio y equipo</p>
+                    <p class="cc-group-title"><span class="cc-group-num">3</span>Servicio y ubicacion</p>
                     <div class="cc-grid">
 
                         <div class="cc-item cc-full @StateClass(HasPlan)">
@@ -268,53 +362,12 @@
                             }
                         </div>
 
-                        <div class="cc-item @StateClass(HasMac)">
-                            <div class="cc-item-top">
-                                <div class="cc-ico"><i class="fa fa-gears"></i></div>
-                                <div class="cc-info">
-                                    <div class="cc-name">Mac Equipo <span class="cc-state"><i class="@StateIcon(HasMac)"></i> @StateText(HasMac)</span></div>
-                                    @if (HasMac)
-                                    {
-                                        <div class="cc-data">@ContractMac!.CargueDetail?.MacWlan</div>
-                                    }
-                                    else
-                                    {
-                                        <div class="cc-data cc-empty">Sin MAC asignada</div>
-                                    }
-                                </div>
-                                <div class="cc-acts">
-                                    @if (!HasMac)
-                                    {
-                                        <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractMacsAsyn(ContractClient!.ContractClientId)">
-                                            <i class="fa fa-plus"></i>Agregar
-                                        </button>
-                                    }
-                                    else if (HasContractBind)
-                                    {
-                                        <button type="button" class="cc-btn cc-btn-lock" disabled title="Elimine IpBinding Acceso primero">
-                                            <i class="fa fa-lock"></i>Quitar
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractMacAsync(ContractMac!.ContractMacId)">
-                                            <i class="fa fa-trash"></i>Quitar
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="cc-item @StateClass(HasMap)">
+                        <div class="cc-item cc-full @StateClass(HasMap)">
                             <div class="cc-item-top">
                                 <div class="cc-ico"><i class="fa fa-map-location-dot"></i></div>
                                 <div class="cc-info">
                                     <div class="cc-name">Ubicacion <span class="cc-state"><i class="@StateIcon(HasMap)"></i> @StateText(HasMap)</span></div>
-                                    @if (HasMap)
-                                    {
-                                        <div class="cc-data">@ContractMap!.Latitude, @ContractMap.Longitude</div>
-                                    }
-                                    else
+                                    @if (!HasMap)
                                     {
                                         <div class="cc-data cc-empty">Sin coordenadas</div>
                                     }
@@ -340,98 +393,152 @@
                                     }
                                 </div>
                             </div>
+                            @if (HasMap)
+                            {
+                                <div class="cc-facts cc-facts-2">
+                                    <div class="cc-fact"><small>Latitud</small><b>@ContractMap!.Latitude</b></div>
+                                    <div class="cc-fact"><small>Longitud</small><b>@ContractMap.Longitude</b></div>
+                                </div>
+                            }
                         </div>
 
                     </div>
                 </div>
 
-                @* ----- 3. MikroTik HotSpot (solo si la corporacion usa HotSpot) ----- *@
-                @if (UseHotSpotControl)
-                {
-                    <div class="cc-group">
-                        <p class="cc-group-title"><span class="cc-group-num">3</span>MikroTik HotSpot</p>
-                        <div class="cc-grid">
+                @* ----- 4. MikroTik: lo que pida el EQUIPO de este contrato -----
+                     El Queue de velocidad es comun a los dos mecanismos, asi que su tarjeta esta
+                     siempre a la vista. Lo que cambia con el servidor es la pieza de acceso:
+                     IpBinding en HotSpot, credencial en PPPoE. *@
+                <div class="cc-group">
+                    <p class="cc-group-title"><span class="cc-group-num">4</span>MikroTik @(UsaPppoe ? "PPPoE" : UsaHotSpot ? "HotSpot" : null)</p>
+                    <div class="cc-grid">
 
-                            <div class="cc-item cc-full @StateClass(HasContractQue)">
-                                <div class="cc-item-top">
-                                    <div class="cc-ico"><i class="fa fa-sliders"></i></div>
-                                    <div class="cc-info">
-                                        <div class="cc-name">Queue de Velocidad <span class="cc-state"><i class="@StateIcon(HasContractQue)"></i> @StateText(HasContractQue)</span></div>
-                                        @if (!HasContractQue)
-                                        {
-                                            <div class="cc-requires">Necesita: Servidor @CheckText(HasServer) · IP @CheckText(HasIp) · Plan @CheckText(HasPlan)</div>
-                                        }
-                                    </div>
-                                    <div class="cc-acts">
-                                        @if (!HasContractQue)
-                                        {
-                                            <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractQuesAsyn(ContractClient!.ContractClientId)">
-                                                <i class="fa fa-plus"></i>Crear queue
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractQueAsync(ContractQue!.ContractQueId)">
-                                                <i class="fa fa-trash"></i>Quitar
-                                            </button>
-                                        }
-                                    </div>
+                        <div class="cc-item cc-full @StateClass(HasContractQue)">
+                            <div class="cc-item-top">
+                                <div class="cc-ico"><i class="fa fa-sliders"></i></div>
+                                <div class="cc-info">
+                                    <div class="cc-name">Queue de Velocidad <span class="cc-state"><i class="@StateIcon(HasContractQue)"></i> @StateText(HasContractQue)</span></div>
+                                    @if (!HasContractQue)
+                                    {
+                                        <div class="cc-requires">Necesita: Servidor @CheckText(HasServer) · IP @CheckText(HasIp) · Plan @CheckText(HasPlan)</div>
+                                    }
                                 </div>
-                                @if (HasContractQue)
-                                {
-                                    <div class="cc-facts cc-facts-5">
-                                        <div class="cc-fact"><small>Servidor</small><b>@(ContractQue!.ServerName ?? ContractQue.Server?.ServerName)</b></div>
-                                        <div class="cc-fact"><small>IP cliente</small><b>@(ContractQue.IpCliente ?? ContractQue.IpNet?.Ip)</b></div>
-                                        <div class="cc-fact"><small>Plan</small><b>@(ContractQue.PlanName ?? ContractQue.Plan?.PlanName)</b></div>
-                                        <div class="cc-fact"><small>Velocidad</small><b>@(ContractQue.TotalVelocidad ?? ContractQue.Plan?.VelocidadTotal)</b></div>
-                                        <div class="cc-fact"><small>Id MikroTik</small><b>@ContractQue.MikrotikId</b></div>
-                                    </div>
-                                }
-                            </div>
-
-                            <div class="cc-item cc-full @StateClass(HasContractBind)">
-                                <div class="cc-item-top">
-                                    <div class="cc-ico"><i class="fa fa-link"></i></div>
-                                    <div class="cc-info">
-                                        <div class="cc-name">IpBinding Acceso <span class="cc-state"><i class="@StateIcon(HasContractBind)"></i> @StateText(HasContractBind)</span></div>
-                                        @if (!HasContractBind)
-                                        {
-                                            <div class="cc-requires">Necesita: Servidor @CheckText(HasServer) · IP @CheckText(HasIp) · MAC @CheckText(HasMac)</div>
-                                        }
-                                    </div>
-                                    <div class="cc-acts">
-                                        @if (!HasContractBind)
-                                        {
-                                            <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractBindsAsyn(ContractClient!.ContractClientId)">
-                                                <i class="fa fa-plus"></i>Crear IpBinding
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="cc-btn cc-btn-edit" @onclick="() => ShowContractBindEditAsync(ContractBind)">
-                                                <i class="fa fa-pen-to-square"></i>Editar
-                                            </button>
-                                            <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractBindAsync(ContractBind!.ContractBindId)">
-                                                <i class="fa fa-trash"></i>Quitar
-                                            </button>
-                                        }
-                                    </div>
+                                <div class="cc-acts">
+                                    @if (!HasContractQue)
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractQuesAsyn(ContractClient!.ContractClientId)">
+                                            <i class="fa fa-plus"></i>Crear queue
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractQueAsync(ContractQue!.ContractQueId)">
+                                            <i class="fa fa-trash"></i>Quitar
+                                        </button>
+                                    }
                                 </div>
-                                @if (HasContractBind)
-                                {
-                                    <div class="cc-facts cc-facts-5">
-                                        <div class="cc-fact"><small>Servidor</small><b>@(ContractBind!.ServerName ?? ContractBind.Server?.ServerName)</b></div>
-                                        <div class="cc-fact"><small>IP cliente</small><b>@(ContractBind.IpCliente ?? ContractBind.IpNet?.Ip)</b></div>
-                                        <div class="cc-fact"><small>MAC</small><b>@(ContractBind.MacCliente ?? ContractBind.CargueDetail?.MacWlan)</b></div>
-                                        <div class="cc-fact"><small>Tipo</small><b>@ContractBind.HotSpotType?.TypeName</b></div>
-                                        <div class="cc-fact"><small>Id MikroTik</small><b>@ContractBind.MikrotikId</b></div>
-                                    </div>
-                                }
                             </div>
-
+                            @if (HasContractQue)
+                            {
+                                <div class="cc-facts cc-facts-5">
+                                    <div class="cc-fact"><small>Servidor</small><b>@(ContractQue!.ServerName ?? ContractQue.Server?.ServerName)</b></div>
+                                    <div class="cc-fact"><small>IP cliente</small><b>@(ContractQue.IpCliente ?? ContractQue.IpNet?.Ip)</b></div>
+                                    <div class="cc-fact"><small>Plan</small><b>@(ContractQue.PlanName ?? ContractQue.Plan?.PlanName)</b></div>
+                                    <div class="cc-fact"><small>Velocidad</small><b>@(ContractQue.TotalVelocidad ?? ContractQue.Plan?.VelocidadTotal)</b></div>
+                                    <div class="cc-fact"><small>Id MikroTik</small><b>@ContractQue.MikrotikId</b></div>
+                                </div>
+                            }
                         </div>
+
+                        @if (UsaHotSpot)
+                        {
+                        <div class="cc-item cc-full @StateClass(HasContractBind)">
+                            <div class="cc-item-top">
+                                <div class="cc-ico"><i class="fa fa-link"></i></div>
+                                <div class="cc-info">
+                                    <div class="cc-name">IpBinding Acceso <span class="cc-state"><i class="@StateIcon(HasContractBind)"></i> @StateText(HasContractBind)</span></div>
+                                    @if (!HasContractBind)
+                                    {
+                                        <div class="cc-requires">Necesita: Servidor @CheckText(HasServer) · IP @CheckText(HasIp) · MAC @CheckText(HasMac)</div>
+                                    }
+                                </div>
+                                <div class="cc-acts">
+                                    @if (!HasContractBind)
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractBindsAsyn(ContractClient!.ContractClientId)">
+                                            <i class="fa fa-plus"></i>Crear IpBinding
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-edit" @onclick="() => ShowContractBindEditAsync(ContractBind)">
+                                            <i class="fa fa-pen-to-square"></i>Editar
+                                        </button>
+                                        <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractBindAsync(ContractBind!.ContractBindId)">
+                                            <i class="fa fa-trash"></i>Quitar
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            @if (HasContractBind)
+                            {
+                                <div class="cc-facts cc-facts-5">
+                                    <div class="cc-fact"><small>Servidor</small><b>@(ContractBind!.ServerName ?? ContractBind.Server?.ServerName)</b></div>
+                                    <div class="cc-fact"><small>IP cliente</small><b>@(ContractBind.IpCliente ?? ContractBind.IpNet?.Ip)</b></div>
+                                    <div class="cc-fact"><small>MAC</small><b>@(ContractBind.MacCliente ?? ContractBind.CargueDetail?.MacWlan)</b></div>
+                                    <div class="cc-fact"><small>Tipo</small><b>@ContractBind.HotSpotType?.TypeName</b></div>
+                                    <div class="cc-fact"><small>Id MikroTik</small><b>@ContractBind.MikrotikId</b></div>
+                                </div>
+                            }
+                        </div>
+                        }
+
+                        @* La credencial PPPoE: el gemelo del IpBinding para equipos PPPoE *@
+                        @if (UsaPppoe)
+                        {
+                        <div class="cc-item cc-full @StateClass(HasContractPppoe)">
+                            <div class="cc-item-top">
+                                <div class="cc-ico"><i class="fa fa-user-lock"></i></div>
+                                <div class="cc-info">
+                                    <div class="cc-name">Credencial PPPoE <span class="cc-state"><i class="@StateIcon(HasContractPppoe)"></i> @StateText(HasContractPppoe)</span></div>
+                                    @if (!HasContractPppoe)
+                                    {
+                                        <div class="cc-requires">Necesita: Servidor @CheckText(HasServer) &middot; IP @CheckText(HasIp)</div>
+                                    }
+                                </div>
+                                <div class="cc-acts">
+                                    @if (!HasContractPppoe)
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-add" @onclick="() => ShowContractPppoesAsyn(ContractClient!.ContractClientId)">
+                                            <i class="fa fa-plus"></i>Crear credencial
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="cc-btn cc-btn-edit" @onclick="() => ShowContractPppoeEditAsync(ContractPppoe)">
+                                            <i class="fa fa-pen-to-square"></i>Editar
+                                        </button>
+                                        <button type="button" class="cc-btn cc-btn-del" @onclick="() => DeleteContractPppoeAsync(ContractPppoe!.ContractPppoeId)">
+                                            <i class="fa fa-trash"></i>Quitar
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            @if (HasContractPppoe)
+                            {
+                                <div class="cc-facts cc-facts-5">
+                                    <div class="cc-fact"><small>Servidor</small><b>@ContractPppoe!.ServerName</b></div>
+                                    <div class="cc-fact"><small>Usuario</small><b>@ContractPppoe.Usuario</b></div>
+                                    <div class="cc-fact"><small>IP cliente</small><b>@ContractPppoe.IpCliente</b></div>
+                                    <div class="cc-fact"><small>Perfil</small><b>@ContractPppoe.ProfileName</b></div>
+                                    <div class="cc-fact"><small>Id MikroTik</small><b>@ContractPppoe.MikrotikId</b></div>
+                                </div>
+                            }
+                        </div>
+                        }
+
                     </div>
-                }
+                </div>
             </section>
         </div>
     }

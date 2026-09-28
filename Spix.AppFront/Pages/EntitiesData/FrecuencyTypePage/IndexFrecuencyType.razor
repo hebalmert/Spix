@@ -5,14 +5,18 @@
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">@Localizer[nameof(Resource.FrecuencyType)]</h3>
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-tower-broadcast"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.FrecuencyType_Title)]</h3>
+                <p>@Localizer[nameof(Resource.FrecuencyType_Subtitle)]</p>
+            </div>
+        </div>
 
         <!-- Botón + Filtro -->
         <div class="row align-items-center mb-3">
             <div class="col-md-3 d-flex justify-content-start">
-                <button class="btn btn-gradient-primary d-flex align-items-center gap-2" style="width:130px" @onclick="() => ShowModalAsync()">
-                    <i class="fa fa-plus-circle"></i> @Localizer[nameof(Resource.New)]
-                </button>
+                <ButtonFormNew OnClick="() => ShowModalAsync()" />
             </div>
             <div class="col-md-9 d-flex justify-content-end">
                 <FilterComponent ApplyFilter="SetFilterValue" />
@@ -36,12 +40,12 @@
                         <tbody>
                             @foreach (var item in FrecuencyTypes!)
                             {
-                                <tr>
+                                <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.FrecuencyTypeId, true)">
                                     <td>@item.TypeName</td>
                                     <td>
                                         <input type="checkbox" class="form-check-input" checked="@item.Active" disabled />
                                     </td>
-                                    <td style="width:1px;">
+                                    <td @ondblclick:stopPropagation style="width:1px;">
                                         <ButtonEdit OnClick="() => ShowModalAsync(item.FrecuencyTypeId, true)" />
                                     </td>
                                     <td style="width:1px;">

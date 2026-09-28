@@ -204,12 +204,19 @@ namespace Spix.AppService.ImplementContratos
             {
                 var modelo = await _context.ContractClients.AsNoTracking()
                     .Include(x => x.Client)
-                    .Include(x=> x.Contractor)
+                    .Include(x => x.Contractor)
                     .Include(c => c.ContractIDPic)
+
+                    //El plan del contrato: de aqui salen PlanId y PlanCategoryId, que son
+                    //[NotMapped] y por eso no vienen solos de la base. Sin esto, al abrir
+                    //Editar los dos combos del plan salen vacios aunque este guardado.
+                    .Include(x => x.ContractPlans!)
+                        .ThenInclude(x => x.Plan)
+
                     .FirstOrDefaultAsync(x => x.ContractClientId == id);
-                var ZoneDetail = await _context.Zones.AsNoTracking().FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
-                        modelo!.StateId = ZoneDetail!.StateId;
-                        modelo.CityId = ZoneDetail.CityId;
+
+                //La comprobacion va ANTES de tocar el modelo: estaba despues, asi que un
+                //id inexistente reventaba con una nula en vez de dar el mensaje.
                 if (modelo == null)
                 {
                     return new ActionResponse<ContractClient>
@@ -217,6 +224,23 @@ namespace Spix.AppService.ImplementContratos
                         WasSuccess = false,
                         Message = "Problemas para Enconstrar el Registro Indicado"
                     };
+                }
+
+                //El estado y la ciudad se deducen de la zona: tambien son [NotMapped]
+                var ZoneDetail = await _context.Zones.AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.ZoneId == modelo.ZoneId);
+
+                if (ZoneDetail != null)
+                {
+                    modelo.StateId = ZoneDetail.StateId;
+                    modelo.CityId = ZoneDetail.CityId;
+                }
+
+                var planDelContrato = modelo.ContractPlans?.FirstOrDefault()?.Plan;
+                if (planDelContrato != null)
+                {
+                    modelo.PlanId = planDelContrato.PlanId;
+                    modelo.PlanCategoryId = planDelContrato.PlanCategoryId;
                 }
 
                 return new ActionResponse<ContractClient>
@@ -286,8 +310,7 @@ namespace Spix.AppService.ImplementContratos
                     currentContract is not null)
                 {
                     var integrityResponse = await _contractActivationIntegrityService.ValidateAsync(
-                        modelo.ContractClientId,
-                        currentContract.CorporationId);
+                        modelo.ContractClientId);
                     if (!integrityResponse.WasSuccess)
                     {
                         await _transactionManager.RollbackTransactionAsync();
@@ -300,8 +323,64 @@ namespace Spix.AppService.ImplementContratos
                     }
                 }
 
-                //Implementando el Mapeo de Modelos con Mapster
-                _context.ContractClients.Update(modelo);
+                //Se asigna campo por campo sobre la fila que ya existe.
+                //
+                //Antes era Update(modelo), que marca TODAS las columnas como modificadas y
+                //escribe la entidad completa. Pero el formulario no manda la entidad
+                //completa: arma un objeto con una lista escogida a mano. Todo lo que no
+                //viajaba se escribia en NULL, y con ello se borraban:
+                //
+                //  - SignatureRequestedAt: el contrato desaparecia del portal del cliente
+                //    aunque la solicitud de firma ya se hubiera enviado
+                //  - UsuarioOwner y UserId: quien creo el contrato
+                //
+                //Bastaba con abrir Editar y guardar para perderlos.
+                var current = await _context.ContractClients
+                    .FirstOrDefaultAsync(x => x.ContractClientId == modelo.ContractClientId);
+
+                if (current == null)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Message = "Problemas para Enconstrar el Registro Indicado"
+                    };
+                }
+
+                //Lo que el formulario edita, y nada mas. Ni la corporacion, ni el
+                //consecutivo, ni la fecha de creacion: eso no se toca al editar.
+                current.ContractorId = modelo.ContractorId;
+                current.ClientId = modelo.ClientId;
+                current.PhoneNumber = modelo.PhoneNumber;
+                current.PhoneNumber2 = modelo.PhoneNumber2;
+                current.Address = modelo.Address;
+                current.ZoneId = modelo.ZoneId;
+                current.ContractState = modelo.ContractState;
+                current.EquipoEmpres = modelo.EquipoEmpres;
+                current.EnvoiceClient = modelo.EnvoiceClient;
+                current.EstratoSocialId = modelo.EstratoSocialId;
+
+                //El plan: el contrato tiene exactamente uno. Si el formulario mando otro,
+                //se actualiza la fila; si todavia no existe, se crea.
+                if (modelo.PlanId != Guid.Empty)
+                {
+                    var contractPlan = await _context.ContractPlans
+                        .FirstOrDefaultAsync(x => x.ContractClientId == current.ContractClientId);
+
+                    if (contractPlan == null)
+                    {
+                        _context.ContractPlans.Add(new ContractPlan
+                        {
+                            ContractClientId = current.ContractClientId,
+                            PlanId = modelo.PlanId
+                        });
+                    }
+                    else if (contractPlan.PlanId != modelo.PlanId)
+                    {
+                        contractPlan.PlanId = modelo.PlanId;
+                    }
+                }
 
                 await _transactionManager.SaveChangesAsync();
                 await _transactionManager.CommitTransactionAsync();
@@ -408,6 +487,32 @@ namespace Spix.AppService.ImplementContratos
                     };
                 }
 
+                //El plan es obligatorio y tiene que ser de SU corporacion: llega por el cuerpo
+                //de la peticion, asi que no alcanza con que el combo del front lo haya filtrado
+                if (modelo.PlanId == Guid.Empty)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Message = "Debe seleccionar el plan del contrato."
+                    };
+                }
+
+                var planOk = await _context.Plans.AnyAsync(x =>
+                    x.PlanId == modelo.PlanId &&
+                    x.CorporationId == user.CorporationId);
+
+                if (!planOk)
+                {
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
+                    {
+                        WasSuccess = false,
+                        Message = "El plan seleccionado no existe o no es de su empresa."
+                    };
+                }
+
                 //Para crear el correlativo de Contratos
                 var lastNumber = await _context.ContractClients.AsNoTracking()
                     .Where(x => x.CorporationId == user.CorporationId)
@@ -422,6 +527,25 @@ namespace Spix.AppService.ImplementContratos
                 modelo.UserId = Guid.Parse(user.Id);
 
                 _context.ContractClients.Add(modelo);
+
+                //Se guarda AQUI, antes de colgarle hijos.
+                //
+                //La llave del contrato la genera la base (NEWSEQUENTIALID), asi que hasta
+                //este punto ContractClientId esta vacio. Tanto la bitacora como el plan la
+                //reciben como ESCALAR, y a un escalar EF no se la corrige: se irian con
+                //una llave foranea vacia y el guardado revienta.
+                //
+                //Sigue todo en la MISMA transaccion, asi que o entra completo o no entra.
+                await _transactionManager.SaveChangesAsync();
+
+                //Su plan: un contrato nunca queda sin plan. Todo lo que ya leia ContractPlan
+                //(el queue padre, los reportes) sigue igual, solo que la fila nace al crear
+                //el contrato y no despues, en el detalle.
+                _context.ContractPlans.Add(new ContractPlan
+                {
+                    ContractClientId = modelo.ContractClientId,
+                    PlanId = modelo.PlanId
+                });
 
                 //Primer renglon de la bitacora del contrato
                 await ContractAuditLog.AddAsync(_context, modelo.ContractClientId, ContractEventType.Created,

@@ -1,14 +1,14 @@
+﻿@* El queue de velocidad es el MISMO para HotSpot y para PPPoE: solo depende del
+   servidor y del plan.
+
+   NO lleva la IP del cliente: esa se asigna en ContractIp, que es su tarjeta, y en PPPoE
+   ni siquiera aplica igual. Aqui solo repetia un dato de otro sitio. *@
 <EditForm Model="ContractQue" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
     <div class="input-group mb-2">
         <span class="input-group-text" style="width:150px">Servidor</span>
         <InputText class="form-control" @bind-Value="ContractQue.ServerName" readonly />
-    </div>
-
-    <div class="input-group mb-2">
-        <span class="input-group-text" style="width:150px">IP Cliente</span>
-        <InputText class="form-control" @bind-Value="ContractQue.IpCliente" readonly />
     </div>
 
     <div class="input-group mb-2">

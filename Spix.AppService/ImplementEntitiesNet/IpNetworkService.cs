@@ -47,6 +47,71 @@ public class IpNetworkService : IIpNetworkService
 
     //IP libres para elegir. Sin id: con el neutro traducido. Con id: incluye la IP que ya tiene
     //el registro que se esta editando, para que el combo la muestre.
+    //La lista para la IP local del PPPoE de UN servidor.
+    //
+    //Devuelve TODAS las IP de red activas de la corporacion, sin esconder ninguna: en
+    //MikroTik el local-address no tiene que existir en una interfaz, y el caso mas comun
+    //es justo la IP de gestion del propio equipo.
+    //
+    //Las que YA tiene otro equipo vienen marcadas en Description con el nombre de ese
+    //equipo. No se bloquean: el front avisa de quien es y deja decidir. Esta lista NO
+    //toca nada en el modulo de IP de red.
+    public async Task<ActionResponse<IEnumerable<IpNetwork>>> ComboLocalPppAsync(string username, Guid serverId)
+    {
+        try
+        {
+            var corporationId = await GetCorporationIdAsync(username);
+            if (corporationId == null) return Fail<IEnumerable<IpNetwork>>(_localizer[nameof(Resource.Generic_AuthIdFail)]);
+
+            //El servidor tiene que ser de SU corporacion: de aqui salen las dos IPs que
+            //se admiten por fuera del pozo libre.
+            var server = await _context.Servers
+                .AsNoTracking()
+                .Where(x => x.ServerId == serverId && x.CorporationId == corporationId)
+                .Select(x => new { x.IpNetworkId, x.PppLocalIpNetId })
+                .FirstOrDefaultAsync();
+
+            if (server == null) return Fail<IEnumerable<IpNetwork>>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+
+            //De quien es cada IP de red: su equipo de gestion, o el que la use como IP
+            //local de PPPoE. Se resuelve de una pasada, no una consulta por fila.
+            var duenos = await _context.Servers
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId && x.ServerId != serverId)
+                .Select(x => new { x.ServerName, x.IpNetworkId, x.PppLocalIpNetId })
+                .ToListAsync();
+
+            var list = await _context.IpNetworks
+                .AsNoTracking()
+                .Where(x => x.CorporationId == corporationId && x.Active)
+                .OrderBy(x => x.IpSort)
+                .ToListAsync();
+
+            foreach (var ip in list)
+            {
+                var dueno = duenos.FirstOrDefault(d => d.IpNetworkId == ip.IpNetworkId ||
+                                                       d.PppLocalIpNetId == ip.IpNetworkId);
+
+                //Description viaja solo para avisar: si esta vacia, la IP esta libre
+                ip.Description = dueno?.ServerName;
+            }
+
+            //El neutro va SIEMPRE: es la unica forma de dejar el campo en blanco. Si solo
+            //se pone cuando no hay una elegida, una vez elegida no se puede quitar nunca.
+            list.Insert(0, new IpNetwork
+            {
+                IpNetworkId = Guid.Empty,
+                Ip = _localizer[nameof(Resource.Select_IP)]
+            });
+
+            return Success<IEnumerable<IpNetwork>>(list);
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IpNetwork>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string username, Guid? id = null)
     {
         try

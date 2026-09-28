@@ -9,6 +9,9 @@ public interface IIpNetworkServiceX
 {
     Task<ActionResponse<IEnumerable<IpNetwork>>> ComboAsync(string username, Guid? id = null);
 
+    //La lista para la IP local del PPPoE de un servidor
+    Task<ActionResponse<IEnumerable<IpNetwork>>> ComboLocalPppAsync(string username, Guid serverId);
+
     Task<ActionResponse<IpSummaryDto>> GetSummaryAsync(string username);
 
     Task<ActionResponse<IEnumerable<IpNetwork>>> GetAsync(PaginationDTO pagination, string username);

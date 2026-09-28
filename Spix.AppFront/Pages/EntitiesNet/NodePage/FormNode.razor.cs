@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
@@ -9,6 +9,7 @@ using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 using System.Globalization;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.AppFront.Pages.EntitiesNet.NodePage;
 
@@ -113,8 +114,8 @@ public partial class FormNode
     {
         if (int.TryParse(e.Value?.ToString(), out var frecuencyType))
         {
-            Node.FrecuencyTypeId = frecuencyType;
-            Node.FrecuencyId = 0;
+            Node.FrecuencyTypeId = ComboValue.OrNull(frecuencyType);
+            Node.FrecuencyId = null;
             await LoadFrecuency(frecuencyType);
         }
     }
@@ -135,7 +136,7 @@ public partial class FormNode
     {
         if (int.TryParse(e.Value?.ToString(), out var frecuencyId))
         {
-            Node.FrecuencyId = frecuencyId;
+            Node.FrecuencyId = ComboValue.OrNull(frecuencyId);
         }
     }
 
@@ -155,7 +156,7 @@ public partial class FormNode
     {
         if (int.TryParse(e.Value?.ToString(), out var securityId))
         {
-            Node.SecurityId = securityId;
+            Node.SecurityId = ComboValue.OrNull(securityId);
         }
     }
 
@@ -175,7 +176,7 @@ public partial class FormNode
     {
         if (int.TryParse(e.Value?.ToString(), out var channelId))
         {
-            Node.ChannelId = channelId;
+            Node.ChannelId = ComboValue.OrNull(channelId);
         }
     }
 

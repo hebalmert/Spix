@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Network;
 using Spix.AppWpf.SharedServices;
@@ -275,9 +275,41 @@ public partial class ContractSuspendedIndexViewModel : ObservableObject
             }
 
             //===== La orden al equipo, por la red LAN =====
-            //Sin HotSpot no hay nada que escribir: solo cambia el estado
+            //Sin control en el equipo no hay nada que escribir: solo cambia el estado
 
-            if (datos.UsaHotSpot)
+            if (datos.Control == MikrotikControlType.PPPoE)
+            {
+                var serverPpp = new Server
+                {
+                    ServerId = datos.ServerId,
+                    ServerName = datos.ServerName,
+                    Usuario = datos.Usuario,
+                    Clave = datos.Clave,
+                    ApiPort = datos.ApiPort,
+                    IpNetwork = new IpNetwork { Ip = datos.ServerIp }
+                };
+
+                var reactivado = await _mikrotikService.ExecuteAsync(serverPpp, mikrotik =>
+                {
+                    //El MkIndex guardado al suspender es el .id del secret. Se habilita y se
+                    //tumba la sesion para que reconecte con el perfil bueno.
+                    LocalPppoeCommands.SetAccess(mikrotik,
+                        datos.MkIndex!,
+                        datos.UsuarioPppoe!,
+                        datos.IpCliente!,
+                        enabled: true);
+                });
+
+                if (!reactivado.WasExecuted)
+                {
+                    await _alertService.ErrorAsync(
+                        "No se pudo conectar con MikroTik",
+                        $"{reactivado.Message} El contrato NO quedo reactivado.");
+
+                    return;
+                }
+            }
+            else if (datos.UsaHotSpot)
             {
                 var server = new Server
                 {
@@ -514,9 +546,42 @@ public partial class ContractSuspendedDialogViewModel : ObservableObject
             }
 
             //===== Las ordenes al equipo, por la red LAN =====
-            //Sin HotSpot no hay nada que escribir: solo cambia el estado
+            //Sin control en el equipo no hay nada que escribir: solo cambia el estado
 
-            if (datos.UsaHotSpot)
+            if (datos.Control == MikrotikControlType.PPPoE && datos.Credencial is not null)
+            {
+                var credencial = datos.Credencial;
+
+                var serverPpp = new Server
+                {
+                    ServerId = credencial.ServerId,
+                    ServerName = credencial.ServerName,
+                    Usuario = credencial.Usuario,
+                    Clave = credencial.Clave,
+                    ApiPort = credencial.ApiPort,
+                    IpNetwork = new IpNetwork { Ip = credencial.ServerIp }
+                };
+
+                var cortado = await _mikrotikService.ExecuteAsync(serverPpp, mikrotik =>
+                {
+                    //Primero el secret, despues la sesion viva: al reves el cliente reconecta
+                    LocalPppoeCommands.SetAccess(mikrotik,
+                        credencial.MikrotikId!,
+                        credencial.UsuarioPppoe!,
+                        credencial.IpCliente!,
+                        enabled: false);
+                });
+
+                if (!cortado.WasExecuted)
+                {
+                    await _alertService.ErrorAsync(
+                        "No se pudo conectar con MikroTik",
+                        $"{cortado.Message} El contrato NO quedo suspendido.");
+
+                    return;
+                }
+            }
+            else if (datos.UsaHotSpot)
             {
                 //Una conexion por servidor, no una por binding
                 foreach (var grupo in datos.Bindings.GroupBy(x => x.ServerId))

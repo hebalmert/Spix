@@ -1,14 +1,17 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesEmails;
 using Spix.HttpService;
+using Microsoft.Extensions.Localization;
+using Spix.xLanguage.Resources;
 
 namespace Spix.AppFront.Pages.EntitiesEmails.EmailProviderSettingPage;
 
 public partial class IndexEmailProviderSetting
 {
+    [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;

@@ -130,7 +130,7 @@ namespace Spix.Services.ImplementContratos
                 }
 
                 //Y el MikroTik tiene que estar como corresponde para ese destino
-                var bloqueo = await ContractStateRules.GetBlockingReasonAsync(_context, contractClientId, destino);
+                var bloqueo = await _contractActivationIntegrityService.GetBlockingReasonAsync(contractClientId, destino);
                 if (bloqueo != null)
                 {
                     await _transactionManager.RollbackTransactionAsync();
@@ -139,11 +139,12 @@ namespace Spix.Services.ImplementContratos
 
                 //El MikroTik se toca ANTES de asentar nada: si falla, no se cambia el estado.
                 //Se reusan las mismas piezas del corte masivo y del modulo de suspendidos.
-                bool usaHotSpot = await _contractActivationIntegrityService.UsesHotSpotControlAsync(contract.CorporationId);
-
-                if (usaHotSpot && destino == ContractState.Suspended)
+                //Ya no se pregunta de que tipo es el equipo: se llama y adentro se resuelve
+                //por el servidor del contrato. Con HotSpot toca el ip-binding, con PPPoE el
+                //secret mas la sesion viva, y sin control no toca nada.
+                if (destino == ContractState.Suspended)
                 {
-                    var suspension = await _contractActivationIntegrityService.SuspendHotSpotBindingsAsync(contract);
+                    var suspension = await _contractActivationIntegrityService.SuspendAsync(contract);
                     if (!suspension.WasSuccess)
                     {
                         await _transactionManager.RollbackTransactionAsync();
@@ -151,9 +152,9 @@ namespace Spix.Services.ImplementContratos
                     }
                 }
 
-                if (usaHotSpot && destino == ContractState.Active)
+                if (destino == ContractState.Active)
                 {
-                    var activacion = await _contractActivationIntegrityService.ActivateHotSpotBindingsAsync(contract);
+                    var activacion = await _contractActivationIntegrityService.ActivateAsync(contract);
                     if (!activacion.WasSuccess)
                     {
                         await _transactionManager.RollbackTransactionAsync();
@@ -248,6 +249,22 @@ namespace Spix.Services.ImplementContratos
                 await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
                 var modelo = await queryable.Paginate(pagination).ToListAsync();
 
+                //Si el contrato es PPPoE o HotSpot lo dice su servidor. Se resuelve con UNA
+                //consulta para los contratos de la pagina, y se trae solo el enum: el Server
+                //completo llevaria la clave del equipo a un listado.
+                var ids = modelo.Select(x => x.ContractClientId).ToList();
+                var controles = await _context.ContractServers.AsNoTracking()
+                    .Where(x => ids.Contains(x.ContractClientId))
+                    .Select(x => new { x.ContractClientId, x.Server!.ControlMk })
+                    .ToDictionaryAsync(x => x.ContractClientId, x => x.ControlMk);
+
+                foreach (var contrato in modelo)
+                {
+                    contrato.ControlMk = controles.TryGetValue(contrato.ContractClientId, out var control)
+                        ? control
+                        : MikrotikControlType.Ninguno;
+                }
+
                 return new ActionResponse<IEnumerable<ContractClient>>
                 {
                     WasSuccess = true,
@@ -273,6 +290,7 @@ namespace Spix.Services.ImplementContratos
                     .Include(x => x.ContractServers)
                     .Include(x => x.ContractPlans)
                     .Include(x => x.ContractNodes)
+                    .Include(x => x.ContractOlts)
                     .Include(x => x.ContractMaps)
                     .FirstOrDefaultAsync(x => x.ContractClientId == id);
                 var ZoneDetail = await _context.Zones.AsNoTracking().FirstOrDefaultAsync(x => x.ZoneId == modelo!.ZoneId);
@@ -341,8 +359,7 @@ namespace Spix.Services.ImplementContratos
                 }
 
                 var integrityResponse = await _contractActivationIntegrityService.ValidateAsync(
-                    contract.ContractClientId,
-                    contract.CorporationId);
+                    contract.ContractClientId);
                 if (!integrityResponse.WasSuccess)
                 {
                     await _transactionManager.RollbackTransactionAsync();
@@ -353,21 +370,15 @@ namespace Spix.Services.ImplementContratos
                     };
                 }
 
-                bool usesHotSpotControl = await _contractActivationIntegrityService
-                    .UsesHotSpotControlAsync(contract.CorporationId);
-                if (usesHotSpotControl)
+                var activationResponse = await _contractActivationIntegrityService.ActivateAsync(contract);
+                if (!activationResponse.WasSuccess)
                 {
-                    var activationResponse = await _contractActivationIntegrityService
-                        .ActivateHotSpotBindingsAsync(contract);
-                    if (!activationResponse.WasSuccess)
+                    await _transactionManager.RollbackTransactionAsync();
+                    return new ActionResponse<ContractClient>
                     {
-                        await _transactionManager.RollbackTransactionAsync();
-                        return new ActionResponse<ContractClient>
-                        {
-                            WasSuccess = false,
-                            Message = activationResponse.Message
-                        };
-                    }
+                        WasSuccess = false,
+                        Message = activationResponse.Message
+                    };
                 }
 
                 contract.ContractState = ContractState.Active;

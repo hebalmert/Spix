@@ -1,10 +1,16 @@
-@page "/plancategories"
+﻿@page "/plancategories"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
 <div class="container-fluid pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-1">@Localizer[nameof(Resource.PlanCategory)]</h3>
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-sitemap"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.PlanCategoryIdx_Title)]</h3>
+                <p>@Localizer[nameof(Resource.PlanCategoryIdx_Subtitle)]</p>
+            </div>
+        </div>
         <p class="pc-sub">Elija una categoria a la izquierda y trabaje sus planes a la derecha.</p>
 
         @* Resumen de la categoria seleccionada *@

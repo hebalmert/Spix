@@ -63,7 +63,7 @@
                             <Body>
                                 @foreach (var item in Technicians!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.TechnicianId, true)">
                                         <td>
                                             <div class="idx-who">
                                                 <AvatarImage Url="@item.ImageFullPath" Icon="fa fa-user-gear" Size="46" Alt="@($"{item.FirstName} {item.LastName}")" />

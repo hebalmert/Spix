@@ -1,4 +1,4 @@
-using Spix.AppService.InterfaceContratos.InterfaceContractControl;
+﻿using Spix.AppService.InterfaceContratos.InterfaceContractControl;
 using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.ModelUtility;
@@ -18,5 +18,5 @@ public class ContractPlanServiceX : IContractPlanServiceX
 
     public async Task<ActionResponse<ContractPlan>> AddAsync(ContractPlan modelo, string username) => await _contractService.AddAsync(modelo, username);
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _contractService.DeleteAsync(id);
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username) => await _contractService.DeleteAsync(id, username);
 }

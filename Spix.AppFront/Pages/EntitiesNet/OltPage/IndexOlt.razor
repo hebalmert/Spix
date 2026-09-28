@@ -1,0 +1,136 @@
+﻿@page "/olts"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-network-wired"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.Olt_Title)]</h3>
+                <p>@Localizer[nameof(Resource.Olt_Subtitle)]</p>
+            </div>
+
+            @if (TotalRecords > 0)
+            {
+                <div class="idx-head-tools">
+                    <span class="idx-count">@Localizer[TotalRecords == 1 ? "Olt_CountOne" : "Olt_CountMany", TotalRecords.ToString("N0")]</span>
+                </div>
+            }
+        </div>
+
+        @* El tablero: lo cuenta la base, sobre todas las OLT *@
+        @if (Summary is not null)
+        {
+            <div class="idx-board">
+                <div class="idx-tile">
+                    <div class="idx-tile-label">@Localizer["Net_Total"]</div>
+                    <div class="idx-tile-value">@Summary.Total.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-green">
+                    <div class="idx-tile-label">@Localizer["Net_Active"]</div>
+                    <div class="idx-tile-value">@Summary.Active.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-amber">
+                    <div class="idx-tile-label">@Localizer["Net_Inactive"]</div>
+                    <div class="idx-tile-value">@Summary.Inactive.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-purple">
+                    <div class="idx-tile-label">@Localizer["Net_Clients"]</div>
+                    <div class="idx-tile-value">@Summary.Clients.ToString("N0")</div>
+                </div>
+            </div>
+        }
+
+        @* Acciones y buscador, fuera del panel de la tabla *@
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+
+            <div class="idx-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <section class="idx-panel">
+
+            @* La tabla vive afuera del GenericList: el encabezado se pinta siempre,
+               aunque no haya registros, y el borde del panel no queda cortado. *@
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Olt)]</th>
+                            <th>@Localizer[nameof(Resource.Mark)]</th>
+                            <th>@Localizer[nameof(Resource.Zone)]</th>
+                            <th>@Localizer["Ip_Address"]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.OltPorts)]</th>
+                            <th style="text-align:right">@Localizer["Net_Clients"]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Olts">
+                            <Loading>
+                                <tr>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="8" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Olts!)
+                                {
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.OltId, true)">
+                                        <td><span class="idx-name">@item.OltName</span></td>
+                                        <td>@item.MarkName</td>
+                                        <td>@item.ZoneName</td>
+                                        <td>@item.Ip</td>
+                                        <td style="text-align:right">
+                                            @item.PortCount.ToString("N0")
+                                            @if (!string.IsNullOrWhiteSpace(item.PortSpeed))
+                                            {
+                                                <span class="idx-meta"> @@ @item.PortSpeed</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:right">@item.Clients.ToString("N0")</td>
+                                        <td>
+                                            <span class="idx-pill @(item.Active ? "is-on" : "is-off")">
+                                                @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
+                                            </span>
+                                        </td>
+                                        <td @ondblclick:stopPropagation>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowMapAsync(item)"
+                                                               TooTip="@Localizer["Map_Map"]"
+                                                               Icon="fa fa-map-location-dot" />
+                                                <ButtonEdit OnClick="() => ShowModalAsync(item.OltId, true)" />
+                                                @* Con clientes no se borra: se inactiva *@
+                                                @if (item.Clients == 0)
+                                                {
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.OltId)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="idx-panel-foot">
+                <Pagination CurrentPage="CurrentPage"
+                            SelectedPage="SelectedPage"
+                            TotalPages="TotalPages" />
+            </div>
+        </section>
+    </div>
+</div>

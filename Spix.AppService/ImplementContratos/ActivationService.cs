@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
@@ -62,21 +62,26 @@ public class ActivationService : IActivationService
                 .Select(x => new
                 {
                     x.ContractClientId,
-                    ServerId = _context.ContractBinds
+                    //El equipo sale de ContractServer, que vale para HotSpot y para PPPoE.
+                    //Del IpBinding no, porque el IpBinding solo existe en HotSpot.
+                    ServerId = _context.ContractServers
                         .Where(b => b.ContractClientId == x.ContractClientId)
                         .Select(b => (Guid?)b.ServerId)
                         .FirstOrDefault(),
-                    ServerName = _context.ContractBinds
+                    ServerName = _context.ContractServers
                         .Where(b => b.ContractClientId == x.ContractClientId)
                         .Select(b => b.Server!.ServerName)
                         .FirstOrDefault(),
+                    HasAccess = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId) ||
+                                _context.ContractPppoes.Any(b => b.ContractClientId == x.ContractClientId),
                     HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId)
                 })
-                .GroupBy(x => new { x.ServerId, x.ServerName, x.HasQueue })
+                .GroupBy(x => new { x.ServerId, x.ServerName, x.HasAccess, x.HasQueue })
                 .Select(g => new
                 {
                     g.Key.ServerId,
                     g.Key.ServerName,
+                    g.Key.HasAccess,
                     g.Key.HasQueue,
                     Contracts = g.Count()
                 })
@@ -85,13 +90,13 @@ public class ActivationService : IActivationService
             var dto = new ActivationCheckDto
             {
                 Ready = grupos.Sum(x => x.Contracts),
-                NoBinding = grupos.Where(x => x.ServerId == null).Sum(x => x.Contracts),
+                NoBinding = grupos.Where(x => x.ServerId == null || !x.HasAccess).Sum(x => x.Contracts),
                 NoQueue = grupos.Where(x => !x.HasQueue).Sum(x => x.Contracts)
             };
 
             //Solo se puede reactivar al que tiene IpBinding y Queue
             dto.Servers = grupos
-                .Where(x => x.ServerId != null && x.HasQueue)
+                .Where(x => x.ServerId != null && x.HasAccess && x.HasQueue)
                 .GroupBy(x => new { x.ServerId, x.ServerName })
                 .Select(g => new ActivationServerDto
                 {
@@ -129,13 +134,16 @@ public class ActivationService : IActivationService
                     ControlContrato = x.ControlContrato,
                     ClientFullName = x.ClientName ?? string.Empty,
                     ZoneName = x.ZoneName,
-                    ServerName = _context.ContractBinds
+                    ServerName = _context.ContractServers
                         .Where(b => b.ContractClientId == x.ContractClientId)
                         .Select(b => b.Server!.ServerName)
                         .FirstOrDefault(),
                     DateSuspended = x.DateSuspended,
                     DatePaymentReceived = x.DatePaymentReceived,
-                    HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId),
+                    //Su pieza de acceso, sea IpBinding o credencial PPPoE: un contrato solo
+                    //puede tener una, porque su servidor es de un solo tipo.
+                    HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId) ||
+                                 _context.ContractPppoes.Any(b => b.ContractClientId == x.ContractClientId),
                     HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId)
                 });
 
@@ -171,11 +179,22 @@ public class ActivationService : IActivationService
 
             var corporationId = Convert.ToInt32(user.CorporationId);
 
-            //Los contratos de ese equipo que esperan reactivacion
-            var ids = await PendingQuery(corporationId)
-                .Where(x => _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId &&
-                                                            b.ServerId == serverId) &&
-                            _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId))
+            //Los contratos de ese equipo que esperan reactivacion.
+            //
+            //La pieza de acceso depende de como trabaje el equipo: en HotSpot es el IpBinding
+            //y en PPPoE la credencial. El queue es el mismo para los dos.
+            var controlServidor = await _contractActivationIntegrityService.ResolveControlByServerAsync(serverId);
+
+            var pendientes = PendingQuery(corporationId)
+                .Where(x => _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId));
+
+            pendientes = controlServidor == MikrotikControlType.PPPoE
+                ? pendientes.Where(x => _context.ContractPppoes.Any(b => b.ContractClientId == x.ContractClientId &&
+                                                                        b.ServerId == serverId))
+                : pendientes.Where(x => _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId &&
+                                                                       b.ServerId == serverId));
+
+            var ids = await pendientes
                 .Select(x => x.ContractClientId)
                 .ToListAsync();
 
@@ -206,13 +225,14 @@ public class ActivationService : IActivationService
             //Si la corporacion controla el acceso por HotSpot, se le devuelve en el equipo.
             //Este modulo habla con la Mikrotik por su cuenta: asi el corte y las demas
             //pantallas siguen con su propio codigo, sin enterarse de lo que pase aqui.
-            var usesHotSpotControl = await _contractActivationIntegrityService
-                .UsesHotSpotControlAsync(corporationId);
+            //El mecanismo lo manda ESE equipo, no la corporacion.
+            var control = await _contractActivationIntegrityService.ResolveControlByServerAsync(serverId);
 
             var activados = contracts;
 
-            if (usesHotSpotControl)
+            if (control == MikrotikControlType.HotSpot)
             {
+                //Su propio codigo, que aguanta fallos contrato por contrato
                 var respuesta = await ActivateOnServerAsync(serverId, contracts, result);
                 if (!respuesta.WasSuccess)
                 {
@@ -222,6 +242,15 @@ public class ActivationService : IActivationService
 
                 //Solo se dan por activados los que el equipo si acepto
                 activados = respuesta.Result!;
+            }
+            else if (control == MikrotikControlType.PPPoE)
+            {
+                var respuesta = await _contractActivationIntegrityService.ActivateAsync(contracts);
+                if (!respuesta.WasSuccess)
+                {
+                    await transaction.RollbackAsync();
+                    return Fail<ActivationRunResultDto>(respuesta.Message!);
+                }
             }
 
             var userName = $"{user.FirstName} {user.LastName}";

@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -57,7 +57,11 @@ public partial class EditContractClient
             EquipoEmpres = ContractClient.EquipoEmpres,
             EnvoiceClient = ContractClient.EnvoiceClient,
             EstratoSocialId = ContractClient.EstratoSocialId,
-            CorporationId = ContractClient.CorporationId
+            CorporationId = ContractClient.CorporationId,
+
+            //El plan, que tambien se edita. Va sin mapear y el servicio lo lleva a la
+            //fila de ContractPlan.
+            PlanId = ContractClient.PlanId
         };
 
         var responseHttp = await _repository.PutAsync($"{BaseUrl}", nModelo);

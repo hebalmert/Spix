@@ -51,7 +51,7 @@ public class ChannelsController : ControllerBase
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 
     [HttpPost]
@@ -62,7 +62,7 @@ public class ChannelsController : ControllerBase
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 
     [HttpDelete("{id}")]
@@ -73,6 +73,6 @@ public class ChannelsController : ControllerBase
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 }

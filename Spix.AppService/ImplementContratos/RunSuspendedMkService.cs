@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -94,13 +94,71 @@ public partial class RunSuspendedMkService : IRunSuspendedMkService
                 })
                 .ToList();
 
-            datos.UsaHotSpot = await _contractActivationIntegrityService
-                .UsesHotSpotControlAsync(corporationId);
+            //Como trabaja ESE equipo. Antes se preguntaba por corporacion y devolvia un bool,
+            //asi que PPPoE caia en la misma rama que Ninguno: el lote se daba por cortado y el
+            //cliente seguia navegando.
+            datos.Control = await _contractActivationIntegrityService
+                .ResolveControlByServerAsync(serverId);
 
-            //Sin HotSpot no se toca el equipo, y sin IpBinding no hay como quitarles el
-            //acceso: en los dos casos no hay nada que escribir
-            if (!datos.UsaHotSpot || datos.SinEquipo)
+            //Sin control en el equipo no hay nada que escribir, y sin servidor asignado no hay
+            //a quien escribirle
+            if (!datos.UsaControl || datos.SinEquipo)
             {
+                return Ok(datos);
+            }
+
+            var idsContratos = contracts.Select(x => x.ContractClientId).ToList();
+
+            //===== El lado PPPoE: se deshabilita el secret y se tumba la sesion =====
+            if (datos.Control == MikrotikControlType.PPPoE)
+            {
+                var credenciales = await _context.ContractPppoes
+                    .AsNoTracking()
+                    .Include(x => x.Server!)
+                        .ThenInclude(x => x.IpNetwork)
+                    .Where(x => idsContratos.Contains(x.ContractClientId))
+                    .ToListAsync();
+
+                //Si a UNO le falta la credencial no se manda ni una orden del lote: a medio
+                //camino quedaria gente cortada y gente navegando, y el lote diria que si
+                var sinCredencial = idsContratos.Except(credenciales.Select(x => x.ContractClientId)).ToList();
+
+                if (sinCredencial.Count > 0)
+                {
+                    datos.Blocked = _localizer["Pppoe_BatchIncomplete", sinCredencial.Count.ToString()];
+                    return Ok(datos);
+                }
+
+                foreach (var credencial in credenciales)
+                {
+                    var contrato = contracts.First(x => x.ContractClientId == credencial.ContractClientId);
+
+                    if (credencial.Server?.IpNetwork?.Ip == null ||
+                        string.IsNullOrWhiteSpace(credencial.MikrotikId) ||
+                        string.IsNullOrWhiteSpace(credencial.Usuario) ||
+                        string.IsNullOrWhiteSpace(credencial.IpCliente ?? credencial.IpNet?.Ip))
+                    {
+                        datos.Blocked = _localizer[nameof(Resource.Pppoe_CredentialIncomplete)];
+                        return Ok(datos);
+                    }
+
+                    datos.Credenciales.Add(new CortePppoeDTO
+                    {
+                        ContractClientId = credencial.ContractClientId,
+                        ControlContrato = contrato.ControlContrato,
+                        ClientFullName = $"{contrato.Client?.FirstName} {contrato.Client?.LastName}".Trim(),
+                        ServerId = credencial.ServerId,
+                        ServerName = credencial.Server.ServerName,
+                        ServerIp = credencial.Server.IpNetwork.Ip,
+                        Usuario = credencial.Server.Usuario,
+                        Clave = credencial.Server.Clave,
+                        ApiPort = credencial.Server.ApiPort,
+                        MikrotikId = credencial.MikrotikId,
+                        UsuarioPppoe = credencial.Usuario,
+                        IpCliente = credencial.IpCliente
+                    });
+                }
+
                 return Ok(datos);
             }
 

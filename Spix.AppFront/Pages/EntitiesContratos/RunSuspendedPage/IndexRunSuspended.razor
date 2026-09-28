@@ -1,4 +1,4 @@
-@page "/runsuspended"
+﻿@page "/runsuspended"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -74,7 +74,7 @@
                             <Body>
                                 @foreach (var item in Runs!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowDetailsAsync(item.RunSuspendedId)">
                                         <td>
                                             <div class="idx-name">@GetMonthName(item.MonthType) @item.YearNumber</div>
                                             <div class="idx-meta">@item.DateUtc?.ToString("dd/MM/yyyy")</div>
@@ -90,7 +90,7 @@
                                             }
                                         </td>
                                         <td>@item.UserByName</td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonGeneric OnClick="() => ShowDetailsAsync(item.RunSuspendedId)"
                                                                TooTip="@Localizer["Corte_Details"]"

@@ -3,6 +3,7 @@ using Spix.Domain.EntitiesGen;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesInven;
 
@@ -17,6 +18,7 @@ public class TransferDetails
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Product), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public Guid ProductId { get; set; }
 
     [MaxLength(100, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
@@ -26,6 +28,7 @@ public class TransferDetails
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Column(TypeName = "decimal(18,2)")]
     [Display(Name = nameof(Resource.Quantity), ResourceType = typeof(Resource))]
+    [Range(0.01, double.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public decimal Quantity { get; set; }
 
     public int CorporationId { get; set; }

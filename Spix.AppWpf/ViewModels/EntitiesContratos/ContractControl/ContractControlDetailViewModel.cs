@@ -8,7 +8,6 @@ using Spix.AppWpf.Views.EntitiesContratos.ContractControl;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EntitiesContractDTO;
-using Spix.Domain.EntitiesMK;
 using Spix.DomainLogic.EnumTypes;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
@@ -41,13 +40,15 @@ public partial class ContractControlDetailViewModel : ObservableObject
     private const string MapUrl = "api/v1/contractmaps";
     private const string QueUrl = "api/v1/contractques";
     private const string BindUrl = "api/v1/contractbinds";
-    private const string MikrotikUrl = "api/v1/connectionmikrotikcontrols";
+    private const string PppoeUrl = "api/v1/contractpppoes";
+    private const string ServerDetailUrl = "api/v1/servers";
 
     //El v2 es el API del escritorio: entrega los datos del equipo y guarda lo que ya se
     //escribio en el por la red LAN
     private const string QueSetupUrl = "api/v2/contractmksetup/que";
     private const string BindConnUrl = "api/v2/contractmksetup/conn";
     private const string BindSaveUrl = "api/v2/contractmksetup/bind";
+    private const string PppoeSetupUrl = "api/v2/contractmksetup/pppoe";
 
     private readonly IRepository _repository;
     private readonly HttpResponseHandler _responseHandler;
@@ -84,6 +85,9 @@ public partial class ContractControlDetailViewModel : ObservableObject
     private ContractBind? _bind;
 
     [ObservableProperty]
+    private ContractPppoe? _pppoe;
+
+    [ObservableProperty]
     private ObservableCollection<string> _missing = new();
 
     [ObservableProperty]
@@ -115,9 +119,15 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
     //===================== Lo que hay y lo que falta =====================
 
-    // La corporacion usa MikroTik en modo HotSpot: entonces el contrato necesita dos
-    // piezas mas, la Queue de velocidad y el IpBinding de acceso.
-    public bool UseHotSpot { get; private set; }
+    public MikrotikControlType ControlMk { get; private set; } = MikrotikControlType.Ninguno;
+
+    public bool UseHotSpot => ControlMk == MikrotikControlType.HotSpot;
+
+    public bool UsePppoe => ControlMk == MikrotikControlType.PPPoE;
+
+    public bool UseMikrotik => UseHotSpot || UsePppoe;
+
+    public string ControlTitle => UsePppoe ? "3 · MikroTik PPPoE" : "3 · MikroTik HotSpot";
 
     public bool HasServer => Server is not null && Server.ContractServerId != Guid.Empty;
 
@@ -135,10 +145,12 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
     public bool HasBind => Bind is not null && Bind.ContractBindId != Guid.Empty;
 
-    // Mientras exista alguna de las dos, lo que ya esta en el MikroTik no se toca
-    public bool HasHotSpotDependencies => HasQueue || HasBind;
+    public bool HasPppoe => Pppoe is not null && Pppoe.ContractPppoeId != Guid.Empty;
 
-    public int TotalItems => UseHotSpot ? 8 : 6;
+    // Mientras exista alguna de las dos, lo que ya esta en el MikroTik no se toca
+    public bool HasHotSpotDependencies => HasQueue || HasBind || HasPppoe;
+
+    public int TotalItems => UseMikrotik ? 8 : 6;
 
     public int DoneItems => TotalItems - Missing.Count;
 
@@ -165,7 +177,7 @@ public partial class ContractControlDetailViewModel : ObservableObject
     // La MAC solo la sostiene el IpBinding
     public bool CanChangeMac => !HasBind;
 
-    public string LockTip => "Elimine primero la Queue de velocidad y el IpBinding de acceso";
+    public string LockTip => "Elimine primero la Queue y el acceso MikroTik del contrato";
 
     public string LockTipMac => "Elimine primero el IpBinding de acceso";
 
@@ -221,6 +233,8 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
     public string? BindText => Bind?.MacCliente ?? Bind?.CargueDetail?.MacWlan;
 
+    public string? PppoeText => Pppoe?.Usuario;
+
     public async Task InitializeAsync(Guid id)
     {
         _id = id;
@@ -230,7 +244,6 @@ public partial class ContractControlDetailViewModel : ObservableObject
         try
         {
             await CargarContratoAsync();
-            await CargarModoMikrotikAsync();
             await CargarPiezasAsync();
         }
         finally
@@ -872,16 +885,101 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
     private async Task CargarModoMikrotikAsync()
     {
-        var response = await _repository.GetAsync<List<ConnectionMikrotikControl>>(
-            $"{MikrotikUrl}?page=1&recordsnumber=1");
-
-        if (await _responseHandler.HandleErrorAsync(response))
+        ControlMk = MikrotikControlType.Ninguno;
+        if (!HasServer)
         {
-            UseHotSpot = false;
             return;
         }
 
-        UseHotSpot = response.Response?.FirstOrDefault()?.MikrotikControlType == MikrotikControlType.HotSpot;
+        var response = await _repository.GetAsync<Server>($"{ServerDetailUrl}/{Server!.ServerId}");
+        if (await _responseHandler.HandleErrorAsync(response))
+        {
+            return;
+        }
+
+        ControlMk = response.Response?.ControlMk ?? MikrotikControlType.Ninguno;
+    }
+
+    [RelayCommand]
+    private async Task SetPppoeAsync()
+    {
+        if (!UsePppoe || HasPppoe) return;
+
+        var parameters = new Dictionary<string, object> { ["ContractClientId"] = _id };
+        var result = await _modalService.ShowAsync<ContractPppoeDialogView>("Credencial PPPoE", parameters);
+        if (result.Succeeded) await RecargarAsync();
+    }
+
+    [RelayCommand]
+    private async Task EditPppoeAsync()
+    {
+        if (!UsePppoe || !HasPppoe) return;
+
+        var parameters = new Dictionary<string, object>
+        {
+            ["ContractClientId"] = _id,
+            ["Edit"] = true
+        };
+        var result = await _modalService.ShowAsync<ContractPppoeDialogView>("Editar credencial PPPoE", parameters);
+        if (result.Succeeded) await RecargarAsync();
+    }
+
+    [RelayCommand]
+    private async Task RemovePppoeAsync()
+    {
+        if (!UsePppoe || !HasPppoe) return;
+
+        var confirmed = await _alertService.ConfirmAsync("Quitar credencial PPPoE",
+            "Se borrara del MikroTik y se desconectara la sesion del cliente.", "Quitar");
+        if (!confirmed) return;
+
+        var response = await _repository.GetAsync<ContractPppoeLocalSetupDTO>($"{PppoeSetupUrl}/{_id}");
+        if (await _responseHandler.HandleErrorAsync(response)) return;
+        var setup = response.Response;
+        if (setup == null || setup.CredentialId != Pppoe!.ContractPppoeId ||
+            string.IsNullOrWhiteSpace(setup.MikrotikId) ||
+            string.IsNullOrWhiteSpace(setup.CurrentUsername) ||
+            string.IsNullOrWhiteSpace(setup.ClientIp))
+        {
+            await _alertService.WarningAsync("Credencial PPPoE", "Faltan datos para quitarla con seguridad.");
+            return;
+        }
+
+        IsSaving = true;
+        try
+        {
+            var server = new Server
+            {
+                ServerId = setup.ServerId,
+                ServerName = setup.ServerName,
+                Usuario = setup.ServerUser,
+                Clave = setup.ServerPassword,
+                ApiPort = setup.ApiPort,
+                IpNetwork = new IpNetwork { Ip = setup.ServerIp }
+            };
+
+            var result = await _mikrotikService.ExecuteAsync(server, router =>
+                LocalPppoeCommands.Remove(router, setup.MikrotikId, setup.CurrentUsername, setup.ClientIp));
+            if (!result.WasExecuted)
+            {
+                await _alertService.ErrorAsync("Credencial PPPoE", result.Message);
+                return;
+            }
+
+            var delete = await _repository.DeleteAsync($"{PppoeSetupUrl}/{setup.CredentialId}");
+            if (await _responseHandler.HandleErrorAsync(delete))
+            {
+                await _alertService.WarningAsync("Credencial PPPoE",
+                    "El MikroTik quedo actualizado, pero Spix no confirmo el borrado. Revise ambos antes de reintentar.");
+                return;
+            }
+
+            await RecargarAsync();
+        }
+        finally
+        {
+            IsSaving = false;
+        }
     }
 
     // Cada pieza se pide SOLO si el contrato dice que la tiene: el contrato trae los
@@ -889,22 +987,24 @@ public partial class ContractControlDetailViewModel : ObservableObject
     private async Task CargarPiezasAsync()
     {
         Server = Contract?.ControlServerCount > 0 ? await PedirAsync<ContractServer>(ServerUrl) : null;
+        await CargarModoMikrotikAsync();
         Ip = Contract?.ControlIpCount > 0 ? await PedirAsync<ContractIp>(IpUrl) : null;
         Node = Contract?.ControlNodeCount > 0 ? await PedirAsync<ContractNode>(NodeUrl) : null;
         Plan = Contract?.ControlPlanCount > 0 ? await PedirAsync<ContractPlan>(PlanUrl) : null;
         Mac = Contract?.ControlMacCount > 0 ? await PedirAsync<ContractMac>(MacUrl) : null;
         Map = Contract?.ControlMapCount > 0 ? await PedirAsync<ContractMap>(MapUrl) : null;
 
-        if (UseHotSpot)
+        if (UseMikrotik)
         {
             Queue = await PedirAsync<ContractQue>(QueUrl);
-            Bind = await PedirAsync<ContractBind>(BindUrl);
         }
         else
         {
             Queue = null;
-            Bind = null;
         }
+
+        Bind = UseHotSpot ? await PedirAsync<ContractBind>(BindUrl) : null;
+        Pppoe = UsePppoe ? await PedirAsync<ContractPppoe>(PppoeUrl) : null;
 
         ArmarPendientes();
     }
@@ -927,8 +1027,9 @@ public partial class ContractControlDetailViewModel : ObservableObject
         if (!HasPlan) faltan.Add("Plan del cliente");
         if (!HasMac) faltan.Add("MAC del equipo");
         if (!HasMap) faltan.Add("Ubicacion");
-        if (UseHotSpot && !HasQueue) faltan.Add("Queue de velocidad");
+        if (UseMikrotik && !HasQueue) faltan.Add("Queue de velocidad");
         if (UseHotSpot && !HasBind) faltan.Add("IpBinding de acceso");
+        if (UsePppoe && !HasPppoe) faltan.Add("Credencial PPPoE");
 
         Missing = new ObservableCollection<string>(faltan);
 
@@ -943,13 +1044,15 @@ public partial class ContractControlDetailViewModel : ObservableObject
             nameof(HasContract), nameof(Number), nameof(ClientName), nameof(ClientDocument),
             nameof(Phone), nameof(Email), nameof(Address), nameof(ContractorName), nameof(Created),
             nameof(StatusText), nameof(StatusColor), nameof(HasEquipment), nameof(HasInvoice),
-            nameof(UseHotSpot), nameof(HasServer), nameof(HasIp), nameof(HasNode), nameof(HasPlan),
-            nameof(HasMac), nameof(HasMap), nameof(HasQueue), nameof(HasBind),
+            nameof(ControlMk), nameof(UseHotSpot), nameof(UsePppoe), nameof(UseMikrotik), nameof(ControlTitle),
+            nameof(HasServer), nameof(HasIp), nameof(HasNode), nameof(HasPlan),
+            nameof(HasMac), nameof(HasMap), nameof(HasQueue), nameof(HasBind), nameof(HasPppoe),
             nameof(HasHotSpotDependencies), nameof(CanChangeServer), nameof(CanChangeIp),
             nameof(CanChangePlan), nameof(CanChangeMac), nameof(TotalItems), nameof(DoneItems),
             nameof(ProgressPercent), nameof(ProgressText), nameof(IsComplete), nameof(HasMissing),
             nameof(CanActivate), nameof(ServerName), nameof(IpText), nameof(NodeName),
-            nameof(PlanName), nameof(MacText), nameof(MapText), nameof(QueueText), nameof(BindText)
+            nameof(PlanName), nameof(MacText), nameof(MapText), nameof(QueueText), nameof(BindText),
+            nameof(PppoeText)
         })
         {
             OnPropertyChanged(propiedad);

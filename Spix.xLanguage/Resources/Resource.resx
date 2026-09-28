@@ -163,6 +163,9 @@
   <data name="Db_LoginFail" xml:space="preserve">
     <value>Could not connect to the database</value>
   </data>
+  <data name="Db_ForeignKeyMissing" xml:space="preserve">
+    <value>The selected item does not exist. Check the dropdown lists</value>
+  </data>
   <data name="Db_Reference" xml:space="preserve">
     <value>This record cannot be deleted because it has related data</value>
   </data>
@@ -898,6 +901,138 @@
   <data name="IpNetwork" xml:space="preserve">
     <value>Ip Network</value>
   </data>
+  <data name="Server_ControlMkInUse" xml:space="preserve">
+    <value>The equipment already has provisioned clients: its Mikrotik control cannot be changed.</value>
+  </data>
+  <data name="Select_Interface" xml:space="preserve">
+    <value>[Select Interface]</value>
+  </data>
+  <data name="Server_NotPppoe" xml:space="preserve">
+    <value>The equipment is not set to work with PPPoE.</value>
+  </data>
+  <data name="Server_PppoeAlreadyExists" xml:space="preserve">
+    <value>The equipment already has its PPPoE server created.</value>
+  </data>
+  <data name="Server_LanNameRequired" xml:space="preserve">
+    <value>Choose the clients interface before creating the PPPoE server.</value>
+  </data>
+  <data name="Server_PppLocalIpRequired" xml:space="preserve">
+    <value>Choose the PPPoE local IP before creating the PPPoE server.</value>
+  </data>
+  <data name="Server_LanNameNotFound" xml:space="preserve">
+    <value>The interface {0} does not exist on the equipment.</value>
+  </data>
+  <data name="Select_ControlType" xml:space="preserve">
+    <value>[Select Control]</value>
+  </data>
+  <data name="MikrotikControlType_Ninguno" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="MikrotikControlType_HotSpot" xml:space="preserve">
+    <value>HotSpot</value>
+  </data>
+  <data name="MikrotikControlType_PPPoE" xml:space="preserve">
+    <value>PPPoE</value>
+  </data>
+  <data name="Menu_ServersSetup" xml:space="preserve">
+    <value>Equipment Setup</value>
+  </data>
+  <data name="ContractQue" xml:space="preserve">
+    <value>Speed Queue</value>
+  </data>
+  <data name="ContractBind" xml:space="preserve">
+    <value>Access IpBinding</value>
+  </data>
+  <data name="ContractPppoe" xml:space="preserve">
+    <value>PPPoE Credential</value>
+  </data>
+  <data name="ContractState_NeedsQueueAndPppoe" xml:space="preserve">
+    <value>The contract needs its Speed Queue and its PPPoE Credential before it can be activated.</value>
+  </data>
+  <data name="Pppoe_RequirementsMissing" xml:space="preserve">
+    <value>The equipment works with PPPoE and the contract has neither its Speed Queue nor its PPPoE Credential.</value>
+  </data>
+  <data name="Pppoe_CredentialRequired" xml:space="preserve">
+    <value>The contract does not have its PPPoE Credential configured.</value>
+  </data>
+  <data name="Pppoe_QueueRequired" xml:space="preserve">
+    <value>The contract does not have its Speed Queue configured.</value>
+  </data>
+  <data name="Pppoe_CredentialIncomplete" xml:space="preserve">
+    <value>The PPPoE Credential does not have the data needed to talk to the equipment.</value>
+  </data>
+  <data name="Pppoe_ServersOffline" xml:space="preserve">
+    <value>The following equipment does not answer or is offline: {0}.</value>
+  </data>
+  <data name="Pppoe_AlreadyExists" xml:space="preserve">
+    <value>This contract already has its PPPoE Credential.</value>
+  </data>
+  <data name="Pppoe_UserRepeated" xml:space="preserve">
+    <value>The PPPoE user {0} is already in use on this equipment.</value>
+  </data>
+  <data name="Pppoe_ServerNotReady" xml:space="preserve">
+    <value>The equipment does not have its PPPoE server set up yet: set it up from the equipment screen first.</value>
+  </data>
+  <data name="Pppoe_BatchIncomplete" xml:space="preserve">
+    <value>{0} contract(s) in the batch do not have their PPPoE Credential: nothing was changed.</value>
+  </data>
+  <data name="Pppoe_SessionNotKilled" xml:space="preserve">
+    <value>The live session of user {0} could not be closed, so the cut is not guaranteed.</value>
+  </data>
+  <data name="Server_PppoeLocked" xml:space="preserve">
+    <value>The equipment already has its PPPoE server created: its interface and local IP cannot be changed.</value>
+  </data>
+  <data name="Pppoe_UserExistsOnDevice" xml:space="preserve">
+    <value>The PPPoE user {0} already exists on the equipment and is not managed by Spix. Check the equipment or use another user.</value>
+  </data>
+  <data name="Pppoe_ProfileExistsOnDevice" xml:space="preserve">
+    <value>A PPPoE profile named {0} already exists on the equipment and is not managed by Spix. Check the equipment.</value>
+  </data>
+  <data name="Pppoe_ServerExistsOnDevice" xml:space="preserve">
+    <value>The equipment already has a PPPoE server on interface {0} that is not managed by Spix. Check the equipment.</value>
+  </data>
+  <data name="Server_PppoeProvisioned" xml:space="preserve">
+    <value>The equipment {0} still has its PPPoE server on the MikroTik: remove it from the equipment before deleting it.</value>
+  </data>
+  <data name="ContractBind_ServerCannotChange" xml:space="preserve">
+    <value>The server and the contract of an IpBinding cannot be changed: remove it and create it again.</value>
+  </data>
+  <data name="Contract_AlreadyHasServer" xml:space="preserve">
+    <value>The contract already has a server assigned: remove it before assigning another one.</value>
+  </data>
+  <data name="Contract_ServerMismatch" xml:space="preserve">
+    <value>The server or the IP do not match the ones assigned to the contract.</value>
+  </data>
+  <data name="Server_IdentityUnknown" xml:space="preserve">
+    <value>Test the connection first: Spix needs to learn the equipment name before its management IP can be changed.</value>
+  </data>
+  <data name="Server_IdentityMismatch" xml:space="preserve">
+    <value>The equipment answering at the new IP is called {1} and not {0}: it is not the same equipment.</value>
+  </data>
+  <data name="SoftwarePC" xml:space="preserve">
+    <value>PC Software</value>
+  </data>
+  <data name="Commercial" xml:space="preserve">
+    <value>Commercial</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="LanName" xml:space="preserve">
+    <value>Clients Interface</value>
+  </data>
+  <data name="MikrotikControl" xml:space="preserve">
+    <value>Mikrotik Control</value>
+  </data>
+  <data name="PppLocalIp" xml:space="preserve">
+    <value>PPPoE Local IP</value>
+  </data>
+  <data name="PppProfileName" xml:space="preserve">
+    <value>PPPoE Profile</value>
+  </data>
+  <data name="PppServiceName" xml:space="preserve">
+    <value>PPPoE Service Name</value>
+  </data>
   <data name="WanName" xml:space="preserve">
     <value>Wan Name</value>
   </data>
@@ -1164,6 +1299,12 @@
   </data>
   <data name="PlanCategory" xml:space="preserve">
     <value>Plan Category</value>
+  </data>
+  <data name="Create_ProductCategory" xml:space="preserve">
+    <value>Create Product Category</value>
+  </data>
+  <data name="Edit_ProductCategory" xml:space="preserve">
+    <value>Edit Product Category</value>
   </data>
   <data name="ProductCategory" xml:space="preserve">
     <value>Product Category</value>
@@ -3819,5 +3960,317 @@
   </data>
   <data name="MyBill_Details" xml:space="preserve">
     <value>Bill detail</value>
+  </data>
+  <data name="Zone_Title" xml:space="preserve">
+    <value>Zones</value>
+  </data>
+  <data name="Zone_Subtitle" xml:space="preserve">
+    <value>The areas where service is provided</value>
+  </data>
+  <data name="Tax_Title" xml:space="preserve">
+    <value>Taxes</value>
+  </data>
+  <data name="Tax_Subtitle" xml:space="preserve">
+    <value>The rates applied to plans and products</value>
+  </data>
+  <data name="Register_Title" xml:space="preserve">
+    <value>Document numbering</value>
+  </data>
+  <data name="Register_Subtitle" xml:space="preserve">
+    <value>The starting number for each document</value>
+  </data>
+  <data name="DocumentType_Title" xml:space="preserve">
+    <value>Document types</value>
+  </data>
+  <data name="DocumentType_Subtitle" xml:space="preserve">
+    <value>ID card, passport and other identifications</value>
+  </data>
+  <data name="EstratoSocial_Title" xml:space="preserve">
+    <value>Social strata</value>
+  </data>
+  <data name="EstratoSocial_Subtitle" xml:space="preserve">
+    <value>The socioeconomic classification of the client</value>
+  </data>
+  <data name="PlanCategoryIdx_Title" xml:space="preserve">
+    <value>Plan categories</value>
+  </data>
+  <data name="PlanCategoryIdx_Subtitle" xml:space="preserve">
+    <value>The groups that organize the internet plans</value>
+  </data>
+  <data name="ProductCategoryIdx_Title" xml:space="preserve">
+    <value>Product categories</value>
+  </data>
+  <data name="ProductCategoryIdx_Subtitle" xml:space="preserve">
+    <value>The groups that organize the inventory</value>
+  </data>
+  <data name="ServiceCategoryIdx_Title" xml:space="preserve">
+    <value>Service categories</value>
+  </data>
+  <data name="ServiceCategoryIdx_Subtitle" xml:space="preserve">
+    <value>The groups that organize the client services</value>
+  </data>
+  <data name="Channel_Title" xml:space="preserve">
+    <value>Channels</value>
+  </data>
+  <data name="Channel_Subtitle" xml:space="preserve">
+    <value>The radio channels used by the nodes</value>
+  </data>
+  <data name="FrecuencyType_Title" xml:space="preserve">
+    <value>Frequency types</value>
+  </data>
+  <data name="FrecuencyType_Subtitle" xml:space="preserve">
+    <value>The working bands: 2.4 GHz, 5 GHz and others</value>
+  </data>
+  <data name="ChainType_Title" xml:space="preserve">
+    <value>Chain types</value>
+  </data>
+  <data name="ChainType_Subtitle" xml:space="preserve">
+    <value>The antenna chains of each device</value>
+  </data>
+  <data name="Operation_Title" xml:space="preserve">
+    <value>Operation modes</value>
+  </data>
+  <data name="Operation_Subtitle" xml:space="preserve">
+    <value>How the device works: AP, station, repeater</value>
+  </data>
+  <data name="Security_Title" xml:space="preserve">
+    <value>Security types</value>
+  </data>
+  <data name="Security_Subtitle" xml:space="preserve">
+    <value>The encryption of the wireless networks</value>
+  </data>
+  <data name="Hotspot_Title" xml:space="preserve">
+    <value>HotSpot types</value>
+  </data>
+  <data name="Hotspot_Subtitle" xml:space="preserve">
+    <value>The IpBinding control modes of the MikroTik</value>
+  </data>
+  <data name="EmailProvider_Title" xml:space="preserve">
+    <value>Outgoing email</value>
+  </data>
+  <data name="EmailProvider_Subtitle" xml:space="preserve">
+    <value>Where the system emails are sent from</value>
+  </data>
+  <data name="ContractDocumentTemplate_Title" xml:space="preserve">
+    <value>PDF templates</value>
+  </data>
+  <data name="ContractDocumentTemplate_Subtitle" xml:space="preserve">
+    <value>The documents the client signs</value>
+  </data>
+  <data name="ContractSuspendedAudit_Title" xml:space="preserve">
+    <value>Activation audit</value>
+  </data>
+  <data name="ContractSuspendedAudit_Subtitle" xml:space="preserve">
+    <value>What was activated, when and by whom</value>
+  </data>
+  <data name="CorporationIdx_Title" xml:space="preserve">
+    <value>Corporations</value>
+  </data>
+  <data name="CorporationIdx_Subtitle" xml:space="preserve">
+    <value>The companies that use Spix</value>
+  </data>
+  <data name="ManagerIdx_Title" xml:space="preserve">
+    <value>Managers</value>
+  </data>
+  <data name="ManagerIdx_Subtitle" xml:space="preserve">
+    <value>Who administers each corporation</value>
+  </data>
+  <data name="SoftPlanIdx_Title" xml:space="preserve">
+    <value>Software plans</value>
+  </data>
+  <data name="SoftPlanIdx_Subtitle" xml:space="preserve">
+    <value>What each corporation can do according to its plan</value>
+  </data>
+  <data name="UsuarioIdx_Title" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="UsuarioIdx_Subtitle" xml:space="preserve">
+    <value>Who signs in and with what role</value>
+  </data>
+  <data name="MarkIdx_Title" xml:space="preserve">
+    <value>Brands and models</value>
+  </data>
+  <data name="MarkIdx_Subtitle" xml:space="preserve">
+    <value>Pick a brand on the left and manage its models on the right</value>
+  </data>
+  <data name="ServerIdx_Subtitle" xml:space="preserve">
+    <value>Pick a server on the left and set it up on the right</value>
+  </data>
+  <data name="Stock_EmptyTitle" xml:space="preserve">
+    <value>No stock</value>
+  </data>
+  <data name="Stock_EmptyHint" xml:space="preserve">
+    <value>This product has no units in any storage</value>
+  </data>
+  <data name="Server_Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="Server_MkName" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="Server_ConnHint" xml:space="preserve">
+    <value>Check the IP, the port or the API user</value>
+  </data>
+  <data name="Server_CountPppoe" xml:space="preserve">
+    <value>PPPoE users</value>
+  </data>
+  <data name="Server_CountBinding" xml:space="preserve">
+    <value>IP Binding records</value>
+  </data>
+  <data name="Server_LoadMk" xml:space="preserve">
+    <value>Load interfaces</value>
+  </data>
+  <data name="Server_PppoeNotCreated" xml:space="preserve">
+    <value>The PPPoE server has not been created on this device</value>
+  </data>
+  <data name="Server_PppoeHasContracts" xml:space="preserve">
+    <value>The server has PPPoE contracts. Move or remove them before deleting the configuration</value>
+  </data>
+  <data name="Server_PppoeDelete" xml:space="preserve">
+    <value>Delete PPPoE server</value>
+  </data>
+  <data name="Server_PppoeDeleteText" xml:space="preserve">
+    <value>The profile and the PPPoE server will be removed from the device. The configuration can be created again</value>
+  </data>
+  <data name="Server_PppLocalIpTaken" xml:space="preserve">
+    <value>IP {0} is already used by equipment {1}. Continue anyway?</value>
+  </data>
+  <data name="ButtonContinue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="Server_BoxConfig" xml:space="preserve">
+    <value>Device configuration</value>
+  </data>
+  <data name="Server_BoxPppoe" xml:space="preserve">
+    <value>PPPoE server on the device</value>
+  </data>
+  <data name="Server_TestConn" xml:space="preserve">
+    <value>Test connection</value>
+  </data>
+  <data name="Select_Unit" xml:space="preserve">
+    <value>[Select unit]</value>
+  </data>
+  <data name="Olt" xml:space="preserve">
+    <value>OLT</value>
+  </data>
+  <data name="Select_Olt" xml:space="preserve">
+    <value>[Select OLT]</value>
+  </data>
+  <data name="OltPorts" xml:space="preserve">
+    <value>PON ports</value>
+  </data>
+  <data name="OltPortSpeed" xml:space="preserve">
+    <value>Speed per port</value>
+  </data>
+  <data name="Menu_Olts" xml:space="preserve">
+    <value>OLTs</value>
+  </data>
+  <data name="Olt_Title" xml:space="preserve">
+    <value>OLTs</value>
+  </data>
+  <data name="Olt_Subtitle" xml:space="preserve">
+    <value>The central equipment fiber clients connect through</value>
+  </data>
+  <data name="Create_Olt" xml:space="preserve">
+    <value>Create OLT</value>
+  </data>
+  <data name="Edit_Olt" xml:space="preserve">
+    <value>Edit OLT</value>
+  </data>
+  <data name="Olt_NameRepeated" xml:space="preserve">
+    <value>There is already an OLT named {0}</value>
+  </data>
+  <data name="Olt_InUse" xml:space="preserve">
+    <value>OLT {0} has contracts: it cannot be deleted</value>
+  </data>
+  <data name="ContractOlt" xml:space="preserve">
+    <value>Contract OLT</value>
+  </data>
+  <data name="Olt_CountOne" xml:space="preserve">
+    <value>{0} OLT</value>
+  </data>
+  <data name="Olt_CountMany" xml:space="preserve">
+    <value>{0} OLTs</value>
+  </data>
+  <data name="OltMap_Title" xml:space="preserve">
+    <value>OLT map</value>
+  </data>
+  <data name="OltMap_Subtitle" xml:space="preserve">
+    <value>Each OLT with its fiber clients and their distance to the equipment.</value>
+  </data>
+  <data name="OltMap_Menu" xml:space="preserve">
+    <value>OLT map</value>
+  </data>
+  <data name="OltMap_Olt" xml:space="preserve">
+    <value>OLT</value>
+  </data>
+  <data name="OltMap_View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="OltMap_AllOlts" xml:space="preserve">
+    <value>[All OLTs]</value>
+  </data>
+  <data name="OltMap_AllTitle" xml:space="preserve">
+    <value>All OLTs</value>
+  </data>
+  <data name="OltMap_AllHint" xml:space="preserve">
+    <value>All the OLTs with their clients. Choose one to see its clients on the map.</value>
+  </data>
+  <data name="OltMap_AllCount" xml:space="preserve">
+    <value>OLTs on the map</value>
+  </data>
+  <data name="OltMap_AllNoPoint" xml:space="preserve">
+    <value>OLTs without coordinates</value>
+  </data>
+  <data name="OltMap_Clients" xml:space="preserve">
+    <value>Clients</value>
+  </data>
+  <data name="OltMap_Located" xml:space="preserve">
+    <value>Clients with location</value>
+  </data>
+  <data name="OltMap_Unlocated" xml:space="preserve">
+    <value>Clients without location</value>
+  </data>
+  <data name="OltMap_Farthest" xml:space="preserve">
+    <value>Farthest</value>
+  </data>
+  <data name="OltMap_Ports" xml:space="preserve">
+    <value>Used ports</value>
+  </data>
+  <data name="OltMap_OltNoPoint" xml:space="preserve">
+    <value>This OLT has no coordinates: its clients are shown, but distances cannot be measured. Load its location in OLTs.</value>
+  </data>
+  <data name="OltMap_GoContract" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="OltMap_UnlocatedHint" xml:space="preserve">
+    <value>Load its location in the contract to see it on the map.</value>
+  </data>
+  <data name="OltMap_NoOlts" xml:space="preserve">
+    <value>There are no active OLTs with coordinates to show on the map.</value>
+  </data>
+  <data name="OltMapViewType_Points" xml:space="preserve">
+    <value>Points only</value>
+  </data>
+  <data name="OltMapViewType_Lines" xml:space="preserve">
+    <value>Lines</value>
+  </data>
+  <data name="OltMapViewType_LinesWithDistance" xml:space="preserve">
+    <value>Lines with distance</value>
+  </data>
+  <data name="Select_ProductCategory" xml:space="preserve">
+    <value>[Select category]</value>
+  </data>
+  <data name="Select_Product" xml:space="preserve">
+    <value>[Select equipment]</value>
+  </data>
+  <data name="ContractMac_Equipment" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="Validation_PppoeUser" xml:space="preserve">
+    <value>The PPPoE user must be at least 6 characters, with letters and numbers. Only letters, numbers, dot, hyphen and underscore are allowed.</value>
+  </data>
+  <data name="Contract_NoServerYet" xml:space="preserve">
+    <value>No server assigned yet</value>
   </data>
 </root>

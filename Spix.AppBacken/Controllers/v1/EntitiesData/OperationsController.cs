@@ -52,7 +52,7 @@ public class OperationsController : ControllerBase
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 
 
@@ -64,7 +64,7 @@ public class OperationsController : ControllerBase
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 
 
@@ -76,6 +76,6 @@ public class OperationsController : ControllerBase
         {
             return Ok(response.Result);
         }
-        return NotFound(response.Message);
+        return BadRequest(response.Message);
     }
 }

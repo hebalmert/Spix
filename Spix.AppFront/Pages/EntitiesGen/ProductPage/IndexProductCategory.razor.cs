@@ -152,7 +152,7 @@ public partial class IndexProductCategory
             parameters = new Dictionary<string, object>
             {
                 { "Id", id! },
-                { "Title", $"{Localizer[nameof(Resource.Edit_Product)]}" }
+                { "Title", $"{Localizer[nameof(Resource.Edit_ProductCategory)]}" }
             };
         }
         else
@@ -160,7 +160,7 @@ public partial class IndexProductCategory
             component = typeof(CreateProductCategory);
             parameters = new Dictionary<string, object>
             {
-                { "Title", $"{Localizer[nameof(Resource.Create_Product)]}" }
+                { "Title", $"{Localizer[nameof(Resource.Create_ProductCategory)]}" }
             };
         }
 

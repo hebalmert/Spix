@@ -1,4 +1,4 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Server.ServerMikrotikDialogView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Server.ServerMikrotikDialogView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
@@ -6,8 +6,11 @@
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
              MinWidth="760">
 
-    <!-- La comprobacion de la conexion con el MikroTik, igual que el MkResultView de la
-         web: el estado, el nombre del equipo y cuantos registros hay en IP Binding. -->
+    <!-- La comprobacion de la conexion con el MikroTik: el estado, el nombre del equipo
+         y cuantos registros hay (secrets si trabaja en PPPoE, ip-bindings si en HotSpot).
+
+         En la web esto ya no existe como modal: la pantalla de servidores lo resume en
+         la franja de conexion, junto a Ping y Cargar interfaces. -->
     <Grid Width="660" HorizontalAlignment="Center" Margin="0,16,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

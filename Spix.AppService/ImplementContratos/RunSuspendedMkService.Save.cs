@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.EnumTypes;
@@ -84,8 +84,23 @@ public partial class RunSuspendedMkService
                 .GroupBy(x => x.ContractClientId)
                 .ToDictionary(x => x.Key, x => x.First().Price);
 
-            //El tipo del binding tambien queda en la base, igual que lo dejo el equipo
-            if (await _contractActivationIntegrityService.UsesHotSpotControlAsync(corporationId))
+            //El espejo del estado queda en la base, igual que lo dejo el equipo.
+            //Se resuelve por el SERVIDOR del corte, no por la corporacion.
+            var control = await _contractActivationIntegrityService.ResolveControlByServerAsync(serverId);
+
+            if (control == MikrotikControlType.PPPoE)
+            {
+                var credenciales = await _context.ContractPppoes
+                    .Where(x => ids.Contains(x.ContractClientId))
+                    .ToListAsync();
+
+                foreach (var credencial in credenciales)
+                {
+                    credencial.PppoeAccessState = PppoeAccessState.Corte;
+                }
+            }
+
+            if (control == MikrotikControlType.HotSpot)
             {
                 var regularType = await _context.HotSpotTypes
                     .AsNoTracking()

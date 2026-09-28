@@ -10,7 +10,12 @@ public class ContractServerConfig : IEntityTypeConfiguration<ContractServer>
     {
         builder.HasKey(e => e.ContractServerId);
         builder.Property(x => x.ContractServerId).HasDefaultValueSql("NEWSEQUENTIALID()");
-        builder.HasIndex(e => new { e.ContractClientId, e.ServerId }).IsUnique();
+        //UN servidor por contrato, garantizado por la base.
+        //
+        //Antes el indice era sobre el par (ContractClientId, ServerId), que solo impide
+        //repetir el mismo par: dos altas simultaneas con servidores distintos pasaban las
+        //dos, y el tipo de control que resuelve el sistema quedaba indefinido.
+        builder.HasIndex(e => e.ContractClientId).IsUnique();
 
         //Evitar el borrado en cascada
         builder.HasOne(e => e.ContractClient).WithMany(c => c.ContractServers).OnDelete(DeleteBehavior.Restrict);

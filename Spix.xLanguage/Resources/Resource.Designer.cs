@@ -1015,6 +1015,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        public static string ButtonContinue {
+            get {
+                return ResourceManager.GetString("ButtonContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string ButtonDelete {
@@ -1357,11 +1366,47 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The antenna chains of each device.
+        /// </summary>
+        public static string ChainType_Subtitle {
+            get {
+                return ResourceManager.GetString("ChainType_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chain types.
+        /// </summary>
+        public static string ChainType_Title {
+            get {
+                return ResourceManager.GetString("ChainType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Channel.
         /// </summary>
         public static string Channel {
             get {
                 return ResourceManager.GetString("Channel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The radio channels used by the nodes.
+        /// </summary>
+        public static string Channel_Subtitle {
+            get {
+                return ResourceManager.GetString("Channel_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Channels.
+        /// </summary>
+        public static string Channel_Title {
+            get {
+                return ResourceManager.GetString("Channel_Title", resourceCulture);
             }
         }
         
@@ -1627,6 +1672,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Commercial.
+        /// </summary>
+        public static string Commercial {
+            get {
+                return ResourceManager.GetString("Commercial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Company Antenna.
         /// </summary>
         public static string CompanyAntenna {
@@ -1749,6 +1803,69 @@ namespace Spix.xLanguage.Resources {
         public static string Contract {
             get {
                 return ResourceManager.GetString("Contract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract already has a server assigned: remove it before assigning another one..
+        /// </summary>
+        public static string Contract_AlreadyHasServer {
+            get {
+                return ResourceManager.GetString("Contract_AlreadyHasServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No server assigned yet.
+        /// </summary>
+        public static string Contract_NoServerYet {
+            get {
+                return ResourceManager.GetString("Contract_NoServerYet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server or the IP do not match the ones assigned to the contract..
+        /// </summary>
+        public static string Contract_ServerMismatch {
+            get {
+                return ResourceManager.GetString("Contract_ServerMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Access IpBinding.
+        /// </summary>
+        public static string ContractBind {
+            get {
+                return ResourceManager.GetString("ContractBind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server and the contract of an IpBinding cannot be changed: remove it and create it again..
+        /// </summary>
+        public static string ContractBind_ServerCannotChange {
+            get {
+                return ResourceManager.GetString("ContractBind_ServerCannotChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The documents the client signs.
+        /// </summary>
+        public static string ContractDocumentTemplate_Subtitle {
+            get {
+                return ResourceManager.GetString("ContractDocumentTemplate_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PDF templates.
+        /// </summary>
+        public static string ContractDocumentTemplate_Title {
+            get {
+                return ResourceManager.GetString("ContractDocumentTemplate_Title", resourceCulture);
             }
         }
         
@@ -1933,11 +2050,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Equipment.
+        /// </summary>
+        public static string ContractMac_Equipment {
+            get {
+                return ResourceManager.GetString("ContractMac_Equipment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contract Number.
         /// </summary>
         public static string ContractNumber {
             get {
                 return ResourceManager.GetString("ContractNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract OLT.
+        /// </summary>
+        public static string ContractOlt {
+            get {
+                return ResourceManager.GetString("ContractOlt", resourceCulture);
             }
         }
         
@@ -2068,6 +2203,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PPPoE Credential.
+        /// </summary>
+        public static string ContractPppoe {
+            get {
+                return ResourceManager.GetString("ContractPppoe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed Queue.
+        /// </summary>
+        public static string ContractQue {
+            get {
+                return ResourceManager.GetString("ContractQue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contracts.
         /// </summary>
         public static string Contracts {
@@ -2185,6 +2338,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The contract needs its Speed Queue and its PPPoE Credential before it can be activated..
+        /// </summary>
+        public static string ContractState_NeedsQueueAndPppoe {
+            get {
+                return ResourceManager.GetString("ContractState_NeedsQueueAndPppoe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is nothing to change from this status..
         /// </summary>
         public static string ContractState_NoTransitions {
@@ -2239,6 +2401,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What was activated, when and by whom.
+        /// </summary>
+        public static string ContractSuspendedAudit_Subtitle {
+            get {
+                return ResourceManager.GetString("ContractSuspendedAudit_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activation audit.
+        /// </summary>
+        public static string ContractSuspendedAudit_Title {
+            get {
+                return ResourceManager.GetString("ContractSuspendedAudit_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Control Client.
         /// </summary>
         public static string Control_Client {
@@ -2289,6 +2469,24 @@ namespace Spix.xLanguage.Resources {
         public static string Corporation {
             get {
                 return ResourceManager.GetString("Corporation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The companies that use Spix.
+        /// </summary>
+        public static string CorporationIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("CorporationIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Corporations.
+        /// </summary>
+        public static string CorporationIdx_Title {
+            get {
+                return ResourceManager.GetString("CorporationIdx_Title", resourceCulture);
             }
         }
         
@@ -2887,6 +3085,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create OLT.
+        /// </summary>
+        public static string Create_Olt {
+            get {
+                return ResourceManager.GetString("Create_Olt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Operation.
         /// </summary>
         public static string Create_Operation {
@@ -2910,6 +3117,15 @@ namespace Spix.xLanguage.Resources {
         public static string Create_Product {
             get {
                 return ResourceManager.GetString("Create_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Product Category.
+        /// </summary>
+        public static string Create_ProductCategory {
+            get {
+                return ResourceManager.GetString("Create_ProductCategory", resourceCulture);
             }
         }
         
@@ -3562,6 +3778,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The selected item does not exist. Check the dropdown lists.
+        /// </summary>
+        public static string Db_ForeignKeyMissing {
+            get {
+                return ResourceManager.GetString("Db_ForeignKeyMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not connect to the database.
         /// </summary>
         public static string Db_LoginFail {
@@ -3612,6 +3837,24 @@ namespace Spix.xLanguage.Resources {
         public static string DocumentType {
             get {
                 return ResourceManager.GetString("DocumentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ID card, passport and other identifications.
+        /// </summary>
+        public static string DocumentType_Subtitle {
+            get {
+                return ResourceManager.GetString("DocumentType_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document types.
+        /// </summary>
+        public static string DocumentType_Title {
+            get {
+                return ResourceManager.GetString("DocumentType_Title", resourceCulture);
             }
         }
         
@@ -3823,6 +4066,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit OLT.
+        /// </summary>
+        public static string Edit_Olt {
+            get {
+                return ResourceManager.GetString("Edit_Olt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Operation.
         /// </summary>
         public static string Edit_Operation {
@@ -3846,6 +4098,15 @@ namespace Spix.xLanguage.Resources {
         public static string Edit_Product {
             get {
                 return ResourceManager.GetString("Edit_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Product Category.
+        /// </summary>
+        public static string Edit_ProductCategory {
+            get {
+                return ResourceManager.GetString("Edit_ProductCategory", resourceCulture);
             }
         }
         
@@ -4039,6 +4300,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Where the system emails are sent from.
+        /// </summary>
+        public static string EmailProvider_Subtitle {
+            get {
+                return ResourceManager.GetString("EmailProvider_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outgoing email.
+        /// </summary>
+        public static string EmailProvider_Title {
+            get {
+                return ResourceManager.GetString("EmailProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This is an automated email sent to verify the email provider configuration..
         /// </summary>
         public static string EmailProviderTest_Footer {
@@ -4170,6 +4449,24 @@ namespace Spix.xLanguage.Resources {
         public static string EstratoSocial {
             get {
                 return ResourceManager.GetString("EstratoSocial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The socioeconomic classification of the client.
+        /// </summary>
+        public static string EstratoSocial_Subtitle {
+            get {
+                return ResourceManager.GetString("EstratoSocial_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Social strata.
+        /// </summary>
+        public static string EstratoSocial_Title {
+            get {
+                return ResourceManager.GetString("EstratoSocial_Title", resourceCulture);
             }
         }
         
@@ -4606,6 +4903,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The working bands: 2.4 GHz, 5 GHz and others.
+        /// </summary>
+        public static string FrecuencyType_Subtitle {
+            get {
+                return ResourceManager.GetString("FrecuencyType_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frequency types.
+        /// </summary>
+        public static string FrecuencyType_Title {
+            get {
+                return ResourceManager.GetString("FrecuencyType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Frequencies.
         /// </summary>
         public static string Frequencies {
@@ -4989,6 +5304,24 @@ namespace Spix.xLanguage.Resources {
         public static string Hotspot {
             get {
                 return ResourceManager.GetString("Hotspot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The IpBinding control modes of the MikroTik.
+        /// </summary>
+        public static string Hotspot_Subtitle {
+            get {
+                return ResourceManager.GetString("Hotspot_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HotSpot types.
+        /// </summary>
+        public static string Hotspot_Title {
+            get {
+                return ResourceManager.GetString("Hotspot_Title", resourceCulture);
             }
         }
         
@@ -5524,6 +5857,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clients Interface.
+        /// </summary>
+        public static string LanName {
+            get {
+                return ResourceManager.GetString("LanName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Last Name.
         /// </summary>
         public static string LastName {
@@ -5538,6 +5880,15 @@ namespace Spix.xLanguage.Resources {
         public static string Latitude {
             get {
                 return ResourceManager.GetString("Latitude", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Location {
+            get {
+                return ResourceManager.GetString("Location", resourceCulture);
             }
         }
         
@@ -5592,6 +5943,24 @@ namespace Spix.xLanguage.Resources {
         public static string Manager {
             get {
                 return ResourceManager.GetString("Manager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Who administers each corporation.
+        /// </summary>
+        public static string ManagerIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("ManagerIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Managers.
+        /// </summary>
+        public static string ManagerIdx_Title {
+            get {
+                return ResourceManager.GetString("ManagerIdx_Title", resourceCulture);
             }
         }
         
@@ -5691,6 +6060,24 @@ namespace Spix.xLanguage.Resources {
         public static string MarkEquipment {
             get {
                 return ResourceManager.GetString("MarkEquipment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick a brand on the left and manage its models on the right.
+        /// </summary>
+        public static string MarkIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("MarkIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brands and models.
+        /// </summary>
+        public static string MarkIdx_Title {
+            get {
+                return ResourceManager.GetString("MarkIdx_Title", resourceCulture);
             }
         }
         
@@ -5983,6 +6370,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OLTs.
+        /// </summary>
+        public static string Menu_Olts {
+            get {
+                return ResourceManager.GetString("Menu_Olts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operations.
         /// </summary>
         public static string Menu_Operation {
@@ -6199,6 +6595,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Equipment Setup.
+        /// </summary>
+        public static string Menu_ServersSetup {
+            get {
+                return ResourceManager.GetString("Menu_ServersSetup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Service categories.
         /// </summary>
         public static string Menu_ServiceCategories {
@@ -6348,6 +6753,42 @@ namespace Spix.xLanguage.Resources {
         public static string Mikrotik_Connection_Error {
             get {
                 return ResourceManager.GetString("Mikrotik_Connection_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mikrotik Control.
+        /// </summary>
+        public static string MikrotikControl {
+            get {
+                return ResourceManager.GetString("MikrotikControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HotSpot.
+        /// </summary>
+        public static string MikrotikControlType_HotSpot {
+            get {
+                return ResourceManager.GetString("MikrotikControlType_HotSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string MikrotikControlType_Ninguno {
+            get {
+                return ResourceManager.GetString("MikrotikControlType_Ninguno", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPPoE.
+        /// </summary>
+        public static string MikrotikControlType_PPPoE {
+            get {
+                return ResourceManager.GetString("MikrotikControlType_PPPoE", resourceCulture);
             }
         }
         
@@ -7243,11 +7684,308 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OLT.
+        /// </summary>
+        public static string Olt {
+            get {
+                return ResourceManager.GetString("Olt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} OLTs.
+        /// </summary>
+        public static string Olt_CountMany {
+            get {
+                return ResourceManager.GetString("Olt_CountMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} OLT.
+        /// </summary>
+        public static string Olt_CountOne {
+            get {
+                return ResourceManager.GetString("Olt_CountOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OLT {0} has contracts: it cannot be deleted.
+        /// </summary>
+        public static string Olt_InUse {
+            get {
+                return ResourceManager.GetString("Olt_InUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already an OLT named {0}.
+        /// </summary>
+        public static string Olt_NameRepeated {
+            get {
+                return ResourceManager.GetString("Olt_NameRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The central equipment fiber clients connect through.
+        /// </summary>
+        public static string Olt_Subtitle {
+            get {
+                return ResourceManager.GetString("Olt_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OLTs.
+        /// </summary>
+        public static string Olt_Title {
+            get {
+                return ResourceManager.GetString("Olt_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OLTs on the map.
+        /// </summary>
+        public static string OltMap_AllCount {
+            get {
+                return ResourceManager.GetString("OltMap_AllCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All the OLTs with their clients. Choose one to see its clients on the map..
+        /// </summary>
+        public static string OltMap_AllHint {
+            get {
+                return ResourceManager.GetString("OltMap_AllHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OLTs without coordinates.
+        /// </summary>
+        public static string OltMap_AllNoPoint {
+            get {
+                return ResourceManager.GetString("OltMap_AllNoPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [All OLTs].
+        /// </summary>
+        public static string OltMap_AllOlts {
+            get {
+                return ResourceManager.GetString("OltMap_AllOlts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All OLTs.
+        /// </summary>
+        public static string OltMap_AllTitle {
+            get {
+                return ResourceManager.GetString("OltMap_AllTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients.
+        /// </summary>
+        public static string OltMap_Clients {
+            get {
+                return ResourceManager.GetString("OltMap_Clients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Farthest.
+        /// </summary>
+        public static string OltMap_Farthest {
+            get {
+                return ResourceManager.GetString("OltMap_Farthest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract.
+        /// </summary>
+        public static string OltMap_GoContract {
+            get {
+                return ResourceManager.GetString("OltMap_GoContract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients with location.
+        /// </summary>
+        public static string OltMap_Located {
+            get {
+                return ResourceManager.GetString("OltMap_Located", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OLT map.
+        /// </summary>
+        public static string OltMap_Menu {
+            get {
+                return ResourceManager.GetString("OltMap_Menu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no active OLTs with coordinates to show on the map..
+        /// </summary>
+        public static string OltMap_NoOlts {
+            get {
+                return ResourceManager.GetString("OltMap_NoOlts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OLT.
+        /// </summary>
+        public static string OltMap_Olt {
+            get {
+                return ResourceManager.GetString("OltMap_Olt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This OLT has no coordinates: its clients are shown, but distances cannot be measured. Load its location in OLTs..
+        /// </summary>
+        public static string OltMap_OltNoPoint {
+            get {
+                return ResourceManager.GetString("OltMap_OltNoPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Used ports.
+        /// </summary>
+        public static string OltMap_Ports {
+            get {
+                return ResourceManager.GetString("OltMap_Ports", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Each OLT with its fiber clients and their distance to the equipment..
+        /// </summary>
+        public static string OltMap_Subtitle {
+            get {
+                return ResourceManager.GetString("OltMap_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OLT map.
+        /// </summary>
+        public static string OltMap_Title {
+            get {
+                return ResourceManager.GetString("OltMap_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clients without location.
+        /// </summary>
+        public static string OltMap_Unlocated {
+            get {
+                return ResourceManager.GetString("OltMap_Unlocated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load its location in the contract to see it on the map..
+        /// </summary>
+        public static string OltMap_UnlocatedHint {
+            get {
+                return ResourceManager.GetString("OltMap_UnlocatedHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View.
+        /// </summary>
+        public static string OltMap_View {
+            get {
+                return ResourceManager.GetString("OltMap_View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lines.
+        /// </summary>
+        public static string OltMapViewType_Lines {
+            get {
+                return ResourceManager.GetString("OltMapViewType_Lines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lines with distance.
+        /// </summary>
+        public static string OltMapViewType_LinesWithDistance {
+            get {
+                return ResourceManager.GetString("OltMapViewType_LinesWithDistance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points only.
+        /// </summary>
+        public static string OltMapViewType_Points {
+            get {
+                return ResourceManager.GetString("OltMapViewType_Points", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PON ports.
+        /// </summary>
+        public static string OltPorts {
+            get {
+                return ResourceManager.GetString("OltPorts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed per port.
+        /// </summary>
+        public static string OltPortSpeed {
+            get {
+                return ResourceManager.GetString("OltPortSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operation.
         /// </summary>
         public static string Operation {
             get {
                 return ResourceManager.GetString("Operation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How the device works: AP, station, repeater.
+        /// </summary>
+        public static string Operation_Subtitle {
+            get {
+                return ResourceManager.GetString("Operation_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation modes.
+        /// </summary>
+        public static string Operation_Title {
+            get {
+                return ResourceManager.GetString("Operation_Title", resourceCulture);
             }
         }
         
@@ -7900,6 +8638,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The groups that organize the internet plans.
+        /// </summary>
+        public static string PlanCategoryIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("PlanCategoryIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plan categories.
+        /// </summary>
+        public static string PlanCategoryIdx_Title {
+            get {
+                return ResourceManager.GetString("PlanCategoryIdx_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plans.
         /// </summary>
         public static string Plans {
@@ -7914,6 +8670,150 @@ namespace Spix.xLanguage.Resources {
         public static string PlatForm_Setup {
             get {
                 return ResourceManager.GetString("PlatForm_Setup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPPoE Local IP.
+        /// </summary>
+        public static string PppLocalIp {
+            get {
+                return ResourceManager.GetString("PppLocalIp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This contract already has its PPPoE Credential..
+        /// </summary>
+        public static string Pppoe_AlreadyExists {
+            get {
+                return ResourceManager.GetString("Pppoe_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} contract(s) in the batch do not have their PPPoE Credential: nothing was changed..
+        /// </summary>
+        public static string Pppoe_BatchIncomplete {
+            get {
+                return ResourceManager.GetString("Pppoe_BatchIncomplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PPPoE Credential does not have the data needed to talk to the equipment..
+        /// </summary>
+        public static string Pppoe_CredentialIncomplete {
+            get {
+                return ResourceManager.GetString("Pppoe_CredentialIncomplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract does not have its PPPoE Credential configured..
+        /// </summary>
+        public static string Pppoe_CredentialRequired {
+            get {
+                return ResourceManager.GetString("Pppoe_CredentialRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PPPoE profile named {0} already exists on the equipment and is not managed by Spix. Check the equipment..
+        /// </summary>
+        public static string Pppoe_ProfileExistsOnDevice {
+            get {
+                return ResourceManager.GetString("Pppoe_ProfileExistsOnDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The contract does not have its Speed Queue configured..
+        /// </summary>
+        public static string Pppoe_QueueRequired {
+            get {
+                return ResourceManager.GetString("Pppoe_QueueRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment works with PPPoE and the contract has neither its Speed Queue nor its PPPoE Credential..
+        /// </summary>
+        public static string Pppoe_RequirementsMissing {
+            get {
+                return ResourceManager.GetString("Pppoe_RequirementsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment already has a PPPoE server on interface {0} that is not managed by Spix. Check the equipment..
+        /// </summary>
+        public static string Pppoe_ServerExistsOnDevice {
+            get {
+                return ResourceManager.GetString("Pppoe_ServerExistsOnDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment does not have its PPPoE server set up yet: set it up from the equipment screen first..
+        /// </summary>
+        public static string Pppoe_ServerNotReady {
+            get {
+                return ResourceManager.GetString("Pppoe_ServerNotReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following equipment does not answer or is offline: {0}..
+        /// </summary>
+        public static string Pppoe_ServersOffline {
+            get {
+                return ResourceManager.GetString("Pppoe_ServersOffline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The live session of user {0} could not be closed, so the cut is not guaranteed..
+        /// </summary>
+        public static string Pppoe_SessionNotKilled {
+            get {
+                return ResourceManager.GetString("Pppoe_SessionNotKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PPPoE user {0} already exists on the equipment and is not managed by Spix. Check the equipment or use another user..
+        /// </summary>
+        public static string Pppoe_UserExistsOnDevice {
+            get {
+                return ResourceManager.GetString("Pppoe_UserExistsOnDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PPPoE user {0} is already in use on this equipment..
+        /// </summary>
+        public static string Pppoe_UserRepeated {
+            get {
+                return ResourceManager.GetString("Pppoe_UserRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPPoE Profile.
+        /// </summary>
+        public static string PppProfileName {
+            get {
+                return ResourceManager.GetString("PppProfileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPPoE Service Name.
+        /// </summary>
+        public static string PppServiceName {
+            get {
+                return ResourceManager.GetString("PppServiceName", resourceCulture);
             }
         }
         
@@ -8157,6 +9057,24 @@ namespace Spix.xLanguage.Resources {
         public static string ProductCategory {
             get {
                 return ResourceManager.GetString("ProductCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The groups that organize the inventory.
+        /// </summary>
+        public static string ProductCategoryIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("ProductCategoryIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product categories.
+        /// </summary>
+        public static string ProductCategoryIdx_Title {
+            get {
+                return ResourceManager.GetString("ProductCategoryIdx_Title", resourceCulture);
             }
         }
         
@@ -8616,6 +9534,24 @@ namespace Spix.xLanguage.Resources {
         public static string Receipt_Title {
             get {
                 return ResourceManager.GetString("Receipt_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The starting number for each document.
+        /// </summary>
+        public static string Register_Subtitle {
+            get {
+                return ResourceManager.GetString("Register_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document numbering.
+        /// </summary>
+        public static string Register_Title {
+            get {
+                return ResourceManager.GetString("Register_Title", resourceCulture);
             }
         }
         
@@ -9817,6 +10753,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The encryption of the wireless networks.
+        /// </summary>
+        public static string Security_Subtitle {
+            get {
+                return ResourceManager.GetString("Security_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Security types.
+        /// </summary>
+        public static string Security_Title {
+            get {
+                return ResourceManager.GetString("Security_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Security Phrase.
         /// </summary>
         public static string SecurityPhrase {
@@ -9988,6 +10942,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select Control].
+        /// </summary>
+        public static string Select_ControlType {
+            get {
+                return ResourceManager.GetString("Select_ControlType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Country].
         /// </summary>
         public static string Select_Country {
@@ -10029,6 +10992,15 @@ namespace Spix.xLanguage.Resources {
         public static string Select_F_Role {
             get {
                 return ResourceManager.GetString("Select_F_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select Interface].
+        /// </summary>
+        public static string Select_Interface {
+            get {
+                return ResourceManager.GetString("Select_Interface", resourceCulture);
             }
         }
         
@@ -10087,6 +11059,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select OLT].
+        /// </summary>
+        public static string Select_Olt {
+            get {
+                return ResourceManager.GetString("Select_Olt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Plan].
         /// </summary>
         public static string Select_Plan {
@@ -10101,6 +11082,24 @@ namespace Spix.xLanguage.Resources {
         public static string Select_PlanCategory {
             get {
                 return ResourceManager.GetString("Select_PlanCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select equipment].
+        /// </summary>
+        public static string Select_Product {
+            get {
+                return ResourceManager.GetString("Select_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select category].
+        /// </summary>
+        public static string Select_ProductCategory {
+            get {
+                return ResourceManager.GetString("Select_ProductCategory", resourceCulture);
             }
         }
         
@@ -10137,6 +11136,15 @@ namespace Spix.xLanguage.Resources {
         public static string Select_Technician {
             get {
                 return ResourceManager.GetString("Select_Technician", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Select unit].
+        /// </summary>
+        public static string Select_Unit {
+            get {
+                return ResourceManager.GetString("Select_Unit", resourceCulture);
             }
         }
         
@@ -10285,6 +11293,60 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device configuration.
+        /// </summary>
+        public static string Server_BoxConfig {
+            get {
+                return ResourceManager.GetString("Server_BoxConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPPoE server on the device.
+        /// </summary>
+        public static string Server_BoxPppoe {
+            get {
+                return ResourceManager.GetString("Server_BoxPppoe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connected.
+        /// </summary>
+        public static string Server_Connected {
+            get {
+                return ResourceManager.GetString("Server_Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check the IP, the port or the API user.
+        /// </summary>
+        public static string Server_ConnHint {
+            get {
+                return ResourceManager.GetString("Server_ConnHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment already has provisioned clients: its Mikrotik control cannot be changed..
+        /// </summary>
+        public static string Server_ControlMkInUse {
+            get {
+                return ResourceManager.GetString("Server_ControlMkInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IP Binding records.
+        /// </summary>
+        public static string Server_CountBinding {
+            get {
+                return ResourceManager.GetString("Server_CountBinding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} servers.
         /// </summary>
         public static string Server_CountMany {
@@ -10303,11 +11365,74 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PPPoE users.
+        /// </summary>
+        public static string Server_CountPppoe {
+            get {
+                return ResourceManager.GetString("Server_CountPppoe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment answering at the new IP is called {1} and not {0}: it is not the same equipment..
+        /// </summary>
+        public static string Server_IdentityMismatch {
+            get {
+                return ResourceManager.GetString("Server_IdentityMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test the connection first: Spix needs to learn the equipment name before its management IP can be changed..
+        /// </summary>
+        public static string Server_IdentityUnknown {
+            get {
+                return ResourceManager.GetString("Server_IdentityUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server {0} has contracts, queues or suspensions and cannot be deleted. Deactivate it instead..
         /// </summary>
         public static string Server_InUse {
             get {
                 return ResourceManager.GetString("Server_InUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The interface {0} does not exist on the equipment..
+        /// </summary>
+        public static string Server_LanNameNotFound {
+            get {
+                return ResourceManager.GetString("Server_LanNameNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose the clients interface before creating the PPPoE server..
+        /// </summary>
+        public static string Server_LanNameRequired {
+            get {
+                return ResourceManager.GetString("Server_LanNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load interfaces.
+        /// </summary>
+        public static string Server_LoadMk {
+            get {
+                return ResourceManager.GetString("Server_LoadMk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device.
+        /// </summary>
+        public static string Server_MkName {
+            get {
+                return ResourceManager.GetString("Server_MkName", resourceCulture);
             }
         }
         
@@ -10339,6 +11464,96 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The equipment is not set to work with PPPoE..
+        /// </summary>
+        public static string Server_NotPppoe {
+            get {
+                return ResourceManager.GetString("Server_NotPppoe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose the PPPoE local IP before creating the PPPoE server..
+        /// </summary>
+        public static string Server_PppLocalIpRequired {
+            get {
+                return ResourceManager.GetString("Server_PppLocalIpRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IP {0} is already used by equipment {1}. Continue anyway?.
+        /// </summary>
+        public static string Server_PppLocalIpTaken {
+            get {
+                return ResourceManager.GetString("Server_PppLocalIpTaken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment already has its PPPoE server created..
+        /// </summary>
+        public static string Server_PppoeAlreadyExists {
+            get {
+                return ResourceManager.GetString("Server_PppoeAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete PPPoE server.
+        /// </summary>
+        public static string Server_PppoeDelete {
+            get {
+                return ResourceManager.GetString("Server_PppoeDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The profile and the PPPoE server will be removed from the device. The configuration can be created again.
+        /// </summary>
+        public static string Server_PppoeDeleteText {
+            get {
+                return ResourceManager.GetString("Server_PppoeDeleteText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server has PPPoE contracts. Move or remove them before deleting the configuration.
+        /// </summary>
+        public static string Server_PppoeHasContracts {
+            get {
+                return ResourceManager.GetString("Server_PppoeHasContracts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment already has its PPPoE server created: its interface and local IP cannot be changed..
+        /// </summary>
+        public static string Server_PppoeLocked {
+            get {
+                return ResourceManager.GetString("Server_PppoeLocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PPPoE server has not been created on this device.
+        /// </summary>
+        public static string Server_PppoeNotCreated {
+            get {
+                return ResourceManager.GetString("Server_PppoeNotCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment {0} still has its PPPoE server on the MikroTik: remove it from the equipment before deleting it..
+        /// </summary>
+        public static string Server_PppoeProvisioned {
+            get {
+                return ResourceManager.GetString("Server_PppoeProvisioned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Network servers, their zone and their IP. From here you can check them and ping them..
         /// </summary>
         public static string Server_Subtitle {
@@ -10348,11 +11563,29 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Test connection.
+        /// </summary>
+        public static string Server_TestConn {
+            get {
+                return ResourceManager.GetString("Server_TestConn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Servers.
         /// </summary>
         public static string Server_Title {
             get {
                 return ResourceManager.GetString("Server_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick a server on the left and set it up on the right.
+        /// </summary>
+        public static string ServerIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("ServerIdx_Subtitle", resourceCulture);
             }
         }
         
@@ -10380,6 +11613,24 @@ namespace Spix.xLanguage.Resources {
         public static string ServiceCategory {
             get {
                 return ResourceManager.GetString("ServiceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The groups that organize the client services.
+        /// </summary>
+        public static string ServiceCategoryIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("ServiceCategoryIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service categories.
+        /// </summary>
+        public static string ServiceCategoryIdx_Title {
+            get {
+                return ResourceManager.GetString("ServiceCategoryIdx_Title", resourceCulture);
             }
         }
         
@@ -10546,6 +11797,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What each corporation can do according to its plan.
+        /// </summary>
+        public static string SoftPlanIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("SoftPlanIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software plans.
+        /// </summary>
+        public static string SoftPlanIdx_Title {
+            get {
+                return ResourceManager.GetString("SoftPlanIdx_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PC Software.
+        /// </summary>
+        public static string SoftwarePC {
+            get {
+                return ResourceManager.GetString("SoftwarePC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Speed.
         /// </summary>
         public static string Speed {
@@ -10605,6 +11883,24 @@ namespace Spix.xLanguage.Resources {
         public static string Stock {
             get {
                 return ResourceManager.GetString("Stock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This product has no units in any storage.
+        /// </summary>
+        public static string Stock_EmptyHint {
+            get {
+                return ResourceManager.GetString("Stock_EmptyHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No stock.
+        /// </summary>
+        public static string Stock_EmptyTitle {
+            get {
+                return ResourceManager.GetString("Stock_EmptyTitle", resourceCulture);
             }
         }
         
@@ -11005,6 +12301,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The rates applied to plans and products.
+        /// </summary>
+        public static string Tax_Subtitle {
+            get {
+                return ResourceManager.GetString("Tax_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Taxes.
+        /// </summary>
+        public static string Tax_Title {
+            get {
+                return ResourceManager.GetString("Tax_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Taxes.
         /// </summary>
         public static string Taxes {
@@ -11176,6 +12490,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Who signs in and with what role.
+        /// </summary>
+        public static string UsuarioIdx_Subtitle {
+            get {
+                return ResourceManager.GetString("UsuarioIdx_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Users.
+        /// </summary>
+        public static string UsuarioIdx_Title {
+            get {
+                return ResourceManager.GetString("UsuarioIdx_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Between {2} and {1} characters long.
         /// </summary>
         public static string Validation_BetweenLength {
@@ -11235,6 +12567,15 @@ namespace Spix.xLanguage.Resources {
         public static string Validation_PasswordMismatch {
             get {
                 return ResourceManager.GetString("Validation_PasswordMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PPPoE user must be at least 6 characters, with letters and numbers. Only letters, numbers, dot, hyphen and underscore are allowed..
+        /// </summary>
+        public static string Validation_PppoeUser {
+            get {
+                return ResourceManager.GetString("Validation_PppoeUser", resourceCulture);
             }
         }
         
@@ -11388,6 +12729,24 @@ namespace Spix.xLanguage.Resources {
         public static string Zone {
             get {
                 return ResourceManager.GetString("Zone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The areas where service is provided.
+        /// </summary>
+        public static string Zone_Subtitle {
+            get {
+                return ResourceManager.GetString("Zone_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zones.
+        /// </summary>
+        public static string Zone_Title {
+            get {
+                return ResourceManager.GetString("Zone_Title", resourceCulture);
             }
         }
     }

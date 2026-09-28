@@ -91,10 +91,16 @@ public class ContractMacService : IContractMacService
             };
         }
 
+        //Se lee solo para armar el nombre que se muestra. Igual se acota por corporacion:
+        //no hay razon para leer el nombre del cliente de otra empresa, aunque el alta se
+        //rechace unos renglones mas abajo.
+        var usuarioActual = await _userHelper.GetUserByUserNameAsync(username);
+
         var contractClient = await _context.ContractClients
             .AsNoTracking()
             .Include(x => x.Client)
-            .FirstOrDefaultAsync(c => c.ContractClientId == modelo.ContractClientId);
+            .FirstOrDefaultAsync(c => c.ContractClientId == modelo.ContractClientId &&
+                                      c.CorporationId == usuarioActual!.CorporationId);
         var FullNameClient = $"{contractClient?.Client!.FirstName} {contractClient?.Client!.LastName}";
 
         await _transactionManager.BeginTransactionAsync();
@@ -108,6 +114,36 @@ public class ContractMacService : IContractMacService
                 {
                     WasSuccess = false,
                     Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //El contrato tiene que ser de SU corporacion. Recibir el username no alcanza:
+            //sin esto, con el id de un contrato ajeno se le agrega una pieza a otra empresa.
+            var contratoOk = await _context.ContractClients.AnyAsync(x =>
+                x.ContractClientId == modelo.ContractClientId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!contratoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractMac>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
+                };
+            }
+
+            var recursoOk = await _context.CargueDetails.AnyAsync(x =>
+                x.CargueDetailId == modelo.CargueDetailId &&
+                x.CorporationId == user.CorporationId);
+
+            if (!recursoOk)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<ContractMac>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_IdNotFound)]
                 };
             }
             var resulMac = await _macControl.SelectMacWhenAdd(modelo.CargueDetailId, FullNameClient, transaction!);
@@ -138,7 +174,7 @@ public class ContractMacService : IContractMacService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         var transaction = _transactionManager.GetCurrentTransaction();
@@ -146,7 +182,21 @@ public class ContractMacService : IContractMacService
         try
         {
 
-            var DataRemove = await _context.ContractMacs.FindAsync(id);
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            //Por id SOLO no alcanza: la pieza tiene que ser de un contrato de SU corporacion.
+            //Con FindAsync(id) cualquiera que conociera el id borraba la pieza de otra empresa.
+            var DataRemove = await _context.ContractMacs
+                .FirstOrDefaultAsync(x => x.ContractMacId == id &&
+                                          x.ContractClient!.CorporationId == user.CorporationId);
             if (DataRemove == null)
             {
                 return new ActionResponse<bool>

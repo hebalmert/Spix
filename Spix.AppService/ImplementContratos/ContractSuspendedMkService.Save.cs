@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Spix.DomainLogic.EnumTypes;
 using Spix.DomainLogic.ModelUtility;
 using Spix.xLanguage.Resources;
@@ -44,8 +44,22 @@ public partial class ContractSuspendedMkService
                 return Fail<bool>(_localizer["Suspend_OnlyActive"]);
             }
 
-            //El tipo del binding tambien queda en la base, igual que lo dejo el equipo
-            if (await _contractActivationIntegrityService.UsesHotSpotControlAsync(contract.CorporationId))
+            //El espejo del estado queda en la base, igual que lo dejo el equipo.
+            //Se resuelve por el SERVIDOR del contrato, no por la corporacion.
+            var controlSuspender = await _contractActivationIntegrityService.ResolveControlAsync(contractClientId);
+
+            if (controlSuspender == MikrotikControlType.PPPoE)
+            {
+                var credencial = await _context.ContractPppoes
+                    .FirstOrDefaultAsync(x => x.ContractClientId == contractClientId);
+
+                if (credencial != null)
+                {
+                    credencial.PppoeAccessState = PppoeAccessState.Corte;
+                }
+            }
+
+            if (controlSuspender == MikrotikControlType.HotSpot)
             {
                 var regularType = await _context.HotSpotTypes
                     .AsNoTracking()
@@ -123,7 +137,7 @@ public partial class ContractSuspendedMkService
 
             //La misma validacion de integridad que corre la web
             var integridad = await _contractActivationIntegrityService.ValidateAsync(
-                contract.ContractClientId, contract.CorporationId);
+                contract.ContractClientId);
 
             if (!integridad.WasSuccess)
             {
@@ -131,7 +145,20 @@ public partial class ContractSuspendedMkService
                 return Fail<bool>(integridad.Message!);
             }
 
-            if (await _contractActivationIntegrityService.UsesHotSpotControlAsync(contract.CorporationId))
+            var controlReactivar = await _contractActivationIntegrityService.ResolveControlAsync(contractClientId);
+
+            if (controlReactivar == MikrotikControlType.PPPoE)
+            {
+                var credencial = await _context.ContractPppoes
+                    .FirstOrDefaultAsync(x => x.ContractClientId == contractClientId);
+
+                if (credencial != null)
+                {
+                    credencial.PppoeAccessState = PppoeAccessState.Activo;
+                }
+            }
+
+            if (controlReactivar == MikrotikControlType.HotSpot)
             {
                 var bypassedType = await _context.HotSpotTypes
                     .AsNoTracking()

@@ -63,7 +63,6 @@ using Spix.AppWpf.ViewModels.EntitiesContratos.RunSuspended;
 using Spix.AppWpf.ViewModels.EntitiesContratos.ContractSuspendedAudit;
 using Spix.AppWpf.ViewModels.EntitiesSchedule.ServiceRequest;
 using Spix.AppWpf.ViewModels.EntitiesOper.Client;
-using Spix.AppWpf.ViewModels.EntitiesMK.ConnectionMikrotikControl;
 using Spix.AppWpf.ViewModels.EntitiesMK.QueueType;
 using Spix.AppWpf.ViewModels.Shell;
 using Spix.AppWpf.Views.Auth;
@@ -122,7 +121,6 @@ using Spix.AppWpf.Views.EntitiesContratos.RunSuspended;
 using Spix.AppWpf.Views.EntitiesContratos.ContractSuspendedAudit;
 using Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest;
 using Spix.AppWpf.Views.EntitiesOper.Client;
-using Spix.AppWpf.Views.EntitiesMK.ConnectionMikrotikControl;
 using Spix.AppWpf.Views.EntitiesMK.QueueType;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.Services.Network;
@@ -278,6 +276,7 @@ public partial class App : Application
         services.AddTransient<EditServerDialogViewModel>();
         services.AddTransient<ServerPingDialogViewModel>();
         services.AddTransient<ServerMikrotikDialogViewModel>();
+        services.AddTransient<ServerDetailDialogViewModel>();
         services.AddTransient<ScheduleIndexViewModel>();
         services.AddTransient<ContractControlIndexViewModel>();
         services.AddTransient<ContractSuspendedIndexViewModel>();
@@ -351,6 +350,7 @@ public partial class App : Application
         services.AddTransient<ContractPlanDialogViewModel>();
         services.AddTransient<ContractQueueDialogViewModel>();
         services.AddTransient<ContractBindDialogViewModel>();
+        services.AddTransient<ContractPppoeDialogViewModel>();
         services.AddTransient<ContractMapDialogViewModel>();
         services.AddTransient<ContractChangeStateDialogViewModel>();
         services.AddTransient<ContractClientIndexViewModel>();
@@ -374,9 +374,6 @@ public partial class App : Application
         services.AddTransient<EditClientDialogViewModel>();
         services.AddTransient<CreateIpNetworkPoolDialogViewModel>();
         services.AddTransient<DeleteIpNetworkPoolDialogViewModel>();
-        services.AddTransient<ConnectionMikrotikControlIndexViewModel>();
-        services.AddTransient<CreateConnectionMikrotikControlDialogViewModel>();
-        services.AddTransient<EditConnectionMikrotikControlDialogViewModel>();
         services.AddTransient<QueueTypeIndexViewModel>();
         services.AddTransient<CreateQueueTypeDialogViewModel>();
         services.AddTransient<EditQueueTypeDialogViewModel>();
@@ -461,6 +458,7 @@ public partial class App : Application
         services.AddTransient<EditServerDialogView>();
         services.AddTransient<ServerPingDialogView>();
         services.AddTransient<ServerMikrotikDialogView>();
+        services.AddTransient<ServerDetailDialogView>();
         services.AddTransient<ScheduleIndexView>();
         services.AddTransient<ContractControlIndexView>();
         services.AddTransient<ContractSuspendedIndexView>();
@@ -534,6 +532,7 @@ public partial class App : Application
         services.AddTransient<ContractPlanDialogView>();
         services.AddTransient<ContractQueueDialogView>();
         services.AddTransient<ContractBindDialogView>();
+        services.AddTransient<ContractPppoeDialogView>();
         services.AddTransient<ContractMapDialogView>();
         services.AddTransient<ContractMapViewDialogView>();
         services.AddTransient<ContractChangeStateDialogView>();
@@ -556,9 +555,6 @@ public partial class App : Application
         services.AddTransient<ClientIndexView>();
         services.AddTransient<CreateClientDialogView>();
         services.AddTransient<EditClientDialogView>();
-        services.AddTransient<ConnectionMikrotikControlIndexView>();
-        services.AddTransient<CreateConnectionMikrotikControlDialogView>();
-        services.AddTransient<EditConnectionMikrotikControlDialogView>();
         services.AddTransient<QueueTypeIndexView>();
         services.AddTransient<CreateQueueTypeDialogView>();
         services.AddTransient<EditQueueTypeDialogView>();

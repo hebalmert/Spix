@@ -359,8 +359,10 @@ public class RunSuspendedService : IRunSuspendedService
                 {
                     x.ContractClientId,
                     x.Balance,
-                    ServerId = x.ContractClient!.ContractBinds!.Select(b => (Guid?)b.ServerId).FirstOrDefault(),
-                    ServerName = x.ContractClient!.ContractBinds!.Select(b => b.Server!.ServerName).FirstOrDefault()
+                    //El equipo sale de ContractServer, que vale para HotSpot y para PPPoE.
+                    //Del IpBinding no, porque el IpBinding solo existe en HotSpot.
+                    ServerId = x.ContractClient!.ContractServers!.Select(b => (Guid?)b.ServerId).FirstOrDefault(),
+                    ServerName = x.ContractClient!.ContractServers!.Select(b => b.Server!.ServerName).FirstOrDefault()
                 })
                 .GroupBy(x => new { x.ServerId, x.ServerName })
                 .Select(g => new CorteCheckServerDto
@@ -372,7 +374,7 @@ public class RunSuspendedService : IRunSuspendedService
                 })
                 .ToListAsync();
 
-            //Los que no tienen IpBinding no viven en ningun equipo
+            //Los que no tienen servidor asignado no viven en ningun equipo
             foreach (var server in servers.Where(x => string.IsNullOrWhiteSpace(x.ServerName)))
             {
                 server.ServerName = _localizer["Corte_NoServer"];
@@ -471,14 +473,18 @@ public class RunSuspendedService : IRunSuspendedService
             }
 
             //Los contratos que viven en ese equipo. El vacio es para los que no tienen
-            //IpBinding, que no viven en ningun equipo.
+            //servidor asignado, que no viven en ningun equipo.
+            //
+            //Se busca por ContractServer, la MISMA tabla con la que agrupa CheckAsync: si una
+            //consulta usara el IpBinding y la otra el ContractServer, los dos conjuntos
+            //podrian no coincidir y el corte dejaria contratos afuera sin avisar.
             var delServidor = serverId == Guid.Empty
                 ? await _context.ContractClients
                     .AsNoTracking()
-                    .Where(x => x.CorporationId == corporationId && !x.ContractBinds!.Any())
+                    .Where(x => x.CorporationId == corporationId && !x.ContractServers!.Any())
                     .Select(x => x.ContractClientId)
                     .ToListAsync()
-                : await _context.ContractBinds
+                : await _context.ContractServers
                     .AsNoTracking()
                     .Where(x => x.ServerId == serverId && x.ContractClient!.CorporationId == corporationId)
                     .Select(x => x.ContractClientId)
@@ -525,26 +531,32 @@ public class RunSuspendedService : IRunSuspendedService
                 return new ActionResponse<CorteRunResultDto> { WasSuccess = true, Result = result };
             }
 
-            //Si la corporacion controla el acceso por HotSpot, primero se quita en el equipo
-            var usesHotSpotControl = await _contractActivationIntegrityService
-                .UsesHotSpotControlAsync(corporationId);
-
-            if (usesHotSpotControl)
+            //El lote de los que NO tienen equipo asignado se reporta y no se toca.
+            //
+            //Esto va ANTES de resolver el tipo de control y AFUERA del if, a proposito:
+            //resolver el control de Guid.Empty devuelve Ninguno, asi que si la guarda
+            //estuviera adentro nunca correria y estos contratos se suspenderian en la base
+            //sin avisar y sin tocarles el acceso.
+            if (serverId == Guid.Empty)
             {
-                if (serverId == Guid.Empty)
+                foreach (var contract in contracts)
                 {
-                    //Sin IpBinding no hay como quitarle el acceso: se reportan y no se tocan
-                    foreach (var contract in contracts)
-                    {
-                        result.Issues.Add(NewIssue(contract, _localizer["Corte_NoBinding"]));
-                    }
-
-                    await transaction.CommitAsync();
-                    return new ActionResponse<CorteRunResultDto> { WasSuccess = true, Result = result };
+                    result.Issues.Add(NewIssue(contract, _localizer["Corte_NoBinding"]));
                 }
 
+                await transaction.CommitAsync();
+                return new ActionResponse<CorteRunResultDto> { WasSuccess = true, Result = result };
+            }
+
+            //Ahora si: se le quita el acceso en el equipo con el mecanismo que use ESE equipo.
+            //Antes se preguntaba por la corporacion y devolvia un bool, asi que PPPoE caia en
+            //la misma rama que Ninguno y el cliente seguia navegando.
+            var control = await _contractActivationIntegrityService.ResolveControlByServerAsync(serverId);
+
+            if (control != MikrotikControlType.Ninguno)
+            {
                 var connectionResponse = await _contractActivationIntegrityService
-                    .VerifyHotSpotServersConnectionAsync(contracts.Select(x => x.ContractClientId).ToList());
+                    .VerifyConnectionAsync(contracts.Select(x => x.ContractClientId).ToList());
 
                 if (!connectionResponse.WasSuccess)
                 {
@@ -554,7 +566,7 @@ public class RunSuspendedService : IRunSuspendedService
 
                 //Una sola conexion al equipo para todos sus contratos
                 var suspendResponse = await _contractActivationIntegrityService
-                    .SuspendHotSpotBindingsAsync(contracts);
+                    .SuspendAsync(contracts);
 
                 if (!suspendResponse.WasSuccess)
                 {

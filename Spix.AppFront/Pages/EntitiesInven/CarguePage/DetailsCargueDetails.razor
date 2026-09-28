@@ -21,15 +21,12 @@
                     <p>#@Progress.ControlCargue · @Localizer["Cargue_Invoice"] @Progress.NroFactura · @Progress.DateCargue.ToLocalTime().ToString("dd/MM/yyyy")</p>
                 </div>
                 <div class="idx-head-tools">
-                    <a class="btn cg-btn" href="/cargues">
-                        <i class="bi bi-arrow-left"></i> @Localizer["Cargue_Back"]
-                    </a>
-                    @* Solo para cargues viejos que quedaron completos sin cerrar: hoy se cierran solos *@
-                    @if (Progress.Status == CargueType.Pendiente && Missing == 0)
+                    <AnchorFormBack Href="/cargues" TooTip="@Localizer["Cargue_Back"]" />
+                    @* Cerrar lo decide el operador, igual que en el detalle de la compra:
+                       mientras no cierre puede corregir o borrar un serial mal escaneado. *@
+                    @if (Progress.Status == CargueType.Pendiente)
                     {
-                        <button class="btn cg-btn" @onclick="CloseCargueAsync">
-                            <i class="bi bi-check-square"></i> @Localizer["Cargue_Close"]
-                        </button>
+                        <ButtonFormGreen OnClick="CloseCargueAsync" TooTip="@Localizer["Cargue_Close"]" />
                     }
                 </div>
             </div>
@@ -71,9 +68,14 @@
                            @ref="ScanInput"
                            disabled="@IsSaving"
                            autocomplete="off" />
-                    <button type="submit" class="btn cg-btn" disabled="@IsSaving">
-                        <i class="fa fa-plus"></i> @Localizer["Cargue_Add"]
-                    </button>
+                    @* Verde para que resalte: es la accion de la pantalla. Conserva el
+                       ancho de antes y se le fija el alto al del campo, para que la caja
+                       punteada del escaner no crezca. *@
+                    <ButtonFormGreen Type="submit"
+                                     Icon="fa fa-plus"
+                                     TooTip="@Localizer["Cargue_Add"]"
+                                     Disabled="@IsSaving"
+                                     Style="width:120px;min-width:120px;height:40px" />
                 </form>
             }
             <div class="idx-search">

@@ -1,0 +1,152 @@
+@page "/oltmap"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.DomainLogic.ModelUtility
+@using Spix.DomainLogic.ItemsGeneric
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-map-location-dot"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["OltMap_Title"]</h3>
+                <p>@Localizer["OltMap_Subtitle"]</p>
+            </div>
+        </div>
+
+        @* Los selectores: las listas llegan armadas del backend, con su neutro.
+           El neutro del primero NO es "no elegi nada": es la vista de todas las OLT. *@
+        <div class="om-filters">
+            <div class="om-filter">
+                <label>@Localizer["OltMap_Olt"]</label>
+                <GenericSelectWrapper Tmodel="GuidNameModel" Items="Olts">
+                    <Body>
+                        <select class="form-select" value="@SelectedOltId" @onchange="OltChanged">
+                            @foreach (var item in Olts!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+
+            @* Como se ve: solo puntos, lineas a la OLT, o lineas con la distancia.
+               En la vista de todas no aplica: no hay una OLT desde donde trazar. *@
+            <div class="om-filter">
+                <label>@Localizer["OltMap_View"]</label>
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="Views">
+                    <Body>
+                        <select class="form-select" value="@SelectedView" @onchange="ViewChanged" disabled="@(Map is null)">
+                            @foreach (var item in Views!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+
+            @if (Map is not null)
+            {
+                <div class="om-filter">
+                    <label>@Localizer["OltMap_Unlocated"]</label>
+                    <div class="om-inline">
+                        <select class="form-select" value="@SelectedUnlocatedId" @onchange="UnlocatedChanged">
+                            @foreach (var item in Map.UnlocatedOptions)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                        @* El detalle del contrato es del Administrator: alli se carga la ubicacion *@
+                        @if (SelectedUnlocatedId != Guid.Empty)
+                        {
+                            <AuthorizeView Roles="Administrator">
+                                <a class="btn om-btn" href="/detailscontractcontrol/@SelectedUnlocatedId">
+                                    <i class="fa fa-file-contract"></i> @Localizer["OltMap_GoContract"]
+                                </a>
+                            </AuthorizeView>
+                        }
+                    </div>
+                    @if (SelectedUnlocatedId != Guid.Empty)
+                    {
+                        <div class="om-hint">@Localizer["OltMap_UnlocatedHint"]</div>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Map is null)
+        {
+            @* Vista de todas: el tablero cuenta las OLT, no los clientes de una *@
+            <div class="idx-board">
+                <div class="idx-tile">
+                    <div class="idx-tile-label">@Localizer["OltMap_AllTitle"]</div>
+                    <div class="idx-tile-value">@AllOlts.Count.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-green">
+                    <div class="idx-tile-label">@Localizer["OltMap_AllCount"]</div>
+                    <div class="idx-tile-value">@AllWithPoint.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-amber">
+                    <div class="idx-tile-label">@Localizer["OltMap_AllNoPoint"]</div>
+                    <div class="idx-tile-value">@AllWithoutPoint.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-purple">
+                    <div class="idx-tile-label">@Localizer["OltMap_Clients"]</div>
+                    <div class="idx-tile-value">@AllClients.ToString("N0")</div>
+                </div>
+            </div>
+
+            <div class="om-empty">
+                <i class="fa fa-circle-info"></i> @Localizer["OltMap_AllHint"]
+            </div>
+
+            @if (AllWithPoint == 0)
+            {
+                <div class="om-warning">
+                    <i class="fa fa-triangle-exclamation"></i> @Localizer["OltMap_NoOlts"]
+                </div>
+            }
+        }
+        else
+        {
+            @* El tablero de la OLT elegida *@
+            <div class="idx-board">
+                <div class="idx-tile">
+                    <div class="idx-tile-label">@Localizer["OltMap_Clients"]</div>
+                    <div class="idx-tile-value">@Map.Clients.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-green">
+                    <div class="idx-tile-label">@Localizer["OltMap_Located"]</div>
+                    <div class="idx-tile-value">@Map.WithLocation.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-amber">
+                    <div class="idx-tile-label">@Localizer["OltMap_Unlocated"]</div>
+                    <div class="idx-tile-value">@Map.WithoutLocation.ToString("N0")</div>
+                </div>
+                @* Lo propio de la fibra: cuantos de sus puertos estan tomados *@
+                <div class="idx-tile is-blue">
+                    <div class="idx-tile-label">@Localizer["OltMap_Ports"]</div>
+                    <div class="idx-tile-value">@Map.Clients / @Map.PortCount</div>
+                </div>
+                <div class="idx-tile is-purple">
+                    <div class="idx-tile-label">@Localizer["OltMap_Farthest"]</div>
+                    <div class="idx-tile-value">@(Map.FarthestKm.HasValue ? $"{Map.FarthestKm.Value:N2} Km" : "—")</div>
+                </div>
+            </div>
+
+            @if (Map.Latitude is null || Map.Longitude is null)
+            {
+                <div class="om-warning">
+                    <i class="fa fa-triangle-exclamation"></i> @Localizer["OltMap_OltNoPoint"]
+                </div>
+            }
+        }
+
+        @* El div del mapa existe siempre: Leaflet pinta sobre el *@
+        <div id="@MapId" class="om-map"></div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
 using Spix.AppInfra.ErrorHandling;
@@ -87,10 +87,53 @@ public partial class ActivationMkService : IActivationMkService
                 return Ok(datos);
             }
 
-            datos.UsaHotSpot = await _contractActivationIntegrityService
-                .UsesHotSpotControlAsync(corporationId);
+            //Como trabaja ESE equipo, no la corporacion
+            datos.Control = await _contractActivationIntegrityService
+                .ResolveControlByServerAsync(serverId);
 
             var contractIds = contracts.Select(x => x.ContractClientId).ToList();
+
+            //===== PPPoE: se habilita el secret y se tumba la sesion, todo en el WPF =====
+            if (datos.Control == MikrotikControlType.PPPoE)
+            {
+                var credenciales = await _context.ContractPppoes
+                    .AsNoTracking()
+                    .Include(x => x.Server!)
+                        .ThenInclude(x => x.IpNetwork)
+                    .Where(x => x.ServerId == serverId && contractIds.Contains(x.ContractClientId))
+                    .ToListAsync();
+
+                foreach (var credencial in credenciales)
+                {
+                    var contrato = contracts.First(x => x.ContractClientId == credencial.ContractClientId);
+
+                    if (credencial.Server?.IpNetwork?.Ip == null ||
+                        string.IsNullOrWhiteSpace(credencial.MikrotikId) ||
+                        string.IsNullOrWhiteSpace(credencial.Usuario) ||
+                        string.IsNullOrWhiteSpace(credencial.IpCliente))
+                    {
+                        continue;
+                    }
+
+                    datos.Credenciales.Add(new CortePppoeDTO
+                    {
+                        ContractClientId = credencial.ContractClientId,
+                        ControlContrato = contrato.ControlContrato,
+                        ClientFullName = $"{contrato.Client?.FirstName} {contrato.Client?.LastName}".Trim(),
+                        ServerId = credencial.ServerId,
+                        ServerName = credencial.Server.ServerName,
+                        ServerIp = credencial.Server.IpNetwork.Ip,
+                        Usuario = credencial.Server.Usuario,
+                        Clave = credencial.Server.Clave,
+                        ApiPort = credencial.Server.ApiPort,
+                        MikrotikId = credencial.MikrotikId,
+                        UsuarioPppoe = credencial.Usuario,
+                        IpCliente = credencial.IpCliente
+                    });
+                }
+
+                return Ok(datos);
+            }
 
             var bindings = await _context.ContractBinds
                 .AsNoTracking()
@@ -101,9 +144,9 @@ public partial class ActivationMkService : IActivationMkService
                 .Where(x => x.ServerId == serverId && contractIds.Contains(x.ContractClientId))
                 .ToListAsync();
 
-            //Sin HotSpot no se toca el equipo: el lote viaja solo para que el escritorio
-            //sepa a quienes darle por reactivados
-            if (!datos.UsaHotSpot)
+            //Sin control en el equipo no se toca nada: el lote viaja solo para que el
+            //escritorio sepa a quienes darle por reactivados
+            if (!datos.UsaControl)
             {
                 foreach (var contract in contracts)
                 {

@@ -1,10 +1,16 @@
-@page "/emailproviders"
+﻿@page "/emailproviders"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
 <div class="container pt-4">
     <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
-        <h3 class="mb-4">Setup Emails</h3>
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-envelope"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer[nameof(Resource.EmailProvider_Title)]</h3>
+                <p>@Localizer[nameof(Resource.EmailProvider_Subtitle)]</p>
+            </div>
+        </div>
 
         <div class="row align-items-center mb-3">
             <div class="col-md-3 d-flex justify-content-start">
@@ -35,7 +41,7 @@
                         <tbody>
                             @foreach (var item in EmailProviders!)
                             {
-                                <tr>
+                                <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.EmailProviderSettingId, true)">
                                     <td>@item.Name</td>
                                     <td>@item.ProviderType</td>
                                     <td>@item.FromEmail</td>
@@ -48,7 +54,7 @@
                                     <td style="width:1px;">
                                         <ButtonGeneric Icon="fa fa-paper-plane" TooTip="Email-test" CssClass="btn-mini-success" OnClick="() => TestEmailAsync(item.EmailProviderSettingId)" />
                                     </td>
-                                    <td style="width:1px;">
+                                    <td @ondblclick:stopPropagation style="width:1px;">
                                         <ButtonEdit OnClick="() => ShowModalAsync(item.EmailProviderSettingId, true)" />
                                     </td>
                                     <td style="width:1px;">

@@ -1,0 +1,23 @@
+@* El gemelo de FormContractNode: por que OLT entra este contrato de fibra *@
+<EditForm Model="ContractOlt" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <GenericSelectWrapper Tmodel="Olt" Items="Olts">
+        <Body>
+        <div class="input-group">
+            <span class="input-group-text" style="width:150px">@Localizer[nameof(Resource.Olt)]</span>
+            <select class="form-select" value="@ContractOlt?.OltId" @onchange="OltChanged">
+                @foreach (var item in Olts!)
+                {
+                    <option value="@item.OltId">@item.OltName</option>
+                }
+            </select>
+        </div>
+        </Body>
+    </GenericSelectWrapper>
+    <ValidationMessage For="@(() => ContractOlt.OltId)" />
+
+    <div class="d-flex justify-content-center gap-3 mt-5">
+        <ButtonFormSave IsSaving="IsSaving" />
+        <ButtonFormBack OnClick="ReturnAction" />
+    </div>
+</EditForm>

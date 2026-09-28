@@ -3,6 +3,7 @@ using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesNet;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesGen;
 
@@ -13,10 +14,12 @@ public class Zone
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.State), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int StateId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.City), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public int CityId { get; set; }
 
     [MaxLength(50, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]

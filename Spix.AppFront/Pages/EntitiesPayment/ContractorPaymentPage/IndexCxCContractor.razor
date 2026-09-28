@@ -1,4 +1,4 @@
-@page "/contractor-cxc"
+﻿@page "/contractor-cxc"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -76,7 +76,7 @@
                             <Body>
                                 @foreach (var item in Notes!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowDetailsAsync(item.CxCContractorId)">
                                         <td>
                                             <div class="idx-name">@item.NoteNumber</div>
                                             <div class="idx-meta">@item.DateNote.ToString("dd/MM/yyyy")</div>
@@ -98,7 +98,7 @@
                                         </td>
                                         <td style="text-align:right">@item.Total.ToString("N2")</td>
                                         <td style="text-align:right"><strong>@item.Balance.ToString("N2")</strong></td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonGeneric OnClick="() => ShowDetailsAsync(item.CxCContractorId)"
                                                                TooTip="@Localizer["CxCContractor_CommissionsTitle"]"

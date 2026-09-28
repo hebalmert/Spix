@@ -1,7 +1,7 @@
 ﻿<button type="button"
         class="@CssClass"
         style="@Style"
-        disabled="@IsSaving"
+        disabled="@(IsSaving || Disabled)"
         @onclick="OnClick">
 
     @if (IsSaving)
@@ -25,6 +25,10 @@
     [Parameter] public string? ProgressText { get; set; }
     [Parameter] public string? Style { get; set; } = "width:160px";
     [Parameter] public bool IsSaving { get; set; }
+
+    //Para apagarlo cuando no hay nada que guardar. Nace en false: los usos que ya
+    //existian no cambian.
+    [Parameter] public bool Disabled { get; set; }
 
     // 🔥 Nuevo parámetro
     [Parameter] public EventCallback OnClick { get; set; }

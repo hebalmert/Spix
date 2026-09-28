@@ -10,7 +10,10 @@ public class ContractPlanConfig : IEntityTypeConfiguration<ContractPlan>
     {
         builder.HasKey(e => e.ContractPlanId);
         builder.Property(x => x.ContractPlanId).HasDefaultValueSql("NEWSEQUENTIALID()");
-        builder.HasIndex(e => new { e.ContractClientId, e.PlanId }).IsUnique();
+        //UN plan por contrato. El indice estaba sobre el par, que solo impide repetir el
+        //mismo plan: un contrato podia terminar con dos planes distintos y el queue padre,
+        //que se arma por (Plan, Servidor), no sabria cual usar.
+        builder.HasIndex(e => e.ContractClientId).IsUnique();
 
         //Evitar el borrado en cascada
         builder.HasOne(e => e.ContractClient).WithMany(c => c.ContractPlans).OnDelete(DeleteBehavior.Restrict);

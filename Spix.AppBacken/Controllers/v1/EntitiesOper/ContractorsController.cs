@@ -61,7 +61,7 @@ var response = await _contractorUnitOfWork.GetAsync(pagination, userClaimsInfo.U
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
 
         [HttpPost]
@@ -78,7 +78,7 @@ var response = await _contractorUnitOfWork.GetAsync(pagination, userClaimsInfo.U
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
 
         [HttpPost("{id}/re-email")]
@@ -101,7 +101,7 @@ var response = await _contractorUnitOfWork.GetAsync(pagination, userClaimsInfo.U
             {
                 return Ok(response.Result);
             }
-            return NotFound(response.Message);
+            return BadRequest(response.Message);
         }
     }
 }

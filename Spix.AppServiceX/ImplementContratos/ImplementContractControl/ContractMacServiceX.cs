@@ -18,5 +18,5 @@ public class ContractMacServiceX : IContractMacServiceX
 
     public async Task<ActionResponse<ContractMac>> AddAsync(ContractMac modelo, string username) => await _contractService.AddAsync(modelo, username);
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _contractService.DeleteAsync(id);
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username) => await _contractService.DeleteAsync(id, username);
 }

@@ -3,6 +3,7 @@ using Spix.Domain.EntitiesInven;
 using Spix.xLanguage.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesGen;
 
@@ -36,16 +37,19 @@ public class Product
     [Column(TypeName = "decimal(18,2)")]
     [DisplayFormat(DataFormatString = "{0:C2}")]
     [Display(Name = nameof(Resource.Cost_Price), ResourceType = typeof(Resource))]
+    [Range(0, double.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public decimal Costo { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Cost_Price), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public Guid TaxId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Column(TypeName = "decimal(18,2)")]
     [DisplayFormat(DataFormatString = "{0:C2}")]
     [Display(Name = nameof(Resource.Price), ResourceType = typeof(Resource))]
+    [Range(0, double.MaxValue, ErrorMessageResourceName = nameof(Resource.Validation_Range), ErrorMessageResourceType = typeof(Resource))]
     public decimal Price { get; set; }    //Precio de venta, no incluye impuestos
 
     [Display(Name = nameof(Resource.Serials), ResourceType = typeof(Resource))]

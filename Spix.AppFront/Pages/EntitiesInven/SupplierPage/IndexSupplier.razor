@@ -64,7 +64,7 @@
                             <Body>
                                 @foreach (var item in Suppliers!)
                                 {
-                                    <tr>
+                                    <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.SupplierId, true)">
                                         <td>
                                             <div class="idx-who">
                                                 <AvatarImage Url="@item.ImageFullPath" Icon="fa fa-truck" Size="46" Alt="@item.Name" />
@@ -93,7 +93,7 @@
                                                 @(item.Active ? Localizer[nameof(Resource.Active)] : Localizer[nameof(Resource.Inactive)])
                                             </span>
                                         </td>
-                                        <td>
+                                        <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
                                                 <ButtonGeneric Icon="fa fa-list" TooTip="@Localizer["Purchase_Details"]" OnClick="() => ShowDetailsAsync(item.SupplierId)" />
                                                 <ButtonEdit OnClick="() => ShowModalAsync(item.SupplierId, true)" />

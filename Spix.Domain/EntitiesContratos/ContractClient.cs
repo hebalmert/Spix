@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using Spix.DomainLogic.Validations;
 
 namespace Spix.Domain.EntitiesContratos;
 
@@ -26,6 +27,7 @@ public class ContractClient
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Contractor), ResourceType = typeof(Resource))]
+    [ComboRequired]
     public Guid ContractorId { get; set; }
 
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
@@ -80,6 +82,17 @@ public class ContractClient
     [NotMapped]
     public virtual string? NombreCliente { get; set; }
 
+    //El plan se elige al CREAR el contrato: es una condicion comercial, no un dato tecnico.
+    //Viaja sin mapear, como StateId y CityId, y el servicio crea con el la fila de
+    //ContractPlan en la misma transaccion. Todo lo que hoy lee ContractPlan sigue igual.
+    [Display(Name = nameof(Resource.PlanCategory), ResourceType = typeof(Resource))]
+    [NotMapped]
+    public virtual Guid PlanCategoryId { get; set; }
+
+    [Display(Name = nameof(Resource.Plan), ResourceType = typeof(Resource))]
+    [NotMapped]
+    public virtual Guid PlanId { get; set; }
+
     [NotMapped]
     public virtual bool TieneIDPic => ContractIDPic != null;
 
@@ -112,6 +125,12 @@ public class ContractClient
     public int ControlServerCount => ContractServers == null ? 0 : ContractServers.Count;
     public int ControlPlanCount => ContractPlans == null ? 0 : ContractPlans.Count;
     public int ControlNodeCount => ContractNodes == null ? 0 : ContractNodes.Count;
+    public int ControlOltCount => ContractOlts == null ? 0 : ContractOlts.Count;
+
+    //Como trabaja el equipo de este contrato. Sale del servidor asignado y solo sirve
+    //para que el listado muestre si es PPPoE o HotSpot; no se guarda.
+    [NotMapped]
+    public MikrotikControlType ControlMk { get; set; } = MikrotikControlType.Ninguno;
     public int ControlMapCount => ContractMaps == null ? 0 : ContractMaps.Count;
 
 
@@ -128,10 +147,12 @@ public class ContractClient
     public ICollection<ContractMac>? ContractMacs { get; set; }
     public ICollection<ContractServer>? ContractServers { get; set; } 
     public ICollection<ContractPlan>? ContractPlans { get; set; }
-    public ICollection<ContractNode>? ContractNodes { get; set; } 
+    public ICollection<ContractNode>? ContractNodes { get; set; }
+    public ICollection<ContractOlt>? ContractOlts { get; set; } 
     public ICollection<ContractMap>? ContractMaps { get; set; }
     public ICollection<ContractQue>? ContractQues { get; set; } 
     public ICollection<ContractBind>? ContractBinds { get; set; } 
+    public ICollection<ContractPppoe>? ContractPppoes { get; set; }
     public ICollection<ContractSuspendedAudit>? ContractSuspendedAudits { get; set; }
     public ICollection<RunSuspendedDetail>? RunSuspendedDetails { get; set; }
 

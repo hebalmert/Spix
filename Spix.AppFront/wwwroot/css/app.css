@@ -1253,6 +1253,64 @@ code {
     margin-left: auto;
 }
 
+/* --- Tablero: la fila de numeros sobre el listado, en todos los Index ---
+   Un solo card. El color de la barra lateral se pide por su nombre, para que la
+   misma clase sirva en cualquier pantalla sin inventarle un prefijo propio. */
+.idx-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.idx-tile {
+    border: 1px solid #e6ecf6;
+    border-left: 6px solid #16305e;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 5px 6px 0 rgba(44, 95, 173, .24);
+    padding: 10px 14px;
+}
+
+    .idx-tile.is-green {
+        border-left-color: #198754;
+    }
+
+    .idx-tile.is-red {
+        border-left-color: #dc3545;
+    }
+
+    .idx-tile.is-amber {
+        border-left-color: #f59f00;
+    }
+
+    .idx-tile.is-orange {
+        border-left-color: #fd7e14;
+    }
+
+    .idx-tile.is-blue {
+        border-left-color: #2c5fad;
+    }
+
+    .idx-tile.is-cyan {
+        border-left-color: #0dcaf0;
+    }
+
+    .idx-tile.is-purple {
+        border-left-color: #6f42c1;
+    }
+
+.idx-tile-label {
+    color: #6b7690;
+    font-size: 12px;
+}
+
+.idx-tile-value {
+    color: #152238;
+    font-size: 22px;
+    font-weight: 700;
+}
+
 /* --- Tabla --- */
 .idx-table {
     width: 100%;
@@ -1436,8 +1494,8 @@ code {
 
 /* ================================================================
    BOTONES GRANDES  (familia .btn-gradient-*)
-   Los de los Index y los de los formularios: misma forma, misma sombra negra
-   y el mismo juego al pasar el mouse; solo cambia el color. Los usan los
+   Los de los Index y los de los formularios: misma forma, misma sombra y el
+   mismo juego al pasar el mouse; solo cambia el color. Los usan los
    componentes de SharedButtonForm (ButtonFormNew, ButtonFormSave,
    ButtonFormSaveOnClick, ButtonFormBack, AnchorFormBack, ButtonFormDark,
    ButtonFormRed).
@@ -1446,88 +1504,376 @@ code {
    de una pagina NO llega al marcado de un componente hijo.
    ================================================================ */
 
+/* El molde es el del escritorio (SharedButtonForm.xaml + Colors.xaml del WPF):
+   boton BLANCO con borde fino y esquina 8, una franja de color a la izquierda y
+   el texto en ese mismo color, no en blanco.
+
+   La franja mide 42 y lleva el icono dentro cuando el boton tiene icono, y se
+   encoge a 5 cuando es solo texto (por eso el :has(i)). Asi el acento esta
+   siempre.
+
+   La sombra va SOLIDA y sin difuminar, en gris azulado y no en negro: estos
+   botones tambien viven sobre el azul oscuro de las cabeceras, donde una sombra
+   negra no se distingue.
+
+   Ojo: el <i> trae style="margin-right:5px" en el marcado del componente, asi
+   que hay que ganarle con !important. Es el precio de no tocar los .razor. */
+
 .btn-gradient-blue,
 .btn-gradient-green,
 .btn-gradient-dark,
-.btn-gradient-red {
-    align-items: center;
-    border: 0;
-    border-radius: 14px;
-    color: #fff;
+.btn-gradient-red,
+.btn-gradient-purple {
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid #D7DEEC;
+    border-radius: 8px;
+    color: #16305E;
     display: inline-flex;
-    font-weight: 700;
-    gap: .5rem;
+    font-weight: 500;
+    gap: 0;
     height: 44px;
-    justify-content: center;
-    min-width: 150px;
-    padding: 0 1rem;
+    min-width: 124px;
+    overflow: hidden;
+    padding: 0;
     text-decoration: none;
-    /* Sombra negra y solida: el boton se ve levantado sobre la tarjeta */
-    box-shadow: 4px 6px 9px rgba(0, 0, 0, .72);
-    transition: transform .16s ease, box-shadow .16s ease, background .25s ease;
+    box-shadow: 2px 2px 0 #7C8CA8;
+    transition: background .18s ease;
 }
 
-    /* Al pasar el mouse sube, aclara el tono y estira la sombra */
+    /* La franja con el icono dentro */
+    .btn-gradient-blue > i,
+    .btn-gradient-green > i,
+    .btn-gradient-dark > i,
+    .btn-gradient-red > i,
+    .btn-gradient-purple > i {
+        align-items: center;
+        color: #fff;
+        display: flex;
+        flex: 0 0 42px;
+        font-size: 15px;
+        justify-content: center;
+        margin: 0 !important;
+    }
+
+    /* Sin icono la franja se encoge, pero no desaparece */
+    .btn-gradient-blue:not(:has(i))::before,
+    .btn-gradient-green:not(:has(i))::before,
+    .btn-gradient-dark:not(:has(i))::before,
+    .btn-gradient-red:not(:has(i))::before,
+    .btn-gradient-purple:not(:has(i))::before {
+        content: "";
+        flex: 0 0 5px;
+    }
+
+    .btn-gradient-blue > span:not([class*="spinner"]),
+    .btn-gradient-green > span:not([class*="spinner"]),
+    .btn-gradient-dark > span:not([class*="spinner"]),
+    .btn-gradient-red > span:not([class*="spinner"]),
+    .btn-gradient-purple > span:not([class*="spinner"]) {
+        align-self: center;
+        flex: 1;
+        padding: 0 18px;
+        text-align: center;
+    }
+
+    /* Mientras guarda no hay icono: el girador necesita su propio aire */
+    .btn-gradient-blue > [class*="spinner"],
+    .btn-gradient-green > [class*="spinner"],
+    .btn-gradient-dark > [class*="spinner"],
+    .btn-gradient-red > [class*="spinner"],
+    .btn-gradient-purple > [class*="spinner"] {
+        align-self: center;
+        margin-left: 14px;
+    }
+
+    /* Al pasar el mouse solo se tinta el fondo: el boton NO se mueve de sitio */
     .btn-gradient-blue:hover,
     .btn-gradient-green:hover,
     .btn-gradient-dark:hover,
-    .btn-gradient-red:hover {
-        color: #fff;
+    .btn-gradient-red:hover,
+    .btn-gradient-purple:hover {
+        background: #E8EEFA;
         text-decoration: none;
-        transform: translateY(-2px);
-        box-shadow: 6px 10px 16px rgba(0, 0, 0, .8);
     }
 
-    /* Al pulsar se hunde */
     .btn-gradient-blue:active,
     .btn-gradient-green:active,
     .btn-gradient-dark:active,
-    .btn-gradient-red:active {
-        transform: translateY(1px);
-        box-shadow: 2px 3px 6px rgba(0, 0, 0, .7);
+    .btn-gradient-red:active,
+    .btn-gradient-purple:active {
+        opacity: .86;
     }
 
     .btn-gradient-blue:disabled,
     .btn-gradient-green:disabled,
     .btn-gradient-dark:disabled,
-    .btn-gradient-red:disabled {
-        opacity: .65;
-        transform: none;
-        box-shadow: 2px 3px 6px rgba(0, 0, 0, .45);
+    .btn-gradient-red:disabled,
+    .btn-gradient-purple:disabled {
+        cursor: default;
+        opacity: .55;
+    }
+
+/* Talla chica: para las barras de accion de un panel, donde el boton de 44px
+   pesa demasiado. Mismo diseno, solo mas compacto. Se usa como
+   CssClass="btn-gradient-green is-sm". */
+.btn-gradient-blue.is-sm,
+.btn-gradient-green.is-sm,
+.btn-gradient-dark.is-sm,
+.btn-gradient-red.is-sm,
+.btn-gradient-purple.is-sm {
+    height: 32px;
+    min-width: 0;
+    font-size: 12px;
+}
+
+    .btn-gradient-blue.is-sm > i,
+    .btn-gradient-green.is-sm > i,
+    .btn-gradient-dark.is-sm > i,
+    .btn-gradient-red.is-sm > i,
+    .btn-gradient-purple.is-sm > i {
+        flex: 0 0 30px;
+        font-size: 13px;
+    }
+
+    .btn-gradient-blue.is-sm > span:not([class*="spinner"]),
+    .btn-gradient-green.is-sm > span:not([class*="spinner"]),
+    .btn-gradient-dark.is-sm > span:not([class*="spinner"]),
+    .btn-gradient-red.is-sm > span:not([class*="spinner"]),
+    .btn-gradient-purple.is-sm > span:not([class*="spinner"]) {
+        padding: 0 12px;
     }
 
 /* Accion principal: crear, guardar */
 .btn-gradient-blue {
-    background: linear-gradient(135deg, #6f42c1 0%, #4a4fe0 45%, #0d6efd 100%);
+    color: #16305E;
 }
 
-    .btn-gradient-blue:hover {
-        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 45%, #3b82f6 100%);
+    .btn-gradient-blue > i,
+    .btn-gradient-blue:not(:has(i))::before {
+        background: #2C5FAD;
     }
 
 /* Accion afirmativa: activar, aprobar */
 .btn-gradient-green {
-    background: linear-gradient(135deg, #17a673 0%, #0f8a5f 55%, #0a6b4c 100%);
+    color: #146C44;
 }
 
-    .btn-gradient-green:hover {
-        background: linear-gradient(135deg, #22c58c 0%, #14a172 55%, #0d8259 100%);
+    .btn-gradient-green > i,
+    .btn-gradient-green:not(:has(i))::before {
+        background: #198754;
     }
 
-/* Accion secundaria: volver, procesos en bloque */
+/* Accion secundaria: volver, procesos en bloque. Gris, para no competirle
+   al principal. */
 .btn-gradient-dark {
-    background: linear-gradient(135deg, #111827 0%, #1f2937 48%, #030712 100%);
+    color: #5B6B85;
 }
 
-    .btn-gradient-dark:hover {
-        background: linear-gradient(135deg, #253044 0%, #3d4a5f 48%, #161f2e 100%);
+    .btn-gradient-dark > i,
+    .btn-gradient-dark:not(:has(i))::before {
+        background: #8A96AB;
+    }
+
+/* Accion especial: dejar el equipo listo, provisionar. Morado para que no se
+   confunda con guardar (azul) ni con aprobar (verde). */
+.btn-gradient-purple {
+    color: #4a2a85;
+}
+
+    .btn-gradient-purple > i,
+    .btn-gradient-purple:not(:has(i))::before {
+        background: #6f42c1;
     }
 
 /* Accion destructiva en bloque */
 .btn-gradient-red {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 45%, #991b1b 100%);
+    color: #B02A37;
 }
 
-    .btn-gradient-red:hover {
-        background: linear-gradient(135deg, #fb7185 0%, #f05252 45%, #c22626 100%);
+    .btn-gradient-red > i,
+    .btn-gradient-red:not(:has(i))::before {
+        background: #DC2626;
+    }
+
+
+/* ============================================================================
+   SPIX MODALES
+   ----------------------------------------------------------------------------
+   Un solo lugar para el aspecto de los 159 modales. Todos comparten las mismas
+   clases de Bootstrap, asi que esto los cambia a todos sin tocar un solo .razor.
+
+   La forma: encabezado con el degradado azul del layout y la X arriba a la
+   derecha; cuerpo blanco con los campos en el azul gris de la zebra; y pie
+   BLANCO, para que los botones compartidos (violeta-azul y negro) se lean.
+   ============================================================================ */
+
+/* El contenedor deja de tener padding parejo: el encabezado y el pie tienen que
+   llegar a los bordes. El aire se lo pone cada bloque por dentro. */
+.modal-content.modal-create-shadow {
+    /* El aire lateral vive aqui; el encabezado y el pie lo anulan con margen
+       negativo para llegar a los bordes. Asi no importa que markup tenga adentro
+       cada formulario: todo lo del medio queda sangrado por igual. */
+    padding: 0 20px !important;
+    overflow: hidden;
+    border: 1px solid #d5dfef;
+    border-radius: 10px;
+}
+
+/* ---------- Encabezado ---------- */
+.modal-content.modal-create-shadow .modal-header {
+    position: relative;
+    margin: 0 -20px 18px !important;
+    padding: 14px 58px 14px 20px;
+    background: linear-gradient(120deg, #081634 0%, #0f2c60 55%, #1d4a96 100%);
+    border: 0;
+    border-bottom: 2px solid #5b8de0;
+}
+
+    /* La barrita celeste a la izquierda del titulo */
+    .modal-content.modal-create-shadow .modal-header::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 20px;
+        width: 3px;
+        height: 30px;
+        margin-top: -15px;
+        border-radius: 2px;
+        background: #8ab4f8;
+    }
+
+.modal-content.modal-create-shadow .modal-title {
+    margin: 0;
+    padding-left: 15px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+    .modal-content.modal-create-shadow .modal-title i {
+        color: #8ab4f8;
+    }
+
+/* La X: cuadrada y translucida, para que se vea sobre el degradado */
+.modal-content.modal-create-shadow .btn-close-modal {
+    top: 50%;
+    right: 16px;
+    width: 30px;
+    height: 30px;
+    margin-top: -15px;
+    color: #dce7f7;
+    background-color: rgba(255, 255, 255, .12);
+    border-radius: 6px;
+    box-shadow: none;
+}
+
+    .modal-content.modal-create-shadow .btn-close-modal:hover {
+        background-color: rgba(255, 255, 255, .24);
+        transform: none;
+    }
+
+    .modal-content.modal-create-shadow .btn-close-modal:active {
+        background-color: rgba(255, 255, 255, .3);
+        transform: scale(.95);
+    }
+
+/* ---------- Los campos: etiqueta pegada, en el azul gris de la zebra ---------- */
+.modal-content.modal-create-shadow .input-group {
+    border: 1px solid #cfdcef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+    /* EXCEPCION: el autocompletar cuelga su lista DENTRO del input-group, en
+       position:absolute. Con overflow hidden esa lista se RECORTA y no se ve nada:
+       el usuario escribe las tres letras y no pasa nada.
+
+       Se reconoce por .position-relative, que es justo lo que el autocompletar le
+       pone al grupo para poder colgar la lista. Ningun campo normal lo lleva.
+       Se usa eso y no :has(.list-group) porque :has solo entra cuando la lista ya
+       existe, y el borde cambiaria justo al abrirla.
+
+       Como aqui no se recorta, el redondeo se pone a mano en los extremos. */
+    .modal-content.modal-create-shadow .input-group.position-relative {
+        overflow: visible;
+    }
+
+        .modal-content.modal-create-shadow .input-group.position-relative > :first-child {
+            border-radius: 5px 0 0 5px;
+        }
+
+        .modal-content.modal-create-shadow .input-group.position-relative > .form-control {
+            border-radius: 0 5px 5px 0;
+        }
+
+.modal-content.modal-create-shadow .input-group-text {
+    color: #33456b;
+    font-size: 13px;
+    background: #dbe6f8;
+    border: 0;
+    border-right: 1px solid #cfdcef;
+    border-radius: 0;
+}
+
+.modal-content.modal-create-shadow .input-group > .form-control,
+.modal-content.modal-create-shadow .input-group > .form-select {
+    background: #e9f0fb;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+    .modal-content.modal-create-shadow .input-group > .form-control:focus,
+    .modal-content.modal-create-shadow .input-group > .form-select:focus {
+        background: #fff;
+        box-shadow: inset 0 0 0 2px #5b8de0;
+    }
+
+/* ---------- Pie ----------
+   La fila de botones de los formularios pasa a ser el pie: blanca, pegada a los
+   bordes y con los botones a la izquierda.
+
+   El orden va al reves que en el marcado: los .razor ponen Guardar y luego
+   Volver, pero en pantalla Volver va primero. Se invierte con row-reverse para
+   no tocar los 159 modales.
+
+   Se busca por :has() y no por la clase del gap: los pies estan escritos con
+   gap-3, gap-2 y hasta sin gap, asi que amarrarlo a uno solo dejaba formularios
+   con los botones al reves (Editar Compra, por ejemplo). Lo que de verdad define
+   un pie es que adentro tenga los botones compartidos.
+
+   Y por eso el justify-content es flex-END: al invertir el eje, el "inicio"
+   pasa a ser la derecha, asi que para dejarlos pegados a la izquierda hay que
+   pedir el final. */
+.modal-content.modal-create-shadow .d-flex.justify-content-center:has(> .btn-gradient-blue),
+.modal-content.modal-create-shadow .d-flex.justify-content-center:has(> .btn-gradient-dark),
+.modal-content.modal-create-shadow .d-flex.justify-content-center:has(> .btn-gradient-green),
+.modal-content.modal-create-shadow .d-flex.justify-content-center:has(> .btn-gradient-red),
+.modal-content.modal-create-shadow .d-flex.justify-content-center:has(> .btn-gradient-purple) {
+    flex-direction: row-reverse;
+    gap: 12px;
+    justify-content: flex-end !important;
+    margin: 18px -20px 0 !important;
+    padding: 14px 20px;
+    background: #fff;
+    border-top: 1px solid #e3e9f3;
+}
+
+/* ============================================================================
+   DOBLE CLICK EN LAS FILAS
+   ----------------------------------------------------------------------------
+   Igual que en el escritorio: doble click sobre la fila abre Editar, o el
+   Detalle en los modulos que no editan de a uno.
+
+   El user-select es necesario: sin el, el doble click pinta de azul el texto de
+   la celda y queda seleccionado mientras se abre el modal.
+   ============================================================================ */
+.row-dbl {
+    cursor: pointer;
+    user-select: none;
+}
+
+    .row-dbl:hover {
+        background-color: #dce8fa !important;
     }

@@ -42,6 +42,146 @@ public class CargueDetailsService : ICargueDetailsService
         _httpErrorHandler = httpErrorHandle;
         _localizer = localizer;
     }
+    //Los tres combos de la cascada Categoria -> Equipo -> MAC de ContractMac.
+    //Cada lista sale COMPLETA de aqui, con su neutro traducido: el front solo la pinta.
+    //Los tres miran lo mismo: seriales Disponibles de la corporacion del usuario. Por eso no
+    //aparece una categoria ni un equipo que no tenga ni una MAC libre.
+
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboCategoriesAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<GuidItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            var lista = await _context.CargueDetails.AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId && x.Status == SerialStateType.Disponible)
+                .Select(x => new GuidItemModel
+                {
+                    Value = x.Cargue!.Product!.ProductCategoryId,
+                    Name = x.Cargue.Product.ProductCategory!.Name
+                })
+                .Distinct()
+                .OrderBy(x => x.Name)
+                .ToListAsync();
+
+            lista.Insert(0, new GuidItemModel
+            {
+                Value = Guid.Empty,
+                Name = _localizer["Select_ProductCategory"]
+            });
+
+            return new ActionResponse<IEnumerable<GuidItemModel>>
+            {
+                WasSuccess = true,
+                Result = lista
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex);
+        }
+    }
+
+    //Los equipos de esa categoria que tienen MAC libres, con cuantas le quedan a cada uno
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboProductsAsync(string username, Guid productCategoryId)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<GuidItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            var lista = await _context.CargueDetails.AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            x.Status == SerialStateType.Disponible &&
+                            x.Cargue!.Product!.ProductCategoryId == productCategoryId)
+                .GroupBy(x => new { x.Cargue!.ProductId, x.Cargue.Product!.ProductName })
+                .Select(g => new GuidItemModel
+                {
+                    Value = g.Key.ProductId,
+                    Name = g.Key.ProductName + " (" + g.Count() + ")"
+                })
+                .OrderBy(x => x.Name)
+                .ToListAsync();
+
+            lista.Insert(0, new GuidItemModel
+            {
+                Value = Guid.Empty,
+                Name = _localizer["Select_Product"]
+            });
+
+            return new ActionResponse<IEnumerable<GuidItemModel>>
+            {
+                WasSuccess = true,
+                Result = lista
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex);
+        }
+    }
+
+    //Las MAC libres de ese equipo. Al editar se pasa el id para que la suya venga en la lista
+    //aunque ya este tomada.
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboMacsAsync(string username, Guid productId, Guid? id = null)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<GuidItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = _localizer[nameof(Resource.Generic_AuthIdFail)]
+                };
+            }
+
+            var lista = await _context.CargueDetails.AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            ((x.Cargue!.ProductId == productId && x.Status == SerialStateType.Disponible) ||
+                             (id != null && x.CargueDetailId == id)))
+                .OrderBy(x => x.MacWlan)
+                .Select(x => new GuidItemModel
+                {
+                    Value = x.CargueDetailId,
+                    Name = x.MacWlan
+                })
+                .ToListAsync();
+
+            lista.Insert(0, new GuidItemModel
+            {
+                Value = Guid.Empty,
+                Name = _localizer[nameof(Resource.Select_MAC)]
+            });
+
+            return new ActionResponse<IEnumerable<GuidItemModel>>
+            {
+                WasSuccess = true,
+                Result = lista
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<GuidItemModel>>> ComboAsync(string username, Guid? id = null)
     {
         try
@@ -231,11 +371,16 @@ public class CargueDetailsService : ICargueDetailsService
                 };
             }
 
-            modelo.CargueId = currentDetail.CargueId;
-            modelo.CorporationId = currentDetail.CorporationId;
-            CargueDetail NewModelo = _mapperService.Map<CargueDetail, CargueDetail>(modelo);
-
-            _context.CargueDetails.Update(NewModelo);
+            //Se asigna campo por campo SOBRE la instancia que ya quedo rastreada arriba.
+            //Antes se mapeaba a un objeto nuevo y se llamaba Update(): EF no admite dos
+            //instancias con la misma clave y lanzaba InvalidOperationException, que llega
+            //al usuario como "no se puede completar en el estado actual". Es el mismo
+            //patron de PurchaseDetailsService.UpdateAsync.
+            //
+            //El cargue y la corporacion no se tocan: un serial no se cambia de cargue.
+            currentDetail.MacWlan = modelo.MacWlan;
+            currentDetail.Comment = modelo.Comment;
+            currentDetail.Status = modelo.Status;
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
@@ -243,7 +388,7 @@ public class CargueDetailsService : ICargueDetailsService
             return new ActionResponse<CargueDetail>
             {
                 WasSuccess = true,
-                Result = modelo
+                Result = currentDetail
             };
         }
         catch (Exception ex)
@@ -327,11 +472,9 @@ public class CargueDetailsService : ICargueDetailsService
 
             _context.CargueDetails.Add(modelo);
 
-            //Con el ultimo serial de la compra, el cargue se cierra solo
-            if (totalSeriales + 1 >= cargue.CantToUp)
-            {
-                cargue.Status = CargueType.Completado;
-            }
+            //El cargue NO se cierra solo al llegar al ultimo serial: lo cierra el operador
+            //con el boton. Si se cerrara aqui, un serial mal escaneado quedaria sin arreglo,
+            //porque editar y borrar exigen que el cargue siga Pendiente.
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

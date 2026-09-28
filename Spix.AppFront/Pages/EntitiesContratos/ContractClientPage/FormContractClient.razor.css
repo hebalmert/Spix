@@ -74,3 +74,28 @@
     color: #6b7690;
     font-size: 12px;
 }
+
+/* El plan: los dos combos anidados en una caja con acento, porque es la condicion
+   comercial que define velocidad y precio de todo el contrato. */
+.cc-plan-box {
+    padding: 10px 12px;
+    border: 1px solid #c7d7f5;
+    border-radius: 8px;
+    background: #eef4ff;
+}
+
+/* Lo que ese plan significa, para no tener que abrir el modulo de planes */
+.cc-plan-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 10px;
+    padding-top: 8px;
+    color: #2a4a80;
+    font-size: 12.5px;
+    border-top: 1px solid #c7d7f5;
+}
+
+    .cc-plan-facts i {
+        margin-right: 5px;
+    }

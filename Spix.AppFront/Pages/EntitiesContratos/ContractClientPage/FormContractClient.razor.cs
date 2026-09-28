@@ -37,6 +37,11 @@ public partial class FormContractClient
     private Guid Value = Guid.Empty;
     private List<IntItemModel>? WorkStatuses;
     private List<GuidItemModel>? EstratosSociales;
+
+    //El plan se elige en dos pasos: primero la categoria, despues el plan de esa categoria.
+    //Mismo patron que Departamento -> Ciudad -> Zona.
+    private List<PlanCategory>? PlanCategories = new();
+    private List<Plan>? Plans = new();
     private string ValueText = string.Empty;
     private string BaseView = "/contractclients";
     private string BaseClient = "/api/v1/clients";
@@ -50,9 +55,19 @@ public partial class FormContractClient
     private string BaseComboCity = "/api/v1/combosData/ComboCity";
     private string BaseComboZone = "/api/v1/zones/loadCombo";
     private string BaseComboEstratoSocial = "/api/v1/estratossociales/loadCombo";
+    private string BaseComboPlanCategory = "/api/v1/plancategories/loadCombo";
+    private string BaseComboPlan = "/api/v1/plans/loadComboByCategory";
 
     //Se enciende cuando intentan guardar sin elegir estado
     private bool StatusMissing;
+
+    //Se enciende cuando intentan guardar sin elegir plan
+    private bool PlanMissing;
+
+    //El plan elegido, para mostrar velocidad, precio y reuso debajo de los combos.
+    //Se resuelve aqui y no en el marcado: el .razor no calcula.
+    private Plan? SelectedPlan =>
+        Plans?.FirstOrDefault(x => x.PlanId == ContractClient.PlanId && x.PlanId != Guid.Empty);
 
     //Valor del combo de estado: un int, igual que CountryId en FormCorporation
     private int StatusValue => (int)ContractClient.ContractState;
@@ -68,6 +83,7 @@ public partial class FormContractClient
     protected override async Task OnInitializedAsync()
     {
         await LoadState();
+        await LoadPlanCategories();
         await LoadContractor();
         await LoadStatus();
         await LoadEstratosSociales();
@@ -183,6 +199,66 @@ public partial class FormContractClient
         {
             ContractClient.ContractorId = contractorid;
         }
+    }
+
+    private async Task LoadPlanCategories()
+    {
+        var responseHttp = await _repository.GetAsync<List<PlanCategory>>($"{BaseComboPlanCategory}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            _navigationManager.NavigateTo($"{BaseView}");
+            return;
+        }
+
+        PlanCategories = responseHttp.Response;
+
+        if (IsEditControl && ContractClient.PlanCategoryId != Guid.Empty)
+        {
+            await LoadPlans(ContractClient.PlanCategoryId);
+        }
+    }
+
+    private async Task PlanCategoryChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var categoryId))
+        {
+            ContractClient.PlanCategoryId = categoryId;
+
+            //Al cambiar de categoria el plan elegido deja de valer
+            ContractClient.PlanId = Guid.Empty;
+            Plans = new();
+
+            await LoadPlans(categoryId);
+        }
+    }
+
+    private async Task LoadPlans(Guid categoryId)
+    {
+        if (categoryId == Guid.Empty)
+        {
+            Plans = new();
+            return;
+        }
+
+        var responseHttp = await _repository.GetAsync<List<Plan>>($"{BaseComboPlan}/{categoryId}");
+        if (await _responseHandler.HandleErrorAsync(responseHttp))
+        {
+            Plans = new();
+            return;
+        }
+
+        Plans = responseHttp.Response;
+    }
+
+    private async Task PlanChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var planId))
+        {
+            ContractClient.PlanId = planId;
+            PlanMissing = false;
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadState()

@@ -1,0 +1,63 @@
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Spix.AppBack.Helper;
+using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
+using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.AppResponses;
+
+namespace Spix.AppBack.Controllers.EntitiesNet;
+
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/contractolts")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+[ApiController]
+public class ContractOltsController : ControllerBase
+{
+    private readonly IContractOltServiceX _serverUnitOfWork;
+    private readonly IStringLocalizer _localizer;
+
+    public ContractOltsController(IContractOltServiceX serverUnitOfWork, IStringLocalizer localizer)
+    {
+        _serverUnitOfWork = serverUnitOfWork;
+        _localizer = localizer;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAsync(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _serverUnitOfWork.GetAsync(id, userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return NotFound(response.Message);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ContractOlt>> PostAsync(ContractOlt modelo)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _serverUnitOfWork.AddAsync(modelo, userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<bool>> DeleteAsync(Guid id)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _serverUnitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+}

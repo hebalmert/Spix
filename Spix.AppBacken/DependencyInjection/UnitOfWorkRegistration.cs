@@ -159,16 +159,21 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IIpNetworkService, IpNetworkService>();
             services.AddScoped<INodeServiceX, NodeServiceX>();
             services.AddScoped<INodeService, NodeService>();
+
+            //La OLT: el gemelo del Nodo para los clientes de fibra
+            services.AddScoped<IOltServiceX, OltServiceX>();
+            services.AddScoped<IOltService, OltService>();
             services.AddScoped<IServerServiceX, ServerServiceX>();
             services.AddScoped<IServerService, ServerService>();
             services.AddScoped<INodeMapServiceX, NodeMapServiceX>();
             services.AddScoped<INodeMapService, NodeMapService>();
 
+            services.AddScoped<IOltMapServiceX, OltMapServiceX>();
+            services.AddScoped<IOltMapService, OltMapService>();
+
             //MikrotikServices
             services.AddScoped<IMkConnectionServiceX, MkConnectionServiceX>();
             services.AddScoped<IMkConnectionService, MkConnectionService>();
-            services.AddScoped<IConnectionMikrotikControlServiceX, ConnectionMikrotikControlServiceX>();
-            services.AddScoped<IConnectionMikrotikControlService, ConnectionMikrotikControlService>();
             services.AddScoped<IQueueTypeServiceX, QueueTypeServiceX>();
             services.AddScoped<IQueueTypeService, QueueTypeService>();
 
@@ -233,6 +238,9 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IContractServerService, ContractServerService>();
             services.AddScoped<IContractNodeServiceX, ContractNodeServiceX>();
             services.AddScoped<IContractNodeService, ContractNodeService>();
+
+            services.AddScoped<IContractOltServiceX, ContractOltServiceX>();
+            services.AddScoped<IContractOltService, ContractOltService>();
             services.AddScoped<IContractMapServiceX, ContractMapServiceX>();
             services.AddScoped<IContractMapService, ContractMapService>();
             services.AddScoped<IContractPlanServiceX, ContractPlanServiceX>();
@@ -241,6 +249,9 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IContractQueService, ContractQueService>();
             services.AddScoped<IContractBindServiceX, ContractBindServiceX>();
             services.AddScoped<IContractBindService, ContractBindService>();
+
+            services.AddScoped<IContractPppoeServiceX, ContractPppoeServiceX>();
+            services.AddScoped<IContractPppoeService, ContractPppoeService>();
 
             //Schedule
             services.AddScoped<IScheduleServiceX, ScheduleServiceX>();

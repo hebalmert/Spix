@@ -21,4 +21,10 @@ public interface IContractMkSetupServiceX
     Task<ActionResponse<ContractQueRemoveSetupDTO>> GetQueRemoveSetupAsync(Guid contractQueId, string username);
 
     Task<ActionResponse<ContractMkConnectionDTO>> GetConnectionAsync(Guid contractClientId, string username);
+
+    Task<ActionResponse<ContractPppoeLocalSetupDTO>> GetPppoeSetupAsync(Guid contractClientId, string username);
+
+    Task<ActionResponse<ContractPppoe>> SavePppoeAsync(ContractPppoeLocalSaveDTO datos, string username);
+
+    Task<ActionResponse<bool>> RemovePppoeAsync(Guid credentialId, string username);
 }

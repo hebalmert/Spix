@@ -42,17 +42,19 @@
 
             @* Acciones: cerrar va aparte, a la derecha, para no pulsarlo por error *@
             <div class="pu-actions">
-                <a class="btn pu-btn" href="/purchases">
-                    <i class="fa fa-arrow-left"></i> @Localizer["Purchase_Back"]
-                </a>
+                <AnchorFormBack Href="/purchases" TooTip="@Localizer["Purchase_Back"]" />
                 @if (IsOpen)
                 {
-                    <button class="btn pu-btn" @onclick="() => ShowModalAsync()">
-                        <i class="fa fa-plus"></i> @Localizer[nameof(Resource.Product)]
-                    </button>
-                    <button class="btn pu-btn pu-btn-close" @onclick="ClosePurchaseAsync">
-                        <i class="fa fa-lock"></i> @Localizer["Purchase_Close"]
-                    </button>
+                    <ButtonFormNew OnClick="() => ShowModalAsync()" TooTip="@Localizer[nameof(Resource.Product)]" />
+
+                    @* Cerrar conserva su candado y su verde, pero con el molde compartido.
+                       El envoltorio es el que lo manda a la derecha: la clase no se le puede
+                       poner al boton porque el CSS aislado no alcanza el marcado de un hijo. *@
+                    <div class="pu-close-wrap">
+                        <ButtonFormGreen OnClick="ClosePurchaseAsync"
+                                         Icon="fa fa-lock"
+                                         TooTip="@Localizer["Purchase_Close"]" />
+                    </div>
                 }
             </div>
         }
