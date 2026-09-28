@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.AuthenticationProviders;
 using Spix.AppFront.GenericModel;
@@ -24,6 +25,7 @@ public partial class Login
     [Inject] private HttpResponseHandler _httpHandler { get; set; } = null!;
     [Inject] private ModalService _modalService { get; set; } = null!;
     [Inject] private ILocalStorageService _localStorage { get; set; } = null!;
+    [Inject] private AuthenticationStateProvider _authStateProvider { get; set; } = null!;
 
     private LoginDTO loginDTO = new();
     private SessionModelDTO sessionModelDTO = new();
@@ -69,31 +71,17 @@ public partial class Login
         sessionModelDTO.Expiration = responseHttp.Response.Expiration;
         await _sessionModel.SetSessionAsync(sessionModelDTO, "SessionDTO");
 
-        isProcessing = false;
-        var dashboardUrl = await TakeReturnUrlAsync() ?? GetDashboardUrl(roles);
+        var dashboardUrl = await TakeReturnUrlAsync() ?? DashboardRoute.For(roles);
 
+        //El estado nuevo se pide UNA vez antes de navegar. Sin esto la ruta protegida se
+        //evaluaba con el estado anterior (anonimo) y el Router la mandaba a UnauthorizedRedirect,
+        //que recargaba la app entera en el landing: por eso habia que loguearse dos veces.
+        await _authStateProvider.GetAuthenticationStateAsync();
+
+        isProcessing = false;
         _navigation.NavigateTo(dashboardUrl);
     }
 
-    private static string GetDashboardUrl(IEnumerable<string> roles)
-    {
-        if (roles.Any(x => string.Equals(x, UserType.Admin.ToString(), StringComparison.OrdinalIgnoreCase)))
-        {
-            return "/saasdashboard";
-        }
-
-        if (roles.Any(x => string.Equals(x, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase)))
-        {
-            return "/client-dashboard";
-        }
-
-        if (roles.Any(x => string.Equals(x, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase)))
-        {
-            return "/tech-dashboard";
-        }
-
-        return "/dashboard";
-    }
 
     private async Task OpenRecoverPasswordModal()
     {

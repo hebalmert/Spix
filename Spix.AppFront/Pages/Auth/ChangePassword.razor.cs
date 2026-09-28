@@ -75,18 +75,7 @@ public partial class ChangePassword
     private async Task NavigateToDashboardByRoleAsync()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var role = authState.User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role")
-            ?.Value;
 
-        var dashboardUrl = role switch
-        {
-            var r when string.Equals(r, UserType.Admin.ToString(), StringComparison.OrdinalIgnoreCase) => "/saasdashboard",
-            var r when string.Equals(r, UserType.Client.ToString(), StringComparison.OrdinalIgnoreCase) => "/client-dashboard",
-            var r when string.Equals(r, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase) => "/tech-dashboard",
-            _ => "/dashboard"
-        };
-
-        _navigation.NavigateTo(dashboardUrl);
+        _navigation.NavigateTo(DashboardRoute.For(DashboardRoute.RolesOf(authState.User)));
     }
 }

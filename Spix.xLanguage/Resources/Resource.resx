@@ -4273,4 +4273,10 @@
   <data name="Contract_NoServerYet" xml:space="preserve">
     <value>No server assigned yet</value>
   </data>
+  <data name="PasswordsMatch" xml:space="preserve">
+    <value>The passwords match</value>
+  </data>
+  <data name="PasswordsDontMatch" xml:space="preserve">
+    <value>The passwords do not match</value>
+  </data>
 </root>

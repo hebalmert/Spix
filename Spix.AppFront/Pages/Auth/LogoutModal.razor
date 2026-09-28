@@ -1,26 +1,24 @@
-﻿
-    <div class="modal show d-block fade" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
+@* El mismo cascaron de los demas modales: fondo oscuro, cabecera con el titulo y la X,
+   y los botones compartidos de la familia Shared. *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
                 <h5 class="modal-title">@Localizer[nameof(Resource.LogoutTitle)]</h5>
-                <button type="button" class="btn-close" aria-label="Close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                <p>@Localizer[nameof(Resource.LogoutMsg)]</p>
-                </div>
-                <div class="modal-footer">
-                <button class="btn btn-gradient-primary" @onclick="ConfirmLogout">
-                    <i class="fa fa-right-from-bracket me-2"></i> @Localizer[nameof(Resource.ButtonLogout)]
+                <button class="btn-close-modal" @onclick="CloseModal" title="Close">
+                    <i class="fa fa-times"></i>
                 </button>
-                <button class="btn btn-gradient-black" @onclick="CloseModal">
-                    <i class="fa fa-arrow-left me-2"></i> @Localizer[nameof(Resource.ButtonCancel)]
-                    </button>
-                </div>
+            </div>
+
+            <p class="mb-0">@Localizer[nameof(Resource.LogoutMsg)]</p>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <ButtonFormRed Icon="fa fa-right-from-bracket"
+                               TooTip="@Localizer[nameof(Resource.ButtonLogout)]"
+                               OnClick="ConfirmLogout" />
+                <ButtonFormBack TooTip="@Localizer[nameof(Resource.ButtonCancel)]"
+                                OnClick="CloseModal" />
             </div>
         </div>
     </div>
-
-    <div class="modal-backdrop fade show"></div>
-
-
+</div>

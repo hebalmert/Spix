@@ -8161,6 +8161,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The passwords do not match.
+        /// </summary>
+        public static string PasswordsDontMatch {
+            get {
+                return ResourceManager.GetString("PasswordsDontMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The passwords match.
+        /// </summary>
+        public static string PasswordsMatch {
+            get {
+                return ResourceManager.GetString("PasswordsMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your Password has been changed successfully.
         /// </summary>
         public static string PasswordUpdateMsg {
