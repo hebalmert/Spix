@@ -2473,6 +2473,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This corporation cannot be deleted because it already holds data ({0}). Deactivate it instead: deleting it would wipe out its clients, contracts, payments and operations..
+        /// </summary>
+        public static string Corporation_DeleteHasData {
+            get {
+                return ResourceManager.GetString("Corporation_DeleteHasData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The companies that use Spix.
         /// </summary>
         public static string CorporationIdx_Subtitle {
@@ -6730,6 +6739,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Transfers.
+        /// </summary>
+        public static string Menu_Transfers {
+            get {
+                return ResourceManager.GetString("Menu_Transfers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Users.
         /// </summary>
         public static string Menu_Users {
@@ -8800,6 +8818,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The credential is cut off for non payment: its state is handled by the suspension process..
+        /// </summary>
+        public static string Pppoe_StateLockedByCut {
+            get {
+                return ResourceManager.GetString("Pppoe_StateLockedByCut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose Active or Blocked. The Cut off state is set by the suspension process..
+        /// </summary>
+        public static string Pppoe_StateNotAllowed {
+            get {
+                return ResourceManager.GetString("Pppoe_StateNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The PPPoE user {0} already exists on the equipment and is not managed by Spix. Check the equipment or use another user..
         /// </summary>
         public static string Pppoe_UserExistsOnDevice {
@@ -8814,6 +8850,33 @@ namespace Spix.xLanguage.Resources {
         public static string Pppoe_UserRepeated {
             get {
                 return ResourceManager.GetString("Pppoe_UserRepeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string PppoeAccessState_Activo {
+            get {
+                return ResourceManager.GetString("PppoeAccessState_Activo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blocked.
+        /// </summary>
+        public static string PppoeAccessState_Bloqueado {
+            get {
+                return ResourceManager.GetString("PppoeAccessState_Bloqueado", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cut off.
+        /// </summary>
+        public static string PppoeAccessState_Corte {
+            get {
+                return ResourceManager.GetString("PppoeAccessState_Corte", resourceCulture);
             }
         }
         
@@ -10807,6 +10870,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select access state].
+        /// </summary>
+        public static string Select_AccessState {
+            get {
+                return ResourceManager.GetString("Select_AccessState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Corporation].
         /// </summary>
         public static string Select_B_Corporation {
@@ -12418,6 +12490,51 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Available.
+        /// </summary>
+        public static string Transfer_Available {
+            get {
+                return ResourceManager.GetString("Transfer_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer items.
+        /// </summary>
+        public static string Transfer_Details {
+            get {
+                return ResourceManager.GetString("Transfer_Details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quantity.
+        /// </summary>
+        public static string Transfer_Quantity {
+            get {
+                return ResourceManager.GetString("Transfer_Quantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move stock from one storage to another.
+        /// </summary>
+        public static string Transfer_Subtitle {
+            get {
+                return ResourceManager.GetString("Transfer_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock transfers.
+        /// </summary>
+        public static string Transfer_Title {
+            get {
+                return ResourceManager.GetString("Transfer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Transfer Date.
         /// </summary>
         public static string TransferDate {
@@ -12432,6 +12549,24 @@ namespace Spix.xLanguage.Resources {
         public static string TransferNumber {
             get {
                 return ResourceManager.GetString("TransferNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed.
+        /// </summary>
+        public static string TransferType_Completado {
+            get {
+                return ResourceManager.GetString("TransferType_Completado", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string TransferType_Pendiente {
+            get {
+                return ResourceManager.GetString("TransferType_Pendiente", resourceCulture);
             }
         }
         

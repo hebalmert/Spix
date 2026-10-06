@@ -20,11 +20,11 @@ public class TransferServiceX : ITransferServiceX
 
     public async Task<ActionResponse<IEnumerable<Transfer>>> GetAsync(PaginationDTO pagination, string email) => await _transferService.GetAsync(pagination, email);
 
-    public async Task<ActionResponse<Transfer>> GetAsync(Guid id) => await _transferService.GetAsync(id);
+    public async Task<ActionResponse<Transfer>> GetAsync(Guid id, string username) => await _transferService.GetAsync(id, username);
 
-    public async Task<ActionResponse<Transfer>> UpdateAsync(Transfer modelo) => await _transferService.UpdateAsync(modelo);
+    public async Task<ActionResponse<Transfer>> UpdateAsync(Transfer modelo, string username) => await _transferService.UpdateAsync(modelo, username);
 
     public async Task<ActionResponse<Transfer>> AddAsync(Transfer modelo, string email) => await _transferService.AddAsync(modelo, email);
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id) => await _transferService.DeleteAsync(id);
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username) => await _transferService.DeleteAsync(id, username);
 }

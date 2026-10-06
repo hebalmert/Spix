@@ -1,13 +1,16 @@
-﻿<EditForm Model="TransferDetails" OnValidSubmit="OnSubmit">
+@* Una linea del traslado: que producto se mueve y cuanto.
+   Los cuatro campos con el mismo molde del resto del sistema: input-group con su rotulo
+   gris a la izquierda y todos del mismo ancho. *@
+<EditForm Model="TransferDetails" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
-    <div class="col-md-6 mb-2">
+    <div class="mb-2">
         <GenericSelectWrapper Tmodel="ProductCategory" Items="Categories">
             <Body>
             <div class="input-group">
-                <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Category)]</span>
-                <select class="form-select" value="@TransferDetails.Product!.ProductCategoryId" @onchange="CategoryChanged">
-                    @foreach (var item in Categories)
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Category)]</span>
+                <select class="form-select" value="@SelectedCategoryId" @onchange="CategoryChanged">
+                    @foreach (var item in Categories!)
                     {
                         <option value="@item.ProductCategoryId">@item.Name</option>
                     }
@@ -17,13 +20,13 @@
         </GenericSelectWrapper>
     </div>
 
-    <div class="col-md-6 mb-2">
+    <div class="mb-2">
         <GenericSelectWrapper Tmodel="Product" Items="Products">
             <Body>
             <div class="input-group">
-                <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Product)]</span>
+                <span class="input-group-text" style="width: 150px">@Localizer[nameof(Resource.Product)]</span>
                 <select class="form-select" value="@TransferDetails.ProductId" @onchange="ProductsChanged">
-                    @foreach (var item in Products)
+                    @foreach (var item in Products!)
                     {
                         <option value="@item.ProductId">@item.ProductName</option>
                     }
@@ -33,22 +36,23 @@
         </GenericSelectWrapper>
     </div>
 
-    <!-- Disponible -->
-    <div class="mb-4">
-        <label class="form-label">Disponible</label>
-        <InputNumber class="form-control"
-                     @bind-Value="StockAvaible"
-                     readonly />
+    @* Lo que hay del producto en la bodega de ORIGEN: es el techo de la cantidad *@
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">@Localizer["Transfer_Available"]</span>
+            <InputNumber class="form-control" @bind-Value="StockAvaible" readonly />
+        </div>
     </div>
 
-    <!-- Cantidad Transferir -->
-    <div class="mb-4">
-        <label class="form-label">Cantidad Transferir</label>
-        <InputNumber class="form-control"
-                     @bind-Value="TransferDetails.Quantity"
-                     @oninput="@(e => CalculoTotalCant(decimal.Parse(e.Value?.ToString() ?? "0")))" />
-        <ValidationMessage For="@(() => TransferDetails.Quantity)" />
+    <div class="mb-2">
+        <div class="input-group">
+            <span class="input-group-text" style="width: 150px">@Localizer["Transfer_Quantity"]</span>
+            <InputNumber class="form-control"
+                         @bind-Value="TransferDetails.Quantity"
+                         @oninput="@(e => CalculoTotalCant(decimal.TryParse(e.Value?.ToString(), out var valor) ? valor : 0))" />
+        </div>
     </div>
+    <ValidationMessage For="@(() => TransferDetails.Quantity)" />
 
     <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-4">
@@ -56,4 +60,3 @@
         <ButtonFormSave />
     </div>
 </EditForm>
-

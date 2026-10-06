@@ -62,7 +62,8 @@ public class TransfersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(Guid id)
     {
-        var response = await _transferUnitOfWork.GetAsync(id);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferUnitOfWork.GetAsync(id, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
@@ -73,7 +74,8 @@ public class TransfersController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<Transfer>> PutAsync(Transfer modelo)
     {
-        var response = await _transferUnitOfWork.UpdateAsync(modelo);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferUnitOfWork.UpdateAsync(modelo, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);
@@ -97,7 +99,8 @@ public class TransfersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> DeleteAsync(Guid id)
     {
-        var response = await _transferUnitOfWork.DeleteAsync(id);
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferUnitOfWork.DeleteAsync(id, userClaimsInfo.UserName);
         if (response.WasSuccess)
         {
             return Ok(response.Result);

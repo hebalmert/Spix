@@ -9,6 +9,7 @@
             <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
             <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
             <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
             <RowDefinition Height="Auto"/><RowDefinition Height="24"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -38,9 +39,17 @@
         <Border Grid.Row="6" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Usuario PPPoE"/>
         </Border>
-        <TextBox Grid.Row="6" Grid.Column="1" MaxLength="50"
-                 Style="{StaticResource SharedFormBox}"
-                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"/>
+        <Grid Grid.Row="6" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" MaxLength="50" Style="{StaticResource SharedFormBox}"
+                     Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Column="1" Margin="8,0,0,0" Width="44"
+                    Command="{Binding ProposeUsernameCommand}" Content="#"
+                    ToolTip="Proponer usuario: apellido + numero de contrato"/>
+        </Grid>
 
         <Border Grid.Row="8" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Clave PPPoE"/>
@@ -56,10 +65,29 @@
                     Command="{Binding GeneratePasswordCommand}" Content="+" ToolTip="Generar clave"/>
         </Grid>
 
-        <shared:SharedModalActions Grid.Row="10" Grid.ColumnSpan="2"
+        <!-- El estado del acceso, solo al editar: una credencial nueva nace Activa.
+             En Corte por mora no se ofrece el combo, porque ese estado lo maneja la
+             suspension y cambiarlo a mano desincronizaria el contrato. -->
+        <Border Grid.Row="10" Style="{StaticResource SharedFormLabel}"
+                Visibility="{Binding IsEdit, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estado Acceso"/>
+        </Border>
+        <ComboBox Grid.Row="10" Grid.Column="1"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding AccessStates}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding AccessStateValue, Mode=TwoWay}"
+                  Visibility="{Binding CanChangeAccess, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBox Grid.Row="10" Grid.Column="1" IsReadOnly="True"
+                 Style="{StaticResource SharedFormBox}"
+                 Text="Corte por mora: lo maneja la suspension"
+                 Visibility="{Binding IsCut, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        <shared:SharedModalActions Grid.Row="12" Grid.ColumnSpan="2"
                                    SaveText="{Binding SaveText}"
                                    SaveCommand="{Binding SaveCommand}"
                                    CancelCommand="{Binding CancelCommand}"/>
-        <shared:SharedLoading Grid.RowSpan="11" Grid.ColumnSpan="2" IsLoading="{Binding IsLoading}"/>
+        <shared:SharedLoading Grid.RowSpan="13" Grid.ColumnSpan="2" IsLoading="{Binding IsLoading}"/>
     </Grid>
 </UserControl>

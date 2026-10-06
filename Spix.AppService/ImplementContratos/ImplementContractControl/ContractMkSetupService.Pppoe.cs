@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.xLanguage.Resources;
 
@@ -70,6 +71,23 @@ public partial class ContractMkSetupService
         }
     }
 
+    //Los estados que el operador puede elegir desde el ESCRITORIO. Es la copia de la
+    //lista de v1, a proposito: v2 no se cuelga de v1 para no arriesgar lo que ya funciona.
+    //Corte queda fuera: ese lo pone la suspension por mora.
+    public ActionResponse<IEnumerable<IntItemModel>> PppoeAccessStatesCombo()
+    {
+        var list = _enumMultilLanguageService
+            .GetEnumSelectList<PppoeAccessState>(nameof(Resource.Select_AccessState))
+            .Where(x => x.Value != (int)PppoeAccessState.Corte)
+            .ToList();
+
+        return new ActionResponse<IEnumerable<IntItemModel>>
+        {
+            WasSuccess = true,
+            Result = list
+        };
+    }
+
     public async Task<ActionResponse<ContractPppoe>> SavePppoeAsync(ContractPppoeLocalSaveDTO datos, string username)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -136,6 +154,19 @@ public partial class ContractMkSetupService
                     PppoeAccessState = PppoeAccessState.Activo
                 };
                 _context.ContractPppoes.Add(current);
+            }
+
+            //El estado de acceso. Mientras la credencial este en CORTE por mora el operador
+            //no lo maneja: lo devuelve la suspension. Misma regla que la web.
+            if (current.PppoeAccessState != PppoeAccessState.Corte)
+            {
+                if (datos.AccessState != PppoeAccessState.Activo &&
+                    datos.AccessState != PppoeAccessState.Bloqueado)
+                {
+                    return await PppoeRollbackAsync<ContractPppoe>(_localizer[nameof(Resource.Pppoe_StateNotAllowed)]);
+                }
+
+                current.PppoeAccessState = datos.AccessState;
             }
 
             current.Usuario = normalizedUser;

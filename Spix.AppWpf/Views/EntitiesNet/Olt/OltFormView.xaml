@@ -1,0 +1,242 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesNet.Olt.OltFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             Width="796"
+             MinWidth="796">
+
+    <!-- El formulario de la OLT, el equipo de central de la fibra.
+         Es el de Nodos sin lo inalambrico: no tiene operacion, frecuencia, canal ni
+         seguridad. En su lugar lleva cuantos puertos PON tiene y a que velocidad va cada uno.
+         Los combos encadenados van en OneWay + SelectionChanged: con TwoWay el enlace escribe
+         el valor antes de que llegue el evento y el hijo nunca se recarga. -->
+    <ScrollViewer MaxHeight="470" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="0,24,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="1" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="1" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="1" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- El nombre, en fila completa -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="OLT" />
+                </Border>
+                <TextBox Grid.Column="1" MaxLength="50" Style="{StaticResource SharedFormBox}"
+                         Text="{Binding Entity.OltName, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <!-- Marca + Modelo -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Marca" />
+                </Border>
+                <ComboBox Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                          ItemsSource="{Binding Marks}" DisplayMemberPath="MarkName" SelectedValuePath="MarkId"
+                          SelectedValue="{Binding Entity.MarkId, Mode=OneWay}"
+                          SelectionChanged="MarkSelectionChanged" />
+                <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Modelo" />
+                </Border>
+                <ComboBox Grid.Column="4" Style="{StaticResource SharedFormCombo}"
+                          ItemsSource="{Binding MarkModels}" DisplayMemberPath="MarkModelName" SelectedValuePath="MarkModelId"
+                          SelectedValue="{Binding Entity.MarkModelId, Mode=TwoWay}" />
+            </Grid>
+
+            <Grid Grid.Row="4" Grid.ColumnSpan="5" Background="#566273" />
+
+            <!-- Como entrarle al equipo. Spix NO se conecta: solo queda registrado. -->
+            <Grid Grid.Row="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="IP red" />
+                </Border>
+                <ComboBox Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                          ItemsSource="{Binding IpNetworks}" DisplayMemberPath="Ip" SelectedValuePath="IpNetworkId"
+                          SelectedValue="{Binding Entity.IpNetworkId, Mode=TwoWay}" />
+                <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Usuario" />
+                </Border>
+                <TextBox Grid.Column="4" MaxLength="25" Style="{StaticResource SharedFormBox}"
+                         Text="{Binding Entity.Usuario, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <!-- La clave, en fila completa porque lleva el boton del ojo -->
+            <Grid Grid.Row="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="46" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Clave" />
+                </Border>
+                <TextBox x:Name="PasswordTextBox" Grid.Column="1" MaxLength="25"
+                         Text="{Binding Entity.Clave, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource SharedFormBox}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPasswordVisible}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <PasswordBox x:Name="PasswordBox" Grid.Column="1" MinHeight="42" MaxLength="25" Padding="12,8"
+                             Background="White" BorderBrush="#566273" PasswordChanged="PasswordChanged">
+                    <PasswordBox.Style>
+                        <Style TargetType="PasswordBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPasswordVisible}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </PasswordBox.Style>
+                </PasswordBox>
+                <Button Grid.Column="2" Width="42" Height="42" HorizontalAlignment="Right"
+                        Command="{Binding TogglePasswordVisibilityCommand}" Click="TogglePasswordClick"
+                        Style="{StaticResource SharedButtonTableRowEdit}" ToolTip="Mostrar u ocultar clave">
+                    <fa:FontAwesomeImage Width="16" Height="16" IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}">
+                        <fa:FontAwesomeImage.Style>
+                            <Style TargetType="fa:FontAwesomeImage" BasedOn="{StaticResource SharedButtonTableRowIcon}">
+                                <Setter Property="Icon" Value="{x:Static icons:FontAwesomeIcon.Eye}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPasswordVisible}" Value="True">
+                                        <Setter Property="Icon" Value="{x:Static icons:FontAwesomeIcon.EyeSlash}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </fa:FontAwesomeImage.Style>
+                    </fa:FontAwesomeImage>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Row="10" Grid.ColumnSpan="5" Background="#566273" />
+
+            <!-- Los puertos: lo propio de una OLT -->
+            <Grid Grid.Row="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Puertos PON" />
+                </Border>
+                <TextBox Grid.Column="1" MaxLength="3" Style="{StaticResource SharedFormBox}"
+                         Text="{Binding Entity.PortCount, UpdateSourceTrigger=PropertyChanged}" />
+                <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Velocidad" />
+                </Border>
+                <TextBox Grid.Column="4" MaxLength="15" Style="{StaticResource SharedFormBox}"
+                         Text="{Binding Entity.PortSpeed, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Como la nombra el fabricante: 1G, 2.5G, 10G" />
+            </Grid>
+
+            <!-- Coordenadas + Activo -->
+            <Grid Grid.Row="14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Coordenadas" />
+                </Border>
+                <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                         Text="{Binding CoordinatesText, UpdateSourceTrigger=PropertyChanged}"
+                         LostFocus="CoordinatesLostFocus"
+                         ToolTip="25.82370270482433, -80.38556718743175" />
+                <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Activo" />
+                </Border>
+                <CheckBox Grid.Column="4" Margin="14,0,0,0" VerticalAlignment="Center"
+                          IsChecked="{Binding Entity.Active, Mode=TwoWay}" />
+            </Grid>
+
+            <Grid Grid.Row="16" Grid.ColumnSpan="5" Background="#566273" />
+
+            <!-- Donde esta instalada: estado y ciudad solo encadenan hasta la zona -->
+            <Grid Grid.Row="18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estado" />
+                </Border>
+                <ComboBox Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                          ItemsSource="{Binding States}" DisplayMemberPath="Name" SelectedValuePath="StateId"
+                          SelectedValue="{Binding Entity.StateId, Mode=OneWay}"
+                          SelectionChanged="StateSelectionChanged" />
+                <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Ciudad" />
+                </Border>
+                <ComboBox Grid.Column="4" Style="{StaticResource SharedFormCombo}"
+                          ItemsSource="{Binding Cities}" DisplayMemberPath="Name" SelectedValuePath="CityId"
+                          SelectedValue="{Binding Entity.CityId, Mode=OneWay}"
+                          SelectionChanged="CitySelectionChanged" />
+            </Grid>
+
+            <Grid Grid.Row="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource SharedFormLabel}">
+                    <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Zona" />
+                </Border>
+                <ComboBox Grid.Column="1" Style="{StaticResource SharedFormCombo}"
+                          ItemsSource="{Binding Zones}" DisplayMemberPath="ZoneName" SelectedValuePath="ZoneId"
+                          SelectedValue="{Binding Entity.ZoneId, Mode=TwoWay}" />
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

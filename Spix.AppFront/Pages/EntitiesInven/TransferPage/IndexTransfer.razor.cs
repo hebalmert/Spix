@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
-using Spix.AppFront.Pages.EntitiesGen.ProductPage;
-using Spix.AppFront.Pages.EntitiesInven.SupplierPage;
 using Spix.Domain.EntitiesInven;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -49,32 +47,41 @@ public partial class IndexTransfer
         await Cargar(page);
     }
 
+    //Las lineas del traslado viven en su propia pantalla
+    private void ShowDetailsAsync(Guid id)
+    {
+        _navigationManager.NavigateTo($"/transfers/details/{id}");
+    }
+
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
         Type component;
         Dictionary<string, object> parameters;
+
         if (isEdit)
         {
-            component = typeof(EditSupplier);
+            component = typeof(EditTransfer);
             parameters = new Dictionary<string, object>
-        {
-            { "Id", id! },
-            { "Title", $"{Localizer[nameof(Resource.Edit_Transfer)]}"  }
-        };
+            {
+                { "Id", id! },
+                { "Title", $"{Localizer[nameof(Resource.Edit_Transfer)]}" }
+            };
         }
         else
         {
-            component = typeof(CreateSupplier);
+            component = typeof(CreateTransfer);
             parameters = new Dictionary<string, object>
-        {
-            { "Title", $"{Localizer[nameof(Resource.Create_Transfer)]}"  }
-        };
+            {
+                { "Title", $"{Localizer[nameof(Resource.Create_Transfer)]}" }
+            };
         }
 
         await _modalService.ShowAsync(component, parameters, async result =>
         {
             if (result.Succeeded)
+            {
                 await Cargar();   //solo refresca si hubo cambios
+            }
         });
     }
 
@@ -85,17 +92,27 @@ public partial class IndexTransfer
         {
             url += $"&filter={Filter}";
         }
+
         var responseHttp = await _repository.GetAsync<List<Transfer>>(url);
         // Centralizamos el manejo de errores
         bool errorHandled = await _responseHandler.HandleErrorAsync(responseHttp);
         if (errorHandled)
         {
-            _navigationManager.NavigateTo("/dasboard");
+            //Con la lista en null la tabla se queda en "Cargando..." para siempre. Si la
+            //consulta fallo se deja vacia, que al menos dice la verdad.
+            Transfers = new List<Transfer>();
+            await InvokeAsync(StateHasChanged);
             return;
         }
 
-        Transfers = responseHttp.Response;
-        TotalPages = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("Totalpages").FirstOrDefault()!);
+        Transfers = responseHttp.Response ?? new List<Transfer>();
+
+        //El header puede no venir si la respuesta no es la esperada: sin esto, un fallo al
+        //leerlo dejaba la pantalla colgada aunque los datos ya hubieran llegado.
+        TotalPages = responseHttp.HttpResponseMessage.Headers.TryGetValues("Totalpages", out var paginas) &&
+                     int.TryParse(paginas.FirstOrDefault(), out var total)
+            ? total
+            : 1;
 
         await InvokeAsync(StateHasChanged);
     }

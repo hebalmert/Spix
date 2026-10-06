@@ -21,12 +21,15 @@ using Spix.AppWpf.ViewModels.EntitiesInven.Mark;
 using Spix.AppWpf.ViewModels.EntitiesInven.Supplier;
 using Spix.AppWpf.ViewModels.EntitiesInven.Storage;
 using Spix.AppWpf.ViewModels.EntitiesInven.Purchase;
+using Spix.AppWpf.ViewModels.EntitiesInven.Transfer;
 using Spix.AppWpf.ViewModels.EntitiesInven.Serial;
 using Spix.AppWpf.ViewModels.EntitiesInven.Cargue;
 using Spix.AppWpf.ViewModels.EntitiesNet.IpNet;
 using Spix.AppWpf.ViewModels.EntitiesNet.IpNetwork;
 using Spix.AppWpf.ViewModels.EntitiesNet.Node;
 using Spix.AppWpf.ViewModels.EntitiesNet.NodeMap;
+using Spix.AppWpf.ViewModels.EntitiesNet.Olt;
+using Spix.AppWpf.ViewModels.EntitiesNet.OltMap;
 using Spix.AppWpf.ViewModels.EntitiesNet.Server;
 using Spix.AppWpf.ViewModels.EntitiesSchedule;
 using Spix.AppWpf.ViewModels.EntitiesContratos.ContractClient;
@@ -79,12 +82,15 @@ using Spix.AppWpf.Views.EntitiesInven.Mark;
 using Spix.AppWpf.Views.EntitiesInven.Supplier;
 using Spix.AppWpf.Views.EntitiesInven.Storage;
 using Spix.AppWpf.Views.EntitiesInven.Purchase;
+using Spix.AppWpf.Views.EntitiesInven.Transfer;
 using Spix.AppWpf.Views.EntitiesInven.Serial;
 using Spix.AppWpf.Views.EntitiesInven.Cargue;
 using Spix.AppWpf.Views.EntitiesNet.IpNet;
 using Spix.AppWpf.Views.EntitiesNet.IpNetwork;
 using Spix.AppWpf.Views.EntitiesNet.Node;
 using Spix.AppWpf.Views.EntitiesNet.NodeMap;
+using Spix.AppWpf.Views.EntitiesNet.Olt;
+using Spix.AppWpf.Views.EntitiesNet.OltMap;
 using Spix.AppWpf.Views.EntitiesNet.Server;
 using Spix.AppWpf.Views.EntitiesSchedule;
 using Spix.AppWpf.Views.EntitiesContratos.ContractClient;
@@ -251,6 +257,14 @@ public partial class App : Application
         services.AddTransient<EditPurchaseDialogViewModel>();
         services.AddTransient<CreatePurchaseDetailDialogViewModel>();
         services.AddTransient<EditPurchaseDetailDialogViewModel>();
+
+        //Traslados de inventario: mismo molde que Compras
+        services.AddTransient<TransferIndexViewModel>();
+        services.AddTransient<TransferDetailsViewModel>();
+        services.AddTransient<CreateTransferDialogViewModel>();
+        services.AddTransient<EditTransferDialogViewModel>();
+        services.AddTransient<CreateTransferDetailDialogViewModel>();
+        services.AddTransient<EditTransferDetailDialogViewModel>();
         services.AddTransient<SerialIndexViewModel>();
         services.AddTransient<EditSerialDialogViewModel>();
         services.AddTransient<CargueIndexViewModel>();
@@ -271,6 +285,10 @@ public partial class App : Application
         services.AddTransient<NodeMapDialogViewModel>();
         services.AddTransient<NodePingDialogViewModel>();
         services.AddTransient<NodeMapViewModel>();
+        services.AddTransient<OltIndexViewModel>();
+        services.AddTransient<CreateOltDialogViewModel>();
+        services.AddTransient<EditOltDialogViewModel>();
+        services.AddTransient<OltMapViewModel>();
         services.AddTransient<ServerIndexViewModel>();
         services.AddTransient<CreateServerDialogViewModel>();
         services.AddTransient<EditServerDialogViewModel>();
@@ -346,6 +364,7 @@ public partial class App : Application
         services.AddTransient<ContractServerDialogViewModel>();
         services.AddTransient<ContractIpDialogViewModel>();
         services.AddTransient<ContractNodeDialogViewModel>();
+        services.AddTransient<ContractOltDialogViewModel>();
         services.AddTransient<ContractMacDialogViewModel>();
         services.AddTransient<ContractPlanDialogViewModel>();
         services.AddTransient<ContractQueueDialogViewModel>();
@@ -431,6 +450,13 @@ public partial class App : Application
         services.AddTransient<EditPurchaseDialogView>();
         services.AddTransient<CreatePurchaseDetailDialogView>();
         services.AddTransient<EditPurchaseDetailDialogView>();
+
+        services.AddTransient<TransferIndexView>();
+        services.AddTransient<TransferDetailsView>();
+        services.AddTransient<CreateTransferDialogView>();
+        services.AddTransient<EditTransferDialogView>();
+        services.AddTransient<CreateTransferDetailDialogView>();
+        services.AddTransient<EditTransferDetailDialogView>();
         services.AddTransient<SerialIndexView>();
         services.AddTransient<EditSerialDialogView>();
         services.AddTransient<CargueIndexView>();
@@ -453,6 +479,10 @@ public partial class App : Application
         services.AddTransient<NodeMapDialogView>();
         services.AddTransient<NodePingDialogView>();
         services.AddTransient<NodeMapView>();
+        services.AddTransient<OltIndexView>();
+        services.AddTransient<CreateOltDialogView>();
+        services.AddTransient<EditOltDialogView>();
+        services.AddTransient<OltMapView>();
         services.AddTransient<ServerIndexView>();
         services.AddTransient<CreateServerDialogView>();
         services.AddTransient<EditServerDialogView>();
@@ -528,6 +558,7 @@ public partial class App : Application
         services.AddTransient<ContractServerDialogView>();
         services.AddTransient<ContractIpDialogView>();
         services.AddTransient<ContractNodeDialogView>();
+        services.AddTransient<ContractOltDialogView>();
         services.AddTransient<ContractMacDialogView>();
         services.AddTransient<ContractPlanDialogView>();
         services.AddTransient<ContractQueueDialogView>();

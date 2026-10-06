@@ -110,6 +110,26 @@ public partial class DetailContractControl
     private int ProgressPercent => DoneItems * 100 / TotalItems;
 
     private static string StateClass(bool ok) => ok ? "is-ok" : "is-missing";
+
+    //La linea lateral de las dos tarjetas de acceso tiene TRES estados, no dos:
+    //ambar si falta armarla, verde si esta armada y el cliente navega, y ROJA si esta
+    //armada pero sin servicio (cortado por mora o bloqueado a mano).
+    private static string AccessClass(bool puesto, bool conAcceso) =>
+        !puesto ? "is-missing" : conAcceso ? "is-ok" : "is-blocked";
+
+    private static string AccessText(bool conAcceso) => conAcceso ? "ON" : "OFF";
+
+    private static string AccessCss(bool conAcceso) => conAcceso ? "cc-access-on" : "cc-access-off";
+
+    //En HotSpot el UNICO tipo que da acceso es "bypassed": el corte deja el binding en
+    //"regular" y el bloqueo a mano en "blocked". Es la misma regla que usa el backend
+    //para decidir si un contrato tiene servicio.
+    private bool BindConAcceso =>
+        HasContractBind && ContractBind!.HotSpotType?.TypeName == "bypassed";
+
+    //En PPPoE solo Activo da acceso: Corte y Bloqueado dejan el secret deshabilitado
+    private bool PppoeConAcceso =>
+        HasContractPppoe && ContractPppoe!.PppoeAccessState == PppoeAccessState.Activo;
     private static string StateIcon(bool ok) => ok ? "fa fa-check" : "fa fa-circle-exclamation";
     private static string StateText(bool ok) => ok ? "Configurado" : "Falta";
     private static string CheckText(bool ok) => ok ? "✓" : "✗";

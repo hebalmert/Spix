@@ -186,5 +186,21 @@ public class DataContext : IdentityDbContext<User>
 
         //Para tomar los calores de ConfigEntities
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        //NINGUNA tabla se borra en cascada con la corporacion. Un inquilino con datos no se
+        //borra: se desactiva (Corporation.Active). Si se borrara, un solo click se llevaria
+        //clientes, contratos, pagos y operaciones completas y sin aviso.
+        //Va aqui y no en el config de cada hijo para que valga tambien, y sola, para las
+        //entidades que se agreguen despues.
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var foreignKey in entityType.GetForeignKeys())
+            {
+                if (foreignKey.PrincipalEntityType.ClrType == typeof(Corporation))
+                {
+                    foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+                }
+            }
+        }
     }
 }

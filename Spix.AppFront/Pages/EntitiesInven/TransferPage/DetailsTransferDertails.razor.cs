@@ -89,7 +89,9 @@ public partial class DetailsTransferDertails
         Dictionary<string, object> parameters;
         if (isEdit)
         {
-            component = typeof(CreateTransferDetails);
+            //El Id que viaja aqui es el de la LINEA; el de crear es el del TRASLADO.
+            //Antes las dos ramas abrian el mismo componente y editar no editaba nada.
+            component = typeof(EditTransferDetails);
             parameters = new Dictionary<string, object>
         {
             { "Id", id! },

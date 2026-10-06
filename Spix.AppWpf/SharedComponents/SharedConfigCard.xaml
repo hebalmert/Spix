@@ -34,6 +34,10 @@
             <Border x:Name="Barra" CornerRadius="11,0,0,11" />
 
             <Grid Grid.Column="1" Margin="14,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="14" />
@@ -101,6 +105,52 @@
                                 svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.TrashCan}" />
                     </StackPanel>
                 </StackPanel>
+
+                <!-- Los datos de la pieza, como en la web: cada uno en su cajita con su
+                     rotulo. Solo se ven cuando la pieza ya esta puesta. -->
+                <ItemsControl x:Name="Datos"
+                              Grid.Row="1" Grid.ColumnSpan="3"
+                              Margin="26,12,0,0"
+                              Visibility="Collapsed"
+                              ItemsSource="{Binding Facts, ElementName=Raiz}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,10,0"
+                                    Padding="10,7"
+                                    CornerRadius="10"
+                                    Background="{DynamicResource BrushCatalogKpiBack}"
+                                    BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                                    BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource SharedIndexMeta}"
+                                               FontSize="11"
+                                               Text="{Binding Label}" />
+                                    <TextBlock Margin="0,2,0,0"
+                                               FontSize="13"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Value}"
+                                               Text="{Binding Value}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource SharedIndexName}">
+                                                <Style.Triggers>
+                                                    <!-- El dato que avisa de un problema, como el Acceso en OFF -->
+                                                    <DataTrigger Binding="{Binding IsAlert}" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource BrushCatalogKpiBadText}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Grid>
         </Grid>
     </Border>

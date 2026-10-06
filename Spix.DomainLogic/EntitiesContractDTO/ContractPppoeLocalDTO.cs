@@ -29,4 +29,8 @@ public sealed class ContractPppoeLocalSaveDTO
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string MikrotikId { get; set; } = string.Empty;
+
+    //El estado del acceso que el escritorio acaba de aplicar en el equipo.
+    //Solo puede llegar Activo o Bloqueado: Corte lo pone la suspension por mora.
+    public PppoeAccessState AccessState { get; set; } = PppoeAccessState.Activo;
 }

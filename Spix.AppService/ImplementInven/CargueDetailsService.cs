@@ -380,7 +380,13 @@ public class CargueDetailsService : ICargueDetailsService
             //El cargue y la corporacion no se tocan: un serial no se cambia de cargue.
             currentDetail.MacWlan = modelo.MacWlan;
             currentDetail.Comment = modelo.Comment;
+
+            //Solo cuenta en el inventario el serial DISPONIBLE: uno averiado no se puede
+            //instalar ni trasladar, asi que al marcarlo dañado sale, y si se repara vuelve.
+            var estadoAnterior = currentDetail.Status;
             currentDetail.Status = modelo.Status;
+
+            await AjustarStockPorEstadoAsync(currentDetail, estadoAnterior, modelo.Status);
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
@@ -603,5 +609,52 @@ public class CargueDetailsService : ICargueDetailsService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
         }
+    }
+
+    //Mueve la existencia cuando cambia el estado de un serial.
+    //
+    //Disponible cuenta; Averiado y Operativo no. Asi el inventario dice lo que de verdad
+    //se puede usar, y no el total que se compro alguna vez.
+    //
+    //La bodega del serial es la de la compra que lo trajo: no se guarda en el serial.
+    private async Task AjustarStockPorEstadoAsync(CargueDetail serial, SerialStateType anterior, SerialStateType nuevo)
+    {
+        if (anterior == nuevo)
+        {
+            return;
+        }
+
+        var cantidad = (nuevo == SerialStateType.Disponible ? 1 : 0) -
+                       (anterior == SerialStateType.Disponible ? 1 : 0);
+
+        if (cantidad == 0)
+        {
+            return;
+        }
+
+        var datos = await _context.CargueDetails.AsNoTracking()
+            .Where(x => x.CargueDetailId == serial.CargueDetailId)
+            .Select(x => new
+            {
+                x.Cargue!.ProductId,
+                x.Cargue.PurchaseDetail!.Purchase!.ProductStorageId
+            })
+            .FirstOrDefaultAsync();
+
+        if (datos == null)
+        {
+            return;
+        }
+
+        var stock = await _context.ProductStocks
+            .FirstOrDefaultAsync(x => x.ProductId == datos.ProductId &&
+                                      x.ProductStorageId == datos.ProductStorageId);
+
+        if (stock == null)
+        {
+            return;
+        }
+
+        stock.Stock += cantidad;
     }
 }

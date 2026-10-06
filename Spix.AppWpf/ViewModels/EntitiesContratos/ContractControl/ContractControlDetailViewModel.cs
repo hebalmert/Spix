@@ -35,6 +35,7 @@ public partial class ContractControlDetailViewModel : ObservableObject
     private const string ServerUrl = "api/v1/contractservers";
     private const string IpUrl = "api/v1/contractips";
     private const string NodeUrl = "api/v1/contractnodes";
+    private const string OltUrl = "api/v1/contractolts";
     private const string PlanUrl = "api/v1/contractplans";
     private const string MacUrl = "api/v1/contractmacs";
     private const string MapUrl = "api/v1/contractmaps";
@@ -68,6 +69,10 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
     [ObservableProperty]
     private ContractNode? _node;
+
+    //Por que OLT entra este contrato. Es el gemelo del nodo, para la fibra.
+    [ObservableProperty]
+    private ContractOlt? _olt;
 
     [ObservableProperty]
     private ContractPlan? _plan;
@@ -127,13 +132,17 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
     public bool UseMikrotik => UseHotSpot || UsePppoe;
 
-    public string ControlTitle => UsePppoe ? "3 · MikroTik PPPoE" : "3 · MikroTik HotSpot";
+    public string ControlTitle => UsePppoe
+        ? "4 · MikroTik PPPoE"
+        : UseHotSpot ? "4 · MikroTik HotSpot" : "4 · MikroTik";
 
     public bool HasServer => Server is not null && Server.ContractServerId != Guid.Empty;
 
     public bool HasIp => Ip is not null && Ip.ContractIpId != Guid.Empty;
 
     public bool HasNode => Node is not null && Node.ContractNodeId != Guid.Empty;
+
+    public bool HasOlt => Olt is not null && Olt.ContractOltId != Guid.Empty;
 
     public bool HasPlan => Plan is not null && Plan.ContractPlanId != Guid.Empty;
 
@@ -150,6 +159,8 @@ public partial class ContractControlDetailViewModel : ObservableObject
     // Mientras exista alguna de las dos, lo que ya esta en el MikroTik no se toca
     public bool HasHotSpotDependencies => HasQueue || HasBind || HasPppoe;
 
+    //Sin servidor son 6: servidor, IP, plan, MAC, ubicacion y queue. Al elegirlo entran
+    //las dos piezas que dependen de su control: el acceso fisico y el acceso al servicio.
     public int TotalItems => UseMikrotik ? 8 : 6;
 
     public int DoneItems => TotalItems - Missing.Count;
@@ -223,6 +234,8 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
     public string? NodeName => Node?.Node?.NodesName;
 
+    public string? OltName => Olt?.Olt?.OltName;
+
     public string? PlanName => Plan?.Plan?.PlanName;
 
     public string? MacText => Mac?.CargueDetail?.MacWlan;
@@ -234,6 +247,103 @@ public partial class ContractControlDetailViewModel : ObservableObject
     public string? BindText => Bind?.MacCliente ?? Bind?.CargueDetail?.MacWlan;
 
     public string? PppoeText => Pppoe?.Usuario;
+
+    //Lo que le falta a la pieza para poder crearse, como lo dice la web: asi el operador
+    //sabe por que todavia no puede y que le falta, sin adivinar.
+    public string QueueRequires =>
+        $"Necesita: Servidor {Marca(HasServer)} · IP {Marca(HasIp)} · Plan {Marca(HasPlan)}";
+
+    public string BindRequires =>
+        $"Necesita: Servidor {Marca(HasServer)} · IP {Marca(HasIp)} · MAC {Marca(HasMac)}";
+
+    public string PppoeRequires =>
+        $"Necesita: Servidor {Marca(HasServer)} · IP {Marca(HasIp)}";
+
+    private static string Marca(bool listo) => listo ? "✓" : "✗";
+
+    //Los datos de cada tarjeta, uno por uno como los pinta la web (cc-facts). Se arman aqui
+    //y no en la vista: la pantalla solo los muestra.
+    public IReadOnlyList<ConfigCardFact> NodeFacts => HasNode
+        ? new[]
+        {
+            new ConfigCardFact("Nodo", Node!.Node?.NodesName),
+            new ConfigCardFact("Frecuencia", Node.Node?.Frecuency?.FrecuencyName.ToString()),
+            new ConfigCardFact("Canal", Node.Node?.Channel?.ChannelName),
+            new ConfigCardFact("IP de red", Node.Node?.IpNetwork?.Ip)
+        }
+        : Array.Empty<ConfigCardFact>();
+
+    public IReadOnlyList<ConfigCardFact> OltFacts => HasOlt
+        ? new[]
+        {
+            new ConfigCardFact("OLT", Olt!.Olt?.OltName),
+            new ConfigCardFact("IP de red", Olt.Olt?.IpNetwork?.Ip),
+            new ConfigCardFact("Puertos", $"{Olt.Olt?.PortCount} {Olt.Olt?.PortSpeed}".Trim())
+        }
+        : Array.Empty<ConfigCardFact>();
+
+    public IReadOnlyList<ConfigCardFact> PlanFacts => HasPlan
+        ? new[]
+        {
+            new ConfigCardFact("Plan", Plan!.Plan?.PlanName),
+            new ConfigCardFact("Velocidad total", Plan.Plan?.VelocidadTotal),
+            new ConfigCardFact("Precio con impuesto", Plan.Plan?.PrecioconImpuesto?.ToString("N2"))
+        }
+        : Array.Empty<ConfigCardFact>();
+
+    public IReadOnlyList<ConfigCardFact> MapFacts => HasMap
+        ? new[]
+        {
+            new ConfigCardFact("Latitud", Map!.Latitude?.ToString()),
+            new ConfigCardFact("Longitud", Map.Longitude?.ToString())
+        }
+        : Array.Empty<ConfigCardFact>();
+
+    public IReadOnlyList<ConfigCardFact> QueueFacts => HasQueue
+        ? new[]
+        {
+            new ConfigCardFact("Servidor", Queue!.ServerName ?? Queue.Server?.ServerName),
+            new ConfigCardFact("IP cliente", Queue.IpCliente ?? Queue.IpNet?.Ip),
+            new ConfigCardFact("Plan", Queue.PlanName ?? Queue.Plan?.PlanName),
+            new ConfigCardFact("Velocidad", Queue.TotalVelocidad ?? Queue.Plan?.VelocidadTotal),
+            new ConfigCardFact("Id MikroTik", Queue.MikrotikId)
+        }
+        : Array.Empty<ConfigCardFact>();
+
+    public IReadOnlyList<ConfigCardFact> BindFacts => HasBind
+        ? new[]
+        {
+            new ConfigCardFact("Servidor", Bind!.ServerName ?? Bind.Server?.ServerName),
+            new ConfigCardFact("IP cliente", Bind.IpCliente ?? Bind.IpNet?.Ip),
+            new ConfigCardFact("MAC", Bind.MacCliente ?? Bind.CargueDetail?.MacWlan),
+            new ConfigCardFact("Tipo", Bind.HotSpotType?.TypeName, !BindConAcceso),
+            new ConfigCardFact("Id MikroTik", Bind.MikrotikId)
+        }
+        : Array.Empty<ConfigCardFact>();
+
+    public IReadOnlyList<ConfigCardFact> PppoeFacts => HasPppoe
+        ? new[]
+        {
+            new ConfigCardFact("Servidor", Pppoe!.ServerName),
+            new ConfigCardFact("Usuario", Pppoe.Usuario),
+            new ConfigCardFact("IP cliente", Pppoe.IpCliente),
+            new ConfigCardFact("Acceso", PppoeConAcceso ? "ON" : "OFF", !PppoeConAcceso),
+            new ConfigCardFact("Id MikroTik", Pppoe.MikrotikId)
+        }
+        : Array.Empty<ConfigCardFact>();
+
+    //Si la pieza, estando puesta, le esta dando servicio al cliente. Es la misma regla
+    //que usa el backend: en HotSpot solo "bypassed" da acceso (el corte deja el binding
+    //en "regular" y el bloqueo a mano en "blocked"), y en PPPoE solo el estado Activo.
+    public bool BindConAcceso => HasBind && Bind!.HotSpotType?.TypeName == "bypassed";
+
+    public bool PppoeConAcceso => HasPppoe && Pppoe!.PppoeAccessState == PppoeAccessState.Activo;
+
+    //Lo que la tarjeta necesita: null cuando la pieza todavia no esta, porque ahi la
+    //barra tiene que seguir en ambar y no en rojo.
+    public bool? BindAccess => HasBind ? BindConAcceso : null;
+
+    public bool? PppoeAccess => HasPppoe ? PppoeConAcceso : null;
 
     public async Task InitializeAsync(Guid id)
     {
@@ -272,6 +382,12 @@ public partial class ContractControlDetailViewModel : ObservableObject
     private async Task SetNodeAsync()
     {
         await AbrirPiezaAsync<ContractNodeDialogView>("Nodo de acceso");
+    }
+
+    [RelayCommand]
+    private async Task SetOltAsync()
+    {
+        await AbrirPiezaAsync<ContractOltDialogView>("OLT de acceso");
     }
 
     [RelayCommand]
@@ -348,8 +464,8 @@ public partial class ContractControlDetailViewModel : ObservableObject
         }
     }
 
-    // Ver donde quedo el cliente, y su nodo si lo tiene ubicado: asi se aprecia a que
-    // distancia esta de su AP.
+    // Ver donde quedo el cliente, y el equipo por donde entra si lo tiene ubicado: asi se
+    // aprecia a que distancia esta de su AP o de su OLT.
     [RelayCommand]
     private async Task ViewMapAsync()
     {
@@ -365,8 +481,15 @@ public partial class ContractControlDetailViewModel : ObservableObject
             ["Longitude"] = Map.Longitude.Value
         };
 
-        //El nodo se agrega solo si esta ubicado
-        if (Node?.Node?.Latitude is not null && Node.Node.Longitude is not null)
+        //El segundo punto es el equipo por donde entra: la OLT si es fibra, el nodo si no.
+        //Solo se agrega si ese equipo esta ubicado.
+        if (UsePppoe && Olt?.Olt?.Latitude is not null && Olt.Olt.Longitude is not null)
+        {
+            parametros["NodeLatitude"] = Olt.Olt.Latitude.Value;
+            parametros["NodeLongitude"] = Olt.Olt.Longitude.Value;
+            parametros["NodeName"] = Olt.Olt.OltName ?? "OLT";
+        }
+        else if (Node?.Node?.Latitude is not null && Node.Node.Longitude is not null)
         {
             parametros["NodeLatitude"] = Node.Node.Latitude.Value;
             parametros["NodeLongitude"] = Node.Node.Longitude.Value;
@@ -465,6 +588,12 @@ public partial class ContractControlDetailViewModel : ObservableObject
     private async Task RemoveNodeAsync()
     {
         await QuitarAsync(NodeUrl, Node?.ContractNodeId, true, null);
+    }
+
+    [RelayCommand]
+    private async Task RemoveOltAsync()
+    {
+        await QuitarAsync(OltUrl, Olt?.ContractOltId, true, null);
     }
 
     [RelayCommand]
@@ -905,7 +1034,12 @@ public partial class ContractControlDetailViewModel : ObservableObject
     {
         if (!UsePppoe || HasPppoe) return;
 
-        var parameters = new Dictionary<string, object> { ["ContractClientId"] = _id };
+        var parameters = new Dictionary<string, object>
+        {
+            ["ContractClientId"] = _id,
+            ["ClientLastName"] = Contract?.Client?.LastName ?? string.Empty,
+            ["ControlContrato"] = Contract?.ControlContrato.ToString() ?? string.Empty
+        };
         var result = await _modalService.ShowAsync<ContractPppoeDialogView>("Credencial PPPoE", parameters);
         if (result.Succeeded) await RecargarAsync();
     }
@@ -918,7 +1052,9 @@ public partial class ContractControlDetailViewModel : ObservableObject
         var parameters = new Dictionary<string, object>
         {
             ["ContractClientId"] = _id,
-            ["Edit"] = true
+            ["Edit"] = true,
+            ["ClientLastName"] = Contract?.Client?.LastName ?? string.Empty,
+            ["ControlContrato"] = Contract?.ControlContrato.ToString() ?? string.Empty
         };
         var result = await _modalService.ShowAsync<ContractPppoeDialogView>("Editar credencial PPPoE", parameters);
         if (result.Succeeded) await RecargarAsync();
@@ -990,6 +1126,7 @@ public partial class ContractControlDetailViewModel : ObservableObject
         await CargarModoMikrotikAsync();
         Ip = Contract?.ControlIpCount > 0 ? await PedirAsync<ContractIp>(IpUrl) : null;
         Node = Contract?.ControlNodeCount > 0 ? await PedirAsync<ContractNode>(NodeUrl) : null;
+        Olt = Contract?.ControlOltCount > 0 ? await PedirAsync<ContractOlt>(OltUrl) : null;
         Plan = Contract?.ControlPlanCount > 0 ? await PedirAsync<ContractPlan>(PlanUrl) : null;
         Mac = Contract?.ControlMacCount > 0 ? await PedirAsync<ContractMac>(MacUrl) : null;
         Map = Contract?.ControlMapCount > 0 ? await PedirAsync<ContractMap>(MapUrl) : null;
@@ -1023,11 +1160,16 @@ public partial class ContractControlDetailViewModel : ObservableObject
 
         if (!HasServer) faltan.Add("Servidor Gateway");
         if (!HasIp) faltan.Add("IP del cliente");
-        if (!HasNode) faltan.Add("Nodo de acceso");
         if (!HasPlan) faltan.Add("Plan del cliente");
         if (!HasMac) faltan.Add("MAC del equipo");
         if (!HasMap) faltan.Add("Ubicacion");
-        if (UseMikrotik && !HasQueue) faltan.Add("Queue de velocidad");
+        if (!HasQueue) faltan.Add("Queue de velocidad");
+
+        //Por donde entra fisicamente: nodo si es inalambrico, OLT si es fibra. Lo decide el
+        //servidor, asi que antes de elegirlo no se le pide ninguno de los dos.
+        if (UseHotSpot && !HasNode) faltan.Add("Nodo de acceso");
+        if (UsePppoe && !HasOlt) faltan.Add("OLT de acceso");
+
         if (UseHotSpot && !HasBind) faltan.Add("IpBinding de acceso");
         if (UsePppoe && !HasPppoe) faltan.Add("Credencial PPPoE");
 
@@ -1045,14 +1187,17 @@ public partial class ContractControlDetailViewModel : ObservableObject
             nameof(Phone), nameof(Email), nameof(Address), nameof(ContractorName), nameof(Created),
             nameof(StatusText), nameof(StatusColor), nameof(HasEquipment), nameof(HasInvoice),
             nameof(ControlMk), nameof(UseHotSpot), nameof(UsePppoe), nameof(UseMikrotik), nameof(ControlTitle),
-            nameof(HasServer), nameof(HasIp), nameof(HasNode), nameof(HasPlan),
+            nameof(HasServer), nameof(HasIp), nameof(HasNode), nameof(HasOlt), nameof(HasPlan),
             nameof(HasMac), nameof(HasMap), nameof(HasQueue), nameof(HasBind), nameof(HasPppoe),
             nameof(HasHotSpotDependencies), nameof(CanChangeServer), nameof(CanChangeIp),
             nameof(CanChangePlan), nameof(CanChangeMac), nameof(TotalItems), nameof(DoneItems),
             nameof(ProgressPercent), nameof(ProgressText), nameof(IsComplete), nameof(HasMissing),
-            nameof(CanActivate), nameof(ServerName), nameof(IpText), nameof(NodeName),
+            nameof(CanActivate), nameof(ServerName), nameof(IpText), nameof(NodeName), nameof(OltName),
             nameof(PlanName), nameof(MacText), nameof(MapText), nameof(QueueText), nameof(BindText),
-            nameof(PppoeText)
+            nameof(PppoeText), nameof(QueueRequires), nameof(BindRequires), nameof(PppoeRequires),
+            nameof(NodeFacts), nameof(OltFacts), nameof(PlanFacts),
+            nameof(MapFacts), nameof(QueueFacts), nameof(BindFacts), nameof(PppoeFacts),
+            nameof(BindConAcceso), nameof(PppoeConAcceso), nameof(BindAccess), nameof(PppoeAccess)
         })
         {
             OnPropertyChanged(propiedad);

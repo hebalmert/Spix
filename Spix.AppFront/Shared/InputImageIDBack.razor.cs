@@ -97,6 +97,11 @@ public partial class InputImageIDBack : IAsyncDisposable
             ImageBase64 = base64Content;
             await ImageSelected.InvokeAsync(ImageBase64);
 
+            //Si la camara estaba abierta y la foto se cargo del DISCO, hay que soltarla:
+            //ocultar el <video> NO apaga el stream y la camara quedaba encendida.
+            //stopCamera es inofensivo si nunca se abrio (se protege con su propio stream).
+            await JS.InvokeVoidAsync("camaraIdPicBack.stopCamera");
+
             ShowCamera = false;
             ShowPreview = true;
             ShowImageUrl = false;

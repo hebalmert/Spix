@@ -333,6 +333,22 @@
         border-left-color: #f59f00;
     }
 
+    /* Puesto pero SIN acceso: el cliente esta sin servicio aunque la pieza este armada.
+       Ambar = falta configurar; rojo = configurado pero cortado o bloqueado. */
+    .cc-item.is-blocked {
+        border-left-color: #dc3545;
+    }
+
+/* El ON/OFF del acceso: se lee de un vistazo sin tener que saber que significa
+   "regular" o "bypassed" */
+.cc-access-on {
+    color: #198754;
+}
+
+.cc-access-off {
+    color: #dc3545;
+}
+
 .cc-item-top {
     display: flex;
     align-items: center;
@@ -370,7 +386,11 @@
     white-space: nowrap;
 }
 
-.is-ok .cc-state {
+/* "Configurado" dice si la pieza ESTA ARMADA, no si hay servicio: va verde igual que
+   en todas las demas tarjetas. Que el cliente este cortado lo dicen la linea lateral
+   roja y el Acceso OFF, que son otra cosa. */
+.is-ok .cc-state,
+.is-blocked .cc-state {
     color: #198754;
 }
 

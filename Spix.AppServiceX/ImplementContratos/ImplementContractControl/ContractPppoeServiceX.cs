@@ -1,6 +1,7 @@
 ﻿using Spix.AppService.InterfaceContratos.InterfaceContractControl;
 using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
 using Spix.Domain.EntitiesContratos;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 
 namespace Spix.AppServiceX.ImplementContratos.ImplementContractControl;
@@ -15,6 +16,8 @@ public class ContractPppoeServiceX : IContractPppoeServiceX
     }
 
     public async Task<ActionResponse<ContractPppoe>> GetAsync(Guid id, string username) => await _contractService.GetAsync(id, username);
+
+    public ActionResponse<IEnumerable<IntItemModel>> AccessStatesCombo() => _contractService.AccessStatesCombo();
 
     public async Task<ActionResponse<ContractPppoe>> AddAsync(ContractPppoe modelo, string username) => await _contractService.AddAsync(modelo, username);
 

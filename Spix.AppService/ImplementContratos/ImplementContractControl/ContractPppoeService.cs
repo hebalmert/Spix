@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceContratos.InterfaceContractControl;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.xLanguage.Resources;
 using Spix.xNetwork.MkHelper;
@@ -29,12 +31,14 @@ public class ContractPppoeService : IContractPppoeService
     private readonly IUserHelper _userHelper;
     private readonly IStringLocalizer _localizer;
     private readonly HttpErrorHandler _httpErrorHandler;
+    private readonly IEnumMultilLanguageService _enumMultilLanguageService;
 
     public ContractPppoeService(
         DataContext context,
         ITransactionManager transactionManager,
         IUserHelper userHelper,
         HttpErrorHandler httpErrorHandler,
+        IEnumMultilLanguageService enumMultilLanguageService,
         IStringLocalizer localizer)
     {
         _context = context;
@@ -42,6 +46,26 @@ public class ContractPppoeService : IContractPppoeService
         _userHelper = userHelper;
         _localizer = localizer;
         _httpErrorHandler = httpErrorHandler;
+        _enumMultilLanguageService = enumMultilLanguageService;
+    }
+
+    //Los estados que el operador PUEDE elegir a mano, traducidos y con el neutro en la
+    //posicion 0: el front solo pone value y @onchange.
+    //
+    //Corte queda FUERA a proposito: ese lo pone la suspension por mora. Si se pudiera
+    //elegir a mano, el contrato diria Activo mientras la credencial dice Corte.
+    public ActionResponse<IEnumerable<IntItemModel>> AccessStatesCombo()
+    {
+        var list = _enumMultilLanguageService
+            .GetEnumSelectList<PppoeAccessState>(nameof(Resource.Select_AccessState))
+            .Where(x => x.Value != (int)PppoeAccessState.Corte)
+            .ToList();
+
+        return new ActionResponse<IEnumerable<IntItemModel>>
+        {
+            WasSuccess = true,
+            Result = list
+        };
     }
 
     public async Task<ActionResponse<ContractPppoe>> GetAsync(Guid id, string username)
@@ -264,6 +288,26 @@ public class ContractPppoeService : IContractPppoeService
                 if (repetido) return await FalloRollbackAsync<ContractPppoe>(_localizer["Pppoe_UserRepeated", usuario]);
             }
 
+            //El estado de acceso. Mientras la credencial este en CORTE por mora el operador
+            //no lo maneja: lo devuelve la suspension cuando el cliente se pone al dia. Asi
+            //no se desincroniza el contrato (Suspended) con la credencial.
+            var estado = actual.PppoeAccessState;
+
+            if (estado != PppoeAccessState.Corte)
+            {
+                if (modelo.PppoeAccessState != PppoeAccessState.Activo &&
+                    modelo.PppoeAccessState != PppoeAccessState.Bloqueado)
+                {
+                    return await FalloRollbackAsync<ContractPppoe>(_localizer[nameof(Resource.Pppoe_StateNotAllowed)]);
+                }
+
+                estado = modelo.PppoeAccessState;
+            }
+            else if (modelo.PppoeAccessState != PppoeAccessState.Corte)
+            {
+                return await FalloRollbackAsync<ContractPppoe>(_localizer[nameof(Resource.Pppoe_StateLockedByCut)]);
+            }
+
             MK? mikrotik = null;
 
             try
@@ -279,7 +323,11 @@ public class ContractPppoeService : IContractPppoeService
                 mikrotik.Send("/ppp/secret/set");
                 mikrotik.Send("=.id=" + actual.MikrotikId);
                 mikrotik.Send("=name=" + usuario);
-                mikrotik.Send("=password=" + clave, true);
+                mikrotik.Send("=password=" + clave);
+
+                //Activo = el secret habilitado; cualquier otro estado = deshabilitado.
+                //Va en el MISMO set que el usuario y la clave: una sola escritura.
+                mikrotik.Send("=disabled=" + (estado == PppoeAccessState.Activo ? "no" : "yes"), true);
 
                 //Estricto: en un set, "no such item" significa que el secret ya no existe y
                 //que no se escribio nada. Aceptarlo dejaria la base diciendo que si.
@@ -298,6 +346,17 @@ public class ContractPppoeService : IContractPppoeService
                 {
                     return await FalloRollbackAsync<ContractPppoe>(_localizer["Pppoe_SessionNotKilled", actual.Usuario]);
                 }
+
+                //(5) Al quitarle el acceso hay que tumbar el tunel.
+                //
+                //Deshabilitar el secret NO desconecta al que ya esta adentro: solo le impide
+                //volver a autenticar. Sin esto el cliente sigue navegando hasta que la sesion
+                //se caiga sola. Si el usuario cambio, el bloque de arriba ya la tumbo con el
+                //nombre viejo y aqui no queda ninguna, que tambien es exito.
+                if (estado != PppoeAccessState.Activo && !TumbarSesion(mikrotik, usuario, actual.IpCliente))
+                {
+                    return await FalloRollbackAsync<ContractPppoe>(_localizer["Pppoe_SessionNotKilled", usuario]);
+                }
             }
             catch
             {
@@ -310,6 +369,7 @@ public class ContractPppoeService : IContractPppoeService
 
             actual.Usuario = usuario;
             actual.Clave = clave;
+            actual.PppoeAccessState = estado;
 
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();

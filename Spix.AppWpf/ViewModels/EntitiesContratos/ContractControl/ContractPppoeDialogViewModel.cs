@@ -5,7 +5,10 @@ using Spix.AppWpf.SharedServices;
 using Spix.Domain.EntitiesContratos;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.EntitiesContractDTO;
+using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
+using System.Collections.ObjectModel;
 
 namespace Spix.AppWpf.ViewModels.EntitiesContratos.ContractControl;
 
@@ -27,6 +30,30 @@ public partial class ContractPppoeDialogViewModel : ObservableObject
     [ObservableProperty] private string _saveText = "Crear credencial";
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private bool _isSaving;
+
+    //El estado del acceso: el gemelo del "Tipo Acceso" del IpBinding en HotSpot.
+    //La lista llega ARMADA del backend, con su neutro y sin la opcion Corte.
+    [ObservableProperty] private ObservableCollection<IntItemModel> _accessStates = new();
+
+    [ObservableProperty] private int _accessStateValue = (int)PppoeAccessState.Activo;
+
+    //Solo al editar se puede cambiar: una credencial recien creada nace Activa
+    [ObservableProperty] private bool _isEdit;
+
+    //En Corte por mora el estado lo maneja la suspension, no el operador
+    [ObservableProperty] private bool _isCut;
+
+    public bool CanChangeAccess => IsEdit && !IsCut;
+
+    partial void OnIsEditChanged(bool value) => OnPropertyChanged(nameof(CanChangeAccess));
+
+    partial void OnIsCutChanged(bool value) => OnPropertyChanged(nameof(CanChangeAccess));
+
+    //Con que se arma el usuario que propone el sistema. Los manda el detalle del contrato;
+    //el DTO del setup no los trae y no hace falta tocar el API para eso.
+    public string? ClientLastName { get; set; }
+
+    public string? ControlContrato { get; set; }
 
     public ContractPppoeDialogViewModel(IRepository repository, HttpResponseHandler responseHandler,
         ModalService modalService, AlertService alertService, ILocalMikrotikService mikrotikService)
@@ -61,9 +88,28 @@ public partial class ContractPppoeDialogViewModel : ObservableObject
             ServerName = _setup.ServerName ?? string.Empty;
             ClientIp = _setup.ClientIp ?? string.Empty;
             ProfileName = _setup.ProfileName ?? string.Empty;
-            Username = _setup.CurrentUsername ?? string.Empty;
-            Password = _setup.CurrentPassword ?? string.Empty;
+            //Al crear se propone; al editar se muestra el que ya tiene
+            Username = edit
+                ? _setup.CurrentUsername ?? string.Empty
+                : PppoeCredential.ProponerUsuario(ClientLastName, ControlContrato);
+            Password = edit
+                ? _setup.CurrentPassword ?? string.Empty
+                : PppoeCredential.GenerarClave();
             SaveText = edit ? "Guardar credencial" : "Crear credencial";
+
+            IsEdit = edit;
+            IsCut = _setup.AccessState == PppoeAccessState.Corte;
+            AccessStateValue = (int)(edit ? _setup.AccessState : PppoeAccessState.Activo);
+
+            //La lista solo hace falta cuando hay combo que pintar
+            if (CanChangeAccess)
+            {
+                var estados = await _repository.GetAsync<List<IntItemModel>>("api/v2/contractmksetup/pppoeaccessstates");
+                if (!await _responseHandler.HandleErrorAsync(estados))
+                {
+                    AccessStates = new ObservableCollection<IntItemModel>(estados.Response ?? new());
+                }
+            }
         }
         finally
         {
@@ -71,10 +117,17 @@ public partial class ContractPppoeDialogViewModel : ObservableObject
         }
     }
 
+    //Devuelve el usuario a lo que el sistema propone, igual que el boton # del Blazor
+    [RelayCommand]
+    private void ProposeUsername()
+    {
+        Username = PppoeCredential.ProponerUsuario(ClientLastName, ControlContrato);
+    }
+
     [RelayCommand]
     private void GeneratePassword()
     {
-        Password = Guid.NewGuid().ToString("N")[..10];
+        Password = PppoeCredential.GenerarClave();
     }
 
     [RelayCommand]
@@ -85,9 +138,23 @@ public partial class ContractPppoeDialogViewModel : ObservableObject
 
         var username = Username.Trim().ToLowerInvariant();
         var password = Password.Trim();
-        if (username.Length is < 1 or > 50 || password.Length is < 1 or > 50)
+        if (!PppoeCredential.EsUsuarioValido(username))
         {
-            await _alertService.WarningAsync("Credencial PPPoE", "Usuario y clave deben tener entre 1 y 50 caracteres.");
+            await _alertService.WarningAsync("Credencial PPPoE", PppoeCredential.ReglaTexto);
+            return;
+        }
+
+        if (password.Length is < 1 or > 50)
+        {
+            await _alertService.WarningAsync("Credencial PPPoE", "La clave debe tener entre 1 y 50 caracteres.");
+            return;
+        }
+
+        if (CanChangeAccess &&
+            AccessStateValue != (int)PppoeAccessState.Activo &&
+            AccessStateValue != (int)PppoeAccessState.Bloqueado)
+        {
+            await _alertService.WarningAsync("Credencial PPPoE", "Elija el estado de acceso.");
             return;
         }
 
@@ -123,6 +190,15 @@ public partial class ContractPppoeDialogViewModel : ObservableObject
 
                     LocalPppoeCommands.Update(router, routerId, setup.CurrentUsername, username,
                         password, setup.ClientIp);
+
+                    //El estado del acceso. SetAccess deshabilita el secret Y tumba el tunel:
+                    //deshabilitarlo solo impide la proxima autenticacion, no bota al que ya
+                    //esta adentro. En Corte no se toca: eso lo maneja la suspension.
+                    if (!IsCut)
+                    {
+                        LocalPppoeCommands.SetAccess(router, routerId, username, setup.ClientIp,
+                            AccessStateValue == (int)PppoeAccessState.Activo);
+                    }
                 }
                 else
                 {
@@ -143,7 +219,8 @@ public partial class ContractPppoeDialogViewModel : ObservableObject
                 CredentialId = setup.CredentialId,
                 Username = username,
                 Password = password,
-                MikrotikId = routerId ?? string.Empty
+                MikrotikId = routerId ?? string.Empty,
+                AccessState = IsEdit ? (PppoeAccessState)AccessStateValue : PppoeAccessState.Activo
             };
 
             var response = await _repository.PostAsync<ContractPppoeLocalSaveDTO, ContractPppoe>(Url, save);

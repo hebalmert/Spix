@@ -30,6 +30,19 @@ public partial class SharedConfigCard : UserControl
         nameof(EmptyText), typeof(string), typeof(SharedConfigCard),
         new PropertyMetadata("Sin asignar", Refrescar));
 
+    // Si la pieza, ESTANDO puesta, le esta dando servicio al cliente.
+    // null = no aplica (la mayoria de las tarjetas): la barra se comporta como siempre.
+    // false = armada pero sin servicio -> barra ROJA.
+    public static readonly DependencyProperty HasAccessProperty = DependencyProperty.Register(
+        nameof(HasAccess), typeof(bool?), typeof(SharedConfigCard),
+        new PropertyMetadata(null, Refrescar));
+
+    // Los datos de la pieza, cada uno con su rotulo: lo mismo que la web pinta en cc-facts.
+    // Es opcional: la tarjeta que no los manda se ve como siempre.
+    public static readonly DependencyProperty FactsProperty = DependencyProperty.Register(
+        nameof(Facts), typeof(IEnumerable<ConfigCardFact>), typeof(SharedConfigCard),
+        new PropertyMetadata(null, Refrescar));
+
     public static readonly DependencyProperty IconProperty = DependencyProperty.Register(
         nameof(Icon), typeof(FontAwesomeIcon), typeof(SharedConfigCard),
         new PropertyMetadata(FontAwesomeIcon.Gear, Refrescar));
@@ -85,6 +98,18 @@ public partial class SharedConfigCard : UserControl
     {
         get => (string?)GetValue(EmptyTextProperty);
         set => SetValue(EmptyTextProperty, value);
+    }
+
+    public bool? HasAccess
+    {
+        get => (bool?)GetValue(HasAccessProperty);
+        set => SetValue(HasAccessProperty, value);
+    }
+
+    public IEnumerable<ConfigCardFact>? Facts
+    {
+        get => (IEnumerable<ConfigCardFact>?)GetValue(FactsProperty);
+        set => SetValue(FactsProperty, value);
     }
 
     public FontAwesomeIcon Icon
@@ -157,8 +182,13 @@ public partial class SharedConfigCard : UserControl
     {
         Glifo.Icon = Icon;
 
-        //La barra lateral y la pastilla dicen de un vistazo si la pieza esta o falta
-        Barra.Background = Pincel(IsDone ? "BrushCatalogKpiOk" : "BrushCatalogKpiWarn");
+        //La barra lateral tiene TRES estados, no dos: ambar si falta armar la pieza,
+        //verde si esta armada y el cliente navega, y ROJA si esta armada pero sin
+        //servicio (cortado por mora o bloqueado a mano).
+        var sinServicio = IsDone && HasAccess == false;
+
+        Barra.Background = Pincel(!IsDone ? "BrushCatalogKpiWarn"
+            : sinServicio ? "BrushCatalogKpiBad" : "BrushCatalogKpiOk");
 
         Estado.Background = Pincel(IsDone ? "BrushWhenDoneBack" : "BrushWhenLateBack");
         EstadoTexto.Foreground = Pincel(IsDone ? "BrushWhenDoneText" : "BrushWhenLateText");
@@ -166,6 +196,12 @@ public partial class SharedConfigCard : UserControl
 
         //Sin pieza se dice que falta, en vez de dejar el hueco vacio
         Dato.Text = IsDone ? Value : EmptyText;
+
+        //Los datos solo cuando la pieza esta puesta y la pantalla los mando. Con datos, la
+        //linea de arriba sobra: ya estan ahi abajo con su rotulo.
+        var hayDatos = IsDone && Facts is not null && Facts.Any();
+        Datos.Visibility = Ver(hayDatos);
+        Dato.Visibility = Ver(!hayDatos);
 
         //Agregar SOLO mientras falta: una pieza puesta no se cambia, se quita y se agrega
         BotonAgregar.Visibility = Ver(!IsDone && AddCommand is not null);
@@ -194,5 +230,23 @@ public partial class SharedConfigCard : UserControl
     private static Brush Pincel(string clave)
     {
         return Application.Current.TryFindResource(clave) as Brush ?? Brushes.Gray;
+    }
+}
+
+// Un dato de la tarjeta: el rotulo y lo que dice. Es lo que la web pinta como cc-fact.
+public sealed class ConfigCardFact
+{
+    public string Label { get; }
+
+    public string? Value { get; }
+
+    //Para el dato que avisa de un problema (el Acceso en OFF): se pinta en rojo
+    public bool IsAlert { get; }
+
+    public ConfigCardFact(string label, string? value, bool isAlert = false)
+    {
+        Label = label;
+        Value = value;
+        IsAlert = isAlert;
     }
 }

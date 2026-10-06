@@ -1,91 +1,96 @@
-﻿@page "/transfers"
+@page "/transfers"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
+@using Spix.DomainLogic.EnumTypes
 
-<div class="container shadow-lg mb-5 p-4 bg-white rounded">
-    <h3>Transferencia Inventarios</h3>
+@* Traslados de inventario: mueven stock de una bodega a otra.
+   Mismo molde que Compras, que es su gemelo: encabezado, barra, tabla y paginacion.
+   Un traslado cerrado ya movio el inventario, asi que no se edita ni se borra. *@
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
 
-    <div class="row align-items-center mb-3">
-        <!-- Botón Transferencia -->
-        <div class="col-md-3 d-flex justify-content-start">
-            <button class="btn btn-dark w-100" style="max-width:130px;" @onclick="() => ShowModalAsync()">
-                <i class="bi bi-plus-circle me-1"></i> Transferencia
-            </button>
+        @* Encabezado: el unico titulo de la pantalla *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-right-left"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Transfer_Title"]</h3>
+                <p>@Localizer["Transfer_Subtitle"]</p>
+            </div>
         </div>
 
-        <!-- Filtro -->
-        <div class="col-md-9 d-flex justify-content-end">
-            <FilterComponent ApplyFilter="SetFilterValue" />
+        <div class="idx-bar">
+            <ButtonFormNew OnClick="() => ShowModalAsync()" />
+            <div class="idx-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
         </div>
-    </div>
 
-    <hr class="border-top border-dark opacity-75 my-3" />
-
-    <!-- Tabla -->
-    <div class="table-responsive">
-        <GenericList MyList="Transfers">
-            <Body>
-                <table class="table table-hover table-striped align-middle">
-                    <thead class="table-dark">
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
                         <tr>
-                            <th>Fecha</th>
-                            <th>Transferencia</th>
-                            <th>Desde</th>
-                            <th>Hacia</th>
-                            <th>Estatus</th>
-                            <th colspan="3" class="text-center">Acciones</th>
+                            <th>#</th>
+                            <th>@Localizer[nameof(Resource.FromProductStorage)]</th>
+                            <th>@Localizer[nameof(Resource.ToProductStorage)]</th>
+                            <th>@Localizer[nameof(Resource.User)]</th>
+                            <th>@Localizer[nameof(Resource.Status)]</th>
+                            <th style="text-align:right">@Localizer["Table_Actions"]</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Transfers!)
-                        {
-                            <tr class="row-dbl" @ondblclick="() => ShowModalAsync(item.TransferId, true)">
-                                <td>@item.DateTransfer.ToString("dd/MM/yyyy")</td>
-                                <td>@item.NroTransfer</td>
-                                <td>@item.FromStorageName</td>
-                                <td>@item.ToStorageName</td>
-                                <td>@item.Status.ToString()</td>
-                                <td @ondblclick:stopPropagation class="text-center">
-                                    @if (item.Status == TransferType.Pendiente)
-                                    {
-                                        <button class="btn btn-sm btn-dark"
-                                                title="Editar"
-                                                @onclick="@(() => ShowModalAsync(item.TransferId, true))">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <a class="btn btn-sm btn-dark"
-                                       title="Detalles"
-                                       href="@($"/transfers/details/{item.TransferId}")">
-                                        <i class="bi bi-columns-gap"></i>
-                                    </a>
-                                </td>
-                                <td class="text-center">
-                                    @if (item.Status == TransferType.Pendiente)
-                                    {
-                                        <button class="btn btn-sm btn-danger"
-                                                title="Eliminar"
-                                                @onclick="@(() => DeleteAsync(item.TransferId))">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    }
-                                </td>
-                            </tr>
-                        }
+                        <GenericList MyList="Transfers">
+                            <Loading>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Transfers!)
+                                {
+                                    <tr class="row-dbl" @ondblclick="() => ShowDetailsAsync(item.TransferId)">
+                                        <td>
+                                            <div class="idx-name">@item.NroTransfer</div>
+                                            <div class="idx-meta">@item.DateTransfer.ToString("dd/MM/yyyy")</div>
+                                        </td>
+                                        <td>@item.FromStorageName</td>
+                                        <td>@item.ToStorageName</td>
+                                        <td>@item.NombreUsuario</td>
+                                        <td><TransferStatusBadge Value="@(item.Status ?? TransferType.Pendiente)" /></td>
+                                        <td @ondblclick:stopPropagation>
+                                            <div class="idx-actions">
+                                                <ButtonGeneric OnClick="() => ShowDetailsAsync(item.TransferId)" TooTip="@Localizer["Transfer_Details"]" Icon="fa fa-table-list" />
+                                                @* Un traslado cerrado ya movio inventario: no se edita ni se borra *@
+                                                @if (item.Status == TransferType.Pendiente)
+                                                {
+                                                    <ButtonEdit OnClick="() => ShowModalAsync(item.TransferId, true)" />
+                                                    <ButtonDelete OnClick="() => DeleteAsync(item.TransferId)" />
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
                     </tbody>
                 </table>
-            </Body>
-        </GenericList>
+            </div>
+
+            @if (Transfers is not null)
+            {
+                <div class="idx-panel-foot">
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
     </div>
-
-    <hr class="border-top border-dark opacity-75 my-3" />
-
-    <Pagination CurrentPage="CurrentPage"
-                SelectedPage="SelectedPage"
-                TotalPages="TotalPages" />
 </div>
-
-
-

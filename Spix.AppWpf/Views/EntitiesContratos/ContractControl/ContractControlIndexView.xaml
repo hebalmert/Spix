@@ -176,10 +176,19 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Width="Auto" MinWidth="180" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                <DataGridTemplateColumn Width="Auto" MinWidth="230" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,6,0">
+                                                <!-- Como trabaja el equipo: P de PPPoE, H de HotSpot. NO es un boton,
+                                                     es el dato, por eso va separado por la rayita -->
+                                                <Border Style="{StaticResource SharedIndexMkLetter}"
+                                                        ToolTip="{Binding MkTooltip}">
+                                                    <TextBlock Style="{StaticResource SharedIndexMkLetterText}"
+                                                               Text="{Binding MkLetter}" />
+                                                </Border>
+                                                <Border Style="{StaticResource SharedIndexMkSeparator}" />
+
                                                 <!-- La bitacora no ocupa columna: se consulta aqui -->
                                                 <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.AuditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                                             CommandParameter="{Binding}"

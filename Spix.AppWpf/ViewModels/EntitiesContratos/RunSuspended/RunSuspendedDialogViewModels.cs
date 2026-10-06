@@ -506,7 +506,7 @@ public partial class RunSuspendedDetailDialogViewModel : ObservableObject
         {
             foreach (var contrato in datos.Contracts)
             {
-                fuera.Add(NuevoProblema(contrato, "No tiene IpBinding: no se le puede quitar el acceso."));
+                fuera.Add(NuevoProblema(contrato, "No tiene servidor asignado: no se le puede quitar el acceso."));
             }
 
             return new CorteRunResultDto();

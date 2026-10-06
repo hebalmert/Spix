@@ -1,6 +1,8 @@
 ﻿<EditForm Model="Transfer" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator />
 
+    @* Tres campos cortos: el modal va en tamano normal y cada campo ocupa su ancho.
+       Con modal-lg y campos a media columna sobraba espacio muerto a la derecha. *@
     <div class="mb-2">
         <div class="input-group">
             <span class="input-group-text" style="width: 100px">@Localizer[nameof(Resource.Date)]</span>
@@ -10,7 +12,7 @@
         </div>
     </div>
 
-    <div class="col-md-6 mb-2">
+    <div class="mb-2">
         <GenericSelectWrapper Tmodel="ProductStorage" Items="ProductStorages1">
             <Body>
             <div class="input-group">
@@ -18,7 +20,7 @@
                 <select class="form-select" value="@Transfer.FromProductStorageId" @onchange="ProductStorageChanged1">
                     @foreach (var item in ProductStorages1)
                     {
-                        <option value="@item.ProductStorageId">@item.ProductStocks</option>
+                        <option value="@item.ProductStorageId">@item.StorageName</option>
                     }
                 </select>
             </div>
@@ -26,7 +28,7 @@
         </GenericSelectWrapper>
     </div>
 
-    <div class="col-md-6 mb-2">
+    <div class="mb-2">
         <GenericSelectWrapper Tmodel="ProductStorage" Items="ProductStorages2">
             <Body>
             <div class="input-group">
@@ -34,7 +36,7 @@
                 <select class="form-select" value="@Transfer.ToProductStorageId" @onchange="ProductStorageChanged2">
                     @foreach (var item in ProductStorages2)
                     {
-                        <option value="@item.ProductStorageId">@item.ProductStocks</option>
+                        <option value="@item.ProductStorageId">@item.StorageName</option>
                     }
                 </select>
             </div>

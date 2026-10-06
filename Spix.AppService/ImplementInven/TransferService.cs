@@ -74,10 +74,29 @@ public class TransferService : ITransferService
                 };
             }
 
-            var queryable = _context.Transfers.Where(x => x.CorporationId == user.CorporationId).AsQueryable();
+            //AsNoTracking como en Compras: sin el, EF rastrea las entidades y les rellena
+            //las navegaciones con lo que haya cargado en la misma peticion, y eso termina
+            //en un ciclo al serializar.
+            var queryable = _context.Transfers
+                .AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId);
+
+            //Se busca por bodega de origen, de destino o por el numero del traslado
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                var filter = pagination.Filter.Trim();
+                queryable = queryable.Where(x =>
+                    EF.Functions.Like(x.FromStorageName!, $"%{filter}%") ||
+                    EF.Functions.Like(x.ToStorageName!, $"%{filter}%") ||
+                    EF.Functions.Like(x.NroTransfer.ToString(), $"%{filter}%"));
+            }
 
             await _httpContextAccessor.HttpContext!.InsertParameterPagination(queryable, pagination.RecordsNumber);
-            var modelo = await queryable.OrderBy(x => x.DateTransfer).Paginate(pagination).ToListAsync();
+
+            var modelo = await queryable
+                .OrderByDescending(x => x.NroTransfer)
+                .Paginate(pagination)
+                .ToListAsync();
 
             return new ActionResponse<IEnumerable<Transfer>>
             {
@@ -91,12 +110,15 @@ public class TransferService : ITransferService
         }
     }
 
-    public async Task<ActionResponse<Transfer>> GetAsync(Guid id)
+    public async Task<ActionResponse<Transfer>> GetAsync(Guid id, string username)
     {
         try
         {
+            var corporationId = await GetCorporationIdAsync(username);
+
+            //Por id SOLO no alcanza: tiene que ser de su corporacion
             var modelo = await _context.Transfers.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.TransferId == id);
+            .FirstOrDefaultAsync(x => x.TransferId == id && x.CorporationId == corporationId);
             if (modelo == null)
             {
                 return new ActionResponse<Transfer>
@@ -105,8 +127,10 @@ public class TransferService : ITransferService
                     Message = "Problemas para Enconstrar el Registro Indicado"
                 };
             }
-            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == modelo!.UserId);
-            modelo!.NombreUsuario = $"{modelo.User!.FirstName} {modelo.User!.LastName}" ;
+            //El nombre sale del usuario que se acaba de consultar. Antes leia modelo.User,
+            //que NO viene cargado, y reventaba con null al abrir el registro.
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == modelo.UserId);
+            modelo.NombreUsuario = user == null ? string.Empty : $"{user.FirstName} {user.LastName}";
             return new ActionResponse<Transfer>
             {
                 WasSuccess = true,
@@ -119,12 +143,28 @@ public class TransferService : ITransferService
         }
     }
 
-    public async Task<ActionResponse<Transfer>> UpdateAsync(Transfer modelo)
+    public async Task<ActionResponse<Transfer>> UpdateAsync(Transfer modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
 
         try
         {
+            var corporationId = await GetCorporationIdAsync(username);
+
+            //Por id SOLO no alcanza: tiene que ser de su corporacion
+            var existe = await _context.Transfers.AsNoTracking()
+                .AnyAsync(x => x.TransferId == modelo.TransferId && x.CorporationId == corporationId);
+
+            if (!existe)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<Transfer>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas para Enconstrar el Registro Indicado"
+                };
+            }
+
             Transfer NewModelo = _mapperService.Map<Transfer, Transfer>(modelo);
 
             _context.Transfers.Update(NewModelo);
@@ -197,12 +237,16 @@ public class TransferService : ITransferService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var DataRemove = await _context.Transfers.FindAsync(id);
+            var corporationId = await GetCorporationIdAsync(username);
+
+            //Por id SOLO no alcanza: tiene que ser de su corporacion
+            var DataRemove = await _context.Transfers
+                .FirstOrDefaultAsync(x => x.TransferId == id && x.CorporationId == corporationId);
             if (DataRemove == null)
             {
                 return new ActionResponse<bool>
@@ -228,5 +272,13 @@ public class TransferService : ITransferService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
         }
+    }
+
+    //El CorporationId sale del JWT: el controlador baja el username y aqui se resuelve.
+    //Mismo patron que Compras y el resto de los modulos.
+    private async Task<int?> GetCorporationIdAsync(string username)
+    {
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        return user?.CorporationId;
     }
 }

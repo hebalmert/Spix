@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Spix.AppBack.Helper;
+using Spix.AppInfra.ErrorHandling;
 using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.AppResponses;
@@ -25,6 +26,25 @@ public class ContractPppoesController : ControllerBase
     {
         _unitOfWork = unitOfWork;
         _localizer = localizer;
+    }
+
+    //Los estados que el operador puede elegir, armados en el backend con su neutro
+    [HttpGet("accessStates")]
+    public IActionResult GetAccessStates()
+    {
+        try
+        {
+            var response = _unitOfWork.AccessStatesCombo();
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
     }
 
     [HttpGet("{id}")]

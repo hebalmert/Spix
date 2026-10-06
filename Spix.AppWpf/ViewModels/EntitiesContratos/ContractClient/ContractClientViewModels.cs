@@ -35,6 +35,23 @@ public class ContractClientRow
 
     public bool HasInvoice => Item.EnvoiceClient;
 
+    //Como trabaja el equipo del contrato: P de PPPoE, H de HotSpot, guion si todavia no
+    //tiene servidor. Lo manda el listado de Control de contratos; el de Contratos no, y
+    //ahi la columna no se muestra.
+    public string MkLetter => Item.ControlMk switch
+    {
+        MikrotikControlType.PPPoE => "P",
+        MikrotikControlType.HotSpot => "H",
+        _ => "-"
+    };
+
+    public string MkTooltip => Item.ControlMk switch
+    {
+        MikrotikControlType.PPPoE => "PPPoE",
+        MikrotikControlType.HotSpot => "HotSpot",
+        _ => "Sin servidor asignado todavia"
+    };
+
     public string StatusText { get; }
 
     public Brush StatusColor { get; }

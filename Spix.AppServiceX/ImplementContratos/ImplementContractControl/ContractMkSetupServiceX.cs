@@ -2,6 +2,7 @@ using Spix.AppService.InterfaceContratos.InterfaceContractControl;
 using Spix.AppServiceX.InterfaceContratos.InterfaceContractControl;
 using Spix.Domain.EntitiesContratos;
 using Spix.DomainLogic.EntitiesContractDTO;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 
 namespace Spix.AppServiceX.ImplementContratos.ImplementContractControl;
@@ -41,6 +42,8 @@ public class ContractMkSetupServiceX : IContractMkSetupServiceX
 
     public async Task<ActionResponse<ContractPppoeLocalSetupDTO>> GetPppoeSetupAsync(Guid contractClientId, string username)
         => await _contractService.GetPppoeSetupAsync(contractClientId, username);
+
+    public ActionResponse<IEnumerable<IntItemModel>> PppoeAccessStatesCombo() => _contractService.PppoeAccessStatesCombo();
 
     public async Task<ActionResponse<ContractPppoe>> SavePppoeAsync(ContractPppoeLocalSaveDTO datos, string username)
         => await _contractService.SavePppoeAsync(datos, username);

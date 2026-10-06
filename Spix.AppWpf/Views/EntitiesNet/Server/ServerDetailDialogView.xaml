@@ -66,8 +66,12 @@
                    TextWrapping="Wrap" Foreground="{DynamicResource BrushIndexMeta}"/>
 
         <StackPanel Grid.Row="14" Grid.ColumnSpan="2" Orientation="Horizontal">
-            <Button Width="190" Margin="0,0,12,0" Command="{Binding CheckConnectionCommand}"
+            <Button Width="120" Margin="0,0,12,0" Command="{Binding PingCommand}"
+                    Style="{StaticResource SharedButtonFormSecondary}" Content="Ping"/>
+            <Button Width="170" Margin="0,0,12,0" Command="{Binding CheckConnectionCommand}"
                     Style="{StaticResource SharedButtonFormSecondary}" Content="Probar conexion"/>
+            <Button Width="180" Margin="0,0,12,0" Command="{Binding LoadInterfacesCommand}"
+                    Style="{StaticResource SharedButtonFormSecondary}" Content="Cargar interfaces"/>
             <Button Width="210" Command="{Binding ProvisionCommand}"
                     Style="{StaticResource SharedButtonFormPrimary}" Content="Crear servidor PPPoE"
                     Visibility="{Binding CanProvision, Converter={StaticResource BooleanToVisibilityConverter}}"/>

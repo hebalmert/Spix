@@ -28,6 +28,10 @@ public partial class FormTransferDetails
 
     private decimal StockAvaible;
 
+    //La categoria elegida vive aqui y no en TransferDetails.Product: al crear una linea
+    //ese Product viene en null y el select reventaba al pintarse.
+    private Guid SelectedCategoryId;
+
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
     [Inject] private IRepository _repository { get; set; } = null!;
@@ -44,9 +48,10 @@ public partial class FormTransferDetails
     protected override async Task OnInitializedAsync()
     {
         await LoadCategory();
-        if (IsEditControl)
+        if (IsEditControl && TransferDetails.Product is not null)
         {
-            await LoadProducts(TransferDetails.Product!.ProductCategoryId);
+            SelectedCategoryId = TransferDetails.Product.ProductCategoryId;
+            await LoadProducts(SelectedCategoryId);
         }
     }
 
@@ -55,14 +60,14 @@ public partial class FormTransferDetails
         var responseHTTP = await _repository.GetAsync<List<ProductCategory>>($"api/v1/productcategories/loadCombo");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
-            _navigationManager.NavigateTo("/sells");
+            return;
             return;
         }
 
         Categories = responseHTTP.Response;
-        if (IsEditControl)
+        if (IsEditControl && TransferDetails.Product is not null)
         {
-            SelectedCategory = Categories!.Where(x => x.ProductCategoryId == TransferDetails.Product!.ProductCategoryId)
+            SelectedCategory = Categories!.Where(x => x.ProductCategoryId == TransferDetails.Product.ProductCategoryId)
                 .Select(x => new ProductCategory { ProductCategoryId = x.ProductCategoryId, Name = x.Name }).FirstOrDefault();
         }
     }
@@ -71,7 +76,7 @@ public partial class FormTransferDetails
     {
         if (Guid.TryParse(e?.Value?.ToString(), out Guid selectedId))
         {
-            TransferDetails.Product!.ProductCategoryId = selectedId;
+            SelectedCategoryId = selectedId;
         }
         Products = new();
         SelectedProduct = new();
@@ -83,7 +88,7 @@ public partial class FormTransferDetails
         var responseHTTP = await _repository.GetAsync<List<Product>>($"api/v1/products/loadCombo/{Id}");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
-            _navigationManager.NavigateTo("/sells");
+            return;
             return;
         }
         Products = responseHTTP.Response;

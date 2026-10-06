@@ -1,12 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Spix.AppInfra;
+using Spix.AppInfra.EnumMultilLanguage;
 using Spix.AppInfra.ErrorHandling;
 using Spix.AppInfra.Transactions;
 using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfaceContratos.InterfaceContractControl;
 using Spix.DomainLogic.EntitiesContractDTO;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.xLanguage.Resources;
 
@@ -29,19 +31,22 @@ public partial class ContractMkSetupService : IContractMkSetupService
     private readonly IUserHelper _userHelper;
     private readonly IStringLocalizer _localizer;
     private readonly HttpErrorHandler _httpErrorHandler;
+    private readonly IEnumMultilLanguageService _enumMultilLanguageService;
 
     public ContractMkSetupService(
         DataContext context,
         ITransactionManager transactionManager,
         IUserHelper userHelper,
         IStringLocalizer localizer,
-        HttpErrorHandler httpErrorHandler)
+        HttpErrorHandler httpErrorHandler,
+        IEnumMultilLanguageService enumMultilLanguageService)
     {
         _context = context;
         _transactionManager = transactionManager;
         _userHelper = userHelper;
         _localizer = localizer;
         _httpErrorHandler = httpErrorHandler;
+        _enumMultilLanguageService = enumMultilLanguageService;
     }
 
     // Todo lo que hace falta para armar la Queue de un contrato

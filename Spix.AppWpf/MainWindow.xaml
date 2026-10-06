@@ -154,6 +154,9 @@
                             <Button Click="ShowPurchasesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Compras" />
                             </Button>
+                            <Button Click="ShowTransfersClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Traslados" />
+                            </Button>
                             <Button Click="ShowCarguesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Cargue de seriales" />
                             </Button>
@@ -192,8 +195,14 @@
                             <Button Click="ShowNodesClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Nodos" />
                             </Button>
+                            <Button Click="ShowOltsClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="OLT" />
+                            </Button>
                             <Button Click="ShowNodeMapClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Mapa de nodos" />
+                            </Button>
+                            <Button Click="ShowOltMapClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Mapa de OLT" />
                             </Button>
                         </StackPanel>
 

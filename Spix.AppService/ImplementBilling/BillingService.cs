@@ -576,9 +576,24 @@ public class BillingService : IBillingService
                     HasServer = x.ContractServers!.Any(),
                     HasIp = x.ContractIps!.Any(),
                     HasMac = x.ContractMacs!.Any(),
-                    HasNode = x.ContractNodes!.Any(),
+                    //Lo que se le exige depende del TIPO DEL EQUIPO, no del contrato:
+                    //  PPPoE   -> OLT  + credencial PPPoE, y la credencial ENCENDIDA
+                    //  HotSpot -> Nodo + IpBinding
+                    //Un contrato vive en un solo equipo y el equipo es de un solo tipo.
+                    HasNode = _context.ContractServers
+                        .Where(cs => cs.ContractClientId == x.ContractClientId)
+                        .Select(cs => cs.Server!.ControlMk)
+                        .FirstOrDefault() == MikrotikControlType.PPPoE
+                            ? x.ContractOlts!.Any()
+                            : x.ContractNodes!.Any(),
                     HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId),
-                    HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId),
+                    HasBinding = _context.ContractServers
+                        .Where(cs => cs.ContractClientId == x.ContractClientId)
+                        .Select(cs => cs.Server!.ControlMk)
+                        .FirstOrDefault() == MikrotikControlType.PPPoE
+                            ? _context.ContractPppoes.Any(b => b.ContractClientId == x.ContractClientId &&
+                                                                b.PppoeAccessState == PppoeAccessState.Activo)
+                            : _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId),
 
                     //Ya facturado en el periodo que se va a lanzar
                     AlreadyBilled = _context.CxCBills.Any(c =>
@@ -816,26 +831,45 @@ public class BillingService : IBillingService
             {
                 x.ContractClientId,
                 HasPlan = x.ContractPlans!.Any(),
-                HasIp = x.ContractIps!.Any(),
-                HasMac = x.ContractMacs!.Any(),
                 HasServer = x.ContractServers!.Any(),
-                HasNode = x.ContractNodes!.Any(),
+                Control = _context.ContractServers
+                    .Where(cs => cs.ContractClientId == x.ContractClientId)
+                    .Select(cs => cs.Server!.ControlMk)
+                    .FirstOrDefault(),
+                //Lo que se le exige depende del TIPO DEL EQUIPO, no del contrato:
+                //  PPPoE   -> OLT  + credencial PPPoE, y la credencial ENCENDIDA
+                //  HotSpot -> Nodo + IpBinding
+                //Un contrato vive en un solo equipo y el equipo es de un solo tipo.
+                HasNode = _context.ContractServers
+                    .Where(cs => cs.ContractClientId == x.ContractClientId)
+                    .Select(cs => cs.Server!.ControlMk)
+                    .FirstOrDefault() == MikrotikControlType.PPPoE
+                        ? x.ContractOlts!.Any()
+                        : x.ContractNodes!.Any(),
                 HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId),
-                HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId)
+                HasBinding = _context.ContractServers
+                    .Where(cs => cs.ContractClientId == x.ContractClientId)
+                    .Select(cs => cs.Server!.ControlMk)
+                    .FirstOrDefault() == MikrotikControlType.PPPoE
+                        ? _context.ContractPppoes.Any(b => b.ContractClientId == x.ContractClientId &&
+                                                            b.PppoeAccessState == PppoeAccessState.Activo)
+                        : _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId)
             })
             .ToListAsync();
 
         var incompletos = new Dictionary<Guid, string>();
         foreach (var dato in datos)
         {
+            //Se le reclama con el nombre de SU tipo de equipo: a un contrato de fibra no
+            //tiene sentido decirle que le falta un Nodo o un IpBinding.
+            var esPppoe = dato.Control == MikrotikControlType.PPPoE;
+
             var faltas = new List<string>();
             if (!dato.HasPlan) faltas.Add("Plan");
-            if (!dato.HasIp) faltas.Add("IP");
-            if (!dato.HasMac) faltas.Add("MAC");
             if (!dato.HasServer) faltas.Add("Servidor");
-            if (!dato.HasNode) faltas.Add("Nodo");
+            if (!dato.HasNode) faltas.Add(esPppoe ? "OLT" : "Nodo");
             if (!dato.HasQueue) faltas.Add("Queue");
-            if (!dato.HasBinding) faltas.Add("IpBinding");
+            if (!dato.HasBinding) faltas.Add(esPppoe ? "Credencial PPPoE encendida" : "IpBinding");
 
             if (faltas.Count > 0)
                 incompletos[dato.ContractClientId] = string.Join(", ", faltas);
@@ -896,9 +930,24 @@ public class BillingService : IBillingService
                     HasIp = x.ContractIps!.Any(),
                     HasMac = x.ContractMacs!.Any(),
                     HasServer = x.ContractServers!.Any(),
-                    HasNode = x.ContractNodes!.Any(),
+                    //Lo que se le exige depende del TIPO DEL EQUIPO, no del contrato:
+                    //  PPPoE   -> OLT  + credencial PPPoE, y la credencial ENCENDIDA
+                    //  HotSpot -> Nodo + IpBinding
+                    //Un contrato vive en un solo equipo y el equipo es de un solo tipo.
+                    HasNode = _context.ContractServers
+                        .Where(cs => cs.ContractClientId == x.ContractClientId)
+                        .Select(cs => cs.Server!.ControlMk)
+                        .FirstOrDefault() == MikrotikControlType.PPPoE
+                            ? x.ContractOlts!.Any()
+                            : x.ContractNodes!.Any(),
                     HasQueue = _context.ContractQues.Any(q => q.ContractClientId == x.ContractClientId),
-                    HasBinding = _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId)
+                    HasBinding = _context.ContractServers
+                        .Where(cs => cs.ContractClientId == x.ContractClientId)
+                        .Select(cs => cs.Server!.ControlMk)
+                        .FirstOrDefault() == MikrotikControlType.PPPoE
+                            ? _context.ContractPppoes.Any(b => b.ContractClientId == x.ContractClientId &&
+                                                                b.PppoeAccessState == PppoeAccessState.Activo)
+                            : _context.ContractBinds.Any(b => b.ContractClientId == x.ContractClientId)
                 })
                 .FirstOrDefaultAsync();
 

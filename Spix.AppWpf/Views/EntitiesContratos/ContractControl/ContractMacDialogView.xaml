@@ -4,10 +4,16 @@
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
              MinWidth="620">
 
-    <!-- La MAC del equipo: se elige uno de la lista y se guarda.
-         La lista la arma el backend; aqui solo se pinta. -->
+    <!-- La MAC del equipo, en cascada: Categoria equipo -> Equipo -> MAC.
+         Las tres listas las arma el backend y solo traen lo que tiene seriales disponibles.
+         Los combos van en OneWay + SelectionChanged, NO en TwoWay: con TwoWay el enlace
+         escribe el valor antes de que llegue el evento y el hijo nunca se recarga. -->
     <Grid Margin="0,20,0,0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="24" />
             <RowDefinition Height="Auto" />
@@ -19,20 +25,57 @@
                 <ColumnDefinition Width="*" MinWidth="260" />
             </Grid.ColumnDefinitions>
             <Border Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Categoria equipo" />
+            </Border>
+            <ComboBox Grid.Column="1"
+                      Style="{StaticResource SharedFormCombo}"
+                      ItemsSource="{Binding Categories}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding SelectedCategoryId, Mode=OneWay}"
+                      SelectionChanged="CategorySelectionChanged" />
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="260" />
+            </Grid.ColumnDefinitions>
+            <Border Style="{StaticResource SharedFormLabel}">
                 <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Equipo" />
             </Border>
             <ComboBox Grid.Column="1"
                       Style="{StaticResource SharedFormCombo}"
-                      ItemsSource="{Binding Options}"
+                      IsEnabled="{Binding CanChooseProduct}"
+                      ItemsSource="{Binding Products}"
                       DisplayMemberPath="Name"
                       SelectedValuePath="Value"
-                      SelectedValue="{Binding SelectedValue, Mode=TwoWay}" />
+                      SelectedValue="{Binding SelectedProductId, Mode=OneWay}"
+                      SelectionChanged="ProductSelectionChanged" />
         </Grid>
 
-        <shared:SharedModalActions Grid.Row="2"
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" MinWidth="260" />
+            </Grid.ColumnDefinitions>
+            <Border Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="MAC" />
+            </Border>
+            <ComboBox Grid.Column="1"
+                      Style="{StaticResource SharedFormCombo}"
+                      IsEnabled="{Binding CanChooseMac}"
+                      ItemsSource="{Binding Macs}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding SelectedMacId, Mode=OneWay}"
+                      SelectionChanged="MacSelectionChanged" />
+        </Grid>
+
+        <shared:SharedModalActions Grid.Row="6"
                                    SaveCommand="{Binding SaveCommand}"
                                    CancelCommand="{Binding CancelCommand}" />
 
-        <shared:SharedLoading Grid.RowSpan="3" IsLoading="{Binding IsLoading}" />
+        <shared:SharedLoading Grid.RowSpan="7" IsLoading="{Binding IsLoading}" />
     </Grid>
 </UserControl>

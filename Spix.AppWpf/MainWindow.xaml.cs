@@ -16,12 +16,15 @@ using Spix.AppWpf.Views.EntitiesInven.Mark;
 using Spix.AppWpf.Views.EntitiesInven.Supplier;
 using Spix.AppWpf.Views.EntitiesInven.Storage;
 using Spix.AppWpf.Views.EntitiesInven.Purchase;
+using Spix.AppWpf.Views.EntitiesInven.Transfer;
 using Spix.AppWpf.Views.EntitiesInven.Serial;
 using Spix.AppWpf.Views.EntitiesInven.Cargue;
 using Spix.AppWpf.Views.EntitiesNet.IpNet;
 using Spix.AppWpf.Views.EntitiesNet.IpNetwork;
 using Spix.AppWpf.Views.EntitiesNet.Node;
 using Spix.AppWpf.Views.EntitiesNet.NodeMap;
+using Spix.AppWpf.Views.EntitiesNet.Olt;
+using Spix.AppWpf.Views.EntitiesNet.OltMap;
 using Spix.AppWpf.Views.EntitiesNet.Server;
 using Spix.AppWpf.Views.EntitiesSchedule;
 using Spix.AppWpf.Views.EntitiesContratos.ContractClient;
@@ -283,6 +286,29 @@ public partial class MainWindow : Window
         ShowPurchasesClick(this, new RoutedEventArgs());
     }
 
+    // Abre el listado de traslados y conserva la navegacion hacia su detalle.
+    private void ShowTransfersClick(object sender, RoutedEventArgs e)
+    {
+        var view = _serviceProvider.GetRequiredService<TransferIndexView>();
+        view.DetailsRequested += ShowTransferDetails;
+        ShowView(view, "Traslados", "Inventario / Traslados");
+    }
+
+    // Abre el detalle de un traslado para administrar sus productos y cerrarlo.
+    private void ShowTransferDetails(object? sender, Guid transferId)
+    {
+        var view = _serviceProvider.GetRequiredService<TransferDetailsView>();
+        view.BackRequested += ShowTransfersFromDetails;
+        view.LoadTransfer(transferId);
+        ShowView(view, "Detalle traslado", "Inventario / Traslados / Detalle");
+    }
+
+    // Restablece el listado cuando el usuario termina de revisar el detalle.
+    private void ShowTransfersFromDetails(object? sender, EventArgs e)
+    {
+        ShowTransfersClick(this, new RoutedEventArgs());
+    }
+
     // Muestra los cargues pendientes y completados antes de administrar sus MAC.
     private void ShowCarguesClick(object sender, RoutedEventArgs e)
     {
@@ -328,6 +354,19 @@ public partial class MainWindow : Window
     private void ShowNodesClick(object sender, RoutedEventArgs e)
     {
         ShowView<NodeIndexView>("Nodos", "Network / Nodos");
+    }
+
+    // La OLT va pegada al Nodo: son lo mismo para dos topologias, el AP inalambrico y el
+    // equipo de central de fibra.
+    private void ShowOltsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<OltIndexView>("OLT", "Network / OLT");
+    }
+
+    // El mapa de OLT: al entrar pinta todas; al elegir una, sus clientes.
+    private void ShowOltMapClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<OltMapView>("Mapa de OLT", "Red / Mapa de OLT");
     }
 
     // Abre los servidores y permite ejecutar los diagnosticos locales desde WPF.

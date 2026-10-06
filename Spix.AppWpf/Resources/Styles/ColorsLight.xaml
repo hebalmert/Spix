@@ -52,6 +52,9 @@
     <SolidColorBrush x:Key="BrushIndexIconHover" Color="#D3E2F8" />
     <SolidColorBrush x:Key="BrushIndexIconOnDanger" Color="#FFFFFF" />
     <SolidColorBrush x:Key="BrushIndexIconDanger" Color="#DC2626" />
+
+    <!-- La letra P/H del listado de contratos: el mismo morado en los dos tipos -->
+    <SolidColorBrush x:Key="BrushIndexIconMk" Color="#6F42C1" />
     <SolidColorBrush x:Key="BrushIndexIconDangerHover" Color="#FCE8E8" />
     <SolidColorBrush x:Key="BrushIndexIconSuccess" Color="#198754" />
     <SolidColorBrush x:Key="BrushIndexIconSuccessHover" Color="#E3F3EB" />

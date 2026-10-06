@@ -37,6 +37,40 @@
     </div>
     <ValidationMessage For="@(() => ContractPppoe.Clave)" />
 
+    @* El estado del acceso: el gemelo del "Tipo Acceso" del IpBinding en HotSpot.
+       Solo al editar, porque una credencial recien creada nace Activa.
+
+       En Corte NO se ofrece el combo: ese estado lo pone y lo quita la suspension por
+       mora, y dejarlo a mano desincronizaria el contrato con la credencial. *@
+    @if (IsEdit)
+    {
+        @if (ContractPppoe.PppoeAccessState == PppoeAccessState.Corte)
+        {
+            <div class="input-group mt-2">
+                <span class="input-group-text" style="width:150px">Estado Acceso</span>
+                <input class="form-control" value="@Localizer[nameof(Resource.PppoeAccessState_Corte)]" readonly />
+            </div>
+            <div class="form-text">@Localizer[nameof(Resource.Pppoe_StateLockedByCut)]</div>
+        }
+        else
+        {
+            <GenericSelectWrapper Tmodel="IntItemModel" Items="AccessStates">
+                <Body>
+                    <div class="input-group mt-2">
+                        <span class="input-group-text" style="width:150px">Estado Acceso</span>
+                        <select class="form-select" value="@((int)ContractPppoe.PppoeAccessState)"
+                                @onchange="AccessStateChanged">
+                            @foreach (var item in AccessStates!)
+                            {
+                                <option value="@item.Value">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                </Body>
+            </GenericSelectWrapper>
+        }
+    }
+
     <div class="d-flex justify-content-center gap-3 mt-5">
         <ButtonFormSave IsSaving="IsSaving" />
         <ButtonFormBack OnClick="ReturnAction" />

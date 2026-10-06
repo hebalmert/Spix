@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Network;
 using Spix.AppWpf.SharedServices;
+using Spix.AppWpf.Views.EntitiesNet.Server;
 using Spix.Domain.EntitiesNet;
 using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.MkDTOs;
@@ -113,12 +114,56 @@ public partial class ServerDetailDialogViewModel : ObservableObject
         }
     }
 
+    //Ping al equipo desde ESTE Windows, igual que en la pantalla de la web. Va local:
+    //el escritorio esta en la misma red y por eso sirve aunque el MikroTik no tenga IP publica.
+    [RelayCommand]
+    private async Task PingAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_serverIp))
+        {
+            await _alertService.WarningAsync("Ping", "El servidor no tiene una IP de red para hacerle ping.");
+            return;
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            ["Host"] = _serverIp,
+            ["ServerName"] = Selected?.ServerName ?? _serverIp
+        };
+
+        await _modalService.ShowAsync<ServerPingDialogView>("Ping del servidor", parameters);
+    }
+
+    //Solo prueba que se puede entrar al equipo. NO toca la lista de interfaces: son dos
+    //botones distintos, igual que en la web.
     [RelayCommand]
     private async Task CheckConnectionAsync()
     {
         if (Selected == null) return;
         IsLoading = true;
         ConnectionText = "Probando conexion local...";
+        try
+        {
+            var found = new List<MkInterfaceDTO>();
+            var result = await _mikrotikService.ExecuteAsync(LocalServer(), router =>
+                found = LocalPppoeServerCommands.ReadInterfaces(router));
+
+            ConnectionText = result.WasExecuted
+                ? $"Conexion local correcta. El equipo tiene {found.Count} interfaces."
+                : result.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    //Trae las interfaces del equipo para poder elegir la de internet y la de clientes.
+    [RelayCommand]
+    private async Task LoadInterfacesAsync()
+    {
+        if (Selected == null) return;
+        IsLoading = true;
         try
         {
             var found = new List<MkInterfaceDTO>();
@@ -132,7 +177,7 @@ public partial class ServerDetailDialogViewModel : ObservableObject
 
             found.Insert(0, new MkInterfaceDTO { Name = string.Empty, Text = "Seleccione interfaz" });
             Interfaces = new ObservableCollection<MkInterfaceDTO>(found);
-            ConnectionText = $"Conexion local correcta. {found.Count - 1} interfaces disponibles.";
+            ConnectionText = $"{found.Count - 1} interfaces cargadas del equipo.";
         }
         finally
         {

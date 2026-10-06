@@ -313,7 +313,7 @@ public partial class ActivationIndexViewModel : ObservableObject
             return null;
         }
 
-        if (datos.Bindings.Count == 0)
+        if (datos.Bindings.Count == 0 && datos.Credenciales.Count == 0)
         {
             return new ActivationRunResultDto();
         }

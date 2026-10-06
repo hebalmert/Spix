@@ -131,21 +131,26 @@
                                    Style="{StaticResource SharedIndexMeta}"
                                    Text="Para cambiar servidor, IP o plan, primero quite la Queue y el acceso MikroTik." />
 
-                        <!-- 1. Red -->
-                        <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="1 · Red" />
-                        <UniformGrid Columns="2" Margin="0,0,0,16">
-                            <shared:SharedConfigCard Margin="0,0,12,0"
+                        <!-- 1. Servidor: es lo primero porque de el sale como trabaja el equipo.
+                             Segun su control, mas abajo se pide Nodo (inalambrico) u OLT (fibra). -->
+                        <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="1 · Servidor" />
+                        <shared:SharedConfigCard Margin="0,0,0,16"
                                                      Title="Servidor Gateway"
                                                      Icon="{x:Static icons:FontAwesomeIcon.Server}"
                                                      IsDone="{Binding HasServer}"
                                                      Value="{Binding ServerName}"
+                                                     EmptyText="Elija el servidor primero: de su control depende si el cliente entra por Nodo inalambrico o por OLT de fibra."
                                                      CanRemove="{Binding CanChangeServer}"
                                                      LockTip="{Binding LockTip}"
                                                      AddTip="Asignar el servidor"
                                                      AddCommand="{Binding SetServerCommand}"
                                                      RemoveCommand="{Binding RemoveServerCommand}" />
 
-                            <shared:SharedConfigCard Title="IP del cliente"
+                        <!-- 2. Red: por donde entra el cliente -->
+                        <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="2 · Red" />
+                        <UniformGrid Columns="2" Margin="0,0,0,16">
+                            <shared:SharedConfigCard Margin="0,0,12,0"
+                                                     Title="IP del cliente"
                                                      Icon="{x:Static icons:FontAwesomeIcon.NetworkWired}"
                                                      IsDone="{Binding HasIp}"
                                                      Value="{Binding IpText}"
@@ -154,33 +159,8 @@
                                                      AddTip="Asignar la IP"
                                                      AddCommand="{Binding SetIpCommand}"
                                                      RemoveCommand="{Binding RemoveIpCommand}" />
-                        </UniformGrid>
 
-                        <shared:SharedConfigCard Margin="0,0,0,16"
-                                                 Title="Nodo de acceso"
-                                                 Icon="{x:Static icons:FontAwesomeIcon.TowerBroadcast}"
-                                                 IsDone="{Binding HasNode}"
-                                                 Value="{Binding NodeName}"
-                                                 AddTip="Asignar el nodo"
-                                                 AddCommand="{Binding SetNodeCommand}"
-                                                 RemoveCommand="{Binding RemoveNodeCommand}" />
-
-                        <!-- 2. Servicio y equipo -->
-                        <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="2 · Servicio y equipo" />
-                        <shared:SharedConfigCard Margin="0,0,0,12"
-                                                 Title="Plan del cliente"
-                                                 Icon="{x:Static icons:FontAwesomeIcon.Gauge}"
-                                                 IsDone="{Binding HasPlan}"
-                                                 Value="{Binding PlanName}"
-                                                 CanRemove="{Binding CanChangePlan}"
-                                                 LockTip="{Binding LockTip}"
-                                                 AddTip="Asignar el plan"
-                                                 AddCommand="{Binding SetPlanCommand}"
-                                                 RemoveCommand="{Binding RemovePlanCommand}" />
-
-                        <UniformGrid Columns="2" Margin="0,0,0,16">
-                            <shared:SharedConfigCard Margin="0,0,12,0"
-                                                     Title="MAC del equipo"
+                            <shared:SharedConfigCard Title="MAC del equipo"
                                                      Icon="{x:Static icons:FontAwesomeIcon.Microchip}"
                                                      IsDone="{Binding HasMac}"
                                                      Value="{Binding MacText}"
@@ -189,21 +169,63 @@
                                                      AddTip="Asignar el equipo"
                                                      AddCommand="{Binding SetMacCommand}"
                                                      RemoveCommand="{Binding RemoveMacCommand}" />
+                        </UniformGrid>
 
-                            <!-- La unica con tres botones: ademas de cambiar y quitar,
-                                 deja ver el punto en el mapa -->
-                            <shared:SharedConfigCard Title="Ubicacion"
+                        <!-- Nodo u OLT, nunca los dos: lo decide el control del servidor -->
+                        <shared:SharedConfigCard Margin="0,0,0,16"
+                                                 Visibility="{Binding UseHotSpot, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                 Title="Nodo de acceso"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.TowerBroadcast}"
+                                                 IsDone="{Binding HasNode}"
+                                                 Value="{Binding NodeName}"
+                                                 Facts="{Binding NodeFacts}"
+                                                 AddTip="Asignar el nodo"
+                                                 AddCommand="{Binding SetNodeCommand}"
+                                                 RemoveCommand="{Binding RemoveNodeCommand}" />
+
+                        <shared:SharedConfigCard Margin="0,0,0,16"
+                                                 Visibility="{Binding UsePppoe, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                 Title="OLT de acceso"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.NetworkWired}"
+                                                 IsDone="{Binding HasOlt}"
+                                                 Value="{Binding OltName}"
+                                                 Facts="{Binding OltFacts}"
+                                                 AddTip="Asignar la OLT"
+                                                 AddCommand="{Binding SetOltCommand}"
+                                                 RemoveCommand="{Binding RemoveOltCommand}" />
+
+                        <!-- 3. Servicio y ubicacion -->
+                        <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="3 · Servicio y ubicacion" />
+                        <shared:SharedConfigCard Margin="0,0,0,12"
+                                                 Title="Plan del cliente"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.Gauge}"
+                                                 IsDone="{Binding HasPlan}"
+                                                 Value="{Binding PlanName}"
+                                                 Facts="{Binding PlanFacts}"
+                                                 CanRemove="{Binding CanChangePlan}"
+                                                 LockTip="{Binding LockTip}"
+                                                 AddTip="Asignar el plan"
+                                                 AddCommand="{Binding SetPlanCommand}"
+                                                 RemoveCommand="{Binding RemovePlanCommand}" />
+
+                        <!-- La unica con tres botones: ademas de cambiar y quitar,
+                             deja ver el punto en el mapa -->
+                        <shared:SharedConfigCard Margin="0,0,0,16"
+                                                     Title="Ubicacion"
                                                      Icon="{x:Static icons:FontAwesomeIcon.LocationDot}"
                                                      IsDone="{Binding HasMap}"
                                                      Value="{Binding MapText}"
+                                                     Facts="{Binding MapFacts}"
                                                      AddTip="Cargar la ubicacion"
                                                      AddCommand="{Binding SetMapCommand}"
                                                      ViewCommand="{Binding ViewMapCommand}"
                                                      EditCommand="{Binding EditMapCommand}"
                                                      RemoveCommand="{Binding RemoveMapCommand}" />
-                        </UniformGrid>
 
-                        <StackPanel Visibility="{Binding UseMikrotik, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <!-- 4. MikroTik. El Queue es comun a los dos mecanismos, asi que su
+                             tarjeta esta siempre a la vista. Lo que cambia con el servidor es
+                             la pieza de acceso: IpBinding en HotSpot, credencial en PPPoE. -->
+                        <StackPanel>
                             <TextBlock Margin="0,0,0,8" Style="{StaticResource SharedIndexName}" Text="{Binding ControlTitle}" />
 
                             <shared:SharedConfigCard Margin="0,0,0,12"
@@ -211,6 +233,8 @@
                                                      Icon="{x:Static icons:FontAwesomeIcon.Gauge}"
                                                      IsDone="{Binding HasQueue}"
                                                      Value="{Binding QueueText}"
+                                                     EmptyText="{Binding QueueRequires}"
+                                                     Facts="{Binding QueueFacts}"
                                                      AddTip="Crear la queue"
                                                      AddCommand="{Binding SetQueueCommand}"
                                                      RemoveCommand="{Binding RemoveQueueCommand}" />
@@ -220,6 +244,9 @@
                                                      Icon="{x:Static icons:FontAwesomeIcon.Lock}"
                                                      IsDone="{Binding HasBind}"
                                                      Value="{Binding BindText}"
+                                                     EmptyText="{Binding BindRequires}"
+                                                     Facts="{Binding BindFacts}"
+                                                     HasAccess="{Binding BindAccess}"
                                                      AddTip="Crear el IpBinding"
                                                      AddCommand="{Binding SetBindCommand}"
                                                      EditCommand="{Binding EditBindCommand}"
@@ -230,6 +257,9 @@
                                                      Icon="{x:Static icons:FontAwesomeIcon.Key}"
                                                      IsDone="{Binding HasPppoe}"
                                                      Value="{Binding PppoeText}"
+                                                     EmptyText="{Binding PppoeRequires}"
+                                                     Facts="{Binding PppoeFacts}"
+                                                     HasAccess="{Binding PppoeAccess}"
                                                      AddTip="Crear la credencial"
                                                      AddCommand="{Binding SetPppoeCommand}"
                                                      EditCommand="{Binding EditPppoeCommand}"

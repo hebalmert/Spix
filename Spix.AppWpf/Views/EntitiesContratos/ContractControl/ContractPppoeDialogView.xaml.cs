@@ -28,6 +28,18 @@ public partial class ContractPppoeDialogView : UserControl, ISharedModalContent
             _contractClientId = contractId;
         }
         _edit = parameters.TryGetValue("Edit", out var edit) && edit is true;
+
+        //Con que se propone el usuario PPPoE. Los trae el detalle del contrato, igual que
+        //en el Blazor: el DTO del setup no los manda.
+        if (parameters.TryGetValue("ClientLastName", out var apellido) && apellido is string lastName)
+        {
+            _viewModel.ClientLastName = lastName;
+        }
+
+        if (parameters.TryGetValue("ControlContrato", out var contrato) && contrato is string control)
+        {
+            _viewModel.ControlContrato = control;
+        }
     }
 
     private async void LoadDialog(object sender, RoutedEventArgs e)

@@ -50,9 +50,11 @@ public partial class FormTransfer
         }
     }
 
+    //El combo llega ARMADO del backend, con su [Seleccione Bodega] y filtrado por
+    //corporacion. Antes pedia productStorages/loadCombo, una ruta que no existe.
     private async Task LoadProductStorage1()
     {
-        var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/productStorages/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/combosData/ComboStorage");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/transfers");
@@ -77,7 +79,7 @@ public partial class FormTransfer
 
     private async Task LoadProductStorage2()
     {
-        var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/productStorages/loadCombo");
+        var responseHTTP = await _repository.GetAsync<List<ProductStorage>>($"api/v1/combosData/ComboStorage");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
         {
             _navigationManager.NavigateTo("/transfers");

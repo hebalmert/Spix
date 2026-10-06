@@ -197,20 +197,20 @@ public partial class ContractNodeDialogViewModel : ContractPieceDialogViewModel
     }
 }
 
-// La MAC del equipo que se le instalo, de los seriales ya cargados
-public partial class ContractMacDialogViewModel : ContractPieceDialogViewModel
+// La OLT por la que entra el cliente de fibra. Es el gemelo del nodo: informativa.
+public partial class ContractOltDialogViewModel : ContractPieceDialogViewModel
 {
-    public ContractMacDialogViewModel(IRepository r, HttpResponseHandler h, ModalService m, AlertService a)
+    public ContractOltDialogViewModel(IRepository r, HttpResponseHandler h, ModalService m, AlertService a)
         : base(r, h, m, a) { }
 
-    protected override string SaveUrl => "api/v1/contractmacs";
+    protected override string SaveUrl => "api/v1/contractolts";
 
-    protected override string TargetField => "CargueDetailId";
+    protected override string TargetField => "OltId";
 
-    protected override string PieceName => "El equipo";
+    protected override string PieceName => "La OLT";
 
     protected override Task<List<PieceOption>> CargarOpcionesAsync()
     {
-        return PedirAsync<GuidItemModel>("api/v1/cargueDetails/loadCombo", x => new PieceOption(x.Value, x.Name));
+        return PedirAsync<Olt>("api/v1/olts/loadCombo", x => new PieceOption(x.OltId, x.OltName));
     }
 }

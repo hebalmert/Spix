@@ -37,6 +37,26 @@ public class ContractMkSetupController : ControllerBase
         _localizer = localizer;
     }
 
+    //Los estados de acceso que el operador puede elegir, armados en el backend con su neutro.
+    //Es la MISMA lista que sirve v1: el escritorio no la arma ni la filtra por su cuenta.
+    //Ruta propia (no "pppoe/...") para que no choque con el GET que recibe un Guid.
+    [HttpGet("pppoeaccessstates")]
+    public IActionResult GetPppoeAccessStates()
+    {
+        try
+        {
+            return ResponseHelper.Format(_unitOfWork.PppoeAccessStatesCombo());
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_ServerError"].Value);
+        }
+    }
+
     // Todo lo que el escritorio necesita para armar la Queue de un contrato
     [HttpGet("que/{contractClientId}")]
     public async Task<IActionResult> GetQueSetupAsync(Guid contractClientId)

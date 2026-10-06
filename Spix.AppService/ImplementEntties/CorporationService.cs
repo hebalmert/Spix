@@ -251,6 +251,19 @@ public class CorporationService : ICorporationService
                 };
             }
 
+            //Un inquilino con datos NO se borra: se desactiva. La base ya lo prohibe, pero
+            //alla el mensaje solo puede decir "tiene datos relacionados"; aqui se le dice
+            //QUE tiene, que es lo que necesita ver quien esta a punto de borrarlo.
+            var contenido = await InventarioDelInquilinoAsync(id);
+            if (contenido.Count > 0)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = false,
+                    Message = string.Format(_localizer["Corporation_DeleteHasData"], string.Join(", ", contenido))
+                };
+            }
+
             _context.Corporations.Remove(DataRemove);
 
             if (DataRemove.Imagen is not null)
@@ -281,5 +294,37 @@ public class CorporationService : ICorporationService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
         }
+    }
+
+    //Que tiene adentro la corporacion. Devuelve solo lo que NO esta vacio, ya redactado,
+    //para armar el mensaje de por que no se puede borrar. Son conteos por CorporationId,
+    //que es columna indexada, y corren una sola vez cuando alguien pulsa Eliminar.
+    private async Task<List<string>> InventarioDelInquilinoAsync(int id)
+    {
+        var piezas = new List<(string Nombre, int Cantidad)>
+        {
+            ("Clientes", await _context.Clients.CountAsync(x => x.CorporationId == id)),
+            ("Contratos", await _context.ContractClients.CountAsync(x => x.CorporationId == id)),
+            ("Contratistas", await _context.Contractors.CountAsync(x => x.CorporationId == id)),
+            ("Contratos firmados", await _context.ContractSignedDocuments.CountAsync(x => x.CorporationId == id)),
+            ("Facturas", await _context.Sells.CountAsync(x => x.CorporationId == id)),
+            ("Pagos", await _context.PrePayments.CountAsync(x => x.CorporationId == id)),
+            ("Suscripciones", await _context.CorporationSubscriptions.CountAsync(x => x.CorporationId == id)),
+            ("Usuarios", await _context.Usuarios.CountAsync(x => x.CorporationId == id)),
+            ("Servidores", await _context.Servers.CountAsync(x => x.CorporationId == id)),
+            ("Nodos", await _context.Nodes.CountAsync(x => x.CorporationId == id)),
+            ("Redes IP", await _context.IpNetworks.CountAsync(x => x.CorporationId == id)),
+            ("Planes", await _context.Plans.CountAsync(x => x.CorporationId == id)),
+            ("Zonas", await _context.Zones.CountAsync(x => x.CorporationId == id)),
+            ("Tecnicos", await _context.Technicians.CountAsync(x => x.CorporationId == id)),
+            ("Productos", await _context.Products.CountAsync(x => x.CorporationId == id)),
+            ("Compras", await _context.Purchases.CountAsync(x => x.CorporationId == id)),
+            ("Proveedores", await _context.Suppliers.CountAsync(x => x.CorporationId == id))
+        };
+
+        return piezas
+            .Where(x => x.Cantidad > 0)
+            .Select(x => $"{x.Nombre}: {x.Cantidad}")
+            .ToList();
     }
 }

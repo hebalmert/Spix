@@ -69,11 +69,19 @@ public class TransferDetailsService : ITransferDetailsService
         }
     }
 
-    public async Task<ActionResponse<TransferDetails>> GetAsync(Guid id)
+    public async Task<ActionResponse<TransferDetails>> GetAsync(Guid id, string username)
     {
         try
         {
-            var modelo = await _context.TransferDetails.FindAsync(id);
+            var corporationId = await GetCorporationIdAsync(username);
+
+            //Con el Producto y su categoria: el formulario de edicion los necesita para
+            //preseleccionar los dos combos. Sin esto la pantalla de editar reventaba.
+            var modelo = await _context.TransferDetails
+                .AsNoTracking()
+                .Include(x => x.Product)
+                .ThenInclude(x => x!.ProductCategory)
+                .FirstOrDefaultAsync(x => x.TransferDetailsId == id && x.CorporationId == corporationId);
             if (modelo == null)
             {
                 return new ActionResponse<TransferDetails>
@@ -95,12 +103,28 @@ public class TransferDetailsService : ITransferDetailsService
         }
     }
 
-    public async Task<ActionResponse<TransferDetails>> UpdateAsync(TransferDetails modelo)
+    public async Task<ActionResponse<TransferDetails>> UpdateAsync(TransferDetails modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
 
         try
         {
+            var corporationId = await GetCorporationIdAsync(username);
+
+            //Por id SOLO no alcanza: tiene que ser de su corporacion
+            var existe = await _context.TransferDetails.AsNoTracking()
+                .AnyAsync(x => x.TransferDetailsId == modelo.TransferDetailsId && x.CorporationId == corporationId);
+
+            if (!existe)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new ActionResponse<TransferDetails>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas para Enconstrar el Registro Indicado"
+                };
+            }
+
             _context.TransferDetails.Update(modelo);
 
             await _transactionManager.SaveChangesAsync();
@@ -268,12 +292,16 @@ public class TransferDetailsService : ITransferDetailsService
         }
     }
 
-    public async Task<ActionResponse<bool>> DeleteAsync(Guid id)
+    public async Task<ActionResponse<bool>> DeleteAsync(Guid id, string username)
     {
         await _transactionManager.BeginTransactionAsync();
         try
         {
-            var DataRemove = await _context.TransferDetails.FindAsync(id);
+            var corporationId = await GetCorporationIdAsync(username);
+
+            //Por id SOLO no alcanza: tiene que ser de su corporacion
+            var DataRemove = await _context.TransferDetails
+                .FirstOrDefaultAsync(x => x.TransferDetailsId == id && x.CorporationId == corporationId);
             if (DataRemove == null)
             {
                 return new ActionResponse<bool>
@@ -299,5 +327,13 @@ public class TransferDetailsService : ITransferDetailsService
             await _transactionManager.RollbackTransactionAsync();
             return await _httpErrorHandler.HandleErrorAsync<bool>(ex); // ✅ Manejo de errores automático
         }
+    }
+
+    //El CorporationId sale del JWT: el controlador baja el username y aqui se resuelve.
+    //Mismo patron que Compras y el resto de los modulos.
+    private async Task<int?> GetCorporationIdAsync(string username)
+    {
+        var user = await _userHelper.GetUserByUserNameAsync(username);
+        return user?.CorporationId;
     }
 }

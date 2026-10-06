@@ -922,6 +922,24 @@
   <data name="Server_LanNameNotFound" xml:space="preserve">
     <value>La interfaz {0} no existe en el equipo.</value>
   </data>
+  <data name="PppoeAccessState_Activo" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="PppoeAccessState_Corte" xml:space="preserve">
+    <value>Corte</value>
+  </data>
+  <data name="PppoeAccessState_Bloqueado" xml:space="preserve">
+    <value>Bloqueado</value>
+  </data>
+  <data name="Select_AccessState" xml:space="preserve">
+    <value>[Seleccione Estado]</value>
+  </data>
+  <data name="Pppoe_StateNotAllowed" xml:space="preserve">
+    <value>Elija Activo o Bloqueado. El estado Corte lo pone la suspension.</value>
+  </data>
+  <data name="Pppoe_StateLockedByCut" xml:space="preserve">
+    <value>La credencial esta en corte por mora: su estado lo maneja la suspension.</value>
+  </data>
   <data name="Select_ControlType" xml:space="preserve">
     <value>[Seleccione Control]</value>
   </data>
@@ -2307,6 +2325,30 @@
   </data>
   <data name="Purchase_ProductRepeated" xml:space="preserve">
     <value>{0} ya esta en la compra: edite su renglon.</value>
+  </data>
+  <data name="Menu_Transfers" xml:space="preserve">
+    <value>Traslados</value>
+  </data>
+  <data name="Transfer_Available" xml:space="preserve">
+    <value>Disponible</value>
+  </data>
+  <data name="Transfer_Quantity" xml:space="preserve">
+    <value>Cantidad</value>
+  </data>
+  <data name="Transfer_Title" xml:space="preserve">
+    <value>Traslados</value>
+  </data>
+  <data name="Transfer_Subtitle" xml:space="preserve">
+    <value>Mueve existencias de una bodega a otra</value>
+  </data>
+  <data name="Transfer_Details" xml:space="preserve">
+    <value>Items del traslado</value>
+  </data>
+  <data name="TransferType_Pendiente" xml:space="preserve">
+    <value>Abierto</value>
+  </data>
+  <data name="TransferType_Completado" xml:space="preserve">
+    <value>Cerrado</value>
   </data>
   <data name="Purchase_Title" xml:space="preserve">
     <value>Compras</value>
@@ -4065,6 +4107,9 @@
   </data>
   <data name="CorporationIdx_Title" xml:space="preserve">
     <value>Corporaciones</value>
+  </data>
+  <data name="Corporation_DeleteHasData" xml:space="preserve">
+    <value>No se puede eliminar la corporacion porque ya tiene datos ({0}). Desactivela en lugar de borrarla: al borrarla se irian sus clientes, contratos, pagos y operaciones.</value>
   </data>
   <data name="CorporationIdx_Subtitle" xml:space="preserve">
     <value>Las empresas que usan Spix</value>

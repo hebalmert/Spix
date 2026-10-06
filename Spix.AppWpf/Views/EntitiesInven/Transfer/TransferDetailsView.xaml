@@ -1,0 +1,177 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Transfer.TransferDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:rowbtn="clr-namespace:Spix.AppWpf.SharedComponents.SharedButtonRow"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- El detalle de un traslado, igual que en la web: arriba de que traslado se trata y
+         entre que bodegas va, y abajo sus productos.
+         Mientras este abierto se le agregan productos y se puede cerrar. Al cerrarlo
+         descuenta en la bodega de origen y suma en la de destino, y desde ahi no se toca.
+         Sin tablero de dinero: un traslado mueve cantidades, no valores. -->
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- De que traslado estamos hablando -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource SharedCatalogTitle}">
+                        <Run Text="Traslado" />
+                        <Run Text="{Binding Transfer.NroTransfer, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock Margin="0,4,0,0" Style="{StaticResource SharedCatalogFootText}">
+                        <Run Text="{Binding Transfer.FromStorageName, Mode=OneWay}" />
+                        <Run Text="&#8594;" />
+                        <Run Text="{Binding Transfer.ToStorageName, Mode=OneWay}" />
+                        <Run Text="&#183;" />
+                        <Run Text="{Binding Transfer.DateTransfer, StringFormat=dd/MM/yyyy, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+
+                <catalog:SharedCatalogPill Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           IsOn="{Binding Transfer.Status, Converter={StaticResource EqualsToBooleanConverter}, ConverterParameter=Completado}"
+                                           OnText="Cerrado"
+                                           OffText="Abierto" />
+            </Grid>
+
+            <!-- Lo que se puede hacer con el -->
+            <Grid Grid.Row="1" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Command="{Binding BackCommand}"
+                        Style="{StaticResource SharedIndexGhostButton}"
+                        ToolTip="Volver a los traslados"
+                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.ArrowLeft}"
+                        Content="Volver" />
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            Visibility="{Binding CanManageDetails, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button Margin="0,0,10,0"
+                            Command="{Binding NewDetailCommand}"
+                            Style="{StaticResource SharedIndexNewButton}"
+                            ToolTip="Agregar un producto al traslado"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
+                            Content="Producto" />
+
+                    <!-- Cerrar mueve el inventario y ya no se puede deshacer -->
+                    <Button Command="{Binding CloseCommand}"
+                            Style="{StaticResource SharedIndexGhostButton}"
+                            ToolTip="Cerrar el traslado y mover el inventario"
+                            svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Lock}"
+                            Content="Cerrar traslado" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Grid.Row="2"
+                       Margin="0,0,0,10"
+                       Style="{StaticResource SharedCatalogMessage}"
+                       Text="{Binding Message}"
+                       Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <Border Grid.Row="3" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                        <DataGrid ItemsSource="{Binding Details}"
+                                  Style="{StaticResource SharedIndexGrid}"
+                                  ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                                  RowStyle="{StaticResource SharedIndexRow}"
+                                  CellStyle="{StaticResource SharedIndexCell}">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="*" Header="Producto" SortMemberPath="Product.ProductName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Product.ProductName}" />
+                                                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding NameProduct}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="160" Header="Cantidad" SortMemberPath="Quantity"
+                                                        HeaderStyle="{StaticResource SharedIndexHeaderRight}"
+                                                        CellStyle="{StaticResource SharedIndexCellRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Quantity, StringFormat=N2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="Auto" MinWidth="96" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <!-- Con el traslado cerrado los renglones no se tocan -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Center"
+                                                        Margin="0,0,6,0"
+                                                        Visibility="{Binding DataContext.CanManageDetails, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Editar" />
+
+                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding}"
+                                                                              ToolTip="Eliminar" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Details, Converter={StaticResource CountToVisibilityConverter}}">
+                            <fa:FontAwesomeImage Width="26" Height="26"
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource BrushIndexMeta}"
+                                                 Icon="{x:Static icons:FontAwesomeIcon.BoxOpen}"
+                                                 IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Style="{StaticResource SharedIndexEmpty}"
+                                       Text="Este traslado todavia no tiene productos" />
+                        </StackPanel>
+
+                        <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+                    </Grid>
+
+                    <Border Grid.Row="1" Style="{StaticResource SharedIndexPanelFoot}">
+                        <shared:SharedPagination Foreground="{DynamicResource BrushCatalogMeta}"
+                                                 CurrentPage="{Binding CurrentPage}"
+                                                 TotalPages="{Binding TotalPages}"
+                                                 PageCommand="{Binding GoToPageCommand}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

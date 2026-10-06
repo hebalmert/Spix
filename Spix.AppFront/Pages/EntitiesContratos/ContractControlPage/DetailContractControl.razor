@@ -452,7 +452,7 @@
 
                         @if (UsaHotSpot)
                         {
-                        <div class="cc-item cc-full @StateClass(HasContractBind)">
+                        <div class="cc-item cc-full @AccessClass(HasContractBind, BindConAcceso)">
                             <div class="cc-item-top">
                                 <div class="cc-ico"><i class="fa fa-link"></i></div>
                                 <div class="cc-info">
@@ -486,7 +486,7 @@
                                     <div class="cc-fact"><small>Servidor</small><b>@(ContractBind!.ServerName ?? ContractBind.Server?.ServerName)</b></div>
                                     <div class="cc-fact"><small>IP cliente</small><b>@(ContractBind.IpCliente ?? ContractBind.IpNet?.Ip)</b></div>
                                     <div class="cc-fact"><small>MAC</small><b>@(ContractBind.MacCliente ?? ContractBind.CargueDetail?.MacWlan)</b></div>
-                                    <div class="cc-fact"><small>Tipo</small><b>@ContractBind.HotSpotType?.TypeName</b></div>
+                                    <div class="cc-fact"><small>Tipo</small><b class="@AccessCss(BindConAcceso)">@ContractBind.HotSpotType?.TypeName</b></div>
                                     <div class="cc-fact"><small>Id MikroTik</small><b>@ContractBind.MikrotikId</b></div>
                                 </div>
                             }
@@ -496,7 +496,7 @@
                         @* La credencial PPPoE: el gemelo del IpBinding para equipos PPPoE *@
                         @if (UsaPppoe)
                         {
-                        <div class="cc-item cc-full @StateClass(HasContractPppoe)">
+                        <div class="cc-item cc-full @AccessClass(HasContractPppoe, PppoeConAcceso)">
                             <div class="cc-item-top">
                                 <div class="cc-ico"><i class="fa fa-user-lock"></i></div>
                                 <div class="cc-info">
@@ -530,7 +530,7 @@
                                     <div class="cc-fact"><small>Servidor</small><b>@ContractPppoe!.ServerName</b></div>
                                     <div class="cc-fact"><small>Usuario</small><b>@ContractPppoe.Usuario</b></div>
                                     <div class="cc-fact"><small>IP cliente</small><b>@ContractPppoe.IpCliente</b></div>
-                                    <div class="cc-fact"><small>Perfil</small><b>@ContractPppoe.ProfileName</b></div>
+                                    <div class="cc-fact"><small>Acceso</small><b class="@AccessCss(PppoeConAcceso)">@AccessText(PppoeConAcceso)</b></div>
                                     <div class="cc-fact"><small>Id MikroTik</small><b>@ContractPppoe.MikrotikId</b></div>
                                 </div>
                             }
