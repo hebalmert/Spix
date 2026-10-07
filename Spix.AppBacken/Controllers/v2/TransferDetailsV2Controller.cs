@@ -147,4 +147,65 @@ public class TransferDetailsV2Controller : ControllerBase
             return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
         }
     }
+
+    //Los seriales que se pueden elegir para una linea: disponibles y en la bodega de origen
+    [HttpGet("serials/available")]
+    public async Task<IActionResult> GetAvailableSerialsAsync(Guid transferId, Guid productId, Guid? transferDetailsId)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferDetailsUnitOfWork.GetAvailableSerialsAsync(transferId, productId, transferDetailsId, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    //Los que ya tiene reservados esa linea
+    [HttpGet("serials/line/{transferDetailsId}")]
+    public async Task<IActionResult> GetLineSerialsAsync(Guid transferDetailsId)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferDetailsUnitOfWork.GetLineSerialsAsync(transferDetailsId, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    //Guarda que equipos van en la linea. La cantidad pasa a ser cuantos se eligieron.
+    [HttpPost("serials/{transferDetailsId}")]
+    public async Task<IActionResult> SaveSerialsAsync(Guid transferDetailsId, List<Guid> serialIds)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferDetailsUnitOfWork.SaveSerialsAsync(transferDetailsId, serialIds ?? new List<Guid>(), userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
 }

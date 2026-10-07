@@ -9,6 +9,8 @@ public interface ITransferServiceX
 {
     Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatus();
 
+    Task<ActionResponse<IEnumerable<TextItemModel>>> ReceiversComboAsync(string username);
+
     Task<ActionResponse<IEnumerable<Transfer>>> GetAsync(PaginationDTO pagination, string email);
 
     Task<ActionResponse<Transfer>> GetAsync(Guid id, string username);

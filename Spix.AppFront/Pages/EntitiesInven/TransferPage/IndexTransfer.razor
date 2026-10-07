@@ -1,4 +1,4 @@
-@page "/transfers"
+﻿@page "/transfers"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 @using Spix.DomainLogic.EnumTypes
@@ -66,6 +66,11 @@
                                         <td><TransferStatusBadge Value="@(item.Status ?? TransferType.Pendiente)" /></td>
                                         <td @ondblclick:stopPropagation>
                                             <div class="idx-actions">
+                                                @* El historial va de primero y aparte: no es una accion sobre el
+                                                   traslado, es consultar lo que ya paso. El separador marca eso. *@
+                                                <ButtonGeneric OnClick="() => ShowAuditAsync(item)" TooTip="@Localizer[nameof(Resource.Transfer_Audit)]" Icon="fa fa-clock-rotate-left" />
+                                                <span style="width:1px; align-self:stretch; margin:2px 4px; background:#dde4ef"></span>
+
                                                 <ButtonGeneric OnClick="() => ShowDetailsAsync(item.TransferId)" TooTip="@Localizer["Transfer_Details"]" Icon="fa fa-table-list" />
                                                 @* Un traslado cerrado ya movio inventario: no se edita ni se borra *@
                                                 @if (item.Status == TransferType.Pendiente)

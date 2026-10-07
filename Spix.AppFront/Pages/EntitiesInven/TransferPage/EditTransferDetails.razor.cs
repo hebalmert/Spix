@@ -57,6 +57,20 @@ public partial class EditTransferDetails
             return;
         }
 
+        //Los equipos elegidos: se manda la lista completa, el backend suelta los anteriores
+        //y reserva estos. Si va vacia, la linea se queda sin seriales.
+        if (FormTransferDetails is not null)
+        {
+            var seriales = await _repository.PostAsync($"{BaseUrl}/serials/{Id}",
+                FormTransferDetails.SelectedSerials.ToList());
+
+            if (await _responseHandler.HandleErrorAsync(seriales))
+            {
+                await _modalService.CloseAsync(ModalResult.Ok());
+                return;
+            }
+        }
+
         await _modalService.CloseAsync(ModalResult.Ok());
     }
 

@@ -1094,7 +1094,7 @@
     <value>Contratista</value>
   </data>
   <data name="ContractNumber" xml:space="preserve">
-    <value>Numero Contratista</value>
+    <value>Contrato</value>
   </data>
   <data name="SavePayment" xml:space="preserve">
     <value>Guardar Pagos</value>
@@ -2334,6 +2334,21 @@
   </data>
   <data name="Transfer_Quantity" xml:space="preserve">
     <value>Cantidad</value>
+  </data>
+  <data name="Transfer_Header" xml:space="preserve">
+    <value>Traslado {0}</value>
+  </data>
+  <data name="Transfer_Back" xml:space="preserve">
+    <value>Traslados</value>
+  </data>
+  <data name="Transfer_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Transfer_PickSerials" xml:space="preserve">
+    <value>Elija los equipos que se mueven. Elegidos:</value>
+  </data>
+  <data name="Transfer_NoSerials" xml:space="preserve">
+    <value>No hay equipos disponibles de este producto en la bodega de origen.</value>
   </data>
   <data name="Transfer_Title" xml:space="preserve">
     <value>Traslados</value>
@@ -3859,6 +3874,57 @@
   <data name="Report_ChurnNote" xml:space="preserve">
     <value>Esta es la foto de hoy: el contrato no guarda la fecha en que se retiro, por eso no se puede contar por periodo.</value>
   </data>
+  <data name="Report_StockTitle" xml:space="preserve">
+    <value>Movimientos de inventario</value>
+  </data>
+  <data name="Report_StockSubtitle" xml:space="preserve">
+    <value>Que entro y que salio de cada bodega, y cuanto hay hoy</value>
+  </data>
+  <data name="Report_StockEntries" xml:space="preserve">
+    <value>Entradas</value>
+  </data>
+  <data name="Report_StockExits" xml:space="preserve">
+    <value>Salidas</value>
+  </data>
+  <data name="Report_StockMoves" xml:space="preserve">
+    <value>Movimientos</value>
+  </data>
+  <data name="Report_StockOnHand" xml:space="preserve">
+    <value>Existencia</value>
+  </data>
+  <data name="Report_StockMovesTitle" xml:space="preserve">
+    <value>Movimientos del periodo</value>
+  </data>
+  <data name="Report_StockBalanceTitle" xml:space="preserve">
+    <value>Stock por bodega</value>
+  </data>
+  <data name="Report_StockDocument" xml:space="preserve">
+    <value>Documento</value>
+  </data>
+  <data name="Report_Search" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="Report_SerialDetailTitle" xml:space="preserve">
+    <value>Listado de seriales</value>
+  </data>
+  <data name="Report_SerialDetailSubtitle" xml:space="preserve">
+    <value>Cada serial con su estado y quien lo tiene</value>
+  </data>
+  <data name="Report_SerialDetailCount" xml:space="preserve">
+    <value>seriales</value>
+  </data>
+  <data name="Report_SerialStateAll" xml:space="preserve">
+    <value>[Todos los estados]</value>
+  </data>
+  <data name="SerialStateType_Disponible" xml:space="preserve">
+    <value>Disponible</value>
+  </data>
+  <data name="SerialStateType_Operativo" xml:space="preserve">
+    <value>Instalado</value>
+  </data>
+  <data name="SerialStateType_Averiado" xml:space="preserve">
+    <value>Averiado</value>
+  </data>
   <data name="Report_SerialsTitle" xml:space="preserve">
     <value>Inventario de seriales</value>
   </data>
@@ -3972,6 +4038,12 @@
   </data>
   <data name="Menu_ReportChurn" xml:space="preserve">
     <value>Fuera de servicio</value>
+  </data>
+  <data name="Menu_ReportSerialDetail" xml:space="preserve">
+    <value>Seriales detalle</value>
+  </data>
+  <data name="Menu_ReportStock" xml:space="preserve">
+    <value>Inventario</value>
   </data>
   <data name="Menu_ReportSerials" xml:space="preserve">
     <value>Inventario de seriales</value>
@@ -4323,5 +4395,26 @@
   </data>
   <data name="PasswordsDontMatch" xml:space="preserve">
     <value>Las claves no coinciden</value>
+  </data>
+  <data name="Transfer_ReceivedBy" xml:space="preserve">
+    <value>Recibe</value>
+  </data>
+  <data name="Select_Receiver" xml:space="preserve">
+    <value>[Seleccione quien recibe]</value>
+  </data>
+  <data name="Transfer_Audit" xml:space="preserve">
+    <value>Historial</value>
+  </data>
+  <data name="Transfer_CreatedBy" xml:space="preserve">
+    <value>Creado por</value>
+  </data>
+  <data name="Transfer_ClosedBy" xml:space="preserve">
+    <value>Cerrado por</value>
+  </data>
+  <data name="Transfer_NotClosed" xml:space="preserve">
+    <value>Sin cerrar</value>
+  </data>
+  <data name="Transfer_AuditTitle" xml:space="preserve">
+    <value>Historial del traslado</value>
   </data>
 </root>

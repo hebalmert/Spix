@@ -40,6 +40,26 @@ public class TransfersController : ControllerBase
         return BadRequest(response.Message);
     }
 
+    //Quien recibe los equipos: tecnicos y usuarios en una sola lista, armada en el Service
+    [HttpGet("loadComboReceivers")]
+    public async Task<IActionResult> GetComboReceivers()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferUnitOfWork.ReceiversComboAsync(userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetSerialsAll([FromQuery] PaginationDTO pagination)
     {

@@ -10,6 +10,7 @@ using Spix.AppInfra.UserHelper;
 using Spix.AppService.InterfacesInven;
 using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -193,6 +194,149 @@ public class TransferDetailsService : ITransferDetailsService
         }
     }
 
+    //Los seriales que se pueden elegir para una linea del traslado.
+    //
+    //Solo los que estan DISPONIBLES y en la bodega de ORIGEN de ese traslado, y que no
+    //esten ya reservados por otra linea. Los que ya tiene esta linea se incluyen, para
+    //poder editarla sin perder lo elegido.
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetAvailableSerialsAsync(
+        Guid transferId, Guid productId, Guid? transferDetailsId, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null) return Fallo<IEnumerable<GuidItemModel>>("Problemas de Validacion de Usuario");
+
+            var traslado = await _context.Transfers.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.TransferId == transferId && x.CorporationId == user.CorporationId);
+
+            if (traslado == null) return Fallo<IEnumerable<GuidItemModel>>("Problemas para Enconstrar el Registro Indicado");
+
+            var lista = await _context.CargueDetails.AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId &&
+                            x.Cargue!.ProductId == productId &&
+                            x.ProductStorageId == traslado.FromProductStorageId &&
+                            x.Status == SerialStateType.Disponible &&
+                            (x.TransferDetailsId == null ||
+                             (transferDetailsId != null && x.TransferDetailsId == transferDetailsId)))
+                .OrderBy(x => x.MacWlan)
+                .Select(x => new GuidItemModel
+                {
+                    Value = x.CargueDetailId,
+                    Name = x.MacWlan ?? string.Empty
+                })
+                .ToListAsync();
+
+            return new ActionResponse<IEnumerable<GuidItemModel>> { WasSuccess = true, Result = lista };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex);
+        }
+    }
+
+    //Los seriales que ya tiene reservados una linea
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetLineSerialsAsync(Guid transferDetailsId, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null) return Fallo<IEnumerable<GuidItemModel>>("Problemas de Validacion de Usuario");
+
+            var lista = await _context.CargueDetails.AsNoTracking()
+                .Where(x => x.CorporationId == user.CorporationId && x.TransferDetailsId == transferDetailsId)
+                .OrderBy(x => x.MacWlan)
+                .Select(x => new GuidItemModel
+                {
+                    Value = x.CargueDetailId,
+                    Name = x.MacWlan ?? string.Empty
+                })
+                .ToListAsync();
+
+            return new ActionResponse<IEnumerable<GuidItemModel>> { WasSuccess = true, Result = lista };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex);
+        }
+    }
+
+    //Guarda que seriales van en una linea. La CANTIDAD de la linea pasa a ser cuantos
+    //seriales se eligieron: en un producto con serial el equipo es la unidad, no el numero.
+    public async Task<ActionResponse<bool>> SaveSerialsAsync(Guid transferDetailsId, List<Guid> serialIds, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null) return await FalloRollback<bool>("Problemas de Validacion de Usuario");
+
+            var linea = await _context.TransferDetails
+                .Include(x => x.Transfer)
+                .FirstOrDefaultAsync(x => x.TransferDetailsId == transferDetailsId &&
+                                          x.CorporationId == user.CorporationId);
+
+            if (linea == null) return await FalloRollback<bool>("Problemas para Enconstrar el Registro Indicado");
+
+            if (linea.Transfer!.Status != TransferType.Pendiente)
+            {
+                return await FalloRollback<bool>("El traslado ya esta cerrado: no se pueden cambiar sus seriales.");
+            }
+
+            //Se sueltan los que tenia y se reservan los nuevos
+            var anteriores = await _context.CargueDetails
+                .Where(x => x.TransferDetailsId == transferDetailsId)
+                .ToListAsync();
+
+            foreach (var serial in anteriores)
+            {
+                serial.TransferDetailsId = null;
+            }
+
+            if (serialIds.Count > 0)
+            {
+                var nuevos = await _context.CargueDetails
+                    .Where(x => serialIds.Contains(x.CargueDetailId) &&
+                                x.CorporationId == user.CorporationId &&
+                                x.ProductStorageId == linea.Transfer.FromProductStorageId &&
+                                x.Status == SerialStateType.Disponible &&
+                                (x.TransferDetailsId == null || x.TransferDetailsId == transferDetailsId))
+                    .ToListAsync();
+
+                //Si alguno ya no esta disponible o lo tomo otra linea, no se guarda nada
+                if (nuevos.Count != serialIds.Count)
+                {
+                    return await FalloRollback<bool>("Alguno de los seriales ya no esta disponible en la bodega de origen.");
+                }
+
+                foreach (var serial in nuevos)
+                {
+                    serial.TransferDetailsId = transferDetailsId;
+                }
+            }
+
+            linea.Quantity = serialIds.Count;
+
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return new ActionResponse<bool> { WasSuccess = true, Result = true };
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
+        }
+    }
+
+    private static ActionResponse<T> Fallo<T>(string mensaje) => new() { WasSuccess = false, Message = mensaje };
+
+    private async Task<ActionResponse<T>> FalloRollback<T>(string mensaje)
+    {
+        await _transactionManager.RollbackTransactionAsync();
+        return Fallo<T>(mensaje);
+    }
+
     public async Task<ActionResponse<Transfer>> CerrarTransAsync(Transfer modelo, string username)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -217,6 +361,33 @@ public class TransferDetailsService : ITransferDetailsService
                     WasSuccess = false,
                     Message = "No Existe ningun Item para poder hacer un Cierre de Transferencia, Agregue Item o Elimine la Transferencia"
                 };
+            }
+
+            //ANTES de tocar nada: un producto con serial no se puede cerrar sin sus equipos
+            //elegidos. Si falta uno, no se mueve ni el numero ni los seriales.
+            foreach (var item in transferdetails)
+            {
+                var llevaSerial = await _context.Products.AsNoTracking()
+                    .Where(x => x.ProductId == item.ProductId)
+                    .Select(x => x.WithSerials)
+                    .FirstOrDefaultAsync();
+
+                if (!llevaSerial)
+                {
+                    continue;
+                }
+
+                var elegidos = await _context.CargueDetails
+                    .CountAsync(x => x.TransferDetailsId == item.TransferDetailsId);
+
+                if (elegidos != item.Quantity)
+                {
+                    return new ActionResponse<Transfer>
+                    {
+                        WasSuccess = false,
+                        Message = $"El producto {item.NameProduct} lleva serial: hay {elegidos} equipos elegidos y la cantidad dice {item.Quantity:N0}."
+                    };
+                }
             }
 
             foreach (var item in transferdetails)
@@ -259,6 +430,19 @@ public class TransferDetailsService : ITransferDetailsService
                     ProductStockPlus.Stock = NuevoStock;
                     _context.ProductStocks.Update(ProductStockPlus);
                 }
+                //Y los SERIALES que el operador eligio para esta linea se van con el
+                //equipo: dejan de estar en la bodega de origen y pasan a la de destino.
+                //Sin esto el numero se movia pero los equipos se quedaban donde estaban.
+                var seriales = await _context.CargueDetails
+                    .Where(x => x.TransferDetailsId == item.TransferDetailsId)
+                    .ToListAsync();
+
+                foreach (var serial in seriales)
+                {
+                    serial.ProductStorageId = modelo.ToProductStorageId;
+                    serial.TransferDetailsId = null;
+                }
+
                 await _context.SaveChangesAsync();
             }
 
@@ -274,6 +458,13 @@ public class TransferDetailsService : ITransferDetailsService
             }
 
             UpdateTrans.Status = TransferType.Completado;
+
+            //Auditoria del cierre: quien lo cerro y cuando. El nombre queda congelado,
+            //igual que el de quien lo creo.
+            UpdateTrans.UserIdClosed = user.Id;
+            UpdateTrans.NombreUsuarioCierre = $"{user.FirstName} {user.LastName}".Trim();
+            UpdateTrans.DateClosed = DateTime.Now;
+
             _context.Transfers.Update(UpdateTrans);
 
             await _transactionManager.SaveChangesAsync();

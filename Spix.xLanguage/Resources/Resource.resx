@@ -2335,6 +2335,21 @@
   <data name="Transfer_Quantity" xml:space="preserve">
     <value>Quantity</value>
   </data>
+  <data name="Transfer_Header" xml:space="preserve">
+    <value>Transfer {0}</value>
+  </data>
+  <data name="Transfer_Back" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
+  <data name="Transfer_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Transfer_PickSerials" xml:space="preserve">
+    <value>Pick the equipment to move. Selected:</value>
+  </data>
+  <data name="Transfer_NoSerials" xml:space="preserve">
+    <value>There is no available equipment of this product in the origin storage.</value>
+  </data>
   <data name="Transfer_Title" xml:space="preserve">
     <value>Stock transfers</value>
   </data>
@@ -3859,6 +3874,57 @@
   <data name="Report_ChurnNote" xml:space="preserve">
     <value>This is how contracts stand today: the contract does not store the date it was terminated, so it cannot be counted by period.</value>
   </data>
+  <data name="Report_StockTitle" xml:space="preserve">
+    <value>Stock movements</value>
+  </data>
+  <data name="Report_StockSubtitle" xml:space="preserve">
+    <value>What came in and out of each storage, and what is on hand</value>
+  </data>
+  <data name="Report_StockEntries" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="Report_StockExits" xml:space="preserve">
+    <value>Out</value>
+  </data>
+  <data name="Report_StockMoves" xml:space="preserve">
+    <value>Movements</value>
+  </data>
+  <data name="Report_StockOnHand" xml:space="preserve">
+    <value>On hand</value>
+  </data>
+  <data name="Report_StockMovesTitle" xml:space="preserve">
+    <value>Movements</value>
+  </data>
+  <data name="Report_StockBalanceTitle" xml:space="preserve">
+    <value>Stock by storage</value>
+  </data>
+  <data name="Report_StockDocument" xml:space="preserve">
+    <value>Document</value>
+  </data>
+  <data name="Report_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Report_SerialDetailTitle" xml:space="preserve">
+    <value>Serial list</value>
+  </data>
+  <data name="Report_SerialDetailSubtitle" xml:space="preserve">
+    <value>Every serial with its state and who has it</value>
+  </data>
+  <data name="Report_SerialDetailCount" xml:space="preserve">
+    <value>serials</value>
+  </data>
+  <data name="Report_SerialStateAll" xml:space="preserve">
+    <value>[All states]</value>
+  </data>
+  <data name="SerialStateType_Disponible" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="SerialStateType_Operativo" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="SerialStateType_Averiado" xml:space="preserve">
+    <value>Damaged</value>
+  </data>
   <data name="Report_SerialsTitle" xml:space="preserve">
     <value>Serial inventory</value>
   </data>
@@ -3972,6 +4038,12 @@
   </data>
   <data name="Menu_ReportChurn" xml:space="preserve">
     <value>Out of service</value>
+  </data>
+  <data name="Menu_ReportSerialDetail" xml:space="preserve">
+    <value>Serial list</value>
+  </data>
+  <data name="Menu_ReportStock" xml:space="preserve">
+    <value>Stock</value>
   </data>
   <data name="Menu_ReportSerials" xml:space="preserve">
     <value>Serial inventory</value>
@@ -4323,5 +4395,26 @@
   </data>
   <data name="PasswordsDontMatch" xml:space="preserve">
     <value>The passwords do not match</value>
+  </data>
+  <data name="Transfer_ReceivedBy" xml:space="preserve">
+    <value>Receives</value>
+  </data>
+  <data name="Select_Receiver" xml:space="preserve">
+    <value>[Select who receives]</value>
+  </data>
+  <data name="Transfer_Audit" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Transfer_CreatedBy" xml:space="preserve">
+    <value>Created by</value>
+  </data>
+  <data name="Transfer_ClosedBy" xml:space="preserve">
+    <value>Closed by</value>
+  </data>
+  <data name="Transfer_NotClosed" xml:space="preserve">
+    <value>Still open</value>
+  </data>
+  <data name="Transfer_AuditTitle" xml:space="preserve">
+    <value>Transfer history</value>
   </data>
 </root>

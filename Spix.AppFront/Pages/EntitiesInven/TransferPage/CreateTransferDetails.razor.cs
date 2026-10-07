@@ -35,12 +35,27 @@ public partial class CreateTransferDetails
     private async Task Create()
     {
         isLoading = true;
-        var responseHttp = await _repository.PostAsync($"{BaseUrl}", TransferDetails);
+        var responseHttp = await _repository.PostAsync<TransferDetails, TransferDetails>($"{BaseUrl}", TransferDetails);
         isLoading = false;
         if (await _responseHandler.HandleErrorAsync(responseHttp))
         {
             await _modalService.CloseAsync(ModalResult.Cancel());
             return;
+        }
+
+        //Los equipos elegidos se guardan DESPUES, porque hasta ahora no existia la linea
+        //a la cual reservarlos.
+        var creada = responseHttp.Response;
+        if (creada is not null && FormTransferDetails?.SelectedSerials.Count > 0)
+        {
+            var seriales = await _repository.PostAsync($"{BaseUrl}/serials/{creada.TransferDetailsId}",
+                FormTransferDetails.SelectedSerials.ToList());
+
+            if (await _responseHandler.HandleErrorAsync(seriales))
+            {
+                await _modalService.CloseAsync(ModalResult.Ok());
+                return;
+            }
         }
         await _modalService.CloseAsync(ModalResult.Ok());
         await _sweetAlert.FireAsync(Localizer[nameof(Resource.msg_CreateSuccessTitle)], Localizer[nameof(Resource.msg_CreateSuccessMessage)], SweetAlertIcon.Success);

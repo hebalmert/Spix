@@ -1,0 +1,268 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesReports.stock.ReportStockIndexView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:catalog="clr-namespace:Spix.AppWpf.SharedComponents.SharedCatalog"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents">
+
+    <!-- Movimientos de inventario, replica del reporte /reports/stock de la web.
+
+         Dos bloques: arriba lo que entro y salio en el periodo, abajo lo que hay HOY por
+         bodega y producto.
+
+         Es de SOLA LECTURA: las filas no tienen botones.
+
+         Los movimientos los DEDUCE el backend de las compras y los traslados cerrados.
+         Los seriales no aparecen como movimiento porque el sistema guarda su estado pero
+         no cuando cambio: van en el segundo bloque, como foto del momento. -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </UserControl.InputBindings>
+
+    <Border Style="{StaticResource SharedIndexShell}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Los numeros del periodo -->
+            <UniformGrid Columns="4"
+                         Margin="0,0,0,14"
+                         Visibility="{Binding HasSummary, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Entradas"
+                                          Value="{Binding SummaryEntriesText}"
+                                          Accent="{DynamicResource BrushCatalogKpiOk}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiOk}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Salidas"
+                                          Value="{Binding SummaryExitsText}"
+                                          Accent="{DynamicResource BrushCatalogKpiBad}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiBadText}" />
+                <catalog:SharedCatalogKpi Margin="0,0,12,0"
+                                          Label="Movimientos"
+                                          Value="{Binding SummaryMovesText}" />
+                <catalog:SharedCatalogKpi Label="Existencia"
+                                          Value="{Binding SummaryOnHandText}"
+                                          Accent="{DynamicResource BrushCatalogKpiWarn}"
+                                          ValueBrush="{DynamicResource BrushCatalogKpiWarnText}" />
+            </UniformGrid>
+
+            <!-- Filtros: periodo y bodega -->
+            <Grid Grid.Row="1" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Desde" />
+                    <DatePicker Margin="0,5,0,0" MinHeight="38" SelectedDate="{Binding Desde, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Hasta" />
+                    <DatePicker Margin="0,5,0,0" MinHeight="38" SelectedDate="{Binding Hasta, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="4">
+                    <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Bodega" />
+                    <ComboBox Margin="0,5,0,0"
+                              Style="{StaticResource SharedFormCombo}"
+                              ItemsSource="{Binding Storages}"
+                              DisplayMemberPath="StorageName"
+                              SelectedValuePath="ProductStorageId"
+                              SelectedValue="{Binding StorageId, Mode=TwoWay}" />
+                </StackPanel>
+
+                <Button Grid.Column="6"
+                        Width="38" Height="38"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SharedIndexIconButtonEdit}"
+                        ToolTip="Buscar (F5)">
+                    <fa:FontAwesomeImage Width="14" Height="14"
+                                         Foreground="{DynamicResource BrushIndexIconEdit}"
+                                         Icon="{x:Static icons:FontAwesomeIcon.MagnifyingGlass}"
+                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                </Button>
+            </Grid>
+
+            <!-- 1. Los movimientos del periodo -->
+            <TextBlock Grid.Row="2"
+                       Margin="0,0,0,8"
+                       Style="{StaticResource SharedCatalogTitle}"
+                       Text="Movimientos del periodo" />
+
+            <Border Grid.Row="3" Margin="0,0,0,18" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                    <DataGrid ItemsSource="{Binding Moves}"
+                              Style="{StaticResource SharedIndexGrid}"
+                              ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                              RowStyle="{StaticResource SharedIndexRow}"
+                              CellStyle="{StaticResource SharedIndexCell}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="120" Header="Fecha" SortMemberPath="Date">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Date, StringFormat=dd/MM/yyyy}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="200" Header="Documento" SortMemberPath="Document">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Style="{StaticResource SharedIndexName}">
+                                                <Run Text="{Binding Origin, Mode=OneWay}" />
+                                                <Run Text="{Binding Document, Mode=OneWay}" />
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding Reference}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="*" Header="Producto" SortMemberPath="ProductName">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ProductName}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="200" Header="Bodega" SortMemberPath="StorageName">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding StorageName}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="140" Header="Cantidad" SortMemberPath="Quantity"
+                                                    HeaderStyle="{StaticResource SharedIndexHeaderRight}"
+                                                    CellStyle="{StaticResource SharedIndexCellRight}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!-- Verde lo que entra, rojo lo que sale -->
+                                        <TextBlock Text="{Binding Quantity, StringFormat=N2}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource SharedIndexName}">
+                                                    <Setter Property="Foreground" Value="{DynamicResource BrushCatalogKpiOk}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsEntry}" Value="False">
+                                                            <Setter Property="Foreground" Value="{DynamicResource BrushCatalogKpiBadText}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- 2. Lo que hay hoy -->
+            <TextBlock Grid.Row="4"
+                       Margin="0,0,0,8"
+                       Style="{StaticResource SharedCatalogTitle}"
+                       Text="Stock por bodega" />
+
+            <Border Grid.Row="5" Style="{StaticResource SharedIndexPanel}">
+                <Grid>
+                    <Border Style="{StaticResource SharedIndexHeaderBand}" />
+
+                    <DataGrid ItemsSource="{Binding Balance}"
+                              Style="{StaticResource SharedIndexGrid}"
+                              ColumnHeaderStyle="{StaticResource SharedIndexHeader}"
+                              RowStyle="{StaticResource SharedIndexRow}"
+                              CellStyle="{StaticResource SharedIndexCell}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="220" Header="Bodega" SortMemberPath="StorageName">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}" Text="{Binding StorageName}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="*" Header="Producto" SortMemberPath="ProductName">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding ProductName}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="130" Header="Existencia" SortMemberPath="Stock"
+                                                    HeaderStyle="{StaticResource SharedIndexHeaderRight}"
+                                                    CellStyle="{StaticResource SharedIndexCellRight}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexName}" Text="{Binding Stock, StringFormat=N2}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- El desglose solo aplica a los productos que llevan serial -->
+                            <DataGridTemplateColumn Width="120" Header="Disponibles" SortMemberPath="Available"
+                                                    HeaderStyle="{StaticResource SharedIndexHeaderRight}"
+                                                    CellStyle="{StaticResource SharedIndexCellRight}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}"
+                                                   Text="{Binding Available, StringFormat=N0}"
+                                                   Visibility="{Binding WithSerials, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="120" Header="Instalados" SortMemberPath="Operative"
+                                                    HeaderStyle="{StaticResource SharedIndexHeaderRight}"
+                                                    CellStyle="{StaticResource SharedIndexCellRight}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}"
+                                                   Text="{Binding Operative, StringFormat=N0}"
+                                                   Visibility="{Binding WithSerials, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="120" Header="Averiados" SortMemberPath="Damaged"
+                                                    HeaderStyle="{StaticResource SharedIndexHeaderRight}"
+                                                    CellStyle="{StaticResource SharedIndexCellRight}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource SharedIndexMeta}"
+                                                   Text="{Binding Damaged, StringFormat=N0}"
+                                                   Visibility="{Binding WithSerials, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <shared:SharedLoading Grid.RowSpan="6" IsLoading="{Binding IsLoading}" />
+        </Grid>
+    </Border>
+</UserControl>

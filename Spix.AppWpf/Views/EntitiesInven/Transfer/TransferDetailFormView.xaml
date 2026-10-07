@@ -1,4 +1,4 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Transfer.TransferDetailFormView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Transfer.TransferDetailFormView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              MinWidth="720">
@@ -6,6 +6,8 @@
          origen: ese dato lo entrega el Backend al elegir el producto. -->
     <Grid Margin="0,24,0,0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
@@ -55,8 +57,37 @@
             <Border Grid.Column="3" Background="#F2F4F7" BorderBrush="#566273" BorderThickness="1,1,0,1">
                 <TextBlock Margin="14,0" VerticalAlignment="Center" Foreground="#1E2B3C" Text="Cantidad" />
             </Border>
+            <!-- Con serial la cantidad NO se escribe: la cuentan los equipos marcados -->
             <TextBox Grid.Column="4" MinHeight="42" Padding="12,8"
+                     IsReadOnly="{Binding ProductWithSerials}"
                      Text="{Binding Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
+
+        <!-- Los equipos que se mueven. Solo para los productos con serial: el equipo es
+             la unidad, asi que se marcan uno por uno y la cantidad los cuenta. -->
+        <StackPanel Grid.Row="4"
+                    Margin="0,12,0,0"
+                    Visibility="{Binding ProductWithSerials, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Elija los equipos que se mueven" />
+
+            <Border Margin="0,6,0,0"
+                    MaxHeight="190"
+                    Padding="10"
+                    CornerRadius="10"
+                    BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                    BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding AvailableSerials}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="0,3"
+                                          Content="{Binding MacWlan}"
+                                          IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -1,9 +1,10 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitesSoftSec;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
 
@@ -19,6 +20,9 @@ public partial class FormTransfer
 
     private ProductStorage? SelectedProductStorage2;
     private List<ProductStorage>? ProductStorages2;
+
+    //Tecnicos y usuarios en una sola lista: la arma el backend con su neutro
+    private List<TextItemModel>? Receivers;
 
     private DateTime? DateMin = new DateTime(2024, 1, 1);
     private DateTime? DateStart = DateTime.Now;
@@ -40,6 +44,7 @@ public partial class FormTransfer
     {
         await LoadProductStorage1();
         await LoadProductStorage2();
+        await LoadReceivers();
     }
 
     private void DateTransferChanged(ChangeEventArgs e)
@@ -92,6 +97,23 @@ public partial class FormTransfer
             SelectedProductStorage2 = ProductStorages2!.Where(x => x.ProductStorageId == Transfer.ToProductStorageId)
                 .Select(x => new ProductStorage { ProductStorageId = x.ProductStorageId, StorageName = x.StorageName }).FirstOrDefault();
         }
+    }
+
+    private async Task LoadReceivers()
+    {
+        var responseHTTP = await _repository.GetAsync<List<TextItemModel>>("api/v1/transfers/loadComboReceivers");
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
+        {
+            Receivers = new List<TextItemModel>();
+            return;
+        }
+
+        Receivers = responseHTTP.Response;
+    }
+
+    private void ReceiverChanged(ChangeEventArgs e)
+    {
+        Transfer.ReceiverKey = e?.Value?.ToString();
     }
 
     private void ProductStorageChanged2(ChangeEventArgs e)

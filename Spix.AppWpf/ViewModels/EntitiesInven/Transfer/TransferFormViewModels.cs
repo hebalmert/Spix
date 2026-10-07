@@ -1,9 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.Domain.EntitiesInven;
 using Spix.DomainLogic.EnumTypes;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
 using TransferEntity = Spix.Domain.EntitiesInven.Transfer;
@@ -23,6 +24,11 @@ public abstract partial class TransferFormViewModel : CrudFormViewModel<Transfer
 
     [ObservableProperty]
     private ObservableCollection<ProductStorage> _productStorages = new();
+
+    //Quien recibe los equipos: tecnicos y usuarios en una sola lista. La arma el
+    //Backend con su neutro; aqui solo se pinta.
+    [ObservableProperty]
+    private ObservableCollection<TextItemModel> _receivers = new();
 
     protected override string BaseUrl => "api/v2/transfers";
 
@@ -82,6 +88,15 @@ public abstract partial class TransferFormViewModel : CrudFormViewModel<Transfer
 
             ProductStorages = new ObservableCollection<ProductStorage>(
                 response.Response ?? new List<ProductStorage>());
+
+            var recibe = await _repository.GetAsync<List<TextItemModel>>(
+                "api/v2/transfers/loadComboReceivers");
+
+            if (!await _responseHandler.HandleErrorAsync(recibe))
+            {
+                Receivers = new ObservableCollection<TextItemModel>(
+                    recibe.Response ?? new List<TextItemModel>());
+            }
         }
         catch (Exception exception)
         {

@@ -1,0 +1,4 @@
+/* Esta pantalla NO usa CSS aislado: se arma con las clases globales (idx-*) y las
+   utilidades de Bootstrap. Una hoja .razor.css nueva no llega al navegador hasta que
+   se regenera Spix.AppFront.styles.css, y como ese archivo se pide sin ?v= el
+   navegador sigue sirviendo la copia vieja y la pantalla se ve desarmada. */

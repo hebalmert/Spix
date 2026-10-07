@@ -1,4 +1,4 @@
-@page "/reports/by-server"
+﻿@page "/reports/by-server"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -17,35 +17,6 @@
             </div>
         </div>
 
-        @* El equipo y el estado: las listas las arma el backend *@
-        <div class="rp-filters">
-            <div class="rp-field">
-                <div class="rp-label">@Localizer["Corte_Server"]</div>
-                <GenericSelectWrapper Tmodel="GuidItemModel" Items="Servers">
-                    <Body>
-                        <select class="form-select" value="@ServerId" @onchange="ServerChanged">
-                            @foreach (var item in Servers!)
-                            {
-                                <option value="@item.Value">@item.Name</option>
-                            }
-                        </select>
-                    </Body>
-                </GenericSelectWrapper>
-            </div>
-            <div class="rp-field">
-                <div class="rp-label">@Localizer["Report_Show"]</div>
-                <GenericSelectWrapper Tmodel="IntItemModel" Items="States">
-                    <Body>
-                        <select class="form-select" value="@StateId" @onchange="StateChanged">
-                            @foreach (var item in States!)
-                            {
-                                <option value="@item.Value">@item.Name</option>
-                            }
-                        </select>
-                    </Body>
-                </GenericSelectWrapper>
-            </div>
-        </div>
 
         @* Lo que genera ese equipo *@
         @if (Summary is not null)
@@ -65,6 +36,39 @@
                 </div>
             </div>
         }
+        @* El equipo y el estado: las listas las arma el backend *@
+        <div class="rp-filters">
+            <div class="rp-field">
+                <GenericSelectWrapper Tmodel="GuidItemModel" Items="Servers">
+                    <Body>
+                    <div class="input-group">
+                        <span class="input-group-text" style="white-space:nowrap">@Localizer["Corte_Server"]</span>
+                            <select class="form-select" value="@ServerId" @onchange="ServerChanged">
+                                @foreach (var item in Servers!)
+                                {
+                                    <option value="@item.Value">@item.Name</option>
+                                }
+                            </select>
+                    </div>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+            <div class="rp-field">
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="States">
+                    <Body>
+                    <div class="input-group">
+                        <span class="input-group-text" style="white-space:nowrap">@Localizer["Report_Show"]</span>
+                            <select class="form-select" value="@StateId" @onchange="StateChanged">
+                                @foreach (var item in States!)
+                                {
+                                    <option value="@item.Value">@item.Name</option>
+                                }
+                            </select>
+                    </div>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+        </div>
 
         <section class="idx-panel">
             <div class="table-responsive">

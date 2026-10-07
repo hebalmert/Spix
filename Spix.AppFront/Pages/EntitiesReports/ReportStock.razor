@@ -1,0 +1,180 @@
+﻿@page "/reports/stock"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator")]
+
+@using Spix.Domain.EntitiesInven
+
+@* Movimientos de inventario: que entro y que salio de cada bodega, y cuanto hay hoy.
+   Se arma con las clases GLOBALES del sistema (idx-*), sin hoja aislada propia. *@
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-boxes-stacked"></i></span>
+            <div class="idx-head-text">
+                <h3>@Localizer["Report_StockTitle"]</h3>
+                <p>@Localizer["Report_StockSubtitle"]</p>
+            </div>
+        </div>
+
+        @* Los numeros del periodo *@
+        @if (Summary is not null)
+        {
+            <div class="idx-board">
+                <div class="idx-tile is-green">
+                    <div class="idx-tile-label">@Localizer["Report_StockEntries"]</div>
+                    <div class="idx-tile-value">@Summary.Entries.ToString("N2")</div>
+                </div>
+                <div class="idx-tile is-red">
+                    <div class="idx-tile-label">@Localizer["Report_StockExits"]</div>
+                    <div class="idx-tile-value">@Summary.Exits.ToString("N2")</div>
+                </div>
+                <div class="idx-tile is-blue">
+                    <div class="idx-tile-label">@Localizer["Report_StockMoves"]</div>
+                    <div class="idx-tile-value">@Summary.Moves.ToString("N0")</div>
+                </div>
+                <div class="idx-tile is-amber">
+                    <div class="idx-tile-label">@Localizer["Report_StockOnHand"]</div>
+                    <div class="idx-tile-value">@Summary.TotalStock.ToString("N2")</div>
+                </div>
+            </div>
+        }
+
+        @* Filtros: periodo y bodega *@
+        <div class="row g-2 mb-3">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer[nameof(Resource.DateStart)]</span>
+                    <input type="date" class="form-control" value="@Desde?.ToString("yyyy-MM-dd")" @onchange="DesdeChanged" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer[nameof(Resource.DateEnd)]</span>
+                    <input type="date" class="form-control" value="@Hasta?.ToString("yyyy-MM-dd")" @onchange="HastaChanged" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <GenericSelectWrapper Tmodel="ProductStorage" Items="Storages">
+                    <Body>
+                        <div class="input-group">
+                            <span class="input-group-text" style="white-space:nowrap">@Localizer[nameof(Resource.Storage)]</span>
+                            <select class="form-select" value="@StorageId" @onchange="StorageChanged">
+                                @foreach (var item in Storages!)
+                                {
+                                    <option value="@item.ProductStorageId">@item.StorageName</option>
+                                }
+                            </select>
+                        </div>
+                    </Body>
+                </GenericSelectWrapper>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <ButtonFormBlue OnClick="Cargar" Icon="fa fa-magnifying-glass" TooTip="@Localizer["Report_Search"]" Style="width:100%" />
+            </div>
+        </div>
+
+        @* 1. Los movimientos del periodo *@
+        <h5 class="idx-name mb-2">@Localizer["Report_StockMovesTitle"]</h5>
+        <section class="idx-panel mb-4">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Date)]</th>
+                            <th>@Localizer["Report_StockDocument"]</th>
+                            <th>@Localizer["Report_Product"]</th>
+                            <th>@Localizer[nameof(Resource.Storage)]</th>
+                            <th style="text-align:right">@Localizer[nameof(Resource.Quantity)]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Moves">
+                            <Loading>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="5" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Moves!)
+                                {
+                                    <tr>
+                                        <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <div class="idx-name">@item.Origin @item.Document</div>
+                                            <div class="idx-meta">@item.Reference</div>
+                                        </td>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.StorageName</td>
+                                        @* Verde lo que entra, rojo lo que sale *@
+                                        <td style="text-align:right">
+                                            <strong style="color:@(item.IsEntry ? "#198754" : "#dc3545")">
+                                                @(item.IsEntry ? "+" : "")@item.Quantity.ToString("N2")
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        @* 2. Lo que hay hoy *@
+        <h5 class="idx-name mb-2">@Localizer["Report_StockBalanceTitle"]</h5>
+        <section class="idx-panel">
+            <div class="table-responsive">
+                <table class="idx-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer[nameof(Resource.Storage)]</th>
+                            <th>@Localizer["Report_Product"]</th>
+                            <th style="text-align:right">@Localizer["Report_StockOnHand"]</th>
+                            <th style="text-align:right">@Localizer["Report_SerialsAvailable"]</th>
+                            <th style="text-align:right">@Localizer["Report_SerialsOperative"]</th>
+                            <th style="text-align:right">@Localizer["Report_SerialsDamaged"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <GenericList MyList="Balance">
+                            <Loading>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                    </td>
+                                </tr>
+                            </Loading>
+                            <NoRecords>
+                                <tr>
+                                    <td colspan="6" class="idx-meta" style="text-align:center">@Localizer["Table_NoRecords"]</td>
+                                </tr>
+                            </NoRecords>
+                            <Body>
+                                @foreach (var item in Balance!)
+                                {
+                                    <tr>
+                                        <td>@item.StorageName</td>
+                                        <td><div class="idx-name">@item.ProductName</div></td>
+                                        <td style="text-align:right"><strong>@item.Stock.ToString("N2")</strong></td>
+                                        @* El desglose solo aplica a los productos que llevan serial *@
+                                        <td style="text-align:right">@(item.WithSerials ? item.Available.ToString("N0") : "-")</td>
+                                        <td style="text-align:right">@(item.WithSerials ? item.Operative.ToString("N0") : "-")</td>
+                                        <td style="text-align:right">@(item.WithSerials ? item.Damaged.ToString("N0") : "-")</td>
+                                    </tr>
+                                }
+                            </Body>
+                        </GenericList>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.Services.Data;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
@@ -56,6 +56,23 @@ public partial class TransferIndexViewModel : PagedListViewModel<TransferEntity>
         }
 
         DetailsRequested?.Invoke(this, transfer.TransferId);
+    }
+
+    //El historial se arma con la fila que ya esta en pantalla: no hace falta ir al servidor
+    [RelayCommand]
+    private async Task AuditAsync(TransferEntity? transfer)
+    {
+        if (transfer is null)
+        {
+            return;
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            ["Transfer"] = transfer
+        };
+
+        await _modalService.ShowAsync<AuditTransferDialogView>("Historial del traslado", parameters);
     }
 
     // El encabezado se crea pendiente; las lineas se agregan despues en el detalle

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Spix.AppFront.Helper;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
 using Spix.xLanguage.Resources;
@@ -31,6 +32,14 @@ public partial class FormTransferDetails
     //La categoria elegida vive aqui y no en TransferDetails.Product: al crear una linea
     //ese Product viene en null y el select reventaba al pintarse.
     private Guid SelectedCategoryId;
+
+    //Los equipos que se van a mover. Solo aplica a los productos CON serial: en esos el
+    //equipo es la unidad, asi que la cantidad es cuantos se eligieron.
+    public HashSet<Guid> SelectedSerials { get; } = new();
+
+    private List<GuidItemModel>? AvailableSerials;
+
+    private bool ProductWithSerials;
 
     [Inject] private IStringLocalizer<Resource> Localizer { get; set; } = null!;
     [Inject] private SweetAlertService _sweetAlert { get; set; } = null!;
@@ -106,6 +115,16 @@ public partial class FormTransferDetails
             TransferDetails.ProductId = selectedId;
         }
 
+        //Si el producto lleva serial hay que elegir los equipos, no escribir una cantidad
+        ProductWithSerials = Products?.FirstOrDefault(x => x.ProductId == selectedId)?.WithSerials ?? false;
+        SelectedSerials.Clear();
+        AvailableSerials = null;
+
+        if (ProductWithSerials)
+        {
+            await LoadSerials(selectedId);
+        }
+
         //Traerme el dato del producto
         var responseHTTP = await _repository.GetAsync<TransferStockDTO>($"api/v1/productStocks/transferStock?TransferId={TransferDetails.TransferId}&ProductId={selectedId}");
         if (await _responseHandler.HandleErrorAsync(responseHTTP))
@@ -145,5 +164,59 @@ public partial class FormTransferDetails
             }
         }
         return "Texto no definido";
+    }
+
+    //Los seriales que se pueden mover: disponibles en la bodega de ORIGEN y sin reservar
+    private async Task LoadSerials(Guid productId)
+    {
+        var url = $"api/v1/transferDetails/serials/available?transferId={TransferDetails.TransferId}&productId={productId}";
+        if (IsEditControl)
+        {
+            url += $"&transferDetailsId={TransferDetails.TransferDetailsId}";
+        }
+
+        var responseHTTP = await _repository.GetAsync<List<GuidItemModel>>(url);
+        if (await _responseHandler.HandleErrorAsync(responseHTTP))
+        {
+            return;
+        }
+
+        AvailableSerials = responseHTTP.Response ?? new();
+
+        //Al editar se marcan los que la linea ya tenia
+        if (!IsEditControl)
+        {
+            return;
+        }
+
+        var yaTiene = await _repository.GetAsync<List<GuidItemModel>>(
+            $"api/v1/transferDetails/serials/line/{TransferDetails.TransferDetailsId}");
+
+        if (await _responseHandler.HandleErrorAsync(yaTiene))
+        {
+            return;
+        }
+
+        foreach (var serial in yaTiene.Response ?? new())
+        {
+            SelectedSerials.Add(serial.Value);
+        }
+
+        TransferDetails.Quantity = SelectedSerials.Count;
+    }
+
+    //Marcar o desmarcar un equipo: la cantidad sigue a la cuenta
+    private void ToggleSerial(Guid id, bool marcado)
+    {
+        if (marcado)
+        {
+            SelectedSerials.Add(id);
+        }
+        else
+        {
+            SelectedSerials.Remove(id);
+        }
+
+        TransferDetails.Quantity = SelectedSerials.Count;
     }
 }

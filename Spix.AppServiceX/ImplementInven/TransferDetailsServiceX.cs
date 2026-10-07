@@ -1,6 +1,7 @@
 ﻿using Spix.AppService.InterfacesInven;
 using Spix.AppServiceX.InterfacesInven;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -22,6 +23,12 @@ public class TransferDetailsServiceX : ITransferDetailsServiceX
     public async Task<ActionResponse<TransferDetails>> UpdateAsync(TransferDetails modelo, string username) => await _transferDetailsService.UpdateAsync(modelo, username);
 
     public async Task<ActionResponse<TransferDetails>> AddAsync(TransferDetails modelo, string email) => await _transferDetailsService.AddAsync(modelo, email);
+
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetAvailableSerialsAsync(Guid transferId, Guid productId, Guid? transferDetailsId, string username) => await _transferDetailsService.GetAvailableSerialsAsync(transferId, productId, transferDetailsId, username);
+
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetLineSerialsAsync(Guid transferDetailsId, string username) => await _transferDetailsService.GetLineSerialsAsync(transferDetailsId, username);
+
+    public async Task<ActionResponse<bool>> SaveSerialsAsync(Guid transferDetailsId, List<Guid> serialIds, string username) => await _transferDetailsService.SaveSerialsAsync(transferDetailsId, serialIds, username);
 
     public async Task<ActionResponse<Transfer>> CerrarTransAsync(Transfer modelo, string email) => await _transferDetailsService.CerrarTransAsync(modelo, email);
 

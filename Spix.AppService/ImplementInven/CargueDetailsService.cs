@@ -637,7 +637,8 @@ public class CargueDetailsService : ICargueDetailsService
             .Select(x => new
             {
                 x.Cargue!.ProductId,
-                x.Cargue.PurchaseDetail!.Purchase!.ProductStorageId
+                //La bodega sale del SERIAL, que ahora la lleva propia
+                x.ProductStorageId
             })
             .FirstOrDefaultAsync();
 

@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
@@ -51,6 +51,14 @@ public partial class IndexTransfer
     private void ShowDetailsAsync(Guid id)
     {
         _navigationManager.NavigateTo($"/transfers/details/{id}");
+    }
+
+    //El historial se arma con la fila que ya esta en pantalla: no hace falta ir al servidor
+    private async Task ShowAuditAsync(Transfer item)
+    {
+        var parameters = new Dictionary<string, object> { { "Transfer", item } };
+
+        await _modalService.ShowAsync(typeof(AuditTransfer), parameters, null);
     }
 
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)

@@ -48,6 +48,7 @@ using Spix.AppWpf.Views.EntitiesReports.byzone;
 using Spix.AppWpf.Views.EntitiesReports.bynode;
 using Spix.AppWpf.Views.EntitiesReports.byserver;
 using Spix.AppWpf.Views.EntitiesReports.serials;
+using Spix.AppWpf.Views.EntitiesReports.stock;
 using Spix.AppWpf.Views.EntitiesSystem.Usuario;
 using Spix.AppWpf.Views.EntitiesSystem.Contractor;
 using Spix.AppWpf.Views.EntitiesSystem.Technitian;
@@ -548,6 +549,12 @@ public partial class MainWindow : Window
     private void ShowReportSerialsClick(object sender, RoutedEventArgs e)
     {
         ShowView<ReportSerialsIndexView>("Inventario de seriales", "Reportes / Inventario de seriales");
+    }
+
+    // Movimientos de inventario: que entro y salio de cada bodega, y el stock de hoy
+    private void ShowReportStockClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<ReportStockIndexView>("Movimientos de inventario", "Reportes / Inventario");
     }
 
     //===================== Sistema =====================

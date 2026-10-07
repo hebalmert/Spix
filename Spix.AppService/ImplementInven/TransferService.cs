@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
+using Spix.xLanguage.Resources;
 using Spix.AppInfra;
 using Spix.AppInfra.Sequences;
 using Spix.AppInfra.ErrorHandling;
@@ -25,11 +27,13 @@ public class TransferService : ITransferService
     private readonly ITransactionManager _transactionManager;
     private readonly HttpErrorHandler _httpErrorHandler;
     private readonly IUserHelper _userHelper;
+    private readonly IStringLocalizer _localizer;
 
     public TransferService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapperService mapperService,
         ITransactionManager transactionManager, IMemoryCache cache, HttpErrorHandler httpErrorHandle,
-        IUserHelper userHelper)
+        IUserHelper userHelper, IStringLocalizer localizer)
     {
+        _localizer = localizer;
         _context = context;
         _httpContextAccessor = httpContextAccessor;
         _mapperService = mapperService;
@@ -57,6 +61,60 @@ public class TransferService : ITransferService
         catch (Exception ex)
         {
             return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex); // ✅ Manejo de errores automático
+        }
+    }
+
+    //La lista de quien puede recibir los equipos: tecnicos y usuarios del sistema en
+    //UNA sola lista, armada aqui y lista para pintar. El front no filtra ni ordena.
+    public async Task<ActionResponse<IEnumerable<TextItemModel>>> ReceiversComboAsync(string username)
+    {
+        try
+        {
+            var corporationId = await GetCorporationIdAsync(username);
+
+            //Las etiquetas se traducen ACA, no dentro del Select: adentro quedan a
+            //merced de como EF decida evaluar la proyeccion
+            var etiquetaTecnico = _localizer[nameof(Resource.Audit_Technician)].Value;
+            var etiquetaUsuario = _localizer[nameof(Resource.User)].Value;
+
+            var tecnicos = await _context.Technicians.AsNoTracking()
+                .Where(x => x.CorporationId == corporationId)
+                .OrderBy(x => x.FirstName)
+                .Select(x => new TextItemModel
+                {
+                    Value = "T:" + x.TechnicianId,
+                    Name = etiquetaTecnico + " - " + x.FirstName + " " + x.LastName
+                })
+                .ToListAsync();
+
+            var usuarios = await _context.Usuarios.AsNoTracking()
+                .Where(x => x.CorporationId == corporationId)
+                .OrderBy(x => x.FirstName)
+                .Select(x => new TextItemModel
+                {
+                    Value = "U:" + x.UsuarioId,
+                    Name = etiquetaUsuario + " - " + x.FirstName + " " + x.LastName
+                })
+                .ToListAsync();
+
+            var lista = tecnicos.Concat(usuarios).ToList();
+
+            //El elemento neutro traducido va en la posicion 0
+            lista.Insert(0, new TextItemModel
+            {
+                Value = string.Empty,
+                Name = _localizer[nameof(Resource.Select_Receiver)].Value
+            });
+
+            return new ActionResponse<IEnumerable<TextItemModel>>
+            {
+                WasSuccess = true,
+                Result = lista
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<TextItemModel>>(ex);
         }
     }
 
@@ -98,6 +156,22 @@ public class TransferService : ITransferService
                 .Paginate(pagination)
                 .ToListAsync();
 
+            //NombreUsuario es [NotMapped]: no esta en la base, hay que resolverlo. Se
+            //piden los creadores de la pagina en UNA consulta, no uno por fila.
+            var creadores = modelo.Where(x => x.UserId != null).Select(x => x.UserId!).Distinct().ToList();
+
+            var nombres = await _context.Users.AsNoTracking()
+                .Where(x => creadores.Contains(x.Id))
+                .Select(x => new { x.Id, Nombre = x.FirstName + " " + x.LastName })
+                .ToDictionaryAsync(x => x.Id, x => x.Nombre);
+
+            foreach (var item in modelo)
+            {
+                item.NombreUsuario = item.UserId is not null && nombres.TryGetValue(item.UserId, out var nombre)
+                    ? nombre
+                    : string.Empty;
+            }
+
             return new ActionResponse<IEnumerable<Transfer>>
             {
                 WasSuccess = true,
@@ -131,6 +205,14 @@ public class TransferService : ITransferService
             //que NO viene cargado, y reventaba con null al abrir el registro.
             var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == modelo.UserId);
             modelo.NombreUsuario = user == null ? string.Empty : $"{user.FirstName} {user.LastName}";
+
+            //La llave del combo se arma de vuelta para que el formulario lo preseleccione
+            modelo.ReceiverKey = modelo.ReceivedByTechnicianId is not null
+                ? "T:" + modelo.ReceivedByTechnicianId
+                : modelo.ReceivedByUsuarioId is not null
+                    ? "U:" + modelo.ReceivedByUsuarioId
+                    : string.Empty;
+
             return new ActionResponse<Transfer>
             {
                 WasSuccess = true,
@@ -152,10 +234,10 @@ public class TransferService : ITransferService
             var corporationId = await GetCorporationIdAsync(username);
 
             //Por id SOLO no alcanza: tiene que ser de su corporacion
-            var existe = await _context.Transfers.AsNoTracking()
-                .AnyAsync(x => x.TransferId == modelo.TransferId && x.CorporationId == corporationId);
+            var actual = await _context.Transfers.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.TransferId == modelo.TransferId && x.CorporationId == corporationId);
 
-            if (!existe)
+            if (actual is null)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return new ActionResponse<Transfer>
@@ -164,6 +246,17 @@ public class TransferService : ITransferService
                     Message = "Problemas para Enconstrar el Registro Indicado"
                 };
             }
+
+            //La auditoria no se edita: se conserva la que ya tenia el registro, porque
+            //Update pisa toda la fila con lo que llego del formulario
+            modelo.DateCreated = actual.DateCreated;
+            modelo.UserIdClosed = actual.UserIdClosed;
+            modelo.NombreUsuarioCierre = actual.NombreUsuarioCierre;
+            modelo.DateClosed = actual.DateClosed;
+            modelo.NroTransfer = actual.NroTransfer;
+
+            //Si cambiaron a quien recibe, se vuelve a congelar el nombre
+            modelo.ReceivedByName = await ResolverRecibeAsync(modelo, corporationId ?? 0);
 
             Transfer NewModelo = _mapperService.Map<Transfer, Transfer>(modelo);
 
@@ -219,6 +312,12 @@ public class TransferService : ITransferService
             //El consecutivo de la transferencia lo entrega la base, no la memoria
             var ControlTranfer = await NumberSequence.NextAsync(_context, modelo.CorporationId, NumberKind.Transfer);
             modelo.NroTransfer = ControlTranfer;
+
+            //Auditoria: la fecha del registro la pone el servidor (DateTransfer es la del
+            //movimiento y esa si la elige el operador)
+            modelo.DateCreated = DateTime.Now;
+            modelo.ReceivedByName = await ResolverRecibeAsync(modelo, modelo.CorporationId);
+
             _context.Transfers.Add(modelo);
 
             await _transactionManager.SaveChangesAsync();
@@ -276,6 +375,58 @@ public class TransferService : ITransferService
 
     //El CorporationId sale del JWT: el controlador baja el username y aqui se resuelve.
     //Mismo patron que Compras y el resto de los modulos.
+    //Quien recibe los equipos es UNO de los dos: un tecnico o un usuario del sistema.
+    //El nombre se guarda congelado para que el traslado viejo siga diciendo quien recibio
+    //aunque esa persona ya no exista.
+    private async Task<string?> ResolverRecibeAsync(Transfer modelo, int corporationId)
+    {
+        //El formulario manda UNA llave; aqui se reparte en la columna que le toca
+        RepartirLlave(modelo);
+
+        if (modelo.ReceivedByTechnicianId is not null && modelo.ReceivedByTechnicianId != Guid.Empty)
+        {
+            modelo.ReceivedByUsuarioId = null;
+
+            var tecnico = await _context.Technicians.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.TechnicianId == modelo.ReceivedByTechnicianId &&
+                                          x.CorporationId == corporationId);
+
+            return tecnico is null ? null : $"{tecnico.FirstName} {tecnico.LastName}".Trim();
+        }
+
+        if (modelo.ReceivedByUsuarioId is not null && modelo.ReceivedByUsuarioId != Guid.Empty)
+        {
+            var usuario = await _context.Usuarios.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UsuarioId == modelo.ReceivedByUsuarioId &&
+                                          x.CorporationId == corporationId);
+
+            return usuario is null ? null : $"{usuario.FirstName} {usuario.LastName}".Trim();
+        }
+
+        //Sin destinatario: se limpian los dos
+        modelo.ReceivedByTechnicianId = null;
+        modelo.ReceivedByUsuarioId = null;
+        return null;
+    }
+
+    //"T:<guid>" es un tecnico, "U:<guid>" es un usuario, vacio es nadie
+    private static void RepartirLlave(Transfer modelo)
+    {
+        if (string.IsNullOrWhiteSpace(modelo.ReceiverKey))
+        {
+            return;
+        }
+
+        var partes = modelo.ReceiverKey.Split(':');
+        if (partes.Length != 2 || !Guid.TryParse(partes[1], out var id))
+        {
+            return;
+        }
+
+        modelo.ReceivedByTechnicianId = partes[0] == "T" ? id : null;
+        modelo.ReceivedByUsuarioId = partes[0] == "U" ? id : null;
+    }
+
     private async Task<int?> GetCorporationIdAsync(string username)
     {
         var user = await _userHelper.GetUserByUserNameAsync(username);

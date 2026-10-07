@@ -16,5 +16,9 @@ public class TransferConfig : IEntityTypeConfiguration<Transfer>
         builder.HasOne(e => e.User).WithMany().OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<ProductStorage>() .WithMany().HasForeignKey(e => e.FromProductStorageId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<ProductStorage>().WithMany().HasForeignKey(e => e.ToProductStorageId).OnDelete(DeleteBehavior.Restrict);
+
+        //Quien recibe: no se puede borrar el tecnico o el usuario si tiene traslados
+        builder.HasOne(e => e.ReceivedByTechnician).WithMany().HasForeignKey(e => e.ReceivedByTechnicianId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.ReceivedByUsuario).WithMany().HasForeignKey(e => e.ReceivedByUsuarioId).OnDelete(DeleteBehavior.Restrict);
     }
 }

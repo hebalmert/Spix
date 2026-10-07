@@ -1,4 +1,4 @@
-@page "/reports/services"
+﻿@page "/reports/services"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -16,24 +16,6 @@
             </div>
         </div>
 
-        <div class="rp-filters">
-            <div class="rp-field is-date">
-                <div class="rp-label">@Localizer["Collection_From"]</div>
-                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
-            </div>
-            <div class="rp-field is-date">
-                <div class="rp-label">@Localizer["Collection_To"]</div>
-                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
-            </div>
-            <div class="rp-field is-button">
-                <ButtonFormSaveOnClick OnClick="SearchAsync"
-                                       TooTip="@Localizer["Collection_Search"]"
-                                       ProgressText="@Localizer["Collection_Search"]"
-                                       Icon="fa fa-magnifying-glass"
-                                       IsSaving="IsLoading"
-                                       Style="width:150px" />
-            </div>
-        </div>
 
         @* Como entraron y como terminaron *@
         @if (Summary is not null)
@@ -65,6 +47,28 @@
                 </div>
             </div>
         }
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer["Collection_From"]</span>
+                    <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+                </div>
+            </div>
+            <div class="rp-field is-date">
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer["Collection_To"]</span>
+                    <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+                </div>
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
 
         @* Que fue lo que mas se hizo *@
         @if (Services is not null && Services.Count > 0)

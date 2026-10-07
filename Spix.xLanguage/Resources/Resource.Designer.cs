@@ -6550,6 +6550,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Serial list.
+        /// </summary>
+        public static string Menu_ReportSerialDetail {
+            get {
+                return ResourceManager.GetString("Menu_ReportSerialDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Serial inventory.
         /// </summary>
         public static string Menu_ReportSerials {
@@ -6564,6 +6573,15 @@ namespace Spix.xLanguage.Resources {
         public static string Menu_ReportServices {
             get {
                 return ResourceManager.GetString("Menu_ReportServices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock.
+        /// </summary>
+        public static string Menu_ReportStock {
+            get {
+                return ResourceManager.GetString("Menu_ReportStock", resourceCulture);
             }
         }
         
@@ -10123,6 +10141,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Report_Search {
+            get {
+                return ResourceManager.GetString("Report_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select a city].
         /// </summary>
         public static string Report_SelectCity {
@@ -10168,6 +10195,33 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to serials.
+        /// </summary>
+        public static string Report_SerialDetailCount {
+            get {
+                return ResourceManager.GetString("Report_SerialDetailCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every serial with its state and who has it.
+        /// </summary>
+        public static string Report_SerialDetailSubtitle {
+            get {
+                return ResourceManager.GetString("Report_SerialDetailSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Serial list.
+        /// </summary>
+        public static string Report_SerialDetailTitle {
+            get {
+                return ResourceManager.GetString("Report_SerialDetailTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In stock.
         /// </summary>
         public static string Report_SerialsAvailable {
@@ -10209,6 +10263,15 @@ namespace Spix.xLanguage.Resources {
         public static string Report_SerialsSubtitle {
             get {
                 return ResourceManager.GetString("Report_SerialsSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [All states].
+        /// </summary>
+        public static string Report_SerialStateAll {
+            get {
+                return ResourceManager.GetString("Report_SerialStateAll", resourceCulture);
             }
         }
         
@@ -10272,6 +10335,87 @@ namespace Spix.xLanguage.Resources {
         public static string Report_State {
             get {
                 return ResourceManager.GetString("Report_State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock by storage.
+        /// </summary>
+        public static string Report_StockBalanceTitle {
+            get {
+                return ResourceManager.GetString("Report_StockBalanceTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document.
+        /// </summary>
+        public static string Report_StockDocument {
+            get {
+                return ResourceManager.GetString("Report_StockDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In.
+        /// </summary>
+        public static string Report_StockEntries {
+            get {
+                return ResourceManager.GetString("Report_StockEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Out.
+        /// </summary>
+        public static string Report_StockExits {
+            get {
+                return ResourceManager.GetString("Report_StockExits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Movements.
+        /// </summary>
+        public static string Report_StockMoves {
+            get {
+                return ResourceManager.GetString("Report_StockMoves", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Movements.
+        /// </summary>
+        public static string Report_StockMovesTitle {
+            get {
+                return ResourceManager.GetString("Report_StockMovesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On hand.
+        /// </summary>
+        public static string Report_StockOnHand {
+            get {
+                return ResourceManager.GetString("Report_StockOnHand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What came in and out of each storage, and what is on hand.
+        /// </summary>
+        public static string Report_StockSubtitle {
+            get {
+                return ResourceManager.GetString("Report_StockSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock movements.
+        /// </summary>
+        public static string Report_StockTitle {
+            get {
+                return ResourceManager.GetString("Report_StockTitle", resourceCulture);
             }
         }
         
@@ -11194,6 +11338,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Select who receives].
+        /// </summary>
+        public static string Select_Receiver {
+            get {
+                return ResourceManager.GetString("Select_Receiver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Select Role].
         /// </summary>
         public static string Select_Role {
@@ -11370,6 +11523,33 @@ namespace Spix.xLanguage.Resources {
         public static string Serials {
             get {
                 return ResourceManager.GetString("Serials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damaged.
+        /// </summary>
+        public static string SerialStateType_Averiado {
+            get {
+                return ResourceManager.GetString("SerialStateType_Averiado", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Available.
+        /// </summary>
+        public static string SerialStateType_Disponible {
+            get {
+                return ResourceManager.GetString("SerialStateType_Disponible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string SerialStateType_Operativo {
+            get {
+                return ResourceManager.GetString("SerialStateType_Operativo", resourceCulture);
             }
         }
         
@@ -12490,11 +12670,65 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to History.
+        /// </summary>
+        public static string Transfer_Audit {
+            get {
+                return ResourceManager.GetString("Transfer_Audit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer history.
+        /// </summary>
+        public static string Transfer_AuditTitle {
+            get {
+                return ResourceManager.GetString("Transfer_AuditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Available.
         /// </summary>
         public static string Transfer_Available {
             get {
                 return ResourceManager.GetString("Transfer_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfers.
+        /// </summary>
+        public static string Transfer_Back {
+            get {
+                return ResourceManager.GetString("Transfer_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Transfer_Close {
+            get {
+                return ResourceManager.GetString("Transfer_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed by.
+        /// </summary>
+        public static string Transfer_ClosedBy {
+            get {
+                return ResourceManager.GetString("Transfer_ClosedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created by.
+        /// </summary>
+        public static string Transfer_CreatedBy {
+            get {
+                return ResourceManager.GetString("Transfer_CreatedBy", resourceCulture);
             }
         }
         
@@ -12508,11 +12742,56 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Transfer {0}.
+        /// </summary>
+        public static string Transfer_Header {
+            get {
+                return ResourceManager.GetString("Transfer_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no available equipment of this product in the origin storage..
+        /// </summary>
+        public static string Transfer_NoSerials {
+            get {
+                return ResourceManager.GetString("Transfer_NoSerials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Still open.
+        /// </summary>
+        public static string Transfer_NotClosed {
+            get {
+                return ResourceManager.GetString("Transfer_NotClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick the equipment to move. Selected:.
+        /// </summary>
+        public static string Transfer_PickSerials {
+            get {
+                return ResourceManager.GetString("Transfer_PickSerials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Quantity.
         /// </summary>
         public static string Transfer_Quantity {
             get {
                 return ResourceManager.GetString("Transfer_Quantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Receives.
+        /// </summary>
+        public static string Transfer_ReceivedBy {
+            get {
+                return ResourceManager.GetString("Transfer_ReceivedBy", resourceCulture);
             }
         }
         

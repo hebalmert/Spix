@@ -1,4 +1,5 @@
 ﻿using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.ModelUtility;
 using Spix.DomainLogic.Pagination;
 
@@ -13,6 +14,12 @@ public interface ITransferDetailsService
     Task<ActionResponse<TransferDetails>> UpdateAsync(TransferDetails modelo, string username);
 
     Task<ActionResponse<TransferDetails>> AddAsync(TransferDetails modelo, string email);
+
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> GetAvailableSerialsAsync(Guid transferId, Guid productId, Guid? transferDetailsId, string username);
+
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> GetLineSerialsAsync(Guid transferDetailsId, string username);
+
+    Task<ActionResponse<bool>> SaveSerialsAsync(Guid transferDetailsId, List<Guid> serialIds, string username);
 
     Task<ActionResponse<Transfer>> CerrarTransAsync(Transfer modelo, string email);
 

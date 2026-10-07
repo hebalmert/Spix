@@ -44,15 +44,58 @@
         </div>
     </div>
 
+    @* Con serial la cantidad NO se escribe: es cuantos equipos se eligieron abajo *@
     <div class="mb-2">
         <div class="input-group">
             <span class="input-group-text" style="width: 150px">@Localizer["Transfer_Quantity"]</span>
-            <InputNumber class="form-control"
-                         @bind-Value="TransferDetails.Quantity"
-                         @oninput="@(e => CalculoTotalCant(decimal.TryParse(e.Value?.ToString(), out var valor) ? valor : 0))" />
+            @if (ProductWithSerials)
+            {
+                <InputNumber class="form-control" @bind-Value="TransferDetails.Quantity" readonly />
+            }
+            else
+            {
+                <InputNumber class="form-control"
+                             @bind-Value="TransferDetails.Quantity"
+                             @oninput="@(e => CalculoTotalCant(decimal.TryParse(e.Value?.ToString(), out var valor) ? valor : 0))" />
+            }
         </div>
     </div>
     <ValidationMessage For="@(() => TransferDetails.Quantity)" />
+
+    @* Los equipos que se mueven. Solo para los productos con serial: el equipo es la
+       unidad, asi que se eligen uno por uno y la cantidad los cuenta. *@
+    @if (ProductWithSerials)
+    {
+        <div class="mb-2">
+            <div class="idx-meta mb-1">
+                @Localizer["Transfer_PickSerials"]
+                <strong>@SelectedSerials.Count</strong>
+            </div>
+
+            @if (AvailableSerials is null)
+            {
+                <Loading />
+            }
+            else if (AvailableSerials.Count == 0)
+            {
+                <div class="idx-meta">@Localizer["Transfer_NoSerials"]</div>
+            }
+            else
+            {
+                <div style="max-height:220px; overflow:auto; border:1px solid #e6ecf6; border-radius:12px; padding:10px">
+                    @foreach (var serial in AvailableSerials)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="@serial.Value"
+                                   checked="@SelectedSerials.Contains(serial.Value)"
+                                   @onchange="@(e => ToggleSerial(serial.Value, (bool)(e.Value ?? false)))" />
+                            <label class="form-check-label" for="@serial.Value">@serial.Name</label>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
 
     <!-- Botones -->
     <div class="d-flex justify-content-center gap-3 mt-4">

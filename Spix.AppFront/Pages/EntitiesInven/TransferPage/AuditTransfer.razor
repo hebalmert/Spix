@@ -1,0 +1,50 @@
+﻿@inherits ComponentBase
+
+@using Spix.DomainLogic.EnumTypes
+
+@* El historial del traslado: quien lo creo, quien lo cerro y quien recibio los equipos.
+   No pide nada al servidor: esos datos viajan en la propia fila del traslado. *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">
+                    @Localizer[nameof(Resource.Transfer_AuditTitle)] @Transfer.NroTransfer
+                </h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            @* Cada hecho en su propia tarjeta con linea lateral, como el resto del sistema *@
+            <div class="idx-board">
+                <div class="idx-tile is-blue">
+                    <div class="idx-tile-label">@Localizer[nameof(Resource.Transfer_CreatedBy)]</div>
+                    <div class="idx-tile-value" style="font-size:15px">@Transfer.NombreUsuario</div>
+                    <div class="idx-meta">@Fecha(Transfer.DateCreated)</div>
+                </div>
+
+                <div class="idx-tile @(Transfer.Status == TransferType.Completado ? "is-green" : "is-amber")">
+                    <div class="idx-tile-label">@Localizer[nameof(Resource.Transfer_ClosedBy)]</div>
+                    <div class="idx-tile-value" style="font-size:15px">
+                        @(string.IsNullOrWhiteSpace(Transfer.NombreUsuarioCierre)
+                            ? Localizer[nameof(Resource.Transfer_NotClosed)].Value
+                            : Transfer.NombreUsuarioCierre)
+                    </div>
+                    <div class="idx-meta">@Fecha(Transfer.DateClosed)</div>
+                </div>
+
+                <div class="idx-tile is-cyan">
+                    <div class="idx-tile-label">@Localizer[nameof(Resource.Transfer_ReceivedBy)]</div>
+                    <div class="idx-tile-value" style="font-size:15px">
+                        @(string.IsNullOrWhiteSpace(Transfer.ReceivedByName) ? "-" : Transfer.ReceivedByName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

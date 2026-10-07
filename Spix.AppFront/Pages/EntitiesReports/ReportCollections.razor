@@ -1,4 +1,4 @@
-@page "/reports/collections"
+﻿@page "/reports/collections"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator, Auxiliar")]
 
@@ -16,25 +16,6 @@
             </div>
         </div>
 
-        @* El periodo: hoy, esta semana, el mes... lo que se pida *@
-        <div class="rp-filters">
-            <div class="rp-field is-date">
-                <div class="rp-label">@Localizer["Collection_From"]</div>
-                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
-            </div>
-            <div class="rp-field is-date">
-                <div class="rp-label">@Localizer["Collection_To"]</div>
-                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
-            </div>
-            <div class="rp-field is-button">
-                <ButtonFormSaveOnClick OnClick="SearchAsync"
-                                       TooTip="@Localizer["Collection_Search"]"
-                                       ProgressText="@Localizer["Collection_Search"]"
-                                       Icon="fa fa-magnifying-glass"
-                                       IsSaving="IsLoading"
-                                       Style="width:150px" />
-            </div>
-        </div>
 
         @* Lo que entro y como entro *@
         @if (Summary is not null)
@@ -66,6 +47,29 @@
                     <div class="rp-tile-value">@Summary.Discount.ToString("N2")</div>
                 </div>
             </div>
+        @* El periodo: hoy, esta semana, el mes... lo que se pida *@
+        <div class="rp-filters">
+            <div class="rp-field is-date">
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer["Collection_From"]</span>
+                    <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+                </div>
+            </div>
+            <div class="rp-field is-date">
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer["Collection_To"]</span>
+                    <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+                </div>
+            </div>
+            <div class="rp-field is-button">
+                <ButtonFormSaveOnClick OnClick="SearchAsync"
+                                       TooTip="@Localizer["Collection_Search"]"
+                                       ProgressText="@Localizer["Collection_Search"]"
+                                       Icon="fa fa-magnifying-glass"
+                                       IsSaving="IsLoading"
+                                       Style="width:150px" />
+            </div>
+        </div>
         }
 
         @* Quien recogio *@

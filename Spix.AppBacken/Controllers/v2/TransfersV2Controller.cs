@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +44,26 @@ public class TransfersV2Controller : ControllerBase
         try
         {
             var response = await _transferUnitOfWork.GetComboStatus();
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
+    //Quien recibe los equipos: tecnicos y usuarios en una sola lista, armada en el Service
+    [HttpGet("loadComboReceivers")]
+    public async Task<IActionResult> GetComboReceivers()
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferUnitOfWork.ReceiversComboAsync(userClaimsInfo.UserName);
             return ResponseHelper.Format(response);
         }
         catch (ApplicationException ex)

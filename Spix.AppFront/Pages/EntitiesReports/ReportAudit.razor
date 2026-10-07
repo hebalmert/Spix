@@ -1,4 +1,4 @@
-@page "/reports/audit"
+﻿@page "/reports/audit"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -19,23 +19,29 @@
 
         <div class="rp-filters">
             <div class="rp-field is-date">
-                <div class="rp-label">@Localizer["Collection_From"]</div>
-                <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer["Collection_From"]</span>
+                    <input type="date" class="form-control" value="@DateStart" @onchange="DateStartChanged" />
+                </div>
             </div>
             <div class="rp-field is-date">
-                <div class="rp-label">@Localizer["Collection_To"]</div>
-                <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+                <div class="input-group">
+                    <span class="input-group-text" style="white-space:nowrap">@Localizer["Collection_To"]</span>
+                    <input type="date" class="form-control" value="@DateEnd" @onchange="DateEndChanged" />
+                </div>
             </div>
             <div class="rp-field is-event">
-                <div class="rp-label">@Localizer["Report_AuditEvent"]</div>
                 <GenericSelectWrapper Tmodel="IntItemModel" Items="Events">
                     <Body>
-                        <select class="form-select" value="@EventType" @onchange="EventChanged">
-                            @foreach (var item in Events!)
-                            {
-                                <option value="@item.Value">@item.Name</option>
-                            }
-                        </select>
+                    <div class="input-group">
+                        <span class="input-group-text" style="white-space:nowrap">@Localizer["Report_AuditEvent"]</span>
+                            <select class="form-select" value="@EventType" @onchange="EventChanged">
+                                @foreach (var item in Events!)
+                                {
+                                    <option value="@item.Value">@item.Name</option>
+                                }
+                            </select>
+                    </div>
                     </Body>
                 </GenericSelectWrapper>
             </div>

@@ -1,4 +1,4 @@
-/* Los totales del reporte */
+﻿/* Los totales del reporte */
 .rp-board {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -71,7 +71,7 @@
 }
 
 .rp-field.is-date {
-    flex: 0 1 180px;
+    flex: 0 1 270px;
 }
 
 .rp-field.is-button {

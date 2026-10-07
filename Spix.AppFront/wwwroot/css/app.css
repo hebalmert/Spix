@@ -1778,8 +1778,12 @@ code {
         transform: scale(.95);
     }
 
-/* ---------- Los campos: etiqueta pegada, en el azul gris de la zebra ---------- */
-.modal-content.modal-create-shadow .input-group {
+/* ---------- Los campos: etiqueta pegada, en el azul gris de la zebra ----------
+   La FORMA (el marco redondeado que envuelve rotulo y caja) estaba amarrada al
+   modal, igual que los colores. Por eso los filtros de las pantallas se veian
+   como cajas sueltas aunque tuvieran el color.
+   Ahora vale en toda la aplicacion. */
+.input-group {
     border: 1px solid #cfdcef;
     border-radius: 6px;
     overflow: hidden;
@@ -1795,19 +1799,25 @@ code {
        existe, y el borde cambiaria justo al abrirla.
 
        Como aqui no se recorta, el redondeo se pone a mano en los extremos. */
-    .modal-content.modal-create-shadow .input-group.position-relative {
+    .input-group.position-relative {
         overflow: visible;
     }
 
-        .modal-content.modal-create-shadow .input-group.position-relative > :first-child {
+        .input-group.position-relative > :first-child {
             border-radius: 5px 0 0 5px;
         }
 
-        .modal-content.modal-create-shadow .input-group.position-relative > .form-control {
+        .input-group.position-relative > .form-control {
             border-radius: 0 5px 5px 0;
         }
 
-.modal-content.modal-create-shadow .input-group-text {
+/* El look de los campos: rotulo azul claro a la izquierda y la caja en azul muy
+   suave. Estaba amarrado SOLO a los modales, asi que los filtros de las pantallas
+   y los reportes se veian grises y descuadrados.
+
+   Ahora vale en toda la aplicacion: cualquier input-group se ve igual, este
+   dentro de un modal o no. Los modales no cambian, ya se veian asi. */
+.input-group-text {
     color: #33456b;
     font-size: 13px;
     background: #dbe6f8;
@@ -1816,16 +1826,16 @@ code {
     border-radius: 0;
 }
 
-.modal-content.modal-create-shadow .input-group > .form-control,
-.modal-content.modal-create-shadow .input-group > .form-select {
+.input-group > .form-control,
+.input-group > .form-select {
     background: #e9f0fb;
     border: 0;
     border-radius: 0;
     box-shadow: none;
 }
 
-    .modal-content.modal-create-shadow .input-group > .form-control:focus,
-    .modal-content.modal-create-shadow .input-group > .form-select:focus {
+    .input-group > .form-control:focus,
+    .input-group > .form-select:focus {
         background: #fff;
         box-shadow: inset 0 0 0 2px #5b8de0;
     }

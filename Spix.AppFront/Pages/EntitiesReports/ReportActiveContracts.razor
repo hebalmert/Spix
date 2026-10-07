@@ -1,4 +1,4 @@
-@page "/reports/active-contracts"
+﻿@page "/reports/active-contracts"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 
@@ -39,15 +39,17 @@
         @* El estado y el buscador comparten la linea *@
         <div class="idx-bar">
             <div class="rp-inline">
-                <div class="rp-label">@Localizer["Report_Show"]</div>
                 <GenericSelectWrapper Tmodel="IntItemModel" Items="States">
                     <Body>
-                        <select class="form-select" value="@StateId" @onchange="StateChanged">
-                            @foreach (var item in States!)
-                            {
-                                <option value="@item.Value">@item.Name</option>
-                            }
-                        </select>
+                    <div class="input-group">
+                        <span class="input-group-text" style="white-space:nowrap">@Localizer["Report_Show"]</span>
+                            <select class="form-select" value="@StateId" @onchange="StateChanged">
+                                @foreach (var item in States!)
+                                {
+                                    <option value="@item.Value">@item.Name</option>
+                                }
+                            </select>
+                    </div>
                     </Body>
                 </GenericSelectWrapper>
             </div>

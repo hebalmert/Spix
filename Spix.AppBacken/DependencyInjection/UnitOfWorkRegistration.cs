@@ -150,6 +150,8 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<ITransferServiceX, TransferServiceX>();
             services.AddScoped<ITransferService, TransferService>();
             services.AddScoped<ITransferDetailsServiceX, TransferDetailsServiceX>();
+            services.AddScoped<IReportStockServiceX, ReportStockServiceX>();
+            services.AddScoped<Spix.AppService.InterfacesInven.IReportStockService, Spix.AppService.ImplementInven.ReportStockService>();
             services.AddScoped<ITransferDetailsService, TransferDetailsService>();
             services.AddScoped<ICargueServiceX, CargueServiceX>();
             services.AddScoped<ICargueService, CargueService>();

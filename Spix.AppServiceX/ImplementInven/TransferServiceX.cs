@@ -18,6 +18,8 @@ public class TransferServiceX : ITransferServiceX
 
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> GetComboStatus() => await _transferService.GetComboStatus();
 
+    public async Task<ActionResponse<IEnumerable<TextItemModel>>> ReceiversComboAsync(string username) => await _transferService.ReceiversComboAsync(username);
+
     public async Task<ActionResponse<IEnumerable<Transfer>>> GetAsync(PaginationDTO pagination, string email) => await _transferService.GetAsync(pagination, email);
 
     public async Task<ActionResponse<Transfer>> GetAsync(Guid id, string username) => await _transferService.GetAsync(id, username);

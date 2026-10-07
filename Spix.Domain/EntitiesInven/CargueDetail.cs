@@ -55,10 +55,22 @@ public class CargueDetail
     [Display(Name = nameof(Resource.Status), ResourceType = typeof(Resource))]
     public SerialStateType Status { get; set; } = SerialStateType.Disponible;
 
+    //DONDE ESTA HOY el equipo. Antes se deducia de la bodega de su compra, y por eso al
+    //trasladar equipos el numero se movia pero los seriales se quedaban en la bodega
+    //original. Ahora el serial viaja con el traslado.
+    [Display(Name = nameof(Resource.Storage), ResourceType = typeof(Resource))]
+    public Guid? ProductStorageId { get; set; }
+
+    //En que linea de traslado quedo reservado. Se llena al elegir los seriales que se van
+    //a mover y se usa al cerrar el traslado para cambiarles la bodega.
+    public Guid? TransferDetailsId { get; set; }
+
     public int CorporationId { get; set; }
 
     public Corporation? Corporation { get; set; }
     public Cargue? Cargue { get; set; }
+    public ProductStorage? ProductStorage { get; set; }
+    public TransferDetails? TransferDetails { get; set; }
     public ICollection<ContractBind>? ContractBinds { get; set; } = new List<ContractBind>();
     public ICollection<ContractMac>? ContractMacs { get; set; } = new List<ContractMac>();
 

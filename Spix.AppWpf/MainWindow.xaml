@@ -357,6 +357,9 @@
                             <Button Click="ShowReportSerialsClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Inventario de seriales" />
                             </Button>
+                            <Button Click="ShowReportStockClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Inventario" />
+                            </Button>
                         </StackPanel>
 
                         <Button Click="ToggleMenuClick" Tag="SystemMenu" Style="{StaticResource ShellMenuItem}">

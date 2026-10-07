@@ -2896,17 +2896,27 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(17)
                         .HasColumnType("nvarchar(17)");
 
+                    b.Property<Guid?>("ProductStorageId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("TransferDetailsId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("CargueDetailId");
 
                     b.HasIndex("CargueId");
 
-                    b.HasIndex("CorporationId");
+                    b.HasIndex("ProductStorageId");
+
+                    b.HasIndex("TransferDetailsId");
 
                     b.HasIndex("MacWlan", "CorporationId")
                         .IsUnique();
+
+                    b.HasIndex("CorporationId", "ProductStorageId", "Status");
 
                     b.ToTable("CargueDetails");
                 });
@@ -3147,6 +3157,12 @@ namespace Spix.AppBacken.Migrations
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("DateClosed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateTransfer")
                         .HasColumnType("date");
 
@@ -3157,8 +3173,21 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("NombreUsuarioCierre")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("NroTransfer")
                         .HasColumnType("int");
+
+                    b.Property<string>("ReceivedByName")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<Guid?>("ReceivedByTechnicianId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReceivedByUsuarioId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Status")
                         .HasColumnType("int");
@@ -3173,9 +3202,16 @@ namespace Spix.AppBacken.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("UserIdClosed")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("TransferId");
 
                     b.HasIndex("FromProductStorageId");
+
+                    b.HasIndex("ReceivedByTechnicianId");
+
+                    b.HasIndex("ReceivedByUsuarioId");
 
                     b.HasIndex("ToProductStorageId");
 
@@ -6305,9 +6341,23 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Spix.Domain.EntitiesInven.ProductStorage", "ProductStorage")
+                        .WithMany()
+                        .HasForeignKey("ProductStorageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Spix.Domain.EntitiesInven.TransferDetails", "TransferDetails")
+                        .WithMany()
+                        .HasForeignKey("TransferDetailsId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Cargue");
 
                     b.Navigation("Corporation");
+
+                    b.Navigation("ProductStorage");
+
+                    b.Navigation("TransferDetails");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.ProductStock", b =>
@@ -6467,6 +6517,16 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Spix.Domain.EntitiesOper.Technician", "ReceivedByTechnician")
+                        .WithMany()
+                        .HasForeignKey("ReceivedByTechnicianId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Spix.Domain.EntitesSoftSec.Usuario", "ReceivedByUsuario")
+                        .WithMany()
+                        .HasForeignKey("ReceivedByUsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Spix.Domain.EntitiesInven.ProductStorage", null)
                         .WithMany()
                         .HasForeignKey("ToProductStorageId")
@@ -6479,6 +6539,10 @@ namespace Spix.AppBacken.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Corporation");
+
+                    b.Navigation("ReceivedByTechnician");
+
+                    b.Navigation("ReceivedByUsuario");
 
                     b.Navigation("User");
                 });

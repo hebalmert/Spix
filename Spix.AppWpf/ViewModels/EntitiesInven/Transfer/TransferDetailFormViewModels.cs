@@ -1,9 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
 using Spix.Domain.EntitiesGen;
 using Spix.Domain.EntitiesInven;
+using Spix.DomainLogic.ItemsGeneric;
 using Spix.DomainLogic.EntitiesInvenDTO;
 using Spix.HttpService;
 using System.Collections.ObjectModel;
@@ -21,6 +22,7 @@ public abstract partial class TransferDetailFormViewModel : CrudFormViewModel<Tr
     private readonly IRepository _repository;
     private readonly HttpResponseHandler _responseHandler;
     private readonly AlertService _alertService;
+    private readonly ModalService _modalService;
 
     [ObservableProperty]
     private ObservableCollection<ProductCategory> _categories = new();
@@ -43,6 +45,14 @@ public abstract partial class TransferDetailFormViewModel : CrudFormViewModel<Tr
     [ObservableProperty]
     private bool _isInitializingForm;
 
+    //Los equipos que se van a mover. Solo aplica a los productos CON serial: ahi el
+    //equipo es la unidad, asi que la cantidad es cuantos se marcaron.
+    [ObservableProperty]
+    private ObservableCollection<SerialPickRow> _availableSerials = new();
+
+    [ObservableProperty]
+    private bool _productWithSerials;
+
     protected override string BaseUrl => "api/v2/transferDetails";
 
     protected TransferDetailFormViewModel(
@@ -55,6 +65,7 @@ public abstract partial class TransferDetailFormViewModel : CrudFormViewModel<Tr
         _repository = repository;
         _responseHandler = responseHandler;
         _alertService = alertService;
+        _modalService = modalService;
     }
 
     protected override TransferDetails CreateEntity()
@@ -150,6 +161,15 @@ public abstract partial class TransferDetailFormViewModel : CrudFormViewModel<Tr
     {
         Entity.ProductId = productId;
 
+        //Si el producto lleva serial hay que ELEGIR los equipos, no escribir una cantidad
+        ProductWithSerials = Products.FirstOrDefault(x => x.ProductId == productId)?.WithSerials ?? false;
+        AvailableSerials = new ObservableCollection<SerialPickRow>();
+
+        if (ProductWithSerials)
+        {
+            await LoadSerialsAsync(productId);
+        }
+
         if (productId == Guid.Empty || Entity.TransferId == Guid.Empty)
         {
             StockAvailable = 0;
@@ -197,6 +217,118 @@ public abstract partial class TransferDetailFormViewModel : CrudFormViewModel<Tr
         }
     }
 
+    //Guarda la linea y DESPUES sus equipos. No se usa el SaveChangesAsync del padre
+    //porque al crear hace falta el id que devuelve el servidor para reservarlos.
+    protected async Task GuardarConSerialesAsync(bool isEdit)
+    {
+        var validacion = GetValidationMessage();
+        if (!string.IsNullOrWhiteSpace(validacion))
+        {
+            await _alertService.WarningAsync("Campo requerido", validacion);
+            return;
+        }
+
+        IsSaving = true;
+
+        try
+        {
+            var response = isEdit
+                ? await _repository.PutAsync<TransferDetails, TransferDetails>(BaseUrl, Entity)
+                : await _repository.PostAsync<TransferDetails, TransferDetails>(BaseUrl, Entity);
+
+            if (await _responseHandler.HandleErrorAsync(response))
+            {
+                return;
+            }
+
+            var id = isEdit ? Entity.TransferDetailsId : response.Response?.TransferDetailsId ?? Guid.Empty;
+
+            if (id != Guid.Empty && !await SaveSerialsAsync(id))
+            {
+                //La linea quedo guardada: se cierra igual para que el usuario vea el estado real
+                await _modalService.CloseAsync(ModalResult.Ok());
+                return;
+            }
+
+            await _modalService.CloseAsync(ModalResult.Ok());
+        }
+        catch (Exception exception)
+        {
+            await _alertService.ErrorAsync("Error de conexion", exception.Message);
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    //Los equipos que se pueden mover: disponibles en la bodega de ORIGEN y sin reservar
+    private async Task LoadSerialsAsync(Guid productId)
+    {
+        var url = $"api/v2/transferDetails/serials/available?transferId={Entity.TransferId}&productId={productId}";
+
+        if (Entity.TransferDetailsId != Guid.Empty)
+        {
+            url += $"&transferDetailsId={Entity.TransferDetailsId}";
+        }
+
+        var response = await _repository.GetAsync<List<GuidItemModel>>(url);
+        if (await _responseHandler.HandleErrorAsync(response))
+        {
+            return;
+        }
+
+        var filas = (response.Response ?? new List<GuidItemModel>())
+            .Select(x => new SerialPickRow(x, Recontar))
+            .ToList();
+
+        //Al editar se marcan los que la linea ya tenia
+        if (Entity.TransferDetailsId != Guid.Empty)
+        {
+            var yaTiene = await _repository.GetAsync<List<GuidItemModel>>(
+                $"api/v2/transferDetails/serials/line/{Entity.TransferDetailsId}");
+
+            if (!await _responseHandler.HandleErrorAsync(yaTiene))
+            {
+                var ids = (yaTiene.Response ?? new List<GuidItemModel>()).Select(x => x.Value).ToHashSet();
+                foreach (var fila in filas.Where(x => ids.Contains(x.Id)))
+                {
+                    fila.MarcarSinAvisar(true);
+                }
+            }
+        }
+
+        AvailableSerials = new ObservableCollection<SerialPickRow>(filas);
+        Recontar();
+    }
+
+    //La cantidad sigue a cuantos equipos quedaron marcados
+    private void Recontar()
+    {
+        if (!ProductWithSerials)
+        {
+            return;
+        }
+
+        Quantity = AvailableSerials.Count(x => x.IsSelected);
+    }
+
+    //Los equipos elegidos se guardan DESPUES de la linea, porque hasta ese momento no
+    //existe a cual reservarlos. Devuelve false si el backend los rechazo.
+    public async Task<bool> SaveSerialsAsync(Guid transferDetailsId)
+    {
+        if (!ProductWithSerials)
+        {
+            return true;
+        }
+
+        var elegidos = AvailableSerials.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+
+        var response = await _repository.PostAsync($"api/v2/transferDetails/serials/{transferDetailsId}", elegidos);
+
+        return !await _responseHandler.HandleErrorAsync(response);
+    }
+
     private async Task LoadProductsAsync(Guid productCategoryId)
     {
         if (productCategoryId == Guid.Empty)
@@ -230,7 +362,7 @@ public partial class CreateTransferDetailDialogViewModel : TransferDetailFormVie
     [RelayCommand]
     private async Task SaveAsync()
     {
-        await SaveChangesAsync(false);
+        await GuardarConSerialesAsync(false);
     }
 }
 
@@ -248,6 +380,44 @@ public partial class EditTransferDetailDialogViewModel : TransferDetailFormViewM
     [RelayCommand]
     private async Task SaveAsync()
     {
-        await SaveChangesAsync(true);
+        await GuardarConSerialesAsync(true);
+    }
+}
+
+// Un equipo de la lista, con su casilla. Avisa al formulario para que la cantidad
+// siga a cuantos quedaron marcados.
+public partial class SerialPickRow : ObservableObject
+{
+    private readonly Action _alMarcar;
+    private bool _avisar = true;
+
+    [ObservableProperty]
+    private bool _isSelected;
+
+    public Guid Id { get; }
+
+    public string MacWlan { get; }
+
+    public SerialPickRow(GuidItemModel item, Action alMarcar)
+    {
+        Id = item.Value;
+        MacWlan = item.Name ?? string.Empty;
+        _alMarcar = alMarcar;
+    }
+
+    //Para marcar los que ya tenia la linea sin disparar el recuento una vez por fila
+    public void MarcarSinAvisar(bool marcado)
+    {
+        _avisar = false;
+        IsSelected = marcado;
+        _avisar = true;
+    }
+
+    partial void OnIsSelectedChanged(bool value)
+    {
+        if (_avisar)
+        {
+            _alMarcar();
+        }
     }
 }
