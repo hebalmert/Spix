@@ -3223,6 +3223,41 @@ namespace Spix.AppBacken.Migrations
                     b.ToTable("Transfers");
                 });
 
+            modelBuilder.Entity("Spix.Domain.EntitiesInven.TransferDetailSerial", b =>
+                {
+                    b.Property<Guid>("TransferDetailSerialId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("CargueDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CorporationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateMoved")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MacWlan")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("TransferDetailsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("TransferDetailSerialId");
+
+                    b.HasIndex("CargueDetailId");
+
+                    b.HasIndex("CorporationId", "TransferDetailsId");
+
+                    b.HasIndex("TransferDetailsId", "CargueDetailId")
+                        .IsUnique();
+
+                    b.ToTable("TransferDetailSerials");
+                });
+
             modelBuilder.Entity("Spix.Domain.EntitiesInven.TransferDetails", b =>
                 {
                     b.Property<Guid>("TransferDetailsId")
@@ -6545,6 +6580,33 @@ namespace Spix.AppBacken.Migrations
                     b.Navigation("ReceivedByUsuario");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Spix.Domain.EntitiesInven.TransferDetailSerial", b =>
+                {
+                    b.HasOne("Spix.Domain.EntitiesInven.CargueDetail", "CargueDetail")
+                        .WithMany()
+                        .HasForeignKey("CargueDetailId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.Entities.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Spix.Domain.EntitiesInven.TransferDetails", "TransferDetails")
+                        .WithMany()
+                        .HasForeignKey("TransferDetailsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CargueDetail");
+
+                    b.Navigation("Corporation");
+
+                    b.Navigation("TransferDetails");
                 });
 
             modelBuilder.Entity("Spix.Domain.EntitiesInven.TransferDetails", b =>

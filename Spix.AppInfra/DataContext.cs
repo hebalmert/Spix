@@ -88,6 +88,9 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<PurchaseDetail> PurchaseDetails => Set<PurchaseDetail>();
     public DbSet<Transfer> Transfers => Set<Transfer>();
     public DbSet<TransferDetails> TransferDetails => Set<TransferDetails>();
+
+    //Que equipos movio cada linea del traslado: historico, se escribe al cerrar
+    public DbSet<TransferDetailSerial> TransferDetailSerials => Set<TransferDetailSerial>();
     public DbSet<Cargue> Cargues => Set<Cargue>();
     public DbSet<CargueDetail> CargueDetails => Set<CargueDetail>();
 

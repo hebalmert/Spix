@@ -32,18 +32,8 @@ public partial class RegisterIndexViewModel : PagedListViewModel<RegisterEntity>
         _responseHandler = responseHandler;
     }
 
-    [RelayCommand]
-    private async Task NewAsync()
-    {
-        var result = await _modalService.ShowAsync<CreateRegisterDialogView>("Crear consecutivos");
-        if (!result.Succeeded)
-        {
-            return;
-        }
-
-        await LoadAsync(CurrentPage);
-        await _alertService.SuccessAsync("Guardado", "Los consecutivos fueron guardados correctamente.");
-    }
+    //Aqui NO hay comando de crear a proposito: los consecutivos los crea el sistema,
+    //uno por corporacion. Solo se editan, por si alguno se salto un numero.
 
     [RelayCommand]
     private async Task EditAsync(RegisterEntity? register)

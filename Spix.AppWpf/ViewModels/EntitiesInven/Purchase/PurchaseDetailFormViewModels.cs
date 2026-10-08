@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.Shared;
@@ -152,6 +152,19 @@ public abstract partial class PurchaseDetailFormViewModel : CrudFormViewModel<Sp
     public async Task ChangeProductAsync(Guid productId)
     {
         Entity.ProductId = productId;
+
+        //El combo trae de primero el neutro [Producto] con ProductId vacio. Al llenar la
+        //lista, WPF lo selecciona solo (SelectedValue tambien esta vacio) y dispara el
+        //SelectionChanged sin que el usuario toque nada; sin esta salida se pedia
+        //api/v1/products/00000000-... y el backend respondia 400 "Id invalido".
+        //En Blazor no pasa porque el @onchange solo salta cuando el usuario elige.
+        if (productId == Guid.Empty)
+        {
+            RateTax = 0;
+            UnitCost = 0;
+            Quantity = 1;
+            return;
+        }
 
         var response = await _repository.GetAsync<ProductEntity>($"api/v1/products/{productId}");
         if (await _responseHandler.HandleErrorAsync(response))

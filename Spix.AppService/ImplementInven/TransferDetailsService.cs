@@ -236,6 +236,45 @@ public class TransferDetailsService : ITransferDetailsService
     }
 
     //Los seriales que ya tiene reservados una linea
+    //Los equipos que YA se movieron en esta linea. Sale del historico, no del serial:
+    //el serial solo sabe en que bodega esta ahora, el historico sabe en cual traslado viajo.
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetMovedSerialsAsync(Guid transferDetailsId, string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<GuidItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var lista = await _context.TransferDetailSerials.AsNoTracking()
+                .Where(x => x.TransferDetailsId == transferDetailsId &&
+                            x.CorporationId == user.CorporationId)
+                .OrderBy(x => x.MacWlan)
+                .Select(x => new GuidItemModel
+                {
+                    Value = x.CargueDetailId,
+                    Name = x.MacWlan
+                })
+                .ToListAsync();
+
+            return new ActionResponse<IEnumerable<GuidItemModel>>
+            {
+                WasSuccess = true,
+                Result = lista
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<GuidItemModel>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetLineSerialsAsync(Guid transferDetailsId, string username)
     {
         try
@@ -439,6 +478,18 @@ public class TransferDetailsService : ITransferDetailsService
 
                 foreach (var serial in seriales)
                 {
+                    //Queda el historico ANTES de soltar la reserva: el serial solo sabe en
+                    //que bodega esta AHORA, asi que sin esta fila no habria forma de saber
+                    //despues que equipos viajaron en este traslado.
+                    _context.TransferDetailSerials.Add(new TransferDetailSerial
+                    {
+                        TransferDetailsId = item.TransferDetailsId,
+                        CargueDetailId = serial.CargueDetailId,
+                        MacWlan = serial.MacWlan,
+                        DateMoved = DateTime.Now,
+                        CorporationId = item.CorporationId
+                    });
+
                     serial.ProductStorageId = modelo.ToProductStorageId;
                     serial.TransferDetailsId = null;
                 }

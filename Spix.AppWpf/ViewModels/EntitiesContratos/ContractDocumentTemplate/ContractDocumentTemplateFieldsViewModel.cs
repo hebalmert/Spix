@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using FontAwesome.Net.Generators;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.DomainLogic.EntitiesContractDTO;
@@ -88,6 +89,9 @@ public partial class ContractDocumentTemplateFieldsViewModel : ObservableObject
     public bool MissingSignature => !PlacedFields.Any(x => x.IsSignature);
 
     public string PlacedCountText => $"Campos colocados ({PlacedFields.Count})";
+
+    //Solo el numero: va en la pastilla al final de la linea del paso 3
+    public string PlacedCount => PlacedFields.Count.ToString();
 
     public string PageCountText => $"{_pageCount} pagina(s)";
 
@@ -470,6 +474,7 @@ public partial class ContractDocumentTemplateFieldsViewModel : ObservableObject
     private void Refrescar()
     {
         OnPropertyChanged(nameof(PlacedCountText));
+        OnPropertyChanged(nameof(PlacedCount));
         OnPropertyChanged(nameof(MissingSignature));
 
         foreach (var fila in PlacedFields)
@@ -536,10 +541,37 @@ public partial class FieldTypeOption : ObservableObject
 
     public string Name { get; }
 
+    //Su propio icono. Antes todos mostraban la misma mira y no se distinguia uno de otro;
+    //ahora la mira se reserva para el que se esta colocando.
+    public FontAwesomeIcon Icon { get; }
+
     public FieldTypeOption(ContractDocumentFieldType value, string name)
     {
         Value = value;
         Name = name;
+        Icon = IconoDe(value);
+    }
+
+    private static FontAwesomeIcon IconoDe(ContractDocumentFieldType fieldType)
+    {
+        return fieldType switch
+        {
+            ContractDocumentFieldType.FullName => FontAwesomeIcon.User,
+            ContractDocumentFieldType.Document => FontAwesomeIcon.IdCard,
+            ContractDocumentFieldType.Phone => FontAwesomeIcon.Phone,
+            ContractDocumentFieldType.Date => FontAwesomeIcon.CalendarDays,
+            ContractDocumentFieldType.Signature => FontAwesomeIcon.Signature,
+            ContractDocumentFieldType.Address => FontAwesomeIcon.LocationDot,
+            ContractDocumentFieldType.Email => FontAwesomeIcon.Envelope,
+            ContractDocumentFieldType.PrintName => FontAwesomeIcon.Pen,
+            ContractDocumentFieldType.ContractNumber => FontAwesomeIcon.Hashtag,
+            ContractDocumentFieldType.DateTime => FontAwesomeIcon.Clock,
+            ContractDocumentFieldType.PlanName => FontAwesomeIcon.Box,
+            ContractDocumentFieldType.SpeedDown => FontAwesomeIcon.Download,
+            ContractDocumentFieldType.SpeedUp => FontAwesomeIcon.Upload,
+            ContractDocumentFieldType.MonthlyPrice => FontAwesomeIcon.MoneyBill,
+            _ => FontAwesomeIcon.Font
+        };
     }
 }
 

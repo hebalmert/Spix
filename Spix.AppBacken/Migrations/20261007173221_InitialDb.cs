@@ -364,25 +364,6 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ConnectionMikrotikControls",
-                columns: table => new
-                {
-                    ConnectionMikrotikControlId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
-                    MikrotikControlType = table.Column<int>(type: "int", nullable: false),
-                    CorporationId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConnectionMikrotikControls", x => x.ConnectionMikrotikControlId);
-                    table.ForeignKey(
-                        name: "FK_ConnectionMikrotikControls_Corporations_CorporationId",
-                        column: x => x.CorporationId,
-                        principalTable: "Corporations",
-                        principalColumn: "CorporationId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ContractDocumentTemplates",
                 columns: table => new
                 {
@@ -1316,50 +1297,6 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transfers",
-                columns: table => new
-                {
-                    TransferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
-                    DateTransfer = table.Column<DateTime>(type: "date", nullable: false),
-                    NroTransfer = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FromStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    FromProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ToStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ToProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: true),
-                    CorporationId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transfers", x => x.TransferId);
-                    table.ForeignKey(
-                        name: "FK_Transfers_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transfers_Corporations_CorporationId",
-                        column: x => x.CorporationId,
-                        principalTable: "Corporations",
-                        principalColumn: "CorporationId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Transfers_ProductStorages_FromProductStorageId",
-                        column: x => x.FromProductStorageId,
-                        principalTable: "ProductStorages",
-                        principalColumn: "ProductStorageId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transfers_ProductStorages_ToProductStorageId",
-                        column: x => x.ToProductStorageId,
-                        principalTable: "ProductStorages",
-                        principalColumn: "ProductStorageId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ContractorPayments",
                 columns: table => new
                 {
@@ -1467,6 +1404,69 @@ namespace Spix.AppBacken.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Transfers",
+                columns: table => new
+                {
+                    TransferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    DateTransfer = table.Column<DateTime>(type: "date", nullable: false),
+                    NroTransfer = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FromStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    FromProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ToStorageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ToProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UserIdClosed = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NombreUsuarioCierre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateClosed = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ReceivedByTechnicianId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ReceivedByUsuarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ReceivedByName = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
+                    CorporationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transfers", x => x.TransferId);
+                    table.ForeignKey(
+                        name: "FK_Transfers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transfers_Corporations_CorporationId",
+                        column: x => x.CorporationId,
+                        principalTable: "Corporations",
+                        principalColumn: "CorporationId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transfers_ProductStorages_FromProductStorageId",
+                        column: x => x.FromProductStorageId,
+                        principalTable: "ProductStorages",
+                        principalColumn: "ProductStorageId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transfers_ProductStorages_ToProductStorageId",
+                        column: x => x.ToProductStorageId,
+                        principalTable: "ProductStorages",
+                        principalColumn: "ProductStorageId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transfers_Technicians_ReceivedByTechnicianId",
+                        column: x => x.ReceivedByTechnicianId,
+                        principalTable: "Technicians",
+                        principalColumn: "TechnicianId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transfers_Usuarios_ReceivedByUsuarioId",
+                        column: x => x.ReceivedByUsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "UsuarioId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Nodes",
                 columns: table => new
                 {
@@ -1549,6 +1549,60 @@ namespace Spix.AppBacken.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Nodes_Zones_ZoneId",
+                        column: x => x.ZoneId,
+                        principalTable: "Zones",
+                        principalColumn: "ZoneId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Olts",
+                columns: table => new
+                {
+                    OltId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    OltName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IpNetworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Usuario = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    Clave = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    MarkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MarkModelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Latitude = table.Column<decimal>(type: "decimal(12,7)", nullable: true),
+                    Longitude = table.Column<decimal>(type: "decimal(12,7)", nullable: true),
+                    PortCount = table.Column<int>(type: "int", nullable: false),
+                    PortSpeed = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    CorporationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Olts", x => x.OltId);
+                    table.ForeignKey(
+                        name: "FK_Olts_Corporations_CorporationId",
+                        column: x => x.CorporationId,
+                        principalTable: "Corporations",
+                        principalColumn: "CorporationId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Olts_IpNetworks_IpNetworkId",
+                        column: x => x.IpNetworkId,
+                        principalTable: "IpNetworks",
+                        principalColumn: "IpNetworkId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Olts_MarkModels_MarkModelId",
+                        column: x => x.MarkModelId,
+                        principalTable: "MarkModels",
+                        principalColumn: "MarkModelId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Olts_Marks_MarkId",
+                        column: x => x.MarkId,
+                        principalTable: "Marks",
+                        principalColumn: "MarkId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Olts_Zones_ZoneId",
                         column: x => x.ZoneId,
                         principalTable: "Zones",
                         principalColumn: "ZoneId",
@@ -1642,14 +1696,14 @@ namespace Spix.AppBacken.Migrations
                         principalColumn: "CorporationId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Servers_IpNets_PppLocalIpNetId",
-                        column: x => x.PppLocalIpNetId,
-                        principalTable: "IpNets",
-                        principalColumn: "IpNetId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_Servers_IpNetworks_IpNetworkId",
                         column: x => x.IpNetworkId,
+                        principalTable: "IpNetworks",
+                        principalColumn: "IpNetworkId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Servers_IpNetworks_PppLocalIpNetId",
+                        column: x => x.PppLocalIpNetId,
                         principalTable: "IpNetworks",
                         principalColumn: "IpNetworkId",
                         onDelete: ReferentialAction.Restrict);
@@ -2139,6 +2193,31 @@ namespace Spix.AppBacken.Migrations
                         column: x => x.NodeId,
                         principalTable: "Nodes",
                         principalColumn: "NodeId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContractOlts",
+                columns: table => new
+                {
+                    ContractOltId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    ContractClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OltId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContractOlts", x => x.ContractOltId);
+                    table.ForeignKey(
+                        name: "FK_ContractOlts_ContractClients_ContractClientId",
+                        column: x => x.ContractClientId,
+                        principalTable: "ContractClients",
+                        principalColumn: "ContractClientId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContractOlts_Olts_OltId",
+                        column: x => x.OltId,
+                        principalTable: "Olts",
+                        principalColumn: "OltId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -2649,6 +2728,8 @@ namespace Spix.AppBacken.Migrations
                     DateCargue = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Comment = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    ProductStorageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TransferDetailsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CorporationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -2666,6 +2747,18 @@ namespace Spix.AppBacken.Migrations
                         principalTable: "Corporations",
                         principalColumn: "CorporationId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CargueDetails_ProductStorages_ProductStorageId",
+                        column: x => x.ProductStorageId,
+                        principalTable: "ProductStorages",
+                        principalColumn: "ProductStorageId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CargueDetails_TransferDetails_TransferDetailsId",
+                        column: x => x.TransferDetailsId,
+                        principalTable: "TransferDetails",
+                        principalColumn: "TransferDetailsId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -3487,15 +3580,25 @@ namespace Spix.AppBacken.Migrations
                 column: "CargueId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CargueDetails_CorporationId",
+                name: "IX_CargueDetails_CorporationId_ProductStorageId_Status",
                 table: "CargueDetails",
-                column: "CorporationId");
+                columns: new[] { "CorporationId", "ProductStorageId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CargueDetails_MacWlan_CorporationId",
                 table: "CargueDetails",
                 columns: new[] { "MacWlan", "CorporationId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CargueDetails_ProductStorageId",
+                table: "CargueDetails",
+                column: "ProductStorageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CargueDetails_TransferDetailsId",
+                table: "CargueDetails",
+                column: "TransferDetailsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cargues_CorporationId",
@@ -3555,12 +3658,6 @@ namespace Spix.AppBacken.Migrations
                 name: "IX_Clients_UserName",
                 table: "Clients",
                 column: "UserName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ConnectionMikrotikControls_CorporationId",
-                table: "ConnectionMikrotikControls",
-                column: "CorporationId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -3744,6 +3841,17 @@ namespace Spix.AppBacken.Migrations
                 column: "NodeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContractOlts_ContractClientId",
+                table: "ContractOlts",
+                column: "ContractClientId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContractOlts_OltId",
+                table: "ContractOlts",
+                column: "OltId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ContractorAccountPayables_ContractClientId",
                 table: "ContractorAccountPayables",
                 column: "ContractClientId");
@@ -3825,9 +3933,9 @@ namespace Spix.AppBacken.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ContractPlans_ContractClientId_PlanId",
+                name: "IX_ContractPlans_ContractClientId",
                 table: "ContractPlans",
-                columns: new[] { "ContractClientId", "PlanId" },
+                column: "ContractClientId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -4258,6 +4366,37 @@ namespace Spix.AppBacken.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Nodes_ZoneId",
                 table: "Nodes",
+                column: "ZoneId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Olts_CorporationId",
+                table: "Olts",
+                column: "CorporationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Olts_IpNetworkId",
+                table: "Olts",
+                column: "IpNetworkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Olts_MarkId",
+                table: "Olts",
+                column: "MarkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Olts_MarkModelId",
+                table: "Olts",
+                column: "MarkModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Olts_OltName_CorporationId",
+                table: "Olts",
+                columns: new[] { "OltName", "CorporationId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Olts_ZoneId",
+                table: "Olts",
                 column: "ZoneId");
 
             migrationBuilder.CreateIndex(
@@ -4889,6 +5028,16 @@ namespace Spix.AppBacken.Migrations
                 column: "FromProductStorageId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transfers_ReceivedByTechnicianId",
+                table: "Transfers",
+                column: "ReceivedByTechnicianId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transfers_ReceivedByUsuarioId",
+                table: "Transfers",
+                column: "ReceivedByUsuarioId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Transfers_ToProductStorageId",
                 table: "Transfers",
                 column: "ToProductStorageId");
@@ -4982,9 +5131,6 @@ namespace Spix.AppBacken.Migrations
                 name: "ChainTypes");
 
             migrationBuilder.DropTable(
-                name: "ConnectionMikrotikControls");
-
-            migrationBuilder.DropTable(
                 name: "ContractAudits");
 
             migrationBuilder.DropTable(
@@ -5013,6 +5159,9 @@ namespace Spix.AppBacken.Migrations
 
             migrationBuilder.DropTable(
                 name: "ContractNodes");
+
+            migrationBuilder.DropTable(
+                name: "ContractOlts");
 
             migrationBuilder.DropTable(
                 name: "ContractorPaymentDetails");
@@ -5099,9 +5248,6 @@ namespace Spix.AppBacken.Migrations
                 name: "SystemSettings");
 
             migrationBuilder.DropTable(
-                name: "TransferDetails");
-
-            migrationBuilder.DropTable(
                 name: "UserRoleDetails");
 
             migrationBuilder.DropTable(
@@ -5120,10 +5266,16 @@ namespace Spix.AppBacken.Migrations
                 name: "Nodes");
 
             migrationBuilder.DropTable(
+                name: "Olts");
+
+            migrationBuilder.DropTable(
                 name: "ContractorAccountPayables");
 
             migrationBuilder.DropTable(
                 name: "ContractorPayments");
+
+            migrationBuilder.DropTable(
+                name: "IpNets");
 
             migrationBuilder.DropTable(
                 name: "ContractDocumentTemplates");
@@ -5141,13 +5293,10 @@ namespace Spix.AppBacken.Migrations
                 name: "SellDetails");
 
             migrationBuilder.DropTable(
-                name: "Transfers");
-
-            migrationBuilder.DropTable(
-                name: "Usuarios");
-
-            migrationBuilder.DropTable(
                 name: "Cargues");
+
+            migrationBuilder.DropTable(
+                name: "TransferDetails");
 
             migrationBuilder.DropTable(
                 name: "Channels");
@@ -5171,19 +5320,16 @@ namespace Spix.AppBacken.Migrations
                 name: "Plans");
 
             migrationBuilder.DropTable(
-                name: "IpNets");
-
-            migrationBuilder.DropTable(
                 name: "IpNetworks");
 
             migrationBuilder.DropTable(
                 name: "ServiceRequests");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "PurchaseDetails");
 
             migrationBuilder.DropTable(
-                name: "PurchaseDetails");
+                name: "Transfers");
 
             migrationBuilder.DropTable(
                 name: "FrecuencyTypes");
@@ -5195,13 +5341,19 @@ namespace Spix.AppBacken.Migrations
                 name: "PlanCategories");
 
             migrationBuilder.DropTable(
-                name: "Technicians");
-
-            migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Purchases");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Technicians");
+
+            migrationBuilder.DropTable(
+                name: "Usuarios");
 
             migrationBuilder.DropTable(
                 name: "Sells");

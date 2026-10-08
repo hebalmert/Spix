@@ -83,6 +83,19 @@ public partial class DetailsTransferDertails
         await InvokeAsync(StateHasChanged);
     }
 
+    //Los equipos que viajaron en esta linea. El registro ya viene del listado, asi que
+    //solo se pasa el id y el nombre: la lista la trae el modal.
+    private async Task ShowSerialsAsync(TransferDetails item)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "TransferDetailsId", item.TransferDetailsId },
+            { "ProductName", item.Product?.ProductName ?? string.Empty }
+        };
+
+        await _modalService.ShowAsync(typeof(SerialsTransferDetails), parameters, null);
+    }
+
     private async Task ShowModalAsync(Guid? id = null, bool isEdit = false)
     {
         Type component;

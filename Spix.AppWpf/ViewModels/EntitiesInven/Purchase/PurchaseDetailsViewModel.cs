@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.Views.EntitiesInven.Purchase;
@@ -113,10 +113,6 @@ public partial class PurchaseDetailsViewModel : ObservableObject
             _ = int.TryParse(pageHeaders?.FirstOrDefault(), out var totalPages);
             TotalPages = Math.Max(0, totalPages);
 
-            if (Details.Count == 0)
-            {
-                Message = "No hay productos registrados en esta compra.";
-            }
         }
         catch (Exception exception)
         {

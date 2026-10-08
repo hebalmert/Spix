@@ -56,7 +56,7 @@ public class ProductCategoryService : IProductCategoryService
             var defaultItem = new ProductCategory
             {
                 ProductCategoryId = Guid.Empty,
-                Name = $"[{_localizer[nameof(Resource.Mark)]}]"
+                Name = $"[{_localizer[nameof(Resource.Category)]}]"
             };
             ListModel.Insert(0, defaultItem);
 

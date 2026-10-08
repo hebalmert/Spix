@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.Views.EntitiesInven.Transfer;
@@ -116,10 +116,6 @@ public partial class TransferDetailsViewModel : ObservableObject
             _ = int.TryParse(pageHeaders?.FirstOrDefault(), out var totalPages);
             TotalPages = Math.Max(0, totalPages);
 
-            if (Details.Count == 0)
-            {
-                Message = "No hay productos registrados en este traslado.";
-            }
         }
         catch (Exception exception)
         {
@@ -178,6 +174,25 @@ public partial class TransferDetailsViewModel : ObservableObject
 
         await LoadAsync(_transferId, CurrentPage);
         await _alertService.SuccessAsync("Guardado", "El producto fue agregado al traslado.");
+    }
+
+    //Los equipos que viajaron en esta linea. Se consulta aunque el traslado este cerrado:
+    //es justo ahi donde el historico tiene sentido.
+    [RelayCommand]
+    private async Task ShowSerialsAsync(TransferDetails? detalle)
+    {
+        if (detalle is null)
+        {
+            return;
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            ["TransferDetailsId"] = detalle.TransferDetailsId,
+            ["ProductName"] = detalle.Product?.ProductName ?? string.Empty
+        };
+
+        await _modalService.ShowAsync<TransferDetailSerialsDialogView>("Seriales trasladados", parameters);
     }
 
     [RelayCommand]

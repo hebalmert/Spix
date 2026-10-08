@@ -12,7 +12,12 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{StaticResource SharedCatalogTitle}" Text="{Binding ProductName}" />
+        <!-- SharedCatalogTitle es oscuro porque esta hecho para las paginas de catalogo,
+             que van sobre fondo claro. Aqui el nombre queda sobre el azul del modal, asi
+             que se le pone el color encima en vez de cambiar el estilo compartido. -->
+        <TextBlock Style="{StaticResource SharedCatalogTitle}"
+                   Foreground="#FFFFFF"
+                   Text="{Binding ProductName}" />
 
         <Border Grid.Row="2" Style="{StaticResource SharedCatalogPanel}">
             <Grid>

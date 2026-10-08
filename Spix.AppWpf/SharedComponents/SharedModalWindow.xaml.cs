@@ -18,9 +18,21 @@ public partial class SharedModalWindow : Window
 
         //CenterOwner centra la ventana con el tamano que tiene al mostrarse, pero como el
         //alto sale del contenido (SizeToContent) todavia no se conoce: la ventana queda
-        //corrida hacia abajo, y cuanto mas alto el formulario, mas se corre. Por eso se
-        //vuelve a centrar cuando ya se sabe cuanto mide.
-        SizeChanged += (_, _) => Centrar();
+        //corrida hacia abajo. Por eso se centra cuando ya se sabe cuanto mide.
+        //
+        //UNA SOLA VEZ y se suelta. Antes se recentraba en CADA cambio de tamano, y por eso
+        //al elegir un producto con seriales (aparece la lista, el modal crece) la ventana
+        //se recolocaba sola y se iba de la pantalla. Sin barra de titulo no se puede
+        //arrastrar, asi que ya no se podia recuperar.
+        //
+        //Si despues crece, crece hacia abajo desde donde esta: no se mueve.
+        SizeChanged += CentrarUnaVez;
+    }
+
+    private void CentrarUnaVez(object sender, SizeChangedEventArgs e)
+    {
+        SizeChanged -= CentrarUnaVez;
+        Centrar();
     }
 
     // Deja el modal en el centro de la ventana principal, sin salirse de la pantalla.
@@ -41,9 +53,19 @@ public partial class SharedModalWindow : Window
         var izquierda = area.Left + ((area.Width - ActualWidth) / 2);
         var arriba = area.Top + ((area.Height - ActualHeight) / 2);
 
-        //Un formulario mas alto que la pantalla no puede empezar por encima del borde
-        Left = Math.Max(SystemParameters.WorkArea.Left, izquierda);
-        Top = Math.Max(SystemParameters.WorkArea.Top, arriba);
+        //El modal se encaja dentro de la pantalla por los CUATRO lados. Antes solo se
+        //topaban el izquierdo y el superior, asi que al crecer el contenido (por ejemplo
+        //cuando el producto lleva seriales y aparece la lista) la ventana se recolocaba
+        //y podia quedar fuera de la pantalla; sin barra de titulo no hay como traerla de
+        //vuelta porque no se puede arrastrar ni redimensionar.
+        //
+        //El orden importa: primero se topa contra el borde final y DESPUES contra el
+        //inicial, para que un formulario mas grande que la pantalla quede pegado arriba
+        //a la izquierda y no al reves.
+        var escritorio = SystemParameters.WorkArea;
+
+        Left = Math.Max(escritorio.Left, Math.Min(izquierda, escritorio.Right - ActualWidth));
+        Top = Math.Max(escritorio.Top, Math.Min(arriba, escritorio.Bottom - ActualHeight));
     }
 
     public void Configure(string title, UserControl content)

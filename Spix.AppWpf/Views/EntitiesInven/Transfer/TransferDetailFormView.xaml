@@ -68,19 +68,25 @@
         <StackPanel Grid.Row="4"
                     Margin="0,12,0,0"
                     Visibility="{Binding ProductWithSerials, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock Style="{StaticResource SharedCatalogFootText}" Text="Elija los equipos que se mueven" />
+            <TextBlock Foreground="#FFFFFF" FontSize="12" Text="Elija los equipos que se mueven" />
 
+            <!-- La caja va BLANCA, igual que en la web: asi las casillas y las MAC se leen
+                 con los colores normales y no hay que pintar cada CheckBox a mano sobre el
+                 azul. Pintarlos uno a uno peleaba con el tema y terminaba tapando el texto. -->
             <Border Margin="0,6,0,0"
                     MaxHeight="190"
                     Padding="10"
                     CornerRadius="10"
-                    BorderBrush="{DynamicResource BrushCatalogKpiBorder}"
+                    Background="#FFFFFF"
+                    BorderBrush="#E6ECF6"
                     BorderThickness="1">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding AvailableSerials}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <CheckBox Margin="0,3"
+                                          Foreground="#102A43"
+                                          FontSize="13"
                                           Content="{Binding MacWlan}"
                                           IsChecked="{Binding IsSelected, Mode=TwoWay}" />
                             </DataTemplate>

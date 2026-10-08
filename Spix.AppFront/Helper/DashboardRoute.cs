@@ -1,4 +1,4 @@
-using Spix.DomainLogic.EnumTypes;
+﻿using Spix.DomainLogic.EnumTypes;
 using System.Security.Claims;
 
 namespace Spix.AppFront.Helper;
@@ -22,6 +22,11 @@ public static class DashboardRoute
         if (roles.Any(x => string.Equals(x, UserType.Technician.ToString(), StringComparison.OrdinalIgnoreCase)))
         {
             return "/tech-dashboard";
+        }
+
+        if (roles.Any(x => string.Equals(x, UserType.Contractor.ToString(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return "/contractor-dashboard";
         }
 
         return "/dashboard";

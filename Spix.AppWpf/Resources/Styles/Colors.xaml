@@ -288,14 +288,27 @@
     <SolidColorBrush x:Key="BrushFormTextDanger" Color="#B02A37" />
 
     <!-- ======================================================================
+         CAMPOS: el azul gris de los inputs, UNO SOLO para todo el escritorio
+
+         Son los mismos valores del .input-group de la web, para que el WPF y
+         Blazor se vean igual. Vive aqui y no en cada estilo: el dia que se
+         cambie el tono, se cambia en estas cuatro lineas y lo toma todo el que
+         las referencie.
+
+         Hoy las usa el login. Para extenderlas a los formularios basta con
+         apuntar los TextBox y ComboBox de SharedForm a estos mismos brushes.
+         ====================================================================== -->
+    <SolidColorBrush x:Key="BrushFieldBack" Color="#E9F0FB" />
+    <SolidColorBrush x:Key="BrushFieldBorder" Color="#CFDCEF" />
+    <SolidColorBrush x:Key="BrushFieldLabel" Color="#DBE6F8" />
+    <SolidColorBrush x:Key="BrushFieldLabelText" Color="#33456B" />
+
+    <!-- ======================================================================
          ACCESO: el color de la pantalla de entrada
          ====================================================================== -->
     <SolidColorBrush x:Key="BrushLoginCard" Color="#FFFFFF" />
     <SolidColorBrush x:Key="BrushLoginTitle" Color="#152238" />
     <SolidColorBrush x:Key="BrushLoginMeta" Color="#6B7690" />
-    <SolidColorBrush x:Key="BrushLoginField" Color="#F7F9FD" />
-    <SolidColorBrush x:Key="BrushLoginFieldBorder" Color="#DCE3EF" />
-    <SolidColorBrush x:Key="BrushLoginFieldHover" Color="#ECF1F9" />
     <SolidColorBrush x:Key="BrushLoginIcon" Color="#8FA0B8" />
     <SolidColorBrush x:Key="BrushLoginLink" Color="#2C5FAD" />
     <SolidColorBrush x:Key="BrushLoginBrandText" Color="#C4D7F6" />

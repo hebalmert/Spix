@@ -1,4 +1,4 @@
-@page "/transfers/details/{Id:guid}"
+﻿@page "/transfers/details/{Id:guid}"
 @layout MainLayout
 @attribute [Authorize(Roles = "Administrator")]
 @using Spix.DomainLogic.EnumTypes
@@ -92,6 +92,15 @@
                                         <td style="text-align:right">@item.Quantity.ToString("#,0.##")</td>
                                         <td>
                                             <div class="idx-actions">
+                                                @* Los equipos que viajaron. Solo en los productos que llevan
+                                                   serial: en los demas no hay nada que mostrar. *@
+                                                @if (item.Product?.WithSerials == true)
+                                                {
+                                                    <ButtonGeneric OnClick="() => ShowSerialsAsync(item)"
+                                                                   TooTip="@Localizer["Transfer_MovedSerials"]"
+                                                                   Icon="fa fa-barcode" />
+                                                }
+
                                                 @* Con el traslado cerrado los renglones no se tocan *@
                                                 @if (Transfer?.Status == TransferType.Pendiente)
                                                 {

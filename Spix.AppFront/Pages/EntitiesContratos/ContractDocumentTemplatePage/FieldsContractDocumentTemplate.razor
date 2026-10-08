@@ -1,4 +1,4 @@
-@inherits ComponentBase
+﻿@inherits ComponentBase
 @using Spix.DomainLogic.EnumTypes
 
 <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
@@ -23,31 +23,43 @@
             }
             else
             {
-                <div class="row g-3">
-                    @* Panel izquierdo: tipos de campo, lista y detalle del campo seleccionado *@
-                    <div class="col-12 col-lg-3">
-                        <p class="spix-field-step">1. Elija el campo</p>
-                        <div class="d-grid gap-2">
+                <div class="row g-3 spix-field-body">
+                    @* Panel izquierdo: tipos de campo, lista y detalle del campo seleccionado.
+                       Lleva su PROPIO scroll: antes crecia y empujaba el modal fuera de pantalla. *@
+                    <div class="col-12 col-lg-3 spix-field-side">
+                        <div class="spix-field-step">
+                            <span class="spix-field-num">1</span>Elija el campo
+                        </div>
+
+                        @* Dos columnas: eran 13 botones apilados y el panel no daba el alto.
+                           Cada tipo lleva SU icono; la mira sale solo en el que esta activo. *@
+                        <div class="spix-field-types">
                             @foreach (var type in FieldTypes)
                             {
                                 <button type="button"
                                         class="btn spix-field-type @(placingType == type ? "is-active" : "")"
                                         disabled="@isPreview"
                                         @onclick="() => StartPlacingAsync(type)">
-                                    <i class="@GetFieldIcon(type) me-2"></i>@GetFieldName(type)
+                                    <i class="@(placingType == type ? "fa fa-crosshairs" : GetFieldIcon(type))"></i>
+                                    <span>@GetFieldName(type)</span>
                                 </button>
                             }
                         </div>
 
-                        <p class="spix-field-step mt-3 mb-1">2. Haga clic en el PDF donde va</p>
-                        <p class="small text-muted">Arrastre los recuadros para moverlos. La firma se estira desde la esquina.</p>
+                        <div class="spix-field-step mt-3">
+                            <span class="spix-field-num">2</span>Haga clic en el PDF
+                        </div>
+                        <p class="spix-field-hint">Arrastre los recuadros para moverlos. La firma se estira desde la esquina.</p>
 
-                        <hr />
-
-                        <p class="spix-field-step">Campos colocados (@Fields.Count)</p>
+                        <div class="spix-field-step mt-3">
+                            <span class="spix-field-num">3</span>Colocados
+                            <span class="spix-field-count">@Fields.Count</span>
+                        </div>
                         @if (!HasSignature)
                         {
-                            <div class="alert alert-warning py-1 px-2 small">Falta la firma: sin ella el cliente no podra firmar.</div>
+                            <div class="spix-field-warn">
+                                <i class="fa fa-triangle-exclamation"></i>Falta la firma
+                            </div>
                         }
 
                         <ul class="list-group spix-field-list">
@@ -70,10 +82,10 @@
                         @if (SelectedField is not null && !isPreview)
                         {
                             <div class="spix-field-detail mt-3">
-                                <p class="spix-field-step">@GetFieldName(SelectedField.FieldType)</p>
+                                <p class="spix-field-detail-title">@GetFieldName(SelectedField.FieldType)</p>
 
                                 <div class="input-group input-group-sm mb-2">
-                                    <span class="input-group-text" style="width:90px">Pagina</span>
+                                    <span class="input-group-text">Pagina</span>
                                     <select class="form-select" value="@SelectedField.PageNumber" @onchange="PageChangedAsync">
                                         @for (var pageNumber = 1; pageNumber <= pageCount; pageNumber++)
                                         {
@@ -84,13 +96,16 @@
 
                                 @if (SelectedField.FieldType == ContractDocumentFieldType.Signature)
                                 {
-                                    <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text" style="width:90px">Ancho</span>
-                                        <input class="form-control" type="number" min="40" step="1" @bind="SelectedField.Width" @bind:after="FieldEditedAsync" />
-                                    </div>
-                                    <div class="input-group input-group-sm mb-2">
-                                        <span class="input-group-text" style="width:90px">Alto</span>
-                                        <input class="form-control" type="number" min="20" step="1" @bind="SelectedField.Height" @bind:after="FieldEditedAsync" />
+                                    @* Lado a lado: en filas separadas gastaban el alto que necesita la lista *@
+                                    <div class="spix-field-pair mb-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Ancho</span>
+                                            <input class="form-control" type="number" min="40" step="1" @bind="SelectedField.Width" @bind:after="FieldEditedAsync" />
+                                        </div>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Alto</span>
+                                            <input class="form-control" type="number" min="20" step="1" @bind="SelectedField.Height" @bind:after="FieldEditedAsync" />
+                                        </div>
                                     </div>
                                 }
                                 else
@@ -101,20 +116,22 @@
                                     </div>
                                 }
 
-                                <div class="input-group input-group-sm mb-2">
-                                    <span class="input-group-text" style="width:90px">X</span>
-                                    <input class="form-control" type="number" min="0" step="1" @bind="SelectedField.PositionX" @bind:after="FieldEditedAsync" />
-                                </div>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text" style="width:90px">Y</span>
-                                    <input class="form-control" type="number" min="0" step="1" @bind="SelectedField.PositionY" @bind:after="FieldEditedAsync" />
+                                <div class="spix-field-pair">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">X</span>
+                                        <input class="form-control" type="number" min="0" step="1" @bind="SelectedField.PositionX" @bind:after="FieldEditedAsync" />
+                                    </div>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Y</span>
+                                        <input class="form-control" type="number" min="0" step="1" @bind="SelectedField.PositionY" @bind:after="FieldEditedAsync" />
+                                    </div>
                                 </div>
                             </div>
                         }
                     </div>
 
                     @* Panel derecho: el PDF (lo dibuja jslib/pdfFieldEditor.js dentro del host) *@
-                    <div class="col-12 col-lg-9">
+                    <div class="col-12 col-lg-9 spix-field-main">
                         <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
                             <div class="btn-group">
                                 <button type="button" class="btn @(isPreview ? "btn-outline-primary" : "btn-primary")" @onclick="ShowEditor">
@@ -144,7 +161,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-center gap-3 mt-4 spix-field-foot">
                     <ButtonFormSaveOnClick OnClick="SaveAsync" IsSaving="IsSaving" />
                     <ButtonFormBack OnClick="Return" />
                 </div>

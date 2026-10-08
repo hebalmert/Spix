@@ -227,7 +227,7 @@ public class TechnitianService : ITechnitianService
                 UserCurrent.FirstName = modelo.FirstName;
                 UserCurrent.LastName = modelo.LastName;
                 UserCurrent.PhoneNumber = modelo.PhoneNumber;
-                UserCurrent.PhotoUser = modelo.Imagen;
+                UserCurrent.PhotoUser = NewModelo.Imagen;
                 UserCurrent.JobPosition = "Technician";
                 UserCurrent.Active = modelo.Active;
 

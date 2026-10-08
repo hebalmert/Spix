@@ -44,8 +44,8 @@
         <Setter Property="Height" Value="46" />
         <Setter Property="Margin" Value="0,0,0,18" />
         <Setter Property="Padding" Value="12,0" />
-        <Setter Property="Background" Value="{StaticResource BrushLoginField}" />
-        <Setter Property="BorderBrush" Value="{StaticResource BrushLoginFieldBorder}" />
+        <Setter Property="Background" Value="{StaticResource BrushFieldBack}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BrushFieldBorder}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="10" />
     </Style>
@@ -90,7 +90,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource BrushLoginFieldHover}" />
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource BrushFieldLabel}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.6" />

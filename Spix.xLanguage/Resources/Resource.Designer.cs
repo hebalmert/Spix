@@ -6190,6 +6190,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contractor Portal.
+        /// </summary>
+        public static string Menu_ContractorPortal {
+            get {
+                return ResourceManager.GetString("Menu_ContractorPortal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contractors.
         /// </summary>
         public static string Menu_Contractors {
@@ -12751,6 +12760,24 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Transferred serials.
+        /// </summary>
+        public static string Transfer_MovedSerials {
+            get {
+                return ResourceManager.GetString("Transfer_MovedSerials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This line moved no serials.
+        /// </summary>
+        public static string Transfer_NoMovedSerials {
+            get {
+                return ResourceManager.GetString("Transfer_NoMovedSerials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no available equipment of this product in the origin storage..
         /// </summary>
         public static string Transfer_NoSerials {
@@ -12792,6 +12819,15 @@ namespace Spix.xLanguage.Resources {
         public static string Transfer_ReceivedBy {
             get {
                 return ResourceManager.GetString("Transfer_ReceivedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to equipment.
+        /// </summary>
+        public static string Transfer_SerialCount {
+            get {
+                return ResourceManager.GetString("Transfer_SerialCount", resourceCulture);
             }
         }
         

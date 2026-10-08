@@ -215,7 +215,7 @@ public class ManagerService : IManagerService
                 UserCurrent.LastName = modelo.LastName;
                 UserCurrent.PhoneNumber = modelo.PhoneNumber;
                 UserCurrent.Email = modelo.Email;
-                UserCurrent.PhotoUser = modelo.Imagen;
+                UserCurrent.PhotoUser = NewModelo.Imagen;
                 UserCurrent.JobPosition = modelo.Job;
                 UserCurrent.Active = modelo.Active;
                 IdentityResult result = await _userHelper.UpdateUserAsync(UserCurrent);

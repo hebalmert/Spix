@@ -130,6 +130,26 @@ public class TransferDetailsController : ControllerBase
     }
 
     //Los que ya tiene reservados esa linea
+    //Los equipos que YA viajaron en esta linea: sale del historico, no del serial
+    [HttpGet("serials/moved/{transferDetailsId}")]
+    public async Task<IActionResult> GetMovedSerialsAsync(Guid transferDetailsId)
+    {
+        try
+        {
+            ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+            var response = await _transferDetailsUnitOfWork.GetMovedSerialsAsync(transferDetailsId, userClaimsInfo.UserName);
+            return ResponseHelper.Format(response);
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, _localizer["Generic_UnexpectedError"].Value);
+        }
+    }
+
     [HttpGet("serials/line/{transferDetailsId}")]
     public async Task<IActionResult> GetLineSerialsAsync(Guid transferDetailsId)
     {

@@ -26,6 +26,8 @@ public class TransferDetailsServiceX : ITransferDetailsServiceX
 
     public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetAvailableSerialsAsync(Guid transferId, Guid productId, Guid? transferDetailsId, string username) => await _transferDetailsService.GetAvailableSerialsAsync(transferId, productId, transferDetailsId, username);
 
+    public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetMovedSerialsAsync(Guid transferDetailsId, string username) => await _transferDetailsService.GetMovedSerialsAsync(transferDetailsId, username);
+
     public async Task<ActionResponse<IEnumerable<GuidItemModel>>> GetLineSerialsAsync(Guid transferDetailsId, string username) => await _transferDetailsService.GetLineSerialsAsync(transferDetailsId, username);
 
     public async Task<ActionResponse<bool>> SaveSerialsAsync(Guid transferDetailsId, List<Guid> serialIds, string username) => await _transferDetailsService.SaveSerialsAsync(transferDetailsId, serialIds, username);

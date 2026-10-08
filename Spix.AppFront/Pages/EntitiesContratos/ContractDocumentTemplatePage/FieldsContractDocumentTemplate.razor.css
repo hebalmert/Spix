@@ -1,24 +1,156 @@
-/* Panel del editor de campos (lo que pinta Blazor). Las paginas y recuadros del PDF los pinta
+﻿/* Panel del editor de campos (lo que pinta Blazor). Las paginas y recuadros del PDF los pinta
    jslib/pdfFieldEditor.js con sus propios estilos. */
+/* El modal NO puede pasar de la pantalla. Antes el host del PDF media 72vh fijo y, con
+   la cabecera, la barra y el pie encima, el conjunto se salia: el contenido quedaba sobre
+   el fondo azul (por eso los textos oscuros no se leian) y las barras internas se perdian
+   porque el que scrolleaba era el modal entero. */
 .spix-field-editor-dialog {
     max-width: min(1400px, 96vw);
+    height: 92vh;
 }
 
+    .spix-field-editor-dialog .modal-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+/* La fila es la que se estira y reparte el alto. min-height:0 es obligatorio: sin el, un
+   hijo flex no se deja encoger por debajo de su contenido y el scroll nunca aparece. */
+.spix-field-body {
+    flex: 1;
+    min-height: 0;
+}
+
+.spix-field-side,
+.spix-field-main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: 100%;
+}
+
+/* El panel izquierdo con su propio scroll: antes solo lo tenia la lista de colocados */
+.spix-field-side {
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* El pie queda anclado: Guardar y Volver siempre a la vista */
+.spix-field-foot {
+    flex-shrink: 0;
+}
+
+/* El paso: numero en pastilla a la izquierda, en vez de escribir "1." en el texto */
 .spix-field-step {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     margin-bottom: .5rem;
     color: #0a1a3f;
+    font-size: 14px;
     font-weight: 600;
 }
 
-.spix-field-type {
-    text-align: left;
-    color: #0a1a3f;
-    border: 1px solid #cfd8ea;
-    background: #ffffff;
+.spix-field-num {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: #0d6efd;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
 }
 
+/* Cuantos campos llevan colocados, al final de la linea */
+.spix-field-count {
+    margin-left: auto;
+    padding: 1px 9px;
+    border-radius: 10px;
+    background: #e9f0fb;
+    color: #33456b;
+    font-size: 12px;
+}
+
+.spix-field-hint {
+    margin-bottom: 0;
+    color: #6b7690;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+/* El aviso de la firma en UNA linea: el alert de Bootstrap era un bloque muy alto
+   para el poco espacio que tiene este panel */
+.spix-field-warn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: .5rem;
+    padding: 6px 9px;
+    border-radius: 6px;
+    background: #faeeda;
+    color: #854f0b;
+    font-size: 12px;
+}
+
+/* Dos columnas: eran 13 botones apilados y no cabian */
+.spix-field-types {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+/* Dos campos en la misma fila (X/Y, Ancho/Alto) */
+.spix-field-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.spix-field-detail-title {
+    margin-bottom: .5rem;
+    color: #0a1a3f;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Compacto y con el azul gris de los campos. El texto se recorta si no cabe, para que
+   un nombre largo no desarme la rejilla de dos columnas. */
+.spix-field-type {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    overflow: hidden;
+    text-align: left;
+    color: #33456b;
+    border: 1px solid #cfdcef;
+    border-radius: 6px;
+    background: #e9f0fb;
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+    .spix-field-type i {
+        flex-shrink: 0;
+        font-size: 12px;
+    }
+
+    .spix-field-type span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .spix-field-type:hover {
-        background: #eef4ff;
+        color: #0a1a3f;
+        border-color: #9cb8e4;
+        background: #dbe6f8;
     }
 
     .spix-field-type.is-active {
@@ -27,8 +159,8 @@
         background: linear-gradient(135deg, #0d6efd, #5d46ff);
     }
 
+/* Ya no lleva tope propio: el alto lo reparte el scroll del panel */
 .spix-field-list {
-    max-height: 28vh;
     overflow-y: auto;
 }
 
@@ -41,6 +173,12 @@
             border-left: 4px solid #0d6efd;
         }
 
+/* Sin los 90px fijos las etiquetas se encogian distinto en cada par; 54px las deja
+   parejas y deja el resto del ancho para el numero */
+.spix-field-detail .input-group-text {
+    min-width: 54px;
+}
+
 .spix-field-detail {
     padding: .75rem;
     border: 1px solid #cfd8ea;
@@ -48,10 +186,49 @@
     background: #f7f9fd;
 }
 
+/* Ocupa lo que sobra en vez de un 72vh fijo, que era lo que reventaba el alto */
 .spix-pdf-host {
-    height: 72vh;
+    flex: 1;
+    min-height: 0;
     padding: 16px;
     overflow: auto;
     border-radius: 10px;
     background: #e9eef6;
+}
+
+/* Barras visibles: la fina del navegador se perdia sobre el gris del host y no habia
+   como saber que se podia subir o bajar. Mismo azul gris de los campos. */
+.spix-field-side::-webkit-scrollbar,
+.spix-field-list::-webkit-scrollbar,
+.spix-pdf-host::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.spix-field-side::-webkit-scrollbar-track,
+.spix-field-list::-webkit-scrollbar-track,
+.spix-pdf-host::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background: #cfdcef;
+}
+
+.spix-field-side::-webkit-scrollbar-thumb,
+.spix-field-list::-webkit-scrollbar-thumb,
+.spix-pdf-host::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: #5f7fae;
+}
+
+    .spix-field-side::-webkit-scrollbar-thumb:hover,
+    .spix-field-list::-webkit-scrollbar-thumb:hover,
+    .spix-pdf-host::-webkit-scrollbar-thumb:hover {
+        background: #44618c;
+    }
+
+/* Firefox no entiende los ::-webkit-*, lleva su propio par de propiedades */
+.spix-field-side,
+.spix-field-list,
+.spix-pdf-host {
+    scrollbar-width: thin;
+    scrollbar-color: #5f7fae #cfdcef;
 }

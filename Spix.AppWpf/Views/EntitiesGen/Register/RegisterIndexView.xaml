@@ -9,7 +9,6 @@
 
     <!-- Copiado del molde (DocumentTypeIndexView): solo cambian las columnas y los textos. -->
     <UserControl.InputBindings>
-        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewCommand}" />
         <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
     </UserControl.InputBindings>
 
@@ -30,12 +29,6 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
-                <Button Command="{Binding NewCommand}"
-                        Style="{StaticResource SharedIndexNewButton}"
-                        ToolTip="Crear los consecutivos (Ctrl+N)"
-                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
-                        Content="Nuevo" />
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <Button Width="38" Height="38"
@@ -162,13 +155,6 @@
                             <TextBlock Margin="0,12,0,0"
                                        Style="{StaticResource SharedIndexEmpty}"
                                        Text="Todavia no hay consecutivos" />
-                            <Button Margin="0,14,0,0"
-                                    HorizontalAlignment="Center"
-                                    Command="{Binding NewCommand}"
-                                    Style="{StaticResource SharedIndexNewButton}"
-                                    ToolTip="Crear el primero"
-                                    svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Plus}"
-                                    Content="Crear el primero" />
                         </StackPanel>
 
                         <shared:SharedLoading IsLoading="{Binding IsLoading}" />

@@ -253,7 +253,7 @@ namespace Spix.Services.ImplementOper
                         UserCurrent.FirstName = modelo.FirstName;
                         UserCurrent.LastName = modelo.LastName;
                         UserCurrent.PhoneNumber = modelo.PhoneNumber;
-                        UserCurrent.PhotoUser = modelo.Imagen;
+                        UserCurrent.PhotoUser = NewModelo.Imagen;
                         UserCurrent.JobPosition = "Client";
 
                         // Active del IdentityUser ahora depende de CreateAccount

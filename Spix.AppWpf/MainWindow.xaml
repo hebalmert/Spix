@@ -87,9 +87,6 @@
                             <Button Click="ShowRegistersClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Consecutivos" />
                             </Button>
-                            <Button Click="ShowContractDocumentTemplatesClick" Style="{StaticResource ShellSubMenuItem}">
-                                <TextBlock FontSize="14" Text="Plantillas PDF" />
-                            </Button>
                             <Button Click="ShowEmailProvidersClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Correo" />
                             </Button>

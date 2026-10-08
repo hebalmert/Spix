@@ -140,18 +140,30 @@
                                 <DataGridTemplateColumn Width="Auto" MinWidth="96" Header="" CanUserSort="False" CellStyle="{StaticResource SharedIndexCellActions}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <!-- Con el traslado cerrado los renglones no se tocan -->
                                             <StackPanel Orientation="Horizontal"
                                                         HorizontalAlignment="Center"
-                                                        Margin="0,0,6,0"
-                                                        Visibility="{Binding DataContext.CanManageDetails, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        Margin="0,0,6,0">
+                                                <!-- Los equipos que viajaron. Va FUERA del bloque de abajo
+                                                     porque se consulta sobre todo con el traslado ya cerrado,
+                                                     que es cuando existe el historico. Solo en los productos
+                                                     que llevan serial. -->
+                                                <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.ShowSerialsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                                             CommandParameter="{Binding}"
-                                                                            ToolTip="Editar" />
+                                                                            Icon="{x:Static icons:FontAwesomeIcon.Barcode}"
+                                                                            ToolTip="Seriales trasladados"
+                                                                            Visibility="{Binding Product.WithSerials, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                                                <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                                              CommandParameter="{Binding}"
-                                                                              ToolTip="Eliminar" />
+                                                <!-- Con el traslado cerrado los renglones no se tocan -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            Visibility="{Binding DataContext.CanManageDetails, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                    <rowbtn:SharedButtonRowEdit Command="{Binding DataContext.EditDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                                CommandParameter="{Binding}"
+                                                                                ToolTip="Editar" />
+
+                                                    <rowbtn:SharedButtonRowDelete Command="{Binding DataContext.DeleteDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                                  CommandParameter="{Binding}"
+                                                                                  ToolTip="Eliminar" />
+                                                </StackPanel>
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>

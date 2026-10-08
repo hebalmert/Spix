@@ -4417,4 +4417,16 @@
   <data name="Transfer_AuditTitle" xml:space="preserve">
     <value>Historial del traslado</value>
   </data>
+  <data name="Menu_ContractorPortal" xml:space="preserve">
+    <value>Portal Contratista</value>
+  </data>
+  <data name="Transfer_MovedSerials" xml:space="preserve">
+    <value>Seriales trasladados</value>
+  </data>
+  <data name="Transfer_NoMovedSerials" xml:space="preserve">
+    <value>Esta linea no movio seriales</value>
+  </data>
+  <data name="Transfer_SerialCount" xml:space="preserve">
+    <value>equipos</value>
+  </data>
 </root>

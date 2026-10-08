@@ -237,7 +237,7 @@ public class ContractorService : IContractorService
                     UserCurrent.FirstName = modelo.FirstName;
                     UserCurrent.LastName = modelo.LastName;
                     UserCurrent.PhoneNumber = modelo.PhoneNumber;
-                    UserCurrent.PhotoUser = modelo.Imagen;
+                    UserCurrent.PhotoUser = NewModelo.Imagen;
                     UserCurrent.JobPosition = "Contractor";
                     UserCurrent.Active = modelo.Active;
 

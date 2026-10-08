@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesInven.Transfer.TransferDetailSerialsDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="480">
+
+    <!-- Los equipos que viajaron en una linea del traslado. Solo lee.
+
+         La caja va BLANCA, como en la web: sobre el azul del modal las MAC se leen con el
+         color normal y no hay que pintarlas a mano. -->
+    <Grid Margin="0,16,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="0,0,0,10"
+                   Foreground="#FFFFFF"
+                   FontSize="14"
+                   Text="{Binding ProductName}" />
+
+        <Border Grid.Row="1"
+                MaxHeight="280"
+                Padding="12"
+                CornerRadius="10"
+                Background="#FFFFFF"
+                BorderBrush="#E6ECF6"
+                BorderThickness="1">
+            <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Serials}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,4">
+                                    <fa:FontAwesomeImage Width="13" Height="13"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="#185FA5"
+                                                         Icon="{x:Static icons:FontAwesomeIcon.Barcode}"
+                                                         IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                                    <TextBlock Margin="8,0,0,0"
+                                               VerticalAlignment="Center"
+                                               Foreground="#102A43"
+                                               FontSize="13"
+                                               Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="#6B7690"
+                           FontSize="13"
+                           Text="Esta linea no movio seriales"
+                           Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <shared:SharedLoading IsLoading="{Binding IsLoading}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

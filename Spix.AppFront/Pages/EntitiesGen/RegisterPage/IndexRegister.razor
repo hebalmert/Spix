@@ -12,12 +12,10 @@
             </div>
         </div>
 
-        <!-- Botón + Filtro -->
+        <!-- Solo Filtro: los consecutivos NO se crean a mano, los crea el sistema.
+             Se pueden editar por si alguno se salto un numero. -->
         <div class="row align-items-center mb-3">
-            <div class="col-md-3 d-flex justify-content-start">
-                <ButtonFormNew OnClick="() => ShowModalAsync()" />
-            </div>
-            <div class="col-md-9 d-flex justify-content-end">
+            <div class="col-md-12 d-flex justify-content-end">
                 <FilterComponent ApplyFilter="SetFilterValue" />
             </div>
         </div>

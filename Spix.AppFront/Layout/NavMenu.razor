@@ -23,7 +23,7 @@
             </Authorized>
         </AuthorizeView>
 
-        <AuthorizeView Roles="Administrator, Auxiliar, Cachier, Collector, Contractor, WarehouseLead">
+        <AuthorizeView Roles="Administrator, Auxiliar, Cachier, Collector, WarehouseLead">
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/dashboard">
@@ -64,6 +64,16 @@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/my-servicerequests">
                         <span class="fa fa-tools"></span> @Localizer["Menu_MyRequests"]
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Contractor">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/contractor-dashboard">
+                        <span class="bi bi-house-door-fill-nav-menu"></span> @Localizer["Menu_ContractorPortal"]
                     </NavLink>
                 </div>
             </Authorized>

@@ -476,6 +476,14 @@ public class CargueDetailsService : ICargueDetailsService
             //cuando se instala en un contrato, no porque alguien lo marque al subirlo.
             modelo.Status = SerialStateType.Disponible;
 
+            //En que bodega queda. Sale de la compra que origino el cargue, que es donde
+            //entro la mercancia. Sin esto el serial nacia sin bodega y no aparecia al
+            //armar un traslado, aunque el stock si mostrara unidades disponibles.
+            modelo.ProductStorageId = await _context.PurchaseDetails.AsNoTracking()
+                .Where(x => x.PurchaseDetailId == cargue.PurchaseDetailId)
+                .Select(x => (Guid?)x.Purchase!.ProductStorageId)
+                .FirstOrDefaultAsync();
+
             _context.CargueDetails.Add(modelo);
 
             //El cargue NO se cierra solo al llegar al ultimo serial: lo cierra el operador

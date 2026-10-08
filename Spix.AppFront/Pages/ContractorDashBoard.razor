@@ -1,0 +1,52 @@
+﻿@page "/contractor-dashboard"
+@attribute [Authorize(Roles = "Contractor")]
+@layout MainLayout
+
+<PageTitle>Contractor Dashboard</PageTitle>
+
+@* El contratista tenia el dashboard general, que es el del Administrator. Este es el
+   suyo, con el mismo molde de los otros portales.
+
+   Las tarjetas van NEUTRAS a proposito: sin enlace todavia. Cuando se definan sus
+   pantallas se les envuelve el contenido en un <a class="contractor-card__link">, igual
+   que en el portal del tecnico. *@
+<section class="contractor-dashboard">
+    <div class="contractor-dashboard__header">
+        <div>
+            <p class="contractor-dashboard__eyebrow">Portal Contratista</p>
+            <h1>Mi Actividad</h1>
+        </div>
+        <span class="contractor-dashboard__status">
+            <i class="fa fa-circle-check"></i>
+            Activo
+        </span>
+    </div>
+
+    <div class="contractor-dashboard__grid">
+        <div class="contractor-card contractor-card--commissions">
+            <div class="contractor-card__content">
+                <span class="contractor-card__label">Comisiones</span>
+                <h2>Mis liquidaciones</h2>
+                <p>Espacio reservado para el resumen de comisiones del periodo y su estado de pago.</p>
+            </div>
+            <i class="fa fa-cash-register contractor-card__icon"></i>
+        </div>
+
+        <div class="contractor-card contractor-card--contracts">
+            <div class="contractor-card__content">
+                <span class="contractor-card__label">Contratos</span>
+                <h2>Clientes referidos</h2>
+                <p>Base para listar los contratos asociados al contratista y su estado actual.</p>
+            </div>
+            <i class="fa fa-file-signature contractor-card__icon"></i>
+        </div>
+    </div>
+
+    <div class="contractor-dashboard__panel">
+        <div>
+            <h2>Actividad del contratista</h2>
+            <p>Este bloque queda listo para mostrar avisos, cortes del periodo o novedades de sus contratos.</p>
+        </div>
+        <i class="fa fa-bell"></i>
+    </div>
+</section>

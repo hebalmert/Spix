@@ -1,0 +1,72 @@
+@inherits ComponentBase
+
+@* Los equipos que viajaron en una linea del traslado.
+
+   Sale del historico (TransferDetailSerials), no del serial: el serial solo sabe en que
+   bodega esta AHORA, asi que si despues se vuelve a mover, este traslado sigue mostrando
+   lo que movio en su momento. *@
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-create-shadow p-4 position-relative">
+            <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+                <h5 class="modal-title">
+                    @Localizer["Transfer_MovedSerials"]
+                    <small class="text-muted ms-2">@ProductName</small>
+                </h5>
+                <button class="btn-close-modal" @onclick="Return" title="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <section class="idx-panel">
+                <div class="table-responsive">
+                    <table class="idx-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer[nameof(Resource.MAC)]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <GenericList MyList="Serials">
+                                <Loading>
+                                    <tr>
+                                        <td class="idx-meta" style="text-align:center">
+                                            <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                                        </td>
+                                    </tr>
+                                </Loading>
+                                <NoRecords>
+                                    <tr>
+                                        <td class="idx-meta" style="text-align:center">@Localizer["Transfer_NoMovedSerials"]</td>
+                                    </tr>
+                                </NoRecords>
+                                <Body>
+                                    @foreach (var serial in Serials!)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <i class="fa fa-barcode me-2" style="color:#185FA5"></i>
+                                                <span class="idx-name">@serial.Name</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </Body>
+                            </GenericList>
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (Serials is not null)
+                {
+                    <div class="idx-panel-foot">
+                        <span class="idx-meta">@Serials.Count.ToString("N0") @Localizer["Transfer_SerialCount"]</span>
+                    </div>
+                }
+            </section>
+
+            <div class="d-flex justify-content-center mt-4">
+                <ButtonFormBack OnClick="Return" />
+            </div>
+        </div>
+    </div>
+</div>

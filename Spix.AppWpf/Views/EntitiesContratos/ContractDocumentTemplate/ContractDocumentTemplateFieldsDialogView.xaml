@@ -1,4 +1,4 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate.ContractDocumentTemplateFieldsDialogView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate.ContractDocumentTemplateFieldsDialogView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:svc="clr-namespace:Spix.AppWpf.SharedServices"
@@ -8,10 +8,87 @@
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
              MinWidth="1220">
 
+    <UserControl.Resources>
+        <!-- El numero del paso en pastilla, en vez de escribir "1." dentro del texto -->
+        <Style x:Key="PasoNumero" TargetType="Border">
+            <Setter Property="Width" Value="19" />
+            <Setter Property="Height" Value="19" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Background" Value="#0D6EFD" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="PasoNumeroText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- Mismos colores que la web: el cuerpo es blanco, asi que el texto va oscuro.
+             Van en hexadecimal fijo, no con DynamicResource, porque el fondo blanco es
+             de este dialogo y no cambia con el tema. -->
+        <Style x:Key="PasoTitulo" TargetType="TextBlock">
+            <Setter Property="Margin" Value="7,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#0A1A3F" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <!-- La ayuda del paso 2, como el .spix-field-hint de la web -->
+        <Style x:Key="PasoAyuda" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#6B7690" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <!-- La barra del panel: la de Windows es gris palido sobre blanco y no se distinguia.
+             Mismo azul gris que la del PDF, para que las dos se vean igual. -->
+        <Style x:Key="BarraPanel" TargetType="ScrollBar">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Background" Value="#CFDCEF" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Margin="2"
+                                                        CornerRadius="4"
+                                                        Background="#5F7FAE" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <!-- El editor visual de coordenadas, igual que en la web:
          a la izquierda se elige el campo y se afina, a la derecha se hace clic sobre el PDF.
          El PDF lo dibuja pdf.js dentro del navegador embebido. -->
-    <Grid Margin="0,16,0,0">
+    <Border Margin="0,16,0,0"
+            Padding="18"
+            CornerRadius="10"
+            Background="#FFFFFF"
+            BorderBrush="#D5DFEF"
+            BorderThickness="1">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -26,59 +103,106 @@
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
                    Margin="0,0,0,12"
-                   Style="{StaticResource SharedIndexName}"
+                   Foreground="#0A1A3F"
+                   FontSize="15"
+                   FontWeight="SemiBold"
                    Text="{Binding TemplateName}" />
 
         <!-- Panel izquierdo: tipos de campo, lista de lo colocado y el detalle del elegido -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" Grid.Column="0"
+                      Padding="0,0,8,0"
+                      VerticalScrollBarVisibility="Auto">
+            <ScrollViewer.Resources>
+                <Style TargetType="ScrollBar" BasedOn="{StaticResource BarraPanel}" />
+            </ScrollViewer.Resources>
             <StackPanel>
-                <TextBlock Style="{StaticResource SharedIndexMeta}" Text="1. Elija el campo" />
+                <StackPanel Orientation="Horizontal">
+                    <Border Style="{StaticResource PasoNumero}">
+                        <TextBlock Style="{StaticResource PasoNumeroText}" Text="1" />
+                    </Border>
+                    <TextBlock Style="{StaticResource PasoTitulo}" Text="Elija el campo" />
+                </StackPanel>
 
+                <!-- Dos columnas: eran 14 botones apilados y el panel no daba el alto.
+                     Cada tipo lleva SU icono; la mira sale solo en el que se esta colocando. -->
                 <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding FieldTypes}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="0,0,0,6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="6" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <!-- La marca del campo que se esta colocando -->
-                                <Border Grid.Column="0"
-                                        Width="4"
-                                        CornerRadius="2"
-                                        Background="{DynamicResource BrushFormSuccess}"
-                                        Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-                                <Button Grid.Column="1"
-                                        Margin="6,0,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        Command="{Binding DataContext.StartPlacingCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                        CommandParameter="{Binding}"
-                                        IsEnabled="{Binding DataContext.CanPlace, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                        Style="{StaticResource SharedButtonFormSecondary}"
-                                        svc:FormButton.Icon="{x:Static icons:FontAwesomeIcon.Crosshairs}"
-                                        Content="{Binding Name}" />
-                            </Grid>
+                            <Button Margin="0,0,6,6"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Command="{Binding DataContext.StartPlacingCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+                                    IsEnabled="{Binding DataContext.CanPlace, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    Style="{StaticResource SharedButtonFormSecondary}"
+                                    svc:FormButton.Icon="{Binding Icon}"
+                                    ToolTip="{Binding Name}"
+                                    Content="{Binding Name}">
+                                <Button.Resources>
+                                    <!-- El que se esta colocando se pinta, para saber cual quedo armado -->
+                                    <Style TargetType="Button" BasedOn="{StaticResource SharedButtonFormSecondary}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                <Setter Property="Background" Value="#0D6EFD" />
+                                                <Setter Property="Foreground" Value="#FFFFFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Margin="0,12,0,0" Style="{StaticResource SharedIndexMeta}" Text="2. Haga clic en el PDF donde va" />
+                <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
+                    <Border Style="{StaticResource PasoNumero}">
+                        <TextBlock Style="{StaticResource PasoNumeroText}" Text="2" />
+                    </Border>
+                    <TextBlock Style="{StaticResource PasoTitulo}" Text="Haga clic en el PDF" />
+                </StackPanel>
+
                 <TextBlock Margin="0,4,0,0"
-                           TextWrapping="Wrap"
-                           Style="{StaticResource SharedIndexMeta}"
+                           Style="{StaticResource PasoAyuda}"
                            Text="Arrastre los recuadros para moverlos. La firma se estira desde la esquina." />
 
-                <TextBlock Margin="0,16,0,0" Style="{StaticResource SharedIndexName}" Text="{Binding PlacedCountText}" />
+                <Grid Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Margin="0,6,0,0"
-                           TextWrapping="Wrap"
-                           Foreground="{DynamicResource BrushCatalogKpiWarnText}"
-                           Style="{StaticResource SharedIndexMeta}"
-                           Text="Falta la firma: sin ella el cliente no podra firmar."
-                           Visibility="{Binding MissingSignature, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Border Style="{StaticResource PasoNumero}">
+                        <TextBlock Style="{StaticResource PasoNumeroText}" Text="3" />
+                    </Border>
+                    <TextBlock Grid.Column="1" Style="{StaticResource PasoTitulo}" Text="Colocados" />
 
+                    <!-- Cuantos lleva, al final de la linea -->
+                    <Border Grid.Column="2"
+                            Padding="9,1"
+                            CornerRadius="10"
+                            VerticalAlignment="Center"
+                            Background="#E9F0FB">
+                        <TextBlock Foreground="#33456B" FontSize="12" Text="{Binding PlacedCount}" />
+                    </Border>
+                </Grid>
+
+                <!-- El aviso en UNA linea: el parrafo gastaba el alto que necesita la lista -->
+                <Border Margin="0,8,0,0"
+                        Padding="9,6"
+                        CornerRadius="6"
+                        Background="#FAEEDA"
+                        Visibility="{Binding MissingSignature, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Foreground="#854F0B" FontSize="12" Text="Falta la firma" />
+                </Border>
+
+                <!-- La lista va COMPLETA, como en la web: el scroll es el del panel.
+                     Meterle uno propio la dejaba en una ventanita de tres filas. -->
                 <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding PlacedFields}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -90,6 +214,7 @@
 
                                 <Button Grid.Column="0"
                                         HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
                                         Command="{Binding DataContext.SelectRowCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                         CommandParameter="{Binding}"
                                         Style="{StaticResource SharedButtonFormSecondary}"
@@ -115,7 +240,7 @@
 
                     <Grid Margin="0,8,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="54" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -126,10 +251,14 @@
                                   SelectedItem="{Binding SelectedField.PageNumber, Mode=TwoWay}" />
                     </Grid>
 
+                    <!-- Lado a lado: en filas sueltas gastaban el alto que necesita la lista -->
                     <Grid Margin="0,8,0,0"
                           Visibility="{Binding IsSignatureSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="54" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="54" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -137,25 +266,17 @@
                         </Border>
                         <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
                                  Text="{Binding SelectedField.Width, UpdateSourceTrigger=LostFocus}" />
-                    </Grid>
-
-                    <Grid Margin="0,8,0,0"
-                          Visibility="{Binding IsSignatureSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="90" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                        <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
                             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Alto" />
                         </Border>
-                        <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                        <TextBox Grid.Column="4" Style="{StaticResource SharedFormBox}"
                                  Text="{Binding SelectedField.Height, UpdateSourceTrigger=LostFocus}" />
                     </Grid>
 
                     <Grid Margin="0,8,0,0"
                           Visibility="{Binding IsTextSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="54" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -167,7 +288,10 @@
 
                     <Grid Margin="0,8,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="54" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="54" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
@@ -175,17 +299,10 @@
                         </Border>
                         <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
                                  Text="{Binding SelectedField.PositionX, UpdateSourceTrigger=LostFocus}" />
-                    </Grid>
-
-                    <Grid Margin="0,8,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="90" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
+                        <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
                             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Y" />
                         </Border>
-                        <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
+                        <TextBox Grid.Column="4" Style="{StaticResource SharedFormBox}"
                                  Text="{Binding SelectedField.PositionY, UpdateSourceTrigger=LostFocus}" />
                     </Grid>
                 </StackPanel>
@@ -223,13 +340,13 @@
                 <TextBlock Grid.Column="1"
                            Margin="14,0,0,0"
                            VerticalAlignment="Center"
-                           Style="{StaticResource SharedIndexMeta}"
+                           Style="{StaticResource PasoAyuda}"
                            Text="{Binding PlacingText}"
                            Visibility="{Binding HasPlacing, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                 <TextBlock Grid.Column="2"
                            VerticalAlignment="Center"
-                           Style="{StaticResource SharedIndexMeta}"
+                           Style="{StaticResource PasoAyuda}"
                            Text="{Binding PageCountText}" />
             </Grid>
 
@@ -250,4 +367,5 @@
 
         <shared:SharedLoading Grid.RowSpan="4" Grid.ColumnSpan="3" IsLoading="{Binding IsLoading}" />
     </Grid>
+    </Border>
 </UserControl>

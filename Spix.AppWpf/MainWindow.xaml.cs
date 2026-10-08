@@ -56,7 +56,6 @@ using Spix.AppWpf.Views.EntitiesBilling.Sell;
 using Spix.AppWpf.Views.EntitiesPayment.TechnicianCollection;
 using Spix.AppWpf.Views.EntitiesContratos.Activation;
 using Spix.AppWpf.Views.EntitiesContratos.ContractExempt;
-using Spix.AppWpf.Views.EntitiesContratos.ContractDocumentTemplate;
 using Spix.AppWpf.Views.EntitiesContratos.ContractSuspended;
 using Spix.AppWpf.Views.EntitiesContratos.RunSuspended;
 using Spix.AppWpf.Views.EntitiesContratos.ContractSuspendedAudit;
@@ -574,11 +573,8 @@ public partial class MainWindow : Window
         ShowView<TechnitianIndexView>("Tecnicos", "Sistema / Tecnicos");
     }
 
-    // Las plantillas PDF del contrato y del consentimiento, con sus campos colocados.
-    private void ShowContractDocumentTemplatesClick(object sender, RoutedEventArgs e)
-    {
-        ShowView<ContractDocumentTemplateIndexView>("Plantillas PDF", "Configuracion / Plantillas PDF");
-    }
+    // Las plantillas PDF se arman SOLO desde la web: el editor visual necesita el
+    // navegador y en el escritorio los scroll del PDF nunca quedaron usables.
 
     // Abre los contratos de los clientes.
     private void ShowContractsClick(object sender, RoutedEventArgs e)

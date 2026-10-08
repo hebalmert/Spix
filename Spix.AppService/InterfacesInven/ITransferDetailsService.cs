@@ -17,6 +17,8 @@ public interface ITransferDetailsService
 
     Task<ActionResponse<IEnumerable<GuidItemModel>>> GetAvailableSerialsAsync(Guid transferId, Guid productId, Guid? transferDetailsId, string username);
 
+    Task<ActionResponse<IEnumerable<GuidItemModel>>> GetMovedSerialsAsync(Guid transferDetailsId, string username);
+
     Task<ActionResponse<IEnumerable<GuidItemModel>>> GetLineSerialsAsync(Guid transferDetailsId, string username);
 
     Task<ActionResponse<bool>> SaveSerialsAsync(Guid transferDetailsId, List<Guid> serialIds, string username);

@@ -1,4 +1,4 @@
-using Spix.AppWpf.SharedComponents;
+﻿using Spix.AppWpf.SharedComponents;
 using Spix.AppWpf.SharedServices;
 using Spix.AppWpf.ViewModels.EntitiesContratos.ContractDocumentTemplate;
 using System.Text.Json;
@@ -273,6 +273,13 @@ public partial class ContractDocumentTemplateFieldsDialogView : UserControl, ISh
                     html, body { width: 100%; height: 100%; margin: 0; background: #E8EFFA; }
                     body { overflow-y: auto; padding: 14px; box-sizing: border-box; }
                     #{{HostId}} { width: 100%; }
+
+                    /* La barra fina del navegador se perdia sobre el fondo claro y no habia
+                       como saber que se podia subir o bajar. Mismo azul gris de los campos. */
+                    body::-webkit-scrollbar { width: 12px; }
+                    body::-webkit-scrollbar-track { background: #CFDCEF; }
+                    body::-webkit-scrollbar-thumb { background: #5F7FAE; border-radius: 6px; border: 2px solid #CFDCEF; }
+                    body::-webkit-scrollbar-thumb:hover { background: #44618C; }
                 </style>
                 <script src="{{ArchivoScript}}"></script>
             </head>
