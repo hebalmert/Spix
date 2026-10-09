@@ -1,6 +1,8 @@
-<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractClient.ContractClientFormView"
+﻿<UserControl x:Class="Spix.AppWpf.Views.EntitiesContratos.ContractClient.ContractClientFormView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Net.Wpf;assembly=FontAwesome.Net.Wpf"
+             xmlns:icons="clr-namespace:FontAwesome.Net.Generators"
              xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
              MinWidth="960">
 
@@ -17,6 +19,10 @@
             <ColumnDefinition Width="*" MinWidth="230" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
@@ -56,27 +62,122 @@
                   SelectedValuePath="Value"
                   SelectedValue="{Binding Entity.ContractorId, Mode=TwoWay}" />
 
+        <!-- El plan, en cascada: primero la categoria y despues el plan de esa categoria.
+             Mode=OneWay + SelectionChanged porque al recargar la lista de planes WPF
+             dispara el evento solo, y con TwoWay se borraria el valor guardado. -->
         <Border Grid.Row="2" Style="{StaticResource SharedFormLabel}">
-            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Telefono" />
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Categoria Plan" />
         </Border>
-        <TextBox Grid.Row="2" Grid.Column="1"
-                 MaxLength="25"
-                 Style="{StaticResource SharedFormBox}"
-                 Text="{Binding Entity.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+        <ComboBox Grid.Row="2" Grid.Column="1"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding PlanCategories}"
+                  DisplayMemberPath="PlanCategoryName"
+                  SelectedValuePath="PlanCategoryId"
+                  SelectedValue="{Binding Entity.PlanCategoryId, Mode=OneWay}"
+                  SelectionChanged="PlanCategorySelectionChanged" />
 
         <Border Grid.Row="2" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Plan" />
+        </Border>
+        <ComboBox Grid.Row="2" Grid.Column="4"
+                  Style="{StaticResource SharedFormCombo}"
+                  ItemsSource="{Binding Plans}"
+                  DisplayMemberPath="PlanName"
+                  SelectedValuePath="PlanId"
+                  SelectedValue="{Binding Entity.PlanId, Mode=OneWay}"
+                  SelectionChanged="PlanSelectionChanged" />
+
+        <!-- Los datos del plan elegido: velocidad, precio y tasa de rehuso, igual que la web -->
+        <Border Grid.Row="4" Grid.ColumnSpan="5"
+                Padding="12,8"
+                CornerRadius="8"
+                Background="#E9F0FB"
+                BorderBrush="#CFDCEF"
+                BorderThickness="1"
+                Visibility="{Binding HasPlan, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <fa:FontAwesomeImage Width="13" Height="13" VerticalAlignment="Center"
+                                     Foreground="#33456B"
+                                     Icon="{x:Static icons:FontAwesomeIcon.GaugeHigh}"
+                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                <TextBlock Margin="7,0,18,0" VerticalAlignment="Center" Foreground="#33456B" FontSize="13"
+                           Text="{Binding SelectedPlan.VelocidadTotal}" />
+
+                <fa:FontAwesomeImage Width="13" Height="13" VerticalAlignment="Center"
+                                     Foreground="#33456B"
+                                     Icon="{x:Static icons:FontAwesomeIcon.MoneyBill}"
+                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                <TextBlock Margin="7,0,18,0" VerticalAlignment="Center" Foreground="#33456B" FontSize="13"
+                           Text="{Binding SelectedPlan.PrecioconImpuesto, StringFormat=N2}" />
+
+                <fa:FontAwesomeImage Width="13" Height="13" VerticalAlignment="Center"
+                                     Foreground="#33456B"
+                                     Icon="{x:Static icons:FontAwesomeIcon.Users}"
+                                     IconStyle="{x:Static icons:FontAwesomeIconStyle.Solid}" />
+                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Foreground="#33456B" FontSize="13"
+                           Text="{Binding SelectedPlan.TasaReuso, StringFormat=Tasa de rehuso {0}}" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="6" Style="{StaticResource SharedFormLabel}">
+            <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Telefono" />
+        </Border>
+        <!-- El telefono en sus tres partes: pais, operador y numero. Van en un Grid
+             anidado para ocupar la misma celda que ocupaba la caja unica. -->
+        <Grid Grid.Row="6" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="58" />
+                <ColumnDefinition Width="58" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBox MaxLength="6"
+                     Style="{StaticResource SharedFormBox}"
+                     ToolTip="Indicativo del pais, por ejemplo +57"
+                     Text="{Binding Entity.CodeCountry, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Column="1"
+                     MaxLength="6"
+                     Style="{StaticResource SharedFormBox}"
+                     ToolTip="Indicativo del operador, por ejemplo 300"
+                     Text="{Binding Entity.CodeNumber, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Column="2"
+                     MaxLength="25"
+                     Style="{StaticResource SharedFormBox}"
+                     ToolTip="Numero, por ejemplo 3675815"
+                     Text="{Binding Entity.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <Border Grid.Row="6" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Telefono 2" />
         </Border>
-        <TextBox Grid.Row="2" Grid.Column="4"
-                 MaxLength="25"
-                 Style="{StaticResource SharedFormBox}"
-                 Text="{Binding Entity.PhoneNumber2, UpdateSourceTrigger=PropertyChanged}" />
+        <!-- El telefono en sus tres partes: pais, operador y numero. Van en un Grid
+             anidado para ocupar la misma celda que ocupaba la caja unica. -->
+        <Grid Grid.Row="6" Grid.Column="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="58" />
+                <ColumnDefinition Width="58" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBox MaxLength="6"
+                     Style="{StaticResource SharedFormBox}"
+                     ToolTip="Indicativo del pais, por ejemplo +57"
+                     Text="{Binding Entity.CodeCountry2, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Column="1"
+                     MaxLength="6"
+                     Style="{StaticResource SharedFormBox}"
+                     ToolTip="Indicativo del operador, por ejemplo 300"
+                     Text="{Binding Entity.CodeNumber2, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Column="2"
+                     MaxLength="25"
+                     Style="{StaticResource SharedFormBox}"
+                     ToolTip="Numero, por ejemplo 3675815"
+                     Text="{Binding Entity.PhoneNumber2, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
 
         <!-- El correo es el del cliente: aqui solo se ve -->
-        <Border Grid.Row="4" Style="{StaticResource SharedFormLabel}">
+        <Border Grid.Row="8" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Correo" />
         </Border>
-        <StackPanel Grid.Row="4" Grid.Column="1">
+        <StackPanel Grid.Row="8" Grid.Column="1">
             <TextBox IsEnabled="False"
                      Style="{StaticResource SharedFormBox}"
                      Text="{Binding ClientEmail, Mode=OneWay}" />
@@ -86,10 +187,10 @@
                        TextWrapping="Wrap" />
         </StackPanel>
 
-        <Border Grid.Row="4" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+        <Border Grid.Row="8" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Direccion" />
         </Border>
-        <TextBox Grid.Row="4" Grid.Column="4"
+        <TextBox Grid.Row="8" Grid.Column="4"
                  MinHeight="72"
                  MaxLength="256"
                  AcceptsReturn="True"
@@ -100,10 +201,10 @@
                  Text="{Binding Entity.Address, UpdateSourceTrigger=PropertyChanged}" />
 
         <!-- Estado, ciudad y zona van en cascada -->
-        <Border Grid.Row="6" Style="{StaticResource SharedFormLabel}">
+        <Border Grid.Row="10" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estado" />
         </Border>
-        <ComboBox Grid.Row="6" Grid.Column="1"
+        <ComboBox Grid.Row="10" Grid.Column="1"
                   Style="{StaticResource SharedFormCombo}"
                   ItemsSource="{Binding States}"
                   DisplayMemberPath="Name"
@@ -111,10 +212,10 @@
                   SelectedValue="{Binding Entity.StateId, Mode=OneWay}"
                   SelectionChanged="StateSelectionChanged" />
 
-        <Border Grid.Row="6" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+        <Border Grid.Row="10" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Ciudad" />
         </Border>
-        <ComboBox Grid.Row="6" Grid.Column="4"
+        <ComboBox Grid.Row="10" Grid.Column="4"
                   Style="{StaticResource SharedFormCombo}"
                   ItemsSource="{Binding Cities}"
                   DisplayMemberPath="Name"
@@ -122,20 +223,20 @@
                   SelectedValue="{Binding Entity.CityId, Mode=OneWay}"
                   SelectionChanged="CitySelectionChanged" />
 
-        <Border Grid.Row="8" Style="{StaticResource SharedFormLabel}">
+        <Border Grid.Row="12" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Zona" />
         </Border>
-        <ComboBox Grid.Row="8" Grid.Column="1"
+        <ComboBox Grid.Row="12" Grid.Column="1"
                   Style="{StaticResource SharedFormCombo}"
                   ItemsSource="{Binding Zones}"
                   DisplayMemberPath="ZoneName"
                   SelectedValuePath="ZoneId"
                   SelectedValue="{Binding Entity.ZoneId, Mode=TwoWay}" />
 
-        <Border Grid.Row="8" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
+        <Border Grid.Row="12" Grid.Column="3" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estrato" />
         </Border>
-        <ComboBox Grid.Row="8" Grid.Column="4"
+        <ComboBox Grid.Row="12" Grid.Column="4"
                   Style="{StaticResource SharedFormCombo}"
                   ItemsSource="{Binding Stratums}"
                   DisplayMemberPath="Name"
@@ -143,10 +244,10 @@
                   SelectedValue="{Binding Entity.EstratoSocialId, Mode=TwoWay}" />
 
         <!-- El estado del contrato solo se toca mientras se esta armando -->
-        <Border Grid.Row="10" Style="{StaticResource SharedFormLabel}">
+        <Border Grid.Row="14" Style="{StaticResource SharedFormLabel}">
             <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Estado del contrato" />
         </Border>
-        <Grid Grid.Row="10" Grid.Column="1">
+        <Grid Grid.Row="14" Grid.Column="1">
             <ComboBox Style="{StaticResource SharedFormCombo}"
                       ItemsSource="{Binding Statuses}"
                       DisplayMemberPath="Name"
@@ -169,7 +270,7 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Top">
+        <StackPanel Grid.Row="14" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Top">
             <Border MinHeight="42" Margin="0,0,12,0" Padding="14,0" Style="{StaticResource SharedFormBoxBorder}">
                 <CheckBox VerticalAlignment="Center"
                           IsChecked="{Binding Entity.EquipoEmpres}"

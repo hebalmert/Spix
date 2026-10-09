@@ -197,6 +197,14 @@
     <SolidColorBrush x:Key="BrushWhenDoneBack" Color="#EAF3DE" />
     <SolidColorBrush x:Key="BrushWhenDoneText" Color="#3B6D11" />
 
+    <!-- La distancia en la bandeja de revision: los tonos de .vr-dist de la web -->
+    <SolidColorBrush x:Key="BrushReviewDistOkBack" Color="#EAF3DE" />
+    <SolidColorBrush x:Key="BrushReviewDistOkText" Color="#3B6D11" />
+    <SolidColorBrush x:Key="BrushReviewDistFarBack" Color="#FCEBEB" />
+    <SolidColorBrush x:Key="BrushReviewDistFarText" Color="#A32D2D" />
+    <SolidColorBrush x:Key="BrushReviewDistNoneBack" Color="#F1EFE8" />
+    <SolidColorBrush x:Key="BrushReviewDistNoneText" Color="#5F5E5A" />
+
     <!-- El estado de la solicitud, los mismos colores del ScheduleStatusBadge de la web -->
     <SolidColorBrush x:Key="BrushScheduleRequested" Color="#0DCAF0" />
     <SolidColorBrush x:Key="BrushSchedulePhoneResolved" Color="#20C997" />

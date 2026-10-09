@@ -60,6 +60,7 @@ using Spix.AppWpf.Views.EntitiesContratos.ContractSuspended;
 using Spix.AppWpf.Views.EntitiesContratos.RunSuspended;
 using Spix.AppWpf.Views.EntitiesContratos.ContractSuspendedAudit;
 using Spix.AppWpf.Views.EntitiesSchedule.ServiceRequest;
+using Spix.AppWpf.Views.EntitiesSchedule.VisitReview;
 using Spix.AppWpf.Views.EntitiesOper.Client;
 using Spix.AppWpf.Views.EntitiesMK.QueueType;
 using System.Windows;
@@ -586,6 +587,12 @@ public partial class MainWindow : Window
     private void ShowServiceRequestsClick(object sender, RoutedEventArgs e)
     {
         ShowView<ServiceRequestIndexView>("Solicitudes de servicio", "Operaciones / Solicitudes de servicio");
+    }
+
+    // Abre la bandeja de revision: ubicacion distinta y visitas sin cliente.
+    private void ShowVisitReviewsClick(object sender, RoutedEventArgs e)
+    {
+        ShowView<VisitReviewIndexView>("Revision", "Operaciones / Revision");
     }
 
     // Resuelve cada vista con su ViewModel inyectado para mantener la navegacion centralizada.

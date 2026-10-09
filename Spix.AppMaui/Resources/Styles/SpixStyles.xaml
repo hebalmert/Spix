@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Los colores de Spix, los mismos de app.css de la web. Un solo sitio: si cambia
+         la marca, cambia aqui y no en cada pagina. -->
+
+    <!-- El fondo azul inmersivo del layout -->
+    <Color x:Key="SpixBackDeep">#081A3F</Color>
+    <Color x:Key="SpixBackMid">#103678</Color>
+    <Color x:Key="SpixBackLow">#0B2350</Color>
+
+    <!-- La barra superior, el degradado del sidebar -->
+    <Color x:Key="SpixBarTop">#0A1A3F</Color>
+    <Color x:Key="SpixBarBottom">#0E2A5E</Color>
+
+    <!-- El card blanco -->
+    <Color x:Key="SpixCard">#FFFFFF</Color>
+    <Color x:Key="SpixCardBorder">#E3E9F3</Color>
+    <Color x:Key="SpixText">#152238</Color>
+    <Color x:Key="SpixMeta">#5A6B86</Color>
+    <Color x:Key="SpixFieldBack">#E9F0FB</Color>
+    <Color x:Key="SpixFieldBorder">#CFDCEF</Color>
+    <Color x:Key="SpixFieldText">#33456B</Color>
+
+    <!-- Los botones: franja de color a la izquierda y cuerpo blanco -->
+    <Color x:Key="SpixBtnBorder">#D7DEEC</Color>
+    <Color x:Key="SpixBtnShadow">#7C8CA8</Color>
+    <Color x:Key="SpixBtnBlueStrip">#2C5FAD</Color>
+    <Color x:Key="SpixBtnBlueText">#16305E</Color>
+    <Color x:Key="SpixBtnGreenStrip">#198754</Color>
+    <Color x:Key="SpixBtnGreenText">#146C44</Color>
+    <Color x:Key="SpixBtnDarkStrip">#8A96AB</Color>
+    <Color x:Key="SpixBtnDarkText">#5B6B85</Color>
+    <Color x:Key="SpixBtnRedStrip">#DC2626</Color>
+    <Color x:Key="SpixBtnRedText">#B02A37</Color>
+    <Color x:Key="SpixBtnPurpleStrip">#6F42C1</Color>
+    <Color x:Key="SpixBtnPurpleText">#4A2A85</Color>
+
+    <!-- Las insignias: los mismos tonos de la bandeja de revision -->
+    <Color x:Key="SpixOkBack">#EAF3DE</Color>
+    <Color x:Key="SpixOkText">#3B6D11</Color>
+    <Color x:Key="SpixFarBack">#FCEBEB</Color>
+    <Color x:Key="SpixFarText">#A32D2D</Color>
+    <Color x:Key="SpixInfoBack">#E6F1FB</Color>
+    <Color x:Key="SpixInfoText">#0C447C</Color>
+    <Color x:Key="SpixNoneBack">#F1EFE8</Color>
+    <Color x:Key="SpixNoneText">#5F5E5A</Color>
+    <Color x:Key="SpixAlert">#E24B4A</Color>
+
+    <!-- El fondo de toda pagina: el azul del .main-content -->
+    <LinearGradientBrush x:Key="SpixPageBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource SpixBackDeep}" Offset="0.0" />
+        <GradientStop Color="{StaticResource SpixBackMid}" Offset="0.55" />
+        <GradientStop Color="{StaticResource SpixBackLow}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <Style x:Key="SpixPage" TargetType="ContentPage">
+        <Setter Property="Background" Value="{StaticResource SpixPageBrush}" />
+    </Style>
+
+    <!-- El card blanco de 12, el mismo de la web -->
+    <Style x:Key="SpixCardFrame" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource SpixCard}" />
+        <Setter Property="Stroke" Value="{StaticResource SpixCardBorder}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="14" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+    </Style>
+
+    <Style x:Key="SpixTitle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource SpixText}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontAttributes" Value="Bold" />
+    </Style>
+
+    <Style x:Key="SpixMetaLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource SpixMeta}" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <!-- El campo de texto: el azul gris de los formularios de la web -->
+    <Style x:Key="SpixEntry" TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="{StaticResource SpixFieldBack}" />
+        <Setter Property="TextColor" Value="{StaticResource SpixFieldText}" />
+        <Setter Property="PlaceholderColor" Value="#8A9BBA" />
+        <Setter Property="HeightRequest" Value="46" />
+    </Style>
+
+    <Style x:Key="SpixEditor" TargetType="Editor">
+        <Setter Property="BackgroundColor" Value="{StaticResource SpixFieldBack}" />
+        <Setter Property="TextColor" Value="{StaticResource SpixFieldText}" />
+        <Setter Property="PlaceholderColor" Value="#8A9BBA" />
+        <Setter Property="HeightRequest" Value="92" />
+    </Style>
+
+</ResourceDictionary>

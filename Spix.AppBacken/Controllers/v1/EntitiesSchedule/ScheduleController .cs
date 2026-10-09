@@ -65,6 +65,19 @@ public class ScheduleController : ControllerBase
         return BadRequest(response.Message);
     }
 
+    //Los origenes para filtrar la agenda: instalacion, cliente u oficina
+    [HttpGet("loadOriginFilter")]
+    public async Task<ActionResult<IEnumerable<IntItemModel>>> GetComboOriginFilter()
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.ComboOriginFilterAsync(userClaimsInfo.UserName);
+        if (response.WasSuccess)
+        {
+            return Ok(response.Result);
+        }
+        return BadRequest(response.Message);
+    }
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] DateTime fromUtc, [FromQuery] DateTime toUtc, [FromQuery] Guid? technicianId)
     {

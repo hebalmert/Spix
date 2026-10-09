@@ -196,7 +196,9 @@ public class ServiceRequestService : IServiceRequestService
                     ContractClientId = x.ContractClientId,
                     ControlContrato = x.ControlContrato,
                     ClientFullName = x.Client!.FirstName + " " + x.Client.LastName,
-                    PhoneNumber = x.PhoneNumber,
+                    //El telefono completo: pais, operador y numero. Se arma en la consulta
+                    //porque esto es un Select de EF y PhoneHelper no se puede traducir a SQL.
+                    PhoneNumber = x.CodeCountry + " " + x.CodeNumber + " " + x.PhoneNumber,
                     Address = x.Address,
                     CityName = x.Zone!.City!.Name,
                     ZoneName = x.Zone.ZoneName,
@@ -554,6 +556,76 @@ public class ServiceRequestService : IServiceRequestService
     //Cerrar la visita. Tiene su propio camino porque tiene sus propias reglas: un servicio
     //cargado, el comentario del tecnico y una foto del despues. El guardado normal de la
     //tarjeta no puede cerrar una orden.
+    //El tecnico llego y la app manda donde esta. Se guarda y se mide la distancia, pero
+    //NO se decide nada: eso pasa al cerrar. Asi puede marcar al llegar y reenviar si el
+    //GPS mejora.
+    public async Task<ActionResponse<ServiceRequestDto>> CaptureLocationAsync(Guid id, decimal latitude, decimal longitude, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+
+        try
+        {
+            var user = await GetUserAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return AuthFail<ServiceRequestDto>();
+            }
+
+            //Un tecnico solo marca SUS visitas
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
+            var entity = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
+                                          x.Active);
+
+            if (entity == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+            }
+
+            //Una visita ya cerrada no se vuelve a marcar
+            if (entity.ScheduleStatus == ScheduleStatus.Completed ||
+                entity.ScheduleStatus == ScheduleStatus.Cancelled)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>("La visita ya esta cerrada.");
+            }
+
+            if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>("La coordenada recibida no es valida.");
+            }
+
+            entity.Latitude = Math.Round(latitude, 7);
+            entity.Longitude = Math.Round(longitude, 7);
+            entity.CapturedAtUtc = DateTime.UtcNow;
+
+            //La distancia se calcula ya, para que la app pueda avisarle al tecnico en el
+            //momento si esta lejos del sitio
+            var mapa = await _context.ContractMaps.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ContractClientId == entity.ContractClientId);
+
+            entity.DistanceMeters = mapa is null
+                ? null
+                : GeoHelper.Metros(mapa.Latitude, mapa.Longitude, entity.Latitude, entity.Longitude);
+
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return await GetAsync(entity.ServiceRequestId, username);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<ServiceRequestDto>(ex);
+        }
+    }
+
     public async Task<ActionResponse<ServiceRequestDto>> CloseAsync(Guid id, string? comment, string? recommendation, string username)
     {
         await _transactionManager.BeginTransactionAsync();
@@ -619,6 +691,9 @@ public class ServiceRequestService : IServiceRequestService
             entity.UserIdCompleted = Guid.Parse(user.Id);
             entity.UsuarioOwnerCompleted = $"{user.FirstName} {user.LastName}";
 
+            //Que hacer con la coordenada que trajo el tecnico
+            await ResolverUbicacionAsync(entity, user);
+
             //La cita del calendario sigue el estado de la orden
             var schedule = entity.ScheduleItem ?? await _context.ScheduleItems
                 .FirstOrDefaultAsync(x => x.ServiceRequestId == entity.ServiceRequestId);
@@ -633,6 +708,241 @@ public class ServiceRequestService : IServiceRequestService
             await _transactionManager.CommitTransactionAsync();
 
             return await GetAsync(entity.ServiceRequestId, username);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<ServiceRequestDto>(ex);
+        }
+    }
+
+    //El tecnico fue y no habia nadie. Camino propio porque el cierre normal exige
+    //servicio y foto del despues; aqui lo obligatorio es la COORDENADA, que es la unica
+    //forma de saber si de verdad fue. Queda COMPLETADA, no anulada: la visita se hizo.
+    public async Task<ActionResponse<ServiceRequestDto>> NoClientAsync(Guid id, decimal latitude, decimal longitude, string? comment, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+
+        try
+        {
+            var user = await GetUserAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return AuthFail<ServiceRequestDto>();
+            }
+
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+
+            var entity = await _context.ServiceRequests
+                .Include(x => x.ScheduleItem)
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          (!loggedTechnicianId.HasValue || x.TechnicianId == loggedTechnicianId.Value) &&
+                                          x.Active);
+
+            if (entity == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+            }
+
+            //Igual que el cierre normal: solo se cierra lo que se empezo
+            if (entity.ScheduleStatus != ScheduleStatus.InProgress)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>(_localizer["Visit_NotStarted"]);
+            }
+
+            if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>("La coordenada recibida no es valida.");
+            }
+
+            entity.Latitude = Math.Round(latitude, 7);
+            entity.Longitude = Math.Round(longitude, 7);
+            entity.CapturedAtUtc = DateTime.UtcNow;
+
+            if (!string.IsNullOrWhiteSpace(comment))
+            {
+                entity.TechnicianComment = comment.Trim();
+            }
+
+            entity.ClientAbsent = true;
+            entity.ScheduleStatus = ScheduleStatus.Completed;
+            entity.CompletedAtUtc = DateTime.UtcNow;
+            entity.UserIdCompleted = Guid.Parse(user.Id);
+            entity.UsuarioOwnerCompleted = $"{user.FirstName} {user.LastName}";
+
+            //No se aplica al contrato: si el cliente no estaba, nadie confirmo el sitio
+            var mapa = await _context.ContractMaps.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ContractClientId == entity.ContractClientId);
+
+            entity.DistanceMeters = mapa is null
+                ? null
+                : GeoHelper.Metros(mapa.Latitude, mapa.Longitude, entity.Latitude, entity.Longitude);
+
+            var quien = $"{user.FirstName} {user.LastName}".Trim();
+            var userId = Guid.TryParse(user.Id, out var uid) ? uid : (Guid?)null;
+
+            var detalle = entity.DistanceMeters is null
+                ? $"{entity.Latitude}, {entity.Longitude}"
+                : $"{entity.Latitude}, {entity.Longitude} ({entity.DistanceMeters} m del sitio)";
+
+            await ContractAuditLog.AddAsync(_context, entity.ContractClientId,
+                ContractEventType.ClientAbsent, detalle, quien, userId,
+                corporationId: entity.CorporationId);
+
+            //Lejos del sitio: se anota aparte, es lo que la bandeja marca como "Revisar"
+            if (!GeoHelper.MismoSitio(entity.DistanceMeters))
+            {
+                await ContractAuditLog.AddAsync(_context, entity.ContractClientId,
+                    ContractEventType.LocationMismatch,
+                    $"{entity.DistanceMeters} m de diferencia", quien, userId,
+                    corporationId: entity.CorporationId);
+            }
+
+            var schedule = entity.ScheduleItem ?? await _context.ScheduleItems
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == entity.ServiceRequestId);
+
+            if (schedule != null)
+            {
+                schedule.ScheduleStatus = ScheduleStatus.Completed;
+                schedule.UpdatedAtUtc = DateTime.UtcNow;
+            }
+
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return await GetAsync(entity.ServiceRequestId, username);
+        }
+        catch (Exception ex)
+        {
+            await _transactionManager.RollbackTransactionAsync();
+            return await _httpErrorHandler.HandleErrorAsync<ServiceRequestDto>(ex);
+        }
+    }
+
+    //Reagendar: nace una solicitud NUEVA enlazada, la vieja no se mueve. Si se reusara la
+    //fila, al pasarla del martes al jueves el martes queda vacio y se pierde la evidencia
+    //de que alguien fue. La vieja pasa a Rescheduled y sale de la bandeja.
+    public async Task<ActionResponse<ServiceRequestDto>> RescheduleAsync(Guid id, Guid technicianId, DateTime scheduledAtUtc, string username)
+    {
+        await _transactionManager.BeginTransactionAsync();
+
+        try
+        {
+            var user = await GetUserAsync(username);
+            if (user == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return AuthFail<ServiceRequestDto>();
+            }
+
+            //Reagendar es de la oficina, no del tecnico
+            var loggedTechnicianId = await GetLoggedTechnicianIdAsync(user);
+            if (loggedTechnicianId.HasValue)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>(_localizer["Request_TechnicianCannotCreate"]);
+            }
+
+            var padre = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x => x.ServiceRequestId == id &&
+                                          x.CorporationId == user.CorporationId &&
+                                          x.Active);
+
+            if (padre == null)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>(_localizer[nameof(Resource.Generic_IdNotFound)]);
+            }
+
+            //Solo se reagenda la visita que quedo sin hacer porque no habia nadie
+            if (!padre.ClientAbsent)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>("Solo se reagenda una visita en la que el cliente no estaba.");
+            }
+
+            //Una sola hija por visita fallida: la cadena es una fila, no un arbol
+            var yaTieneHija = await _context.ServiceRequests
+                .AnyAsync(x => x.ServiceRequestParentId == padre.ServiceRequestId && x.Active);
+
+            if (yaTieneHija)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>("Esta visita ya fue reagendada.");
+            }
+
+            if (!await TechnicianIsValidAsync(technicianId, Convert.ToInt32(user.CorporationId)))
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>("Debe seleccionar un tecnico activo.");
+            }
+
+            if (scheduledAtUtc == default)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return Fail<ServiceRequestDto>("Debe seleccionar fecha y hora programada.");
+            }
+
+            //Los datos se copian de la visita que fallo: son con los que el tecnico salio
+            var nextNumber = await NextRequestNumberAsync(Convert.ToInt32(user.CorporationId));
+            var hija = new ServiceRequest
+            {
+                RequestNumber = nextNumber,
+                CreatedAtUtc = DateTime.UtcNow,
+                ScheduledAtUtc = scheduledAtUtc,
+                ContractClientId = padre.ContractClientId,
+                TechnicianId = technicianId,
+                ScheduleStatus = ScheduleStatus.Pending,
+                Origin = padre.Origin,
+                ServiceRequestParentId = padre.ServiceRequestId,
+                ClientReason = padre.ClientReason,
+                CorporationId = padre.CorporationId,
+                UserId = Guid.Parse(user.Id),
+                UsuarioOwner = $"{user.FirstName} {user.LastName}",
+                ControlContrato = padre.ControlContrato,
+                ClientFullName = padre.ClientFullName,
+                PhoneNumber = padre.PhoneNumber,
+                ContactPhone = padre.ContactPhone,
+                Address = padre.Address,
+                CityName = padre.CityName,
+                ZoneName = padre.ZoneName,
+                ServerName = padre.ServerName,
+                IpServer = padre.IpServer,
+                IpCliente = padre.IpCliente,
+                MacCliente = padre.MacCliente,
+                PlanName = padre.PlanName,
+                NodeName = padre.NodeName,
+                NodeIp = padre.NodeIp,
+                PlanSpeed = padre.PlanSpeed
+            };
+
+            _context.ServiceRequests.Add(hija);
+
+            //La vieja ya se gestiono
+            padre.ScheduleStatus = ScheduleStatus.Rescheduled;
+            padre.LocationReviewed = true;
+
+            await _transactionManager.SaveChangesAsync();
+
+            _context.ScheduleItems.Add(BuildSchedule(hija));
+
+            await ContractAuditLog.AddAsync(_context, padre.ContractClientId,
+                ContractEventType.VisitRescheduled,
+                $"Visita #{padre.RequestNumber} reagendada en la #{hija.RequestNumber}",
+                $"{user.FirstName} {user.LastName}".Trim(),
+                Guid.TryParse(user.Id, out var rid) ? rid : (Guid?)null,
+                referenceId: hija.ServiceRequestId,
+                corporationId: padre.CorporationId);
+
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            return await GetAsync(hija.ServiceRequestId, username);
         }
         catch (Exception ex)
         {
@@ -750,10 +1060,10 @@ public class ServiceRequestService : IServiceRequestService
 
             if (entity.ServiceRequestPic != null)
             {
-                DeletePicImage(entity.ServiceRequestPic.PhotoBefore1);
-                DeletePicImage(entity.ServiceRequestPic.PhotoBefore2);
-                DeletePicImage(entity.ServiceRequestPic.PhotoAfter1);
-                DeletePicImage(entity.ServiceRequestPic.PhotoAfter2);
+                await DeletePicImageAsync(entity.ServiceRequestPic.PhotoBefore1);
+                await DeletePicImageAsync(entity.ServiceRequestPic.PhotoBefore2);
+                await DeletePicImageAsync(entity.ServiceRequestPic.PhotoAfter1);
+                await DeletePicImageAsync(entity.ServiceRequestPic.PhotoAfter2);
                 _context.ServiceRequestPics.Remove(entity.ServiceRequestPic);
             }
 
@@ -816,7 +1126,8 @@ public class ServiceRequestService : IServiceRequestService
             ContractClientId = contract.ContractClientId,
             ControlContrato = contract.ControlContrato,
             ClientFullName = $"{contract.Client?.FirstName} {contract.Client?.LastName}".Trim(),
-            PhoneNumber = contract.PhoneNumber,
+            //El telefono completo, para que la solicitud muestre con que numero llamar
+            PhoneNumber = PhoneHelper.Visible(contract.CodeCountry, contract.CodeNumber, contract.PhoneNumber),
             Address = contract.Address,
             CityName = contract.Zone?.City?.Name,
             ZoneName = contract.Zone?.ZoneName,
@@ -845,6 +1156,13 @@ public class ServiceRequestService : IServiceRequestService
             UsuarioOwnerCompleted = entity.UsuarioOwnerCompleted,
             ContractClientId = entity.ContractClientId,
             TechnicianId = entity.TechnicianId,
+            Latitude = entity.Latitude,
+            Longitude = entity.Longitude,
+            CapturedAtUtc = entity.CapturedAtUtc,
+            DistanceMeters = entity.DistanceMeters,
+            ClientAbsent = entity.ClientAbsent,
+            LocationReviewed = entity.LocationReviewed,
+            ServiceRequestParentId = entity.ServiceRequestParentId,
             TechnicianName = entity.Technician == null ? null : $"{entity.Technician.FirstName} {entity.Technician.LastName}",
             ScheduleStatus = entity.ScheduleStatus,
             ClientReason = entity.ClientReason,
@@ -978,15 +1296,75 @@ public class ServiceRequestService : IServiceRequestService
 
     //Las fotos VIEJAS (ServiceRequestPic) quedaron en el contenedor de las cedulas:
     //se borran de alli, no del contenedor nuevo de las visitas.
-    private void DeletePicImage(string? photo)
+    //Pasa a async porque el borrado real es contra Azure. Antes llamaba a DeleteImage,
+    //que busca en el disco local, y las fotos quedaban huerfanas en el blob.
+    private async Task DeletePicImageAsync(string? photo)
     {
         if (!string.IsNullOrWhiteSpace(photo))
-            _fileStorage.DeleteImage(_imgOption.ImgContractIDPic!, photo);
+        {
+            await _fileStorage.RemoveFileAsync(_imgOption.ImgContractIDPic!, photo);
+        }
     }
 
     private async Task<bool> TechnicianIsValidAsync(Guid technicianId, int corporationId)
     {
         return technicianId != Guid.Empty && await _context.Technicians.AnyAsync(x => x.TechnicianId == technicianId && x.CorporationId == corporationId && x.Active);
+    }
+
+    //Que hacer con la coordenada del tecnico. Tres caminos y solo uno escribe el contrato:
+    //sin ubicacion previa se crea; si coincide no se toca; si esta lejos se anota y NO se
+    //pisa, porque el tecnico no puede mover solo una ubicacion que ya estaba bien.
+    private async Task ResolverUbicacionAsync(ServiceRequest entity, User user)
+    {
+        if (entity.Latitude is null || entity.Longitude is null)
+        {
+            return;
+        }
+
+        var quien = $"{user.FirstName} {user.LastName}".Trim();
+        var userId = Guid.TryParse(user.Id, out var id) ? id : (Guid?)null;
+
+        //Siempre queda constancia de que se tomo, pase lo que pase despues
+        await ContractAuditLog.AddAsync(_context, entity.ContractClientId,
+            ContractEventType.LocationCaptured,
+            $"{entity.Latitude}, {entity.Longitude}", quien, userId,
+            corporationId: entity.CorporationId);
+
+        var mapa = await _context.ContractMaps
+            .FirstOrDefaultAsync(x => x.ContractClientId == entity.ContractClientId);
+
+        //Sin ubicacion previa: la del tecnico pasa a ser la del contrato
+        if (mapa is null)
+        {
+            _context.ContractMaps.Add(new ContractMap
+            {
+                ContractClientId = entity.ContractClientId,
+                Latitude = entity.Latitude,
+                Longitude = entity.Longitude
+            });
+
+            await ContractAuditLog.AddAsync(_context, entity.ContractClientId,
+                ContractEventType.LocationUpdated,
+                $"{entity.Latitude}, {entity.Longitude}", quien, userId,
+                corporationId: entity.CorporationId);
+
+            return;
+        }
+
+        //Habia ubicacion: se compara
+        entity.DistanceMeters = GeoHelper.Metros(mapa.Latitude, mapa.Longitude,
+                                                 entity.Latitude, entity.Longitude);
+
+        if (GeoHelper.MismoSitio(entity.DistanceMeters))
+        {
+            return;
+        }
+
+        //Lejos: se anota y queda para que la oficina decida. El contrato NO se toca.
+        await ContractAuditLog.AddAsync(_context, entity.ContractClientId,
+            ContractEventType.LocationMismatch,
+            $"{entity.DistanceMeters} m de diferencia", quien, userId,
+            corporationId: entity.CorporationId);
     }
 
     private async Task<long> NextRequestNumberAsync(int corporationId)

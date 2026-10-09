@@ -8,6 +8,8 @@ public interface IScheduleService
 {
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusAsync(string username);
 
+    Task<ActionResponse<IEnumerable<IntItemModel>>> ComboOriginFilterAsync(string username);
+
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusFilterAsync(string username);
 
     Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusChangeAsync(string username);

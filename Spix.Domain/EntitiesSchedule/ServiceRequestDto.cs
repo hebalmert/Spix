@@ -39,6 +39,17 @@ public class ServiceRequestDto
     public decimal Total { get; set; }
     public Guid? ServiceRequestPicId { get; set; }
 
+    //===== Ubicacion =====
+    //A donde ir (copiada del contrato al crear) y, una vez que el tecnico la toma,
+    //donde estuvo de verdad. La distancia solo tiene valor cuando hubo con que comparar.
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
+    public DateTime? CapturedAtUtc { get; set; }
+    public int? DistanceMeters { get; set; }
+    public bool ClientAbsent { get; set; }
+    public bool LocationReviewed { get; set; }
+    public Guid? ServiceRequestParentId { get; set; }
+
     //Para el cierre guiado: si ya hay al menos una foto de cada lado
     public bool HasPhotoBefore { get; set; }
 

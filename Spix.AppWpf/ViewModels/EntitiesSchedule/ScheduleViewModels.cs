@@ -28,6 +28,10 @@ public partial class ScheduleIndexViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<IntItemModel> _statuses = new();
 
+    //La otra lista: de donde salio la visita
+    [ObservableProperty]
+    private ObservableCollection<IntItemModel> _origins = new();
+
     //Que significa cada color del calendario
     [ObservableProperty]
     private ObservableCollection<ScheduleLegendItem> _legend = new();
@@ -56,6 +60,27 @@ public partial class ScheduleIndexViewModel : ObservableObject
             }
 
             _statusFilter = value;
+            OnPropertyChanged();
+
+            AplicarFiltro();
+        }
+    }
+
+    private int _originFilter;
+
+    // El otro eje del filtro: de donde salio la visita (instalacion, cliente u oficina).
+    // Es independiente del estado, asi que se pueden combinar: instalaciones pendientes.
+    public int OriginFilter
+    {
+        get => _originFilter;
+        set
+        {
+            if (_originFilter == value)
+            {
+                return;
+            }
+
+            _originFilter = value;
             OnPropertyChanged();
 
             AplicarFiltro();
@@ -104,13 +129,38 @@ public partial class ScheduleIndexViewModel : ObservableObject
         OnPropertyChanged(nameof(HasLegend));
     }
 
+    // Los origenes: igual que los estados, la lista la arma el backend ya traducida
+    public async Task LoadOriginsAsync()
+    {
+        var response = await _repository.GetAsync<List<IntItemModel>>(
+            "api/v1/schedulecontrol/loadOriginFilter");
+
+        if (await _responseHandler.HandleErrorAsync(response))
+        {
+            return;
+        }
+
+        Origins = new ObservableCollection<IntItemModel>(
+            response.Response ?? new List<IntItemModel>());
+    }
+
     // Con un estatus puesto solo quedan las citas de ese estatus. Se filtra sobre lo que
     // ya se bajo, como en la web: no se vuelve a pedir nada al servidor.
     private void AplicarFiltro()
     {
-        var items = StatusFilter == 0
-            ? _scheduleItems
-            : _scheduleItems.Where(x => (int?)x.ScheduleStatus == StatusFilter).ToList();
+        IEnumerable<ScheduleItemDto> filtradas = _scheduleItems;
+
+        if (StatusFilter != 0)
+        {
+            filtradas = filtradas.Where(x => (int?)x.ScheduleStatus == StatusFilter);
+        }
+
+        if (OriginFilter != 0)
+        {
+            filtradas = filtradas.Where(x => (int?)x.RequestOrigin == OriginFilter);
+        }
+
+        var items = filtradas.ToList();
 
         Events = new ObservableCollection<CalendarEventModel>(items.Select(CreateCalendarEvent));
 
@@ -226,7 +276,11 @@ public partial class ScheduleIndexViewModel : ObservableObject
             Origin = item.Origin,
             ServiceRequestId = item.ServiceRequestId,
             Color = color,
-            TextColor = "#FFFFFF"
+            TextColor = "#FFFFFF",
+            //Morado si es instalacion; si no, el mismo color del relleno
+            BorderColor = item.RequestOrigin == ServiceRequestOrigin.Installation
+                ? "#7F77DD"
+                : color
         };
     }
 }

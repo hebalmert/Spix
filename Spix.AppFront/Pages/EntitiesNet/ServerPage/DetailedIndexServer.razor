@@ -65,8 +65,9 @@
                                 <div>
                                     <div class="pc-cat-name">@item.ServerName</div>
                                     <div class="pc-cat-meta">
-                                        <span>@item.Ip</span>
-                                        <span>@item.Clients @Localizer["Net_Clients"]</span>
+                                        @* La IP se muestra tapada: solo el primer grupo. El conteo de
+                                           clientes NO va aqui, ya esta en el card de arriba. *@
+                                        <span>@IpTapada(item.Ip)</span>
                                         <span class="pc-pill @(item.ControlMk == MikrotikControlType.Ninguno ? "is-off" : "is-on")">
                                             @ControlName(item.ControlMk)
                                         </span>

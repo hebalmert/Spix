@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppMaui.SharedComponents"
+             x:Class="Spix.AppMaui.Views.LoginPage"
+             Style="{StaticResource SpixPage}"
+             Shell.NavBarIsVisible="False"
+             Title="Entrar">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="22" Spacing="16" VerticalOptions="Center">
+
+            <Label Text="Spix" FontSize="34" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+            <Label Text="Tecnico" FontSize="15" TextColor="#B9CBE8" HorizontalOptions="Center" Margin="0,-10,0,10" />
+
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Usuario" />
+                    <Entry Style="{StaticResource SpixEntry}"
+                           Keyboard="Text"
+                           Placeholder="tu usuario"
+                           Text="{Binding UserName}" />
+
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Clave" />
+                    <Entry Style="{StaticResource SpixEntry}"
+                           IsPassword="True"
+                           Placeholder="tu clave"
+                           Text="{Binding Password}" />
+
+                    <shared:SpixButton Text="Entrar"
+                                       Strip="{StaticResource SpixBtnBlueStrip}"
+                                       TextColorValue="{StaticResource SpixBtnBlueText}"
+                                       Command="{Binding EnterCommand}"
+                                       Margin="0,6,0,0" />
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource SpixBtnBlueStrip}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

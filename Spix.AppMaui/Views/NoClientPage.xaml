@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppMaui.SharedComponents"
+             x:Class="Spix.AppMaui.Views.NoClientPage"
+             Style="{StaticResource SpixPage}"
+             Title="No estaba el cliente">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="10">
+
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="2">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.RequestNumber, StringFormat='Visita #{0}'}" />
+                    <Label Style="{StaticResource SpixTitle}" Text="{Binding Visit.ClientFullName}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- La coordenada es obligatoria: sin ella el boton de marcar no aparece -->
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                    <Label FontSize="15" HorizontalOptions="Center"
+                           TextColor="{StaticResource SpixText}" Text="{Binding CoordText}" />
+
+                    <Border Padding="9,3" StrokeThickness="0" HorizontalOptions="Center"
+                            StrokeShape="RoundRectangle 6"
+                            BackgroundColor="{Binding DistanceBack}">
+                        <Label FontSize="12" FontAttributes="Bold"
+                               TextColor="{Binding DistanceForeground}"
+                               Text="{Binding DistanceText}" />
+                    </Border>
+
+                    <Label Style="{StaticResource SpixMetaLabel}"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding WarningText}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Que paso" />
+                    <Editor Style="{StaticResource SpixEditor}"
+                            Placeholder="toque varias veces, nadie salio"
+                            Text="{Binding Comment}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <shared:SpixButton Text="Volver a medir"
+                               Strip="{StaticResource SpixBtnDarkStrip}"
+                               TextColorValue="{StaticResource SpixBtnDarkText}"
+                               Command="{Binding MeasureCommand}" />
+
+            <shared:SpixButton Text="Marcar"
+                               IsVisible="{Binding CanMark}"
+                               Strip="{StaticResource SpixBtnRedStrip}"
+                               TextColorValue="{StaticResource SpixBtnRedText}"
+                               Command="{Binding MarkCommand}" />
+
+            <Label Style="{StaticResource SpixMetaLabel}"
+                   TextColor="#B9CBE8"
+                   HorizontalOptions="Center"
+                   Text="Queda registrado donde estabas y a que hora" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

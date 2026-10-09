@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppMaui.SharedComponents"
+             x:Class="Spix.AppMaui.Views.AddServicePage"
+             Style="{StaticResource SpixPage}"
+             Title="Servicio realizado">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="10">
+
+            <!-- Las dos listas llegan armadas del backend: el telefono solo las pinta -->
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Categoria" />
+                    <Picker ItemsSource="{Binding Categories}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedCategory}"
+                            BackgroundColor="{StaticResource SpixFieldBack}"
+                            TextColor="{StaticResource SpixFieldText}"
+                            HeightRequest="46" />
+
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Servicio" />
+                    <Picker ItemsSource="{Binding Services}"
+                            ItemDisplayBinding="{Binding ServiceName}"
+                            SelectedItem="{Binding SelectedService}"
+                            BackgroundColor="{StaticResource SpixFieldBack}"
+                            TextColor="{StaticResource SpixFieldText}"
+                            HeightRequest="46" />
+
+                    <Label Style="{StaticResource SpixMetaLabel}"
+                           Text="{Binding PriceText, StringFormat='Precio {0}'}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Detalle (opcional)" />
+                    <Editor Style="{StaticResource SpixEditor}"
+                            Placeholder="algo que haya que anotar del servicio"
+                            Text="{Binding Detail}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <shared:SpixButton Text="Agregar"
+                               Strip="{StaticResource SpixBtnBlueStrip}"
+                               TextColorValue="{StaticResource SpixBtnBlueText}"
+                               Command="{Binding AddCommand}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

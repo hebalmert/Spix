@@ -25,6 +25,17 @@ public class Usuario
     [Display(Name = nameof(Resource.Document), ResourceType = typeof(Resource))]
     public string Nro_Document { get; set; } = null!;
 
+    //El indicativo del pais, escrito a mano: +57, +58. En una misma empresa hay
+    //clientes de paises distintos, asi que se guarda por persona.
+    [MaxLength(6, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.PhoneCode), ResourceType = typeof(Resource))]
+    public string? CodeCountry { get; set; }
+
+    //El indicativo del operador: 300, 318.
+    [MaxLength(6, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.PhoneArea), ResourceType = typeof(Resource))]
+    public string? CodeNumber { get; set; }
+
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]

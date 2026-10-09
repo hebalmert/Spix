@@ -32,6 +32,15 @@ public class ServiceRequestServiceX : IServiceRequestServiceX
     public async Task<ActionResponse<ServiceRequestDto>> ResolveByPhoneAsync(Guid id, string? comment, string? recommendation, string username) =>
         await _serviceRequestService.ResolveByPhoneAsync(id, comment, recommendation, username);
 
+    public async Task<ActionResponse<ServiceRequestDto>> CaptureLocationAsync(Guid id, decimal latitude, decimal longitude, string username) =>
+        await _serviceRequestService.CaptureLocationAsync(id, latitude, longitude, username);
+
+    public async Task<ActionResponse<ServiceRequestDto>> NoClientAsync(Guid id, decimal latitude, decimal longitude, string? comment, string username) =>
+        await _serviceRequestService.NoClientAsync(id, latitude, longitude, comment, username);
+
+    public async Task<ActionResponse<ServiceRequestDto>> RescheduleAsync(Guid id, Guid technicianId, DateTime scheduledAtUtc, string username) =>
+        await _serviceRequestService.RescheduleAsync(id, technicianId, scheduledAtUtc, username);
+
     public async Task<ActionResponse<ServiceRequestDto>> CloseAsync(Guid id, string? comment, string? recommendation, string username) =>
         await _serviceRequestService.CloseAsync(id, comment, recommendation, username);
 

@@ -199,6 +199,14 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("CodeCountry")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
 
@@ -417,6 +425,16 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("CodeCountry")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
@@ -1067,6 +1085,24 @@ namespace Spix.AppBacken.Migrations
 
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodeCountry")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeCountry2")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber2")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("ContractState")
                         .HasColumnType("int");
@@ -3094,6 +3130,16 @@ namespace Spix.AppBacken.Migrations
                     b.Property<int>("CityId")
                         .HasColumnType("int");
 
+                    b.Property<string>("CodeCountry")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
                     b.Property<string>("ContactName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -3736,6 +3782,16 @@ namespace Spix.AppBacken.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("CodeCountry")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
 
@@ -3811,6 +3867,16 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("CodeCountry")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
@@ -3894,6 +3960,16 @@ namespace Spix.AppBacken.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("CodeCountry")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CodeNumber")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("CorporationId")
                         .HasColumnType("int");
@@ -5000,9 +5076,15 @@ namespace Spix.AppBacken.Migrations
                     b.Property<bool>("Billed")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("CapturedAtUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CityName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("ClientAbsent")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ClientFullName")
                         .IsRequired()
@@ -5033,6 +5115,9 @@ namespace Spix.AppBacken.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DistanceMeters")
+                        .HasColumnType("int");
+
                     b.Property<string>("IpCliente")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -5040,6 +5125,15 @@ namespace Spix.AppBacken.Migrations
                     b.Property<string>("IpServer")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("decimal(12,7)");
+
+                    b.Property<bool>("LocationReviewed")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("decimal(12,7)");
 
                     b.Property<string>("MacCliente")
                         .HasMaxLength(100)
@@ -5087,6 +5181,9 @@ namespace Spix.AppBacken.Migrations
                     b.Property<string>("ServerName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("ServiceRequestParentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TechnicianComment")
                         .HasMaxLength(1000)

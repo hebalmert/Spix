@@ -85,13 +85,19 @@
     @* ---------- 2. Contacto ---------- *@
     <p class="cc-section">@Localizer[nameof(Resource.Contact)]</p>
     <div class="row g-2">
+        @* Los dos telefonos, uno al lado del otro. Las tres cajitas caben de sobra a
+           media columna. *@
         <div class="col-12 col-md-6">
             <div class="input-group">
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Phone)]
                 </span>
-                <InputText class="form-control" placeholder="" @bind-Value="ContractClient!.PhoneNumber" />
+                <InputText class="form-control" style="max-width: 80px" placeholder="+57" @bind-Value="ContractClient!.CodeCountry" />
+                <InputText class="form-control" style="max-width: 80px" placeholder="300" @bind-Value="ContractClient!.CodeNumber" />
+                <InputText class="form-control" placeholder="3675815" @bind-Value="ContractClient!.PhoneNumber" />
             </div>
+            <ValidationMessage For="@(() => ContractClient.CodeCountry)" />
+            <ValidationMessage For="@(() => ContractClient.CodeNumber)" />
             <ValidationMessage For="@(() => ContractClient.PhoneNumber)" />
         </div>
 
@@ -100,7 +106,9 @@
                 <span class="input-group-text" style="width: 150px">
                     @Localizer[nameof(Resource.Phone2)]
                 </span>
-                <InputText class="form-control" placeholder="" @bind-Value="ContractClient!.PhoneNumber2" />
+                <InputText class="form-control" style="max-width: 80px" placeholder="+57" @bind-Value="ContractClient!.CodeCountry2" />
+                <InputText class="form-control" style="max-width: 80px" placeholder="300" @bind-Value="ContractClient!.CodeNumber2" />
+                <InputText class="form-control" placeholder="3675815" @bind-Value="ContractClient!.PhoneNumber2" />
             </div>
             <ValidationMessage For="@(() => ContractClient.PhoneNumber2)" />
         </div>

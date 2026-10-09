@@ -105,6 +105,44 @@ public class ScheduleService : IScheduleService
 
     //Misma lista, pero para FILTRAR la agenda: el neutro dice "Todos", no "[Seleccione]".
     //La arma el backend, igual que los demas combos.
+    //Los origenes para filtrar la agenda, con "Todos" al inicio.
+    //
+    //Es un eje DISTINTO del estado: el estado dice en que punto va la visita y el
+    //origen de donde salio. Se pueden combinar: instalaciones pendientes, por ejemplo.
+    public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboOriginFilterAsync(string username)
+    {
+        try
+        {
+            var user = await _userHelper.GetUserByUserNameAsync(username);
+            if (user == null)
+            {
+                return new ActionResponse<IEnumerable<IntItemModel>>
+                {
+                    WasSuccess = false,
+                    Message = "Problemas de Validacion de Usuario"
+                };
+            }
+
+            var list = _enumMultilLanguageService.GetEnumSelectList<ServiceRequestOrigin>();
+
+            list.Insert(0, new IntItemModel
+            {
+                Value = 0,
+                Name = _localizer["Filter_AllOrigin"]
+            });
+
+            return new ActionResponse<IEnumerable<IntItemModel>>
+            {
+                WasSuccess = true,
+                Result = list
+            };
+        }
+        catch (Exception ex)
+        {
+            return await _httpErrorHandler.HandleErrorAsync<IEnumerable<IntItemModel>>(ex);
+        }
+    }
+
     public async Task<ActionResponse<IEnumerable<IntItemModel>>> ComboStatusFilterAsync(string username)
     {
         try
@@ -167,7 +205,8 @@ public class ScheduleService : IScheduleService
             else if (technicianId.HasValue)
                 query = query.Where(x => x.TechnicianId == technicianId.Value);
 
-            var items = await query.ToListAsync();
+            //Include de la solicitud: de ahi sale el origen que pinta y filtra las instalaciones
+            var items = await query.Include(x => x.ServiceRequest).ToListAsync();
 
             var dtoList = items.Select(x => new ScheduleItemDto
             {
@@ -183,6 +222,8 @@ public class ScheduleService : IScheduleService
                 RecurrenceRule = x.RecurrenceRule,
                 ScheduleStatus = x.ScheduleStatus,
                 Origin = x.Origin,
+                //Para poder filtrar el calendario por instalaciones
+                RequestOrigin = x.ServiceRequest != null ? x.ServiceRequest.Origin : null,
                 ServiceRequestId = x.ServiceRequestId
             }).ToList();
 

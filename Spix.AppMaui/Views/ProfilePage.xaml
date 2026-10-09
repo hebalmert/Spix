@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppMaui.SharedComponents"
+             x:Class="Spix.AppMaui.Views.ProfilePage"
+             Style="{StaticResource SpixPage}"
+             Title="Perfil">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="10">
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Style="{StaticResource SpixTitle}" Text="{Binding FullName}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding UserName}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Version, StringFormat='Version {0}'}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <shared:SpixButton Text="Cerrar sesion"
+                               Strip="{StaticResource SpixBtnDarkStrip}"
+                               TextColorValue="{StaticResource SpixBtnDarkText}"
+                               Command="{Binding LogoutCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

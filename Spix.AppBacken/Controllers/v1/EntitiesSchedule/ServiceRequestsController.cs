@@ -88,12 +88,41 @@ public class ServiceRequestsController : ControllerBase
         return ResponseHelper.Format(response);
     }
 
+    //El tecnico llego y manda donde esta. Se guarda y se calcula la distancia contra
+    //la ubicacion del contrato, pero no se decide nada: eso pasa al cerrar
+    [HttpPost("{id}/capturelocation")]
+    public async Task<IActionResult> CaptureLocationAsync(Guid id, [FromQuery] decimal latitude, [FromQuery] decimal longitude)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.CaptureLocationAsync(id, latitude, longitude, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
     //Cerrar la visita: exige servicio, comentario y foto del despues
     [HttpPost("{id}/close")]
     public async Task<IActionResult> CloseAsync(Guid id, [FromQuery] string? comment, [FromQuery] string? recommendation)
     {
         ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
         var response = await _unitOfWork.CloseAsync(id, comment, recommendation, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //El tecnico fue y no habia nadie: exige la coordenada de donde estuvo
+    [HttpPost("{id}/noclient")]
+    public async Task<IActionResult> NoClientAsync(Guid id, [FromQuery] decimal latitude, [FromQuery] decimal longitude, [FromQuery] string? comment)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.NoClientAsync(id, latitude, longitude, comment, userClaimsInfo.UserName);
+        return ResponseHelper.Format(response);
+    }
+
+    //Reagendar la visita fallida: nace una nueva enlazada, la vieja no se mueve
+    [HttpPost("{id}/reschedule")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator, Auxiliar")]
+    public async Task<IActionResult> RescheduleAsync(Guid id, [FromQuery] Guid technicianId, [FromQuery] DateTime scheduledAtUtc)
+    {
+        ClaimsDTOs userClaimsInfo = User.GetSecurityContextOrThrow(_localizer, HttpContext);
+        var response = await _unitOfWork.RescheduleAsync(id, technicianId, scheduledAtUtc, userClaimsInfo.UserName);
         return ResponseHelper.Format(response);
     }
 

@@ -1,4 +1,4 @@
-using Microsoft.Web.WebView2.Core;
+﻿using Microsoft.Web.WebView2.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
@@ -147,7 +147,9 @@ public partial class SharedFullCalendarView : UserControl
                             ...event,
                             display: event.color ? 'block' : undefined,
                             backgroundColor: event.color,
-                            borderColor: event.color,
+                            // El borde lo decide el servidor: morado si es instalacion.
+                            // Antes copiaba el relleno y la marca se perdia.
+                            borderColor: event.borderColor || event.color,
                             textColor: event.textColor
                         })),
                         dateClick: function(info) {

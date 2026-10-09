@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppMaui.SharedComponents"
+             x:Class="Spix.AppMaui.Views.VisitDetailPage"
+             Style="{StaticResource SpixPage}"
+             Title="Visita">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="10">
+
+            <!-- Quien es y que contrato -->
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="3">
+                    <Label Style="{StaticResource SpixTitle}" Text="{Binding Visit.ClientFullName}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.ControlContrato, StringFormat='Contrato {0}'}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.Address}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.ClientReason}" Margin="0,6,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Lo que el tecnico necesita en la calle -->
+            <Border Style="{StaticResource SpixCardFrame}">
+                <VerticalStackLayout Spacing="3">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.PlanName}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.PlanSpeed}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.NodeName, StringFormat='Nodo {0}'}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.NodeIp}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.IpCliente, StringFormat='IP cliente {0}'}" />
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Visit.MacCliente}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Donde estoy -->
+            <Border Style="{StaticResource SpixCardFrame}" IsVisible="{Binding HasLocation}">
+                <VerticalStackLayout Spacing="5">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Donde marcaste" />
+                    <Label FontSize="14" TextColor="{StaticResource SpixText}" Text="{Binding CoordText}" />
+                    <Border Padding="9,3" StrokeThickness="0" HorizontalOptions="Start"
+                            StrokeShape="RoundRectangle 6"
+                            BackgroundColor="{Binding DistanceBack}">
+                        <Label FontSize="12" FontAttributes="Bold"
+                               TextColor="{Binding DistanceText2}"
+                               Text="{Binding DistanceText}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Lo que hiciste: es una de las tres condiciones del cierre -->
+            <Border Style="{StaticResource SpixCardFrame}" IsVisible="{Binding IsInProgress}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="Que hiciste" />
+                    <Editor Style="{StaticResource SpixEditor}"
+                            Placeholder="lo que encontraste y lo que resolviste"
+                            Text="{Binding Comment}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <shared:SpixButton Text="Llegue"
+                               IsVisible="{Binding IsPending}"
+                               Strip="{StaticResource SpixBtnPurpleStrip}"
+                               TextColorValue="{StaticResource SpixBtnPurpleText}"
+                               Command="{Binding StartCommand}" />
+
+            <!-- Lo que falta para poder cerrar, a la vista: no se descubre al tocar Cerrar -->
+            <Border Style="{StaticResource SpixCardFrame}" IsVisible="{Binding IsInProgress}">
+                <VerticalStackLayout Spacing="9">
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding ServiceText}" />
+                    <shared:SpixButton Text="Cargar servicio"
+                                       Strip="{StaticResource SpixBtnBlueStrip}"
+                                       TextColorValue="{StaticResource SpixBtnBlueText}"
+                                       Command="{Binding AddServiceCommand}" />
+
+                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding PhotoText}" Margin="0,6,0,0" />
+                    <shared:SpixButton Text="Tomar foto"
+                                       Strip="{StaticResource SpixBtnPurpleStrip}"
+                                       TextColorValue="{StaticResource SpixBtnPurpleText}"
+                                       Command="{Binding TakePhotoCommand}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <shared:SpixButton Text="Volver a marcar"
+                               IsVisible="{Binding IsInProgress}"
+                               Strip="{StaticResource SpixBtnBlueStrip}"
+                               TextColorValue="{StaticResource SpixBtnBlueText}"
+                               Command="{Binding CaptureCommand}" />
+
+            <shared:SpixButton Text="Cerrar visita"
+                               IsVisible="{Binding IsInProgress}"
+                               Strip="{StaticResource SpixBtnGreenStrip}"
+                               TextColorValue="{StaticResource SpixBtnGreenText}"
+                               Command="{Binding CloseCommand}" />
+
+            <shared:SpixButton Text="No estaba el cliente"
+                               IsVisible="{Binding IsInProgress}"
+                               Strip="{StaticResource SpixBtnRedStrip}"
+                               TextColorValue="{StaticResource SpixBtnRedText}"
+                               Command="{Binding NoClientCommand}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

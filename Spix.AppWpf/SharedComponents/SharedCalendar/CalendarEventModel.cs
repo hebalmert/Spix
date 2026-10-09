@@ -1,4 +1,4 @@
-using Spix.DomainLogic.EnumTypes;
+﻿using Spix.DomainLogic.EnumTypes;
 
 namespace Spix.AppWpf.SharedComponents.SharedCalendar;
 
@@ -22,6 +22,10 @@ public class CalendarEventModel
     public string? Color { get; set; }
 
     public string? TextColor { get; set; }
+
+    //El borde se manda aparte del relleno: el relleno dice el ESTADO y el borde marca
+    //que la visita es una instalacion.
+    public string? BorderColor { get; set; }
 }
 
 // Entrega la fecha seleccionada por FullCalendar a la vista WPF que lo contiene.

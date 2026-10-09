@@ -48,7 +48,10 @@
                         <span class="input-group-text" style="width: 150px">
                             @Localizer[nameof(Resource.Phone)]
                         </span>
-                        <InputText class="form-control" placeholder="Phone..." @bind-Value="Manager.PhoneNumber" />
+                        @* El telefono en sus tres partes: pais, operador y numero *@
+                        <InputText class="form-control" style="max-width: 80px" placeholder="+57" @bind-Value="Manager.CodeCountry" />
+                        <InputText class="form-control" style="max-width: 80px" placeholder="300" @bind-Value="Manager.CodeNumber" />
+                        <InputText class="form-control" placeholder="3675815" @bind-Value="Manager.PhoneNumber" />
                     </div>
                     <ValidationMessage For="@(() => Manager.PhoneNumber)" />
                 </div>

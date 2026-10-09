@@ -65,6 +65,8 @@ using Spix.AppWpf.ViewModels.EntitiesContratos.ContractSuspended;
 using Spix.AppWpf.ViewModels.EntitiesContratos.RunSuspended;
 using Spix.AppWpf.ViewModels.EntitiesContratos.ContractSuspendedAudit;
 using Spix.AppWpf.ViewModels.EntitiesSchedule.ServiceRequest;
+using Spix.AppWpf.Views.EntitiesSchedule.VisitReview;
+using Spix.AppWpf.ViewModels.EntitiesSchedule.VisitReview;
 using Spix.AppWpf.ViewModels.EntitiesOper.Client;
 using Spix.AppWpf.ViewModels.EntitiesMK.QueueType;
 using Spix.AppWpf.ViewModels.Shell;
@@ -379,6 +381,8 @@ public partial class App : Application
         services.AddTransient<CreateServiceRequestDialogViewModel>();
         services.AddTransient<ServiceRequestOrderViewModel>();
         services.AddTransient<AssignServiceRequestDialogViewModel>();
+        services.AddTransient<VisitReviewIndexViewModel>();
+        services.AddTransient<RescheduleVisitDialogViewModel>();
         services.AddTransient<ResolveByPhoneDialogViewModel>();
         services.AddTransient<UploadServicePhotoDialogViewModel>();
         services.AddTransient<ServicePhotoViewerDialogViewModel>();
@@ -572,6 +576,8 @@ public partial class App : Application
         services.AddTransient<CreateServiceRequestDialogView>();
         services.AddTransient<ServiceRequestOrderView>();
         services.AddTransient<AssignServiceRequestDialogView>();
+        services.AddTransient<VisitReviewIndexView>();
+        services.AddTransient<RescheduleVisitDialogView>();
         services.AddTransient<ResolveByPhoneDialogView>();
         services.AddTransient<UploadServicePhotoDialogView>();
         services.AddTransient<ServicePhotoViewerDialogView>();

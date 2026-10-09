@@ -241,7 +241,9 @@ public class TechnitianService : ITechnitianService
                     if (!response.IsSuccess)
                     {
                         var guid = modelo.Imagen;
-                        _fileStorage.DeleteImage(_imgOption.ImgTechnicians!, guid!);
+                        //RemoveFileAsync y no DeleteImage: la foto esta en Azure, y
+                        //DeleteImage busca en el disco local, asi que no borraba nada.
+                        await _fileStorage.RemoveFileAsync(_imgOption.ImgTechnicians!, guid!);
                         await _transactionManager.RollbackTransactionAsync();
                         return new ActionResponse<Technician>
                         {
@@ -325,7 +327,8 @@ public class TechnitianService : ITechnitianService
                 if (!response.IsSuccess)
                 {
                     var guid = modelo.Imagen;
-                    _fileStorage.DeleteImage(_imgOption.ImgTechnicians!, guid!);
+                    //RemoveFileAsync y no DeleteImage: la foto esta en Azure
+                    await _fileStorage.RemoveFileAsync(_imgOption.ImgTechnicians!, guid!);
                     await _transactionManager.RollbackTransactionAsync();
                     return new ActionResponse<Technician>
                     {
@@ -477,21 +480,26 @@ public class TechnitianService : ITechnitianService
 
             _context.Technicians.Remove(DataRemove);
 
-            if (DataRemove.Imagen is not null)
+            await _transactionManager.SaveChangesAsync();
+            await _transactionManager.CommitTransactionAsync();
+
+            //La foto se borra DESPUES de confirmar. Antes iba antes del SaveChanges y si
+            //fallaba hacia return: la transaccion moria sin confirmar y el tecnico NO se
+            //borraba, aunque el mensaje dijera que si. Una foto huerfana en el blob no
+            //justifica dejar el tecnico vivo: el registro manda y la foto solo se avisa.
+            if (!string.IsNullOrWhiteSpace(DataRemove.Imagen))
             {
-                var response = await _fileStorage.RemoveFileAsync(_imgOption.ImgTechnicians!, DataRemove.Imagen);
-                if (!response)
+                var fotoBorrada = await _fileStorage.RemoveFileAsync(_imgOption.ImgTechnicians!, DataRemove.Imagen);
+                if (!fotoBorrada)
                 {
                     return new ActionResponse<bool>
                     {
-                        WasSuccess = false,
-                        Message = "Se Elimino el Registro pero Sin la Imagen"
+                        WasSuccess = true,
+                        Result = true,
+                        Message = "El tecnico se elimino, pero su foto no se pudo borrar del almacenamiento."
                     };
                 }
             }
-
-            await _transactionManager.SaveChangesAsync();
-            await _transactionManager.CommitTransactionAsync();
 
             return new ActionResponse<bool>
             {

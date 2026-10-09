@@ -264,6 +264,10 @@ namespace Spix.AppBack.DependencyInjection
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IServiceRequestServiceX, ServiceRequestServiceX>();
             services.AddScoped<IServiceRequestService, ServiceRequestService>();
+            services.AddScoped<ITechVisitServiceX, TechVisitServiceX>();
+            services.AddScoped<ITechVisitService, TechVisitService>();
+            services.AddScoped<IVisitReviewServiceX, VisitReviewServiceX>();
+            services.AddScoped<IVisitReviewService, VisitReviewService>();
             services.AddScoped<IServiceRequestPicServiceX, ServiceRequestPicServiceX>();
             services.AddScoped<IServiceRequestPicService, ServiceRequestPicService>();
 

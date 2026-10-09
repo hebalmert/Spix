@@ -3217,6 +3217,9 @@
   <data name="Menu_ContractControl" xml:space="preserve">
     <value>Contract control</value>
   </data>
+  <data name="Menu_Review" xml:space="preserve">
+    <value>Review</value>
+  </data>
   <data name="Menu_ServiceRequests" xml:space="preserve">
     <value>Service requests</value>
   </data>
@@ -4428,5 +4431,29 @@
   </data>
   <data name="Transfer_SerialCount" xml:space="preserve">
     <value>equipment</value>
+  </data>
+  <data name="PhoneCode" xml:space="preserve">
+    <value>Country code</value>
+  </data>
+  <data name="PhoneArea" xml:space="preserve">
+    <value>Area code</value>
+  </data>
+  <data name="Filter_AllOrigin" xml:space="preserve">
+    <value>All origins</value>
+  </data>
+  <data name="Schedule_Origin" xml:space="preserve">
+    <value>Origin</value>
+  </data>
+  <data name="Origin_Installation" xml:space="preserve">
+    <value>Installation</value>
+  </data>
+  <data name="ServiceRequestOrigin_Office" xml:space="preserve">
+    <value>Office</value>
+  </data>
+  <data name="ServiceRequestOrigin_Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="ServiceRequestOrigin_Installation" xml:space="preserve">
+    <value>Installation</value>
   </data>
 </root>

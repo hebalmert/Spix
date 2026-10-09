@@ -1,4 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Vml.Office;
+using Spix.Domain.Entities;
+using Spix.Domain.EntitiesSchedule;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Spix.AppInfra;
@@ -352,7 +354,12 @@ namespace Spix.AppService.ImplementContratos
                 //consecutivo, ni la fecha de creacion: eso no se toca al editar.
                 current.ContractorId = modelo.ContractorId;
                 current.ClientId = modelo.ClientId;
+                //El telefono viaja partido: sin los indicativos el numero queda a medias
+                current.CodeCountry = modelo.CodeCountry;
+                current.CodeNumber = modelo.CodeNumber;
                 current.PhoneNumber = modelo.PhoneNumber;
+                current.CodeCountry2 = modelo.CodeCountry2;
+                current.CodeNumber2 = modelo.CodeNumber2;
                 current.PhoneNumber2 = modelo.PhoneNumber2;
                 current.Address = modelo.Address;
                 current.ZoneId = modelo.ZoneId;
@@ -451,6 +458,11 @@ namespace Spix.AppService.ImplementContratos
 
                 contract.ContractState = ContractState.InProgress;
 
+                //Al aprobar nace la visita para instalar el servicio. Va en la MISMA
+                //transaccion que el cambio de estado: si algo falla, ni el contrato
+                //avanza ni queda una instalacion huerfana.
+                await CrearInstalacionAsync(contract, user);
+
                 await ContractAuditLog.AddAsync(_context, contract.ContractClientId, ContractEventType.Approved,
                     ContractState.InProgress.ToString(), $"{user.FirstName} {user.LastName}".Trim(),
                     Guid.TryParse(user.Id, out var approveUserId) ? approveUserId : null,
@@ -470,6 +482,108 @@ namespace Spix.AppService.ImplementContratos
                 await _transactionManager.RollbackTransactionAsync();
                 return await _httpErrorHandler.HandleErrorAsync<bool>(ex);
             }
+        }
+
+        // La visita de instalacion que nace al aprobar el contrato.
+        //
+        // Es la misma solicitud de servicio de siempre, con dos diferencias: el origen
+        // queda en Installation (asi se puede filtrar y reportar aunque despues se
+        // complete) y el estado en Requested, que significa "ya esta pedida pero la
+        // oficina todavia no le asigna tecnico ni fecha". Desde ahi sigue el flujo
+        // normal: la revisan, la agendan y la cierran.
+        //
+        // Los datos del contrato se copian CONGELADOS, igual que en una solicitud
+        // normal: si mañana cambian la direccion o el plan, la visita sigue diciendo
+        // con que datos se mando al tecnico.
+        private async Task CrearInstalacionAsync(ContractClient contract, User user)
+        {
+            //Si ya tiene una instalacion viva no se crea otra: aprobar dos veces no
+            //puede mandar al tecnico dos veces al mismo sitio.
+            var yaTiene = await _context.ServiceRequests.AnyAsync(x =>
+                x.ContractClientId == contract.ContractClientId &&
+                x.Origin == ServiceRequestOrigin.Installation &&
+                x.ScheduleStatus != ScheduleStatus.Cancelled);
+
+            if (yaTiene)
+            {
+                return;
+            }
+
+            //Los datos del contrato para copiarlos a la visita
+            var datos = await _context.ContractClients.AsNoTracking()
+                .Where(x => x.ContractClientId == contract.ContractClientId)
+                .Select(x => new
+                {
+                    Cliente = x.Client!.FirstName + " " + x.Client.LastName,
+                    x.CodeCountry,
+                    x.CodeNumber,
+                    x.PhoneNumber,
+                    x.Address,
+                    Ciudad = x.Zone!.City!.Name,
+                    Zona = x.Zone!.ZoneName,
+                    Servidor = x.ContractServers!.Select(s => s.Server!.ServerName).FirstOrDefault(),
+                    IpServidor = x.ContractServers!.Select(s => s.Server!.IpNetwork!.Ip).FirstOrDefault(),
+                    IpCliente = x.ContractIps!.Select(i => i.IpNet!.Ip).FirstOrDefault(),
+                    Mac = x.ContractMacs!.Select(m => m.CargueDetail!.MacWlan).FirstOrDefault(),
+                    Plan = x.ContractPlans!.Select(p => p.Plan!.PlanName).FirstOrDefault(),
+                    Nodo = x.ContractNodes!.Select(n => n.Node!.NodesName).FirstOrDefault(),
+                    IpNodo = x.ContractNodes!.Select(n => n.Node!.IpNetwork!.Ip).FirstOrDefault(),
+
+                    //La ubicacion registrada, para que el tecnico sepa a donde ir.
+                    //Si el contrato todavia no la tiene, la visita nace sin ella y la
+                    //captura el tecnico cuando llegue.
+                    Latitud = x.ContractMaps!.Select(m => m.Latitude).FirstOrDefault(),
+                    Longitud = x.ContractMaps!.Select(m => m.Longitude).FirstOrDefault()
+                })
+                .FirstOrDefaultAsync();
+
+            if (datos is null)
+            {
+                return;
+            }
+
+            var siguiente = await _context.ServiceRequests
+                .Where(x => x.CorporationId == contract.CorporationId)
+                .Select(x => (long?)x.RequestNumber)
+                .MaxAsync() ?? 0;
+
+            var telefono = PhoneHelper.Visible(datos.CodeCountry, datos.CodeNumber, datos.PhoneNumber);
+
+            _context.ServiceRequests.Add(new ServiceRequest
+            {
+                RequestNumber = siguiente + 1,
+                CreatedAtUtc = DateTime.UtcNow,
+                ContractClientId = contract.ContractClientId,
+
+                //Sin tecnico ni fecha: eso lo pone la oficina al revisarla
+                ScheduleStatus = ScheduleStatus.Requested,
+                Origin = ServiceRequestOrigin.Installation,
+
+                ClientReason = "Instalacion del servicio",
+                CorporationId = contract.CorporationId,
+                UserId = Guid.TryParse(user.Id, out var id) ? id : Guid.Empty,
+                UsuarioOwner = $"{user.FirstName} {user.LastName}".Trim(),
+
+                ControlContrato = contract.ControlContrato,
+                ClientFullName = datos.Cliente,
+                PhoneNumber = telefono,
+                ContactPhone = telefono,
+                Address = datos.Address,
+                CityName = datos.Ciudad,
+                ZoneName = datos.Zona,
+                ServerName = datos.Servidor,
+                IpServer = datos.IpServidor,
+                IpCliente = datos.IpCliente,
+                MacCliente = datos.Mac,
+                PlanName = datos.Plan,
+                NodeName = datos.Nodo,
+                NodeIp = datos.IpNodo,
+
+                //A donde tiene que ir. La coordenada propia de la visita (donde estuvo
+                //de verdad) la pone el tecnico desde la app.
+                Latitude = datos.Latitud,
+                Longitude = datos.Longitud
+            });
         }
 
         public async Task<ActionResponse<ContractClient>> AddAsync(ContractClient modelo, string username)

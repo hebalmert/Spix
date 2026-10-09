@@ -1,4 +1,4 @@
-using Spix.DomainLogic.EnumTypes;
+﻿using Spix.DomainLogic.EnumTypes;
 
 namespace Spix.Domain.EntitiesSchedule;
 
@@ -21,6 +21,11 @@ public class ScheduleItemDto
     public ScheduleStatus? ScheduleStatus { get; set; }
 
     public ScheduleOrigin Origin { get; set; }
+
+    //De donde salio la solicitud: instalacion, pedido del cliente u oficina.
+    //Es distinto de Origin, que dice si la cita nacio del calendario o de una solicitud.
+    //Nulo cuando la cita la agendo la oficina sin solicitud detras.
+    public ServiceRequestOrigin? RequestOrigin { get; set; }
 
     public Guid? ServiceRequestId { get; set; }
 }

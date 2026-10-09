@@ -253,7 +253,9 @@ public class ContractorService : IContractorService
                     if (!response.IsSuccess)
                     {
                         var guid = modelo.Imagen;
-                        _fileStorage.DeleteImage(_imgOption.ImgContractor!, guid!);
+                        //RemoveFileAsync y no DeleteImage: la foto esta en Azure, y
+                        //DeleteImage busca en el disco local, asi que no borraba nada.
+                        await _fileStorage.RemoveFileAsync(_imgOption.ImgContractor!, guid!);
                         await _transactionManager.RollbackTransactionAsync();
                         return new ActionResponse<Contractor>
                         {
@@ -335,7 +337,8 @@ public class ContractorService : IContractorService
                 if (!response.IsSuccess)
                 {
                     var guid = modelo.Imagen;
-                    _fileStorage.DeleteImage(_imgOption.ImgContractor!, guid!);
+                    //RemoveFileAsync y no DeleteImage: la foto esta en Azure
+                    await _fileStorage.RemoveFileAsync(_imgOption.ImgContractor!, guid!);
                     await _transactionManager.RollbackTransactionAsync();
                     return new ActionResponse<Contractor>
                     {

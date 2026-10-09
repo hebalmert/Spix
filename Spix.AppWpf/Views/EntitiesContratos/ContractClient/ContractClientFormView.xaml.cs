@@ -1,5 +1,6 @@
-using Spix.AppWpf.ViewModels.EntitiesContratos.ContractClient;
+﻿using Spix.AppWpf.ViewModels.EntitiesContratos.ContractClient;
 using Spix.Domain.Entities;
+using Spix.Domain.EntitiesGen;
 using System.Windows.Controls;
 
 namespace Spix.AppWpf.Views.EntitiesContratos.ContractClient;
@@ -23,6 +24,26 @@ public partial class ContractClientFormView : UserControl
             e.AddedItems[0] is State state)
         {
             await viewModel.ChangeStateAsync(state.StateId);
+        }
+    }
+
+    private async void PlanCategorySelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is ContractClientFormViewModel viewModel &&
+            e.AddedItems.Count > 0 &&
+            e.AddedItems[0] is PlanCategory categoria)
+        {
+            await viewModel.ChangePlanCategoryAsync(categoria.PlanCategoryId);
+        }
+    }
+
+    private void PlanSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is ContractClientFormViewModel viewModel &&
+            e.AddedItems.Count > 0 &&
+            e.AddedItems[0] is Plan plan)
+        {
+            viewModel.ChangePlan(plan.PlanId);
         }
     }
 

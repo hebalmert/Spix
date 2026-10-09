@@ -203,34 +203,35 @@ public class ContractIDPicService : IContractIDPicService
             }
             _context.ContractIDPics.Remove(DataRemove);
 
-            if (DataRemove.PhotoIDFront is not null)
-            {
-                var response = _fileStorage.DeleteImage(_imgOption.ImgContractIDPic!, DataRemove.PhotoIDFront);
-                if (!response)
-                {
-                    return new ActionResponse<bool>
-                    {
-                        WasSuccess = false,
-                        Message = "Se Elimino el Registro pero Sin la Imagen"
-                    };
-                }
-            }
-
-            if (DataRemove.PhotoIDBack is not null)
-            {
-                var response = _fileStorage.DeleteImage(_imgOption.ImgContractIDPic!, DataRemove.PhotoIDBack);
-                if (!response)
-                {
-                    return new ActionResponse<bool>
-                    {
-                        WasSuccess = false,
-                        Message = "Se Elimino el Registro pero Sin la Imagen"
-                    };
-                }
-            }
-
             await _transactionManager.SaveChangesAsync();
             await _transactionManager.CommitTransactionAsync();
+
+            //Las dos fotos se borran DESPUES de confirmar, y con RemoveFileAsync.
+            //
+            //Antes iban antes del SaveChanges y con DeleteImage, que busca en el disco
+            //local mientras las fotos viven en Azure: siempre devolvia false, hacia return
+            //y el registro nunca se borraba.
+            var quedoPendiente = false;
+
+            if (!string.IsNullOrWhiteSpace(DataRemove.PhotoIDFront))
+            {
+                quedoPendiente |= !await _fileStorage.RemoveFileAsync(_imgOption.ImgContractIDPic!, DataRemove.PhotoIDFront);
+            }
+
+            if (!string.IsNullOrWhiteSpace(DataRemove.PhotoIDBack))
+            {
+                quedoPendiente |= !await _fileStorage.RemoveFileAsync(_imgOption.ImgContractIDPic!, DataRemove.PhotoIDBack);
+            }
+
+            if (quedoPendiente)
+            {
+                return new ActionResponse<bool>
+                {
+                    WasSuccess = true,
+                    Result = true,
+                    Message = "El registro se elimino, pero alguna foto no se pudo borrar del almacenamiento."
+                };
+            }
 
             return new ActionResponse<bool>
             {

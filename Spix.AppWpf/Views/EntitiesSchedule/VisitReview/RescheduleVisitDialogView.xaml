@@ -1,0 +1,73 @@
+<UserControl x:Class="Spix.AppWpf.Views.EntitiesSchedule.VisitReview.RescheduleVisitDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="clr-namespace:Spix.AppWpf.SharedComponents"
+             MinWidth="700">
+
+    <!-- Reagendar: igual que agendar, pero lo que sale es una visita NUEVA enlazada
+         a la que fallo. La vieja no se mueve. -->
+    <Grid Margin="0,20,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="24" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- De que visita sale, para no reagendar la equivocada -->
+        <Border Padding="12,8"
+                CornerRadius="8"
+                Background="{DynamicResource BrushFieldBack}">
+            <TextBlock FontSize="13"
+                       Foreground="{DynamicResource BrushFieldLabelText}"
+                       Text="{Binding FromText}" />
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Tecnico" />
+            </Border>
+            <ComboBox Grid.Column="1"
+                      Style="{StaticResource SharedFormCombo}"
+                      ItemsSource="{Binding Technicians}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding TechnicianId, Mode=TwoWay}" />
+        </Grid>
+
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="110" />
+            </Grid.ColumnDefinitions>
+            <Border Style="{StaticResource SharedFormLabel}">
+                <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Programada" />
+            </Border>
+            <DatePicker Grid.Column="1"
+                        MinHeight="42"
+                        SelectedDate="{Binding ScheduledDate, Mode=TwoWay}"
+                        SelectedDateFormat="Short" />
+            <TextBox Grid.Column="3"
+                     MaxLength="5"
+                     Style="{StaticResource SharedFormBox}"
+                     ToolTip="Hora en formato HH:mm"
+                     Text="{Binding ScheduledTime, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <shared:SharedModalActions Grid.Row="6"
+                                   SaveText="Reagendar"
+                                   SaveCommand="{Binding SaveCommand}"
+                                   CancelCommand="{Binding CancelCommand}" />
+
+        <shared:SharedLoading Grid.RowSpan="7" IsLoading="{Binding IsLoading}" />
+    </Grid>
+</UserControl>

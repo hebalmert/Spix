@@ -208,3 +208,18 @@
         overflow-y: auto;
     }
 }
+
+/* El numerito de pendientes en un item del menu */
+.nav-badge {
+    display: inline-block;
+    margin-left: .45rem;
+    min-width: 1.3rem;
+    padding: .05rem .38rem;
+    border-radius: 999px;
+    background: #e24b4a;
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+}

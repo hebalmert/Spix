@@ -21,6 +21,12 @@ public interface IServiceRequestService
 
     Task<ActionResponse<ServiceRequestDto>> ResolveByPhoneAsync(Guid id, string? comment, string? recommendation, string username);
 
+    Task<ActionResponse<ServiceRequestDto>> CaptureLocationAsync(Guid id, decimal latitude, decimal longitude, string username);
+
+    Task<ActionResponse<ServiceRequestDto>> NoClientAsync(Guid id, decimal latitude, decimal longitude, string? comment, string username);
+
+    Task<ActionResponse<ServiceRequestDto>> RescheduleAsync(Guid id, Guid technicianId, DateTime scheduledAtUtc, string username);
+
     Task<ActionResponse<ServiceRequestDto>> CloseAsync(Guid id, string? comment, string? recommendation, string username);
 
 }

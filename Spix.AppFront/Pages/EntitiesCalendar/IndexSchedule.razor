@@ -17,6 +17,8 @@
                 <p>@Localizer["Schedule_Subtitle"]</p>
             </div>
 
+            @* Dos filtros que se combinan: el estado dice en que punto va la visita y
+               el origen de donde salio. Asi se puede pedir "instalaciones pendientes". *@
             <div class="idx-head-tools">
                 <GenericSelectWrapper Tmodel="IntItemModel" Items="Statuses">
                     <Body>
@@ -24,6 +26,20 @@
                             <span class="input-group-text"><i class="fa fa-filter"></i></span>
                             <select class="form-select" value="@StatusFilter" @onchange="StatusChanged">
                                 @foreach (var item in Statuses!)
+                                {
+                                    <option value="@item.Value">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </Body>
+                </GenericSelectWrapper>
+
+                <GenericSelectWrapper Tmodel="IntItemModel" Items="Origins">
+                    <Body>
+                        <div class="input-group" style="width:230px">
+                            <span class="input-group-text"><i class="fa fa-arrow-right-to-bracket"></i></span>
+                            <select class="form-select" value="@OriginFilter" @onchange="OriginChanged">
+                                @foreach (var item in Origins!)
                                 {
                                     <option value="@item.Value">@item.Name</option>
                                 }
@@ -45,6 +61,12 @@
                         @item.Name
                     </span>
                 }
+
+                @* El color dice el estado; el borde morado marca que es instalacion *@
+                <span class="sch-chip">
+                    <span class="sch-dot" style="background:transparent; border:3px solid #7F77DD"></span>
+                    @Localizer["Origin_Installation"]
+                </span>
             </div>
         }
 

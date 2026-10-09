@@ -249,10 +249,10 @@ public class ServiceRequestPicService : IServiceRequestPicService
                 return new ActionResponse<bool> { WasSuccess = false, Message = "La solicitud completada no permite eliminar fotos." };
             }
 
-            DeleteImage(modelo.PhotoBefore1);
-            DeleteImage(modelo.PhotoBefore2);
-            DeleteImage(modelo.PhotoAfter1);
-            DeleteImage(modelo.PhotoAfter2);
+            await DeleteImageAsync(modelo.PhotoBefore1);
+            await DeleteImageAsync(modelo.PhotoBefore2);
+            await DeleteImageAsync(modelo.PhotoAfter1);
+            await DeleteImageAsync(modelo.PhotoAfter2);
 
             _context.ServiceRequestPics.Remove(modelo);
             await _transactionManager.SaveChangesAsync();
@@ -301,10 +301,14 @@ public class ServiceRequestPicService : IServiceRequestPicService
         return await _fileStorage.GetBlobSasUrlAsync(photo, _imgOption.ImgContractIDPic, TimeSpan.FromMinutes(2));
     }
 
-    private void DeleteImage(string? photo)
+    //Pasa a async porque el borrado real es contra Azure. Antes llamaba a DeleteImage,
+    //que busca en el disco local, y las fotos quedaban huerfanas en el blob.
+    private async Task DeleteImageAsync(string? photo)
     {
         if (!string.IsNullOrWhiteSpace(photo))
-            _fileStorage.DeleteImage(_imgOption.ImgContractIDPic!, photo);
+        {
+            await _fileStorage.RemoveFileAsync(_imgOption.ImgContractIDPic!, photo);
+        }
     }
 
     private async Task<User?> GetUserAsync(string username) => await _userHelper.GetUserByUserNameAsync(username);

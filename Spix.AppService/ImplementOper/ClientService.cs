@@ -272,7 +272,9 @@ namespace Spix.Services.ImplementOper
                         {
                             if (!string.IsNullOrWhiteSpace(modelo.Imagen))
                             {
-                                _fileStorage.DeleteImage(_imgOption.ImgClient!, modelo.Imagen);
+                                //RemoveFileAsync y no DeleteImage: la foto esta en Azure, y
+                                //DeleteImage busca en el disco local, asi que no borraba nada.
+                                await _fileStorage.RemoveFileAsync(_imgOption.ImgClient!, modelo.Imagen);
                             }
 
                             await _transactionManager.RollbackTransactionAsync();
@@ -357,7 +359,8 @@ namespace Spix.Services.ImplementOper
                     {
                         if (!string.IsNullOrWhiteSpace(modelo.Imagen))
                         {
-                            _fileStorage.DeleteImage(_imgOption.ImgClient!, modelo.Imagen);
+                            //RemoveFileAsync y no DeleteImage: la foto esta en Azure
+                            await _fileStorage.RemoveFileAsync(_imgOption.ImgClient!, modelo.Imagen);
                         }
 
                         await _transactionManager.RollbackTransactionAsync();
@@ -513,21 +516,32 @@ namespace Spix.Services.ImplementOper
 
                 _context.Clients.Remove(DataRemove);
 
-                if (DataRemove.Imagen is not null)
+                await _transactionManager.SaveChangesAsync();
+                await _transactionManager.CommitTransactionAsync();
+
+                //La foto se borra DESPUES de confirmar, y aparte.
+                //
+                //Antes iba antes del SaveChanges y si fallaba hacia return: la transaccion
+                //moria sin confirmar y el cliente NO se borraba, aunque el mensaje dijera
+                //que si. Encima llamaba a DeleteImage, que busca en el disco local mientras
+                //la foto vive en Azure, asi que siempre fallaba: ningun cliente con foto se
+                //podia borrar.
+                //
+                //Que quede una foto huerfana en el blob no justifica dejar el cliente vivo,
+                //asi que el registro manda y la foto solo se avisa.
+                if (!string.IsNullOrWhiteSpace(DataRemove.Imagen))
                 {
-                    var response = _fileStorage.DeleteImage(_imgOption.ImgClient!, DataRemove.Imagen);
-                    if (!response)
+                    var fotoBorrada = await _fileStorage.RemoveFileAsync(_imgOption.ImgClient!, DataRemove.Imagen);
+                    if (!fotoBorrada)
                     {
                         return new ActionResponse<bool>
                         {
-                            WasSuccess = false,
-                            Message = "Se Elimino el Registro pero Sin la Imagen"
+                            WasSuccess = true,
+                            Result = true,
+                            Message = "El cliente se elimino, pero su foto no se pudo borrar del almacenamiento."
                         };
                     }
                 }
-
-                await _transactionManager.SaveChangesAsync();
-                await _transactionManager.CommitTransactionAsync();
 
                 return new ActionResponse<bool>
                 {

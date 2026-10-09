@@ -35,6 +35,7 @@ public partial class ScheduleIndexView : UserControl
 
         //El filtro y la leyenda primero: de ahi salen los colores del calendario
         await _viewModel.LoadStatusesAsync();
+        await _viewModel.LoadOriginsAsync();
         await _viewModel.LoadAsync();
     }
 

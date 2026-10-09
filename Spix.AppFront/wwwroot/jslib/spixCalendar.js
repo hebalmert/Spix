@@ -25,7 +25,9 @@
                 ...e,
                 display: e.color ? 'block' : undefined,
                 backgroundColor: e.color,
-                borderColor: e.color,
+                // El borde lo decide el servidor: morado si es instalacion, si no el
+                // mismo color del relleno. Antes se copiaba siempre y la marca se perdia.
+                borderColor: e.borderColor || e.color,
                 textColor: e.textColor
             })),
 
@@ -59,7 +61,7 @@
                     ...e,
                     display: e.color ? 'block' : undefined,
                     backgroundColor: e.color,
-                    borderColor: e.color,
+                    borderColor: e.borderColor || e.color,
                     textColor: e.textColor
                 }))
             );
@@ -68,6 +70,7 @@
 
     applyEventStyle: function (info) {
         var backgroundColor = info.event.backgroundColor;
+        var borderColor = info.event.borderColor || backgroundColor;
         var textColor = info.event.textColor;
 
         if (!backgroundColor || !textColor) {
@@ -75,13 +78,19 @@
         }
 
         info.el.style.backgroundColor = backgroundColor;
-        info.el.style.borderColor = backgroundColor;
+        info.el.style.borderColor = borderColor;
         info.el.style.color = textColor;
+
+        // Cuando el borde no es del color del relleno, la cita viene marcada (hoy, una
+        // instalacion). Se engruesa la barra de la izquierda para que se note.
+        if (borderColor !== backgroundColor) {
+            info.el.style.borderLeftWidth = "4px";
+            info.el.style.borderLeftStyle = "solid";
+        }
 
         info.el.querySelectorAll("a, td, .fc-event-title, .fc-event-time, .fc-list-event-title, .fc-list-event-time")
             .forEach(function (item) {
                 item.style.backgroundColor = backgroundColor;
-                item.style.borderColor = backgroundColor;
                 item.style.color = textColor;
             });
 

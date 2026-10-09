@@ -20,6 +20,7 @@
     private List<CalendarEventDto> _all = new();
     private List<CalendarEventDto> _events = new();
     private int _statusFilter;
+    private int _originFilter;
     private Dictionary<Guid, string> _technicianColors = new();
     private string UserTimeZone = "UTC";
 
@@ -82,25 +83,54 @@
                 origin = x.Origin,
                 serviceRequestId = x.ServiceRequestId,
                 scheduleStatus = x.ScheduleStatus,
+                requestOrigin = x.RequestOrigin,
                 color = ScheduleColors.Get(x.ScheduleStatus),
-                textColor = "#FFFFFF"
+                textColor = "#FFFFFF",
+                //El relleno sigue diciendo el ESTADO; el borde morado marca que es una
+                //instalacion, para distinguirla de un vistazo sin filtrar.
+                borderColor = x.RequestOrigin == ServiceRequestOrigin.Installation
+                    ? "#7F77DD"
+                    : ScheduleColors.Get(x.ScheduleStatus)
             })
             .ToList();
 
         AplicarFiltro();
     }
 
-    //Cero es "todos"; con un estatus puesto solo quedan las citas de ese estatus
+    //Cero es "todos" en cada filtro. Son dos ejes que se combinan: el estado dice en
+    //que punto va la visita y el origen de donde salio, asi que se pueden pedir cosas
+    //como "instalaciones pendientes".
     private void AplicarFiltro()
     {
-        _events = _statusFilter == 0
-            ? _all
-            : _all.Where(x => (int?)x.scheduleStatus == _statusFilter).ToList();
+        IEnumerable<CalendarEventDto> filtradas = _all;
+
+        if (_statusFilter != 0)
+        {
+            filtradas = filtradas.Where(x => (int?)x.scheduleStatus == _statusFilter);
+        }
+
+        if (_originFilter != 0)
+        {
+            filtradas = filtradas.Where(x => (int?)x.requestOrigin == _originFilter);
+        }
+
+        _events = filtradas.ToList();
     }
 
     public async Task SetStatusFilterAsync(int status)
     {
         _statusFilter = status;
+        await RefrescarAsync();
+    }
+
+    public async Task SetOriginFilterAsync(int origin)
+    {
+        _originFilter = origin;
+        await RefrescarAsync();
+    }
+
+    private async Task RefrescarAsync()
+    {
         AplicarFiltro();
 
         await JS.InvokeVoidAsync("SpixCalendar.refreshEvents", "spix-calendar", _events);
@@ -186,7 +216,12 @@
         public ScheduleOrigin origin { get; set; }
         public Guid? serviceRequestId { get; set; }
         public ScheduleStatus? scheduleStatus { get; set; }
+
+        //De donde salio la solicitud: con esto se filtran las instalaciones
+        public ServiceRequestOrigin? requestOrigin { get; set; }
+
         public string? color { get; set; }
         public string? textColor { get; set; }
+        public string? borderColor { get; set; }
     }
 }

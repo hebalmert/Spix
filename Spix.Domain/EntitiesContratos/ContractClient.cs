@@ -34,10 +34,33 @@ public class ContractClient
     [Display(Name = nameof(Resource.Client), ResourceType = typeof(Resource))]
     public Guid ClientId { get; set; }
 
+    //El indicativo del pais, escrito a mano: +57, +58. En una misma empresa hay
+    //clientes de paises distintos, asi que se guarda por persona.
+    [MaxLength(6, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.PhoneCode), ResourceType = typeof(Resource))]
+    public string CodeCountry { get; set; } = null!;
+
+    //El indicativo del operador: 300, 318.
+    [MaxLength(6, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Required(ErrorMessageResourceName = nameof(Resource.Validation_Required), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.PhoneArea), ResourceType = typeof(Resource))]
+    public string CodeNumber { get; set; } = null!;
+
     [Required(ErrorMessage = "El {0} es Obligatorio")]
     [MaxLength(25, ErrorMessage = "El {0} no puede tener mas de {1} Caracteres.")]
     [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]
     public string PhoneNumber { get; set; } = null!;
+
+    //El indicativo del pais del segundo telefono, opcional.
+    [MaxLength(6, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.PhoneCode), ResourceType = typeof(Resource))]
+    public string? CodeCountry2 { get; set; }
+
+    //El indicativo del segundo telefono.
+    [MaxLength(6, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
+    [Display(Name = nameof(Resource.PhoneArea), ResourceType = typeof(Resource))]
+    public string? CodeNumber2 { get; set; }
 
     [MaxLength(25, ErrorMessageResourceName = nameof(Resource.Validation_MaxLength), ErrorMessageResourceType = typeof(Resource))]
     [Display(Name = nameof(Resource.Phone), ResourceType = typeof(Resource))]

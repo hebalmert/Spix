@@ -236,6 +236,9 @@
                             <Button Click="ShowScheduleClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Agenda" />
                             </Button>
+                            <Button Click="ShowVisitReviewsClick" Style="{StaticResource ShellSubMenuItem}">
+                                <TextBlock FontSize="14" Text="Revision" />
+                            </Button>
                             <Button Click="ShowContractSuspendedClick" Style="{StaticResource ShellSubMenuItem}">
                                 <TextBlock FontSize="14" Text="Contratos suspendidos" />
                             </Button>

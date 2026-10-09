@@ -50,12 +50,19 @@
                     <ValidationMessage For="@(() => Contractor.Document)" />
                 </div>
                 <div class="mb-2">
+                    @* El telefono en sus tres partes: pais, operador y numero. Se guarda
+                       partido para poder armar el internacional de la mensajeria. Las dos
+                       cajitas llevan ancho fijo para que no se coman el numero. *@
                     <div class="input-group">
                         <span class="input-group-text" style="width: 150px">
                             @Localizer[nameof(Resource.Phone)]
                         </span>
-                        <InputText class="form-control" placeholder="" @bind-Value="Contractor.PhoneNumber" />
+                        <InputText class="form-control" style="max-width: 80px" placeholder="+57" @bind-Value="Contractor.CodeCountry" />
+                        <InputText class="form-control" style="max-width: 80px" placeholder="300" @bind-Value="Contractor.CodeNumber" />
+                        <InputText class="form-control" placeholder="3675815" @bind-Value="Contractor.PhoneNumber" />
                     </div>
+                    <ValidationMessage For="@(() => Contractor.CodeCountry)" />
+                    <ValidationMessage For="@(() => Contractor.CodeNumber)" />
                     <ValidationMessage For="@(() => Contractor.PhoneNumber)" />
                 </div>
             </div>

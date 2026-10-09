@@ -4858,6 +4858,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All origins.
+        /// </summary>
+        public static string Filter_AllOrigin {
+            get {
+                return ResourceManager.GetString("Filter_AllOrigin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All statuses.
         /// </summary>
         public static string Filter_AllStatus {
@@ -6595,6 +6604,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Review.
+        /// </summary>
+        public static string Menu_Review {
+            get {
+                return ResourceManager.GetString("Menu_Review", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Schedule.
         /// </summary>
         public static string Menu_Schedule {
@@ -8053,6 +8071,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Installation.
+        /// </summary>
+        public static string Origin_Installation {
+            get {
+                return ResourceManager.GetString("Origin_Installation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
         public static string Password {
@@ -8580,6 +8607,24 @@ namespace Spix.xLanguage.Resources {
         public static string Phone2 {
             get {
                 return ResourceManager.GetString("Phone2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Area code.
+        /// </summary>
+        public static string PhoneArea {
+            get {
+                return ResourceManager.GetString("PhoneArea", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Country code.
+        /// </summary>
+        public static string PhoneCode {
+            get {
+                return ResourceManager.GetString("PhoneCode", resourceCulture);
             }
         }
         
@@ -10897,6 +10942,15 @@ namespace Spix.xLanguage.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Origin.
+        /// </summary>
+        public static string Schedule_Origin {
+            get {
+                return ResourceManager.GetString("Schedule_Origin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Technician visits and appointments, by status..
         /// </summary>
         public static string Schedule_Subtitle {
@@ -11910,6 +11964,33 @@ namespace Spix.xLanguage.Resources {
         public static string ServiceCategoryIdx_Title {
             get {
                 return ResourceManager.GetString("ServiceCategoryIdx_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client.
+        /// </summary>
+        public static string ServiceRequestOrigin_Client {
+            get {
+                return ResourceManager.GetString("ServiceRequestOrigin_Client", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installation.
+        /// </summary>
+        public static string ServiceRequestOrigin_Installation {
+            get {
+                return ResourceManager.GetString("ServiceRequestOrigin_Installation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Office.
+        /// </summary>
+        public static string ServiceRequestOrigin_Office {
+            get {
+                return ResourceManager.GetString("ServiceRequestOrigin_Office", resourceCulture);
             }
         }
         

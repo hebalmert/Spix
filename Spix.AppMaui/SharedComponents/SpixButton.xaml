@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Spix.AppMaui.SharedComponents.SpixButton"
+             x:Name="Raiz">
+
+    <!-- El boton de la web: cuerpo blanco, franja de color a la izquierda y sombra
+         solida. Mismas medidas, solo mas alto para el dedo. -->
+    <Border Stroke="{StaticResource SpixBtnBorder}"
+            StrokeThickness="1"
+            Padding="0"
+            BackgroundColor="{StaticResource SpixCard}"
+            StrokeShape="RoundRectangle 8"
+            HeightRequest="52">
+        <Border.Shadow>
+            <Shadow Brush="{StaticResource SpixBtnShadow}" Offset="2,2" Radius="0" Opacity="1" />
+        </Border.Shadow>
+
+        <Grid ColumnDefinitions="46,*">
+            <BoxView Color="{Binding Strip, Source={x:Reference Raiz}}" />
+            <Label Grid.Column="0"
+                   HorizontalOptions="Center" VerticalOptions="Center"
+                   FontSize="18" TextColor="White"
+                   Text="{Binding Glyph, Source={x:Reference Raiz}}" />
+
+            <Label Grid.Column="1"
+                   Margin="14,0"
+                   HorizontalOptions="Center" VerticalOptions="Center"
+                   FontSize="15" FontAttributes="Bold"
+                   TextColor="{Binding TextColorValue, Source={x:Reference Raiz}}"
+                   Text="{Binding Text, Source={x:Reference Raiz}}" />
+        </Grid>
+
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Command, Source={x:Reference Raiz}}"
+                                  CommandParameter="{Binding CommandParameter, Source={x:Reference Raiz}}" />
+        </Border.GestureRecognizers>
+    </Border>
+</ContentView>

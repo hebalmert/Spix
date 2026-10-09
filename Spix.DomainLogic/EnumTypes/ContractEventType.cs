@@ -1,4 +1,4 @@
-namespace Spix.DomainLogic.EnumTypes;
+﻿namespace Spix.DomainLogic.EnumTypes;
 
 //Los pasos que se anotan en la bitacora de un contrato (ContractAudit).
 //Nunca se reutiliza un numero: si un paso deja de usarse, se deja su hueco.
@@ -34,5 +34,21 @@ public enum ContractEventType
     //===== Configuracion tecnica =====
     BindCreated = 50,
     BindChanged = 51,
-    QueueCreated = 52
+    QueueCreated = 52,
+    //===== Ubicacion =====
+    //El tecnico tomo las coordenadas en la visita
+    LocationCaptured = 60,
+
+    //Esa coordenada se aplico a la ubicacion del contrato
+    LocationUpdated = 61,
+
+    //Vino distinta de la registrada: queda para que alguien la revise
+    LocationMismatch = 62,
+
+    //===== Resultado de la visita =====
+    //El tecnico fue y no habia nadie
+    ClientAbsent = 63,
+
+    //De una visita fallida salio otra nueva
+    VisitRescheduled = 64
 }

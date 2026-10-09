@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Spix.AppMaui.ViewModels"
+             x:Class="Spix.AppMaui.Views.VisitListView"
+             x:DataType="vm:VisitListViewModel">
+
+    <!-- La lista es la misma en las tres pestanas: solo cambia el filtro, que lo pone
+         cada ViewModel. Por eso una sola plantilla y no tres copias. -->
+    <RefreshView IsRefreshing="{Binding IsBusy}" Command="{Binding LoadCommand}">
+        <ScrollView>
+            <VerticalStackLayout Padding="12" Spacing="10">
+
+                <Label Text="{Binding EmptyText}"
+                       IsVisible="{Binding IsEmpty}"
+                       TextColor="#B9CBE8"
+                       HorizontalOptions="Center"
+                       Margin="0,40,0,0" />
+
+                <CollectionView ItemsSource="{Binding Rows}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:VisitRow">
+                            <Border Style="{StaticResource SpixCardFrame}">
+                                <VerticalStackLayout Spacing="3">
+
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Style="{StaticResource SpixTitle}" Text="{Binding ClientName}" />
+                                        <Border Grid.Column="1"
+                                                Padding="9,3"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 6"
+                                                BackgroundColor="{Binding WhenBack}">
+                                            <Label FontSize="12" FontAttributes="Bold"
+                                                   TextColor="{Binding WhenText2}"
+                                                   Text="{Binding WhenText}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Meta}" />
+                                    <Label Style="{StaticResource SpixMetaLabel}" Text="{Binding Address}" />
+
+                                    <!-- Abrir manda a la visita; llamar y mapa son de un toque -->
+                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="0,8,0,0">
+                                        <Button Text="Abrir"
+                                                BackgroundColor="{StaticResource SpixBtnBlueStrip}"
+                                                TextColor="White"
+                                                CornerRadius="8"
+                                                HeightRequest="46"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VisitListViewModel}}, Path=OpenCommand}"
+                                                CommandParameter="{Binding .}" />
+
+                                        <Button Grid.Column="1" Text="Llamar"
+                                                IsVisible="{Binding CanCall}"
+                                                BackgroundColor="{StaticResource SpixFieldBack}"
+                                                TextColor="{StaticResource SpixBtnBlueText}"
+                                                CornerRadius="8"
+                                                HeightRequest="46"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VisitListViewModel}}, Path=CallCommand}"
+                                                CommandParameter="{Binding .}" />
+
+                                        <Button Grid.Column="2" Text="Mapa"
+                                                IsVisible="{Binding CanMap}"
+                                                BackgroundColor="{StaticResource SpixFieldBack}"
+                                                TextColor="{StaticResource SpixBtnBlueText}"
+                                                CornerRadius="8"
+                                                HeightRequest="46"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VisitListViewModel}}, Path=MapCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentView>

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Spix.AppFront.GenericModel;
 using Spix.AppFront.Helper;
@@ -17,10 +17,14 @@ public partial class IndexSchedule
 
     //La lista del filtro la arma el backend, con "Todos" en la posicion 0
     private const string BaseComboStatus = "/api/v1/schedulecontrol/loadStatusFilter";
+    private const string BaseComboOrigin = "/api/v1/schedulecontrol/loadOriginFilter";
 
     private SpixCalendar? _calendar;
     private List<IntItemModel>? Statuses;
     private int StatusFilter;
+
+    private List<IntItemModel>? Origins;
+    private int OriginFilter;
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,6 +33,12 @@ public partial class IndexSchedule
             return;
 
         Statuses = responseHttp.Response ?? new();
+
+        //El combo de origenes: instalacion, cliente u oficina
+        var responseOrigin = await _repository.GetAsync<List<IntItemModel>>(BaseComboOrigin);
+        Origins = await _responseHandler.HandleErrorAsync(responseOrigin)
+            ? new()
+            : responseOrigin.Response ?? new();
     }
 
     //Cero es "todos": el calendario vuelve a mostrar la agenda completa
@@ -39,6 +49,16 @@ public partial class IndexSchedule
         if (_calendar is not null)
         {
             await _calendar.SetStatusFilterAsync(StatusFilter);
+        }
+    }
+
+    private async Task OriginChanged(ChangeEventArgs e)
+    {
+        OriginFilter = int.TryParse(e.Value?.ToString(), out var valor) ? valor : 0;
+
+        if (_calendar is not null)
+        {
+            await _calendar.SetOriginFilterAsync(OriginFilter);
         }
     }
 

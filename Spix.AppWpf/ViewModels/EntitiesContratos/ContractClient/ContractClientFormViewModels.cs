@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spix.AppWpf.SharedServices;
 using Spix.Domain.Entities;
@@ -24,6 +24,10 @@ namespace Spix.AppWpf.ViewModels.EntitiesContratos.ContractClient;
 public abstract partial class ContractClientFormViewModel : ObservableObject
 {
     protected const string BaseUrl = "api/v1/contractclients";
+
+    //Mismos endpoints que usa Blazor
+    private const string PlanCategoriesUrl = "api/v1/plancategories/loadCombo";
+    private const string PlansUrl = "api/v1/plans/loadComboByCategory";
 
     private const string ClientsUrl = "api/v1/clients";
     private const string StatusUrl = "/api/v1/contractclients/loadContractClientStatus";
@@ -67,6 +71,27 @@ public abstract partial class ContractClientFormViewModel : ObservableObject
     //Lo que va cayendo mientras se escribe el cliente
     [ObservableProperty]
     private ObservableCollection<GuidItemModel> _clients = new();
+
+    //El plan va en cascada, igual que en la web: primero la categoria y despues el plan.
+    [ObservableProperty]
+    private ObservableCollection<PlanCategory> _planCategories = new();
+
+    [ObservableProperty]
+    private ObservableCollection<Plan> _plans = new();
+
+    //El plan elegido, para mostrar su velocidad, su precio y su tasa de rehuso
+    [ObservableProperty]
+    private bool _hasPlan;
+
+    [ObservableProperty]
+    private Plan? _selectedPlan;
+
+    //La franja de datos se muestra por un bool: WPF no trae un converter de nulo a
+    //visibilidad y no hace falta inventar uno para esto
+    partial void OnSelectedPlanChanged(Plan? value)
+    {
+        HasPlan = value is not null;
+    }
 
     [ObservableProperty]
     private string _clientFilter = string.Empty;
@@ -134,6 +159,7 @@ public abstract partial class ContractClientFormViewModel : ObservableObject
         await LoadStatusesAsync();
         await LoadStratumsAsync();
         await LoadStatesAsync();
+        await LoadPlanCategoriesAsync();
     }
 
     //===================== El cliente =====================
@@ -238,6 +264,67 @@ public abstract partial class ContractClientFormViewModel : ObservableObject
         await LoadZonesAsync(cityId);
     }
 
+    // Las categorias de plan: se piden una vez al abrir el formulario.
+    private async Task LoadPlanCategoriesAsync()
+    {
+        var response = await _repository.GetAsync<List<PlanCategory>>(PlanCategoriesUrl);
+        if (await _responseHandler.HandleErrorAsync(response))
+        {
+            return;
+        }
+
+        PlanCategories = new ObservableCollection<PlanCategory>(
+            response.Response ?? new List<PlanCategory>());
+    }
+
+    // Al cambiar de categoria el plan elegido deja de valer, igual que en la web.
+    public async Task ChangePlanCategoryAsync(Guid planCategoryId)
+    {
+        Entity.PlanCategoryId = planCategoryId;
+
+        //Al editar, la cascada se rearma con lo que ya trae el contrato y NO se limpia
+        if (_cargando)
+        {
+            await LoadPlansAsync(planCategoryId);
+            return;
+        }
+
+        Entity.PlanId = Guid.Empty;
+        SelectedPlan = null;
+        Plans = new ObservableCollection<Plan>();
+
+        await LoadPlansAsync(planCategoryId);
+    }
+
+    // Los planes de esa categoria.
+    private async Task LoadPlansAsync(Guid planCategoryId)
+    {
+        if (planCategoryId == Guid.Empty)
+        {
+            Plans = new ObservableCollection<Plan>();
+            return;
+        }
+
+        var response = await _repository.GetAsync<List<Plan>>($"{PlansUrl}/{planCategoryId}");
+        if (await _responseHandler.HandleErrorAsync(response))
+        {
+            Plans = new ObservableCollection<Plan>();
+            return;
+        }
+
+        Plans = new ObservableCollection<Plan>(response.Response ?? new List<Plan>());
+
+        //Al editar hay que volver a marcar el plan que el contrato ya tenia
+        SelectedPlan = Plans.FirstOrDefault(x => x.PlanId == Entity.PlanId && x.PlanId != Guid.Empty);
+    }
+
+    // El plan elegido: se guarda y se muestran sus datos.
+    public void ChangePlan(Guid planId)
+    {
+        Entity.PlanId = planId;
+        SelectedPlan = Plans.FirstOrDefault(x => x.PlanId == planId && x.PlanId != Guid.Empty);
+    }
+
     private async Task LoadStatesAsync()
     {
         var response = await _repository.GetAsync<List<State>>(StatesUrl);
@@ -337,6 +424,8 @@ public abstract partial class ContractClientFormViewModel : ObservableObject
                 ControlContrato = Entity.ControlContrato,
                 ContractorId = Entity.ContractorId,
                 ClientId = Entity.ClientId,
+                PlanCategoryId = Entity.PlanCategoryId,
+                PlanId = Entity.PlanId,
                 PhoneNumber = Entity.PhoneNumber,
                 PhoneNumber2 = Entity.PhoneNumber2,
                 Address = Entity.Address,
@@ -384,6 +473,13 @@ public abstract partial class ContractClientFormViewModel : ObservableObject
         if (Entity.ContractorId == Guid.Empty)
         {
             mensaje = "Debe seleccionar el contratista.";
+            return false;
+        }
+
+        //El plan tambien lo exige el servidor; se avisa aqui para no hacer el viaje
+        if (Entity.PlanId == Guid.Empty)
+        {
+            mensaje = "Debe seleccionar el plan del contrato.";
             return false;
         }
 
@@ -494,6 +590,7 @@ public partial class EditContractClientDialogViewModel : ContractClientFormViewM
             {
                 await LoadCitiesAsync(Entity.StateId);
                 await LoadZonesAsync(Entity.CityId);
+                await ChangePlanCategoryAsync(Entity.PlanCategoryId);
             });
 
             ClientFilter = $"{Entity.Client?.FirstName} {Entity.Client?.LastName}".Trim();

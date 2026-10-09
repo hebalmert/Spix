@@ -177,6 +177,21 @@ public partial class DetailedIndexServer
     //Al elegir un equipo se trae entero, mas las IPs libres para su IP local.
     //Las interfaces NO se leen aca: eso exige conectarse al equipo y colgaria la pantalla
     //si el router no responde. Se leen al probar la conexion.
+    //La IP del equipo solo se muestra tapada en la lista: 12.***.***.***
+    //Quien necesite la completa entra a editar el servidor.
+    private static string IpTapada(string? ip)
+    {
+        if (string.IsNullOrWhiteSpace(ip))
+        {
+            return string.Empty;
+        }
+
+        var partes = ip.Split('.');
+
+        //Si no tiene forma de IPv4 no se inventa nada: se deja como esta
+        return partes.Length == 4 ? $"{partes[0]}.***.***.***" : ip;
+    }
+
     private async Task SelectServerAsync(Guid serverId)
     {
         SelectedServerId = serverId;

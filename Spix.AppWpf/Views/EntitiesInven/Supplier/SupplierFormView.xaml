@@ -94,8 +94,29 @@
             <Border Grid.Column="0" Style="{StaticResource SharedFormLabel}">
                 <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Telefono" />
             </Border>
-            <TextBox Grid.Column="1" Style="{StaticResource SharedFormBox}"
-                     Text="{Binding Entity.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+            <!-- El telefono en sus tres partes: pais, operador y numero. Van en un Grid
+                 anidado para ocupar la misma celda que ocupaba la caja unica. -->
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="58" />
+                    <ColumnDefinition Width="58" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBox MaxLength="6"
+                         Style="{StaticResource SharedFormBox}"
+                         ToolTip="Indicativo del pais, por ejemplo +57"
+                         Text="{Binding Entity.CodeCountry, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Grid.Column="1"
+                         MaxLength="6"
+                         Style="{StaticResource SharedFormBox}"
+                         ToolTip="Indicativo del operador, por ejemplo 300"
+                         Text="{Binding Entity.CodeNumber, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Grid.Column="2"
+                         MaxLength="25"
+                         Style="{StaticResource SharedFormBox}"
+                         ToolTip="Numero, por ejemplo 3675815"
+                         Text="{Binding Entity.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
             <Border Grid.Column="3" Style="{StaticResource SharedFormLabel}">
                 <TextBlock Style="{StaticResource SharedFormLabelText}" Text="Correo" />
             </Border>

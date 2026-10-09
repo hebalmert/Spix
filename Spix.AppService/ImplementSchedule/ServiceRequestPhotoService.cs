@@ -174,7 +174,8 @@ public class ServiceRequestPhotoService : IServiceRequestPhotoService
 
             if (!string.IsNullOrWhiteSpace(photo.Photo))
             {
-                _fileStorage.DeleteImage(_imgOption.RequiereServicePicture!, photo.Photo);
+                //RemoveFileAsync y no DeleteImage: la foto esta en Azure
+                await _fileStorage.RemoveFileAsync(_imgOption.RequiereServicePicture!, photo.Photo);
             }
 
             return new ActionResponse<bool> { WasSuccess = true, Result = true };

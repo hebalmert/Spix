@@ -176,6 +176,9 @@ public class ManagerService : IManagerService
                 FirstName = modelo.FirstName,
                 LastName = modelo.LastName,
                 NroDocument = modelo.NroDocument,
+                //El telefono viaja partido: sin estas dos el indicativo llega nulo
+                CodeCountry = modelo.CodeCountry,
+                CodeNumber = modelo.CodeNumber,
                 PhoneNumber = modelo.PhoneNumber,
                 Address = modelo.Address,
                 Email = modelo.Email,
@@ -284,6 +287,9 @@ public class ManagerService : IManagerService
                 FirstName = Newmodelo.FirstName,
                 LastName = Newmodelo.LastName,
                 NroDocument = Newmodelo.NroDocument,
+                //El telefono viaja partido: sin estas dos el indicativo llega nulo
+                CodeCountry = Newmodelo.CodeCountry,
+                CodeNumber = Newmodelo.CodeNumber,
                 PhoneNumber = Newmodelo.PhoneNumber,
                 Address = Newmodelo.Address,
                 Email = Newmodelo.Email,

@@ -1,0 +1,136 @@
+@page "/visitreviews"
+@layout MainLayout
+@attribute [Authorize(Roles = "Administrator, Auxiliar")]
+@using Spix.Domain.EntitiesSchedule
+
+<div class="container-fluid pt-4">
+    <div class="card shadow-lg p-4 mb-5" style="border-radius: 12px;">
+
+        @* Encabezado *@
+        <div class="idx-head">
+            <span class="idx-glifo"><i class="fa fa-bell"></i></span>
+            <div class="idx-head-text">
+                <h3>Revision</h3>
+                <p>Visitas que esperan una decision: ubicacion distinta a la del contrato y visitas donde no estaba el cliente.</p>
+            </div>
+        </div>
+
+        @* Las dos pestañas, con su contador. Un solo modulo en el menu: si fuera uno por
+           tipo de aviso el menu crece sin control. *@
+        <div class="vr-tabs">
+            <button type="button" class="vr-tab @(Tab == 0 ? "is-on" : null)" @onclick="() => SetTabAsync(0)">
+                <i class="fa fa-map-pin me-2"></i>Ubicacion
+                @if (Counters is not null && Counters.Location > 0)
+                {
+                    <span class="vr-tab-count">@Counters.Location</span>
+                }
+            </button>
+            <button type="button" class="vr-tab @(Tab == 1 ? "is-on" : null)" @onclick="() => SetTabAsync(1)">
+                <i class="fa fa-user-slash me-2"></i>Sin cliente
+                @if (Counters is not null && Counters.Absent > 0)
+                {
+                    <span class="vr-tab-count">@Counters.Absent</span>
+                }
+            </button>
+
+            <div class="vr-tabs-search">
+                <FilterComponent ApplyFilter="SetFilterValue" />
+            </div>
+        </div>
+
+        <section class="idx-panel p-3">
+
+            @if (Items is null)
+            {
+                <div class="idx-meta text-center py-4">
+                    <span class="spinner-border spinner-border-sm me-2"></span>@Localizer["Table_Loading"]
+                </div>
+            }
+            else if (Items.Count == 0)
+            {
+                <div class="vr-empty">
+                    <i class="fa fa-circle-check"></i>
+                    <span>No hay nada por revisar</span>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Items)
+                {
+                    @* Borde rojo a la izquierda cuando el tecnico marco lejos del sitio *@
+                    <div class="vr-card @(item.SameSite ? null : "is-far")">
+
+                        <div class="vr-card-head">
+                            <div class="vr-card-who">
+                                <div class="vr-name">
+                                    @item.ClientFullName
+                                    <span class="idx-meta">&middot; Contrato @item.ControlContrato</span>
+                                </div>
+                                <div class="idx-meta">
+                                    Visita #@item.RequestNumber &middot; @item.OriginName &middot; @item.TechnicianName
+                                    &middot; @item.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                                    @if (item.ClientAbsent)
+                                    {
+                                        <span> &middot; intento @item.Attempt</span>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(item.TechnicianComment))
+                                {
+                                    <div class="vr-comment">"@item.TechnicianComment"</div>
+                                }
+                            </div>
+
+                            @* La distancia es el dato que decide: se muestra siempre *@
+                            <span class="vr-dist @DistClass(item)">@DistText(item)</span>
+                        </div>
+
+                        @* Las dos coordenadas juntas: no hay que irse a otra pantalla a comparar *@
+                        <div class="vr-coords">
+                            <div class="vr-coord">
+                                <div class="idx-meta">En el contrato</div>
+                                <div class="vr-coord-val">@Coord(item.ContractLatitude, item.ContractLongitude)</div>
+                            </div>
+                            <div class="vr-coord">
+                                <div class="idx-meta">Donde estuvo el tecnico</div>
+                                <div class="vr-coord-val">@Coord(item.VisitLatitude, item.VisitLongitude)</div>
+                            </div>
+                        </div>
+
+                        <div class="vr-card-foot">
+                            @* Ubicacion: se aplica o se deja como esta *@
+                            @if (!item.ClientAbsent)
+                            {
+                                <ButtonGeneric Icon="fa fa-check"
+                                               TooTip="Aplicar al contrato"
+                                               OnClick="() => ApplyAsync(item)" />
+                                <ButtonGeneric Icon="fa fa-xmark"
+                                               TooTip="Dejar como esta"
+                                               OnClick="() => DismissAsync(item)" />
+                            }
+
+                            @* Sin cliente: lo que toca es volver a mandar al tecnico *@
+                            @if (item.ClientAbsent && !item.AlreadyRescheduled)
+                            {
+                                <ButtonGeneric Icon="fa fa-calendar-plus"
+                                               TooTip="Reagendar"
+                                               OnClick="() => RescheduleAsync(item)" />
+                            }
+
+                            <span class="vr-sep">|</span>
+                            <ButtonGeneric Icon="fa fa-clipboard-list"
+                                           TooTip="Orden de trabajo"
+                                           OnClick="() => GoToOrder(item.ServiceRequestId)" />
+                        </div>
+                    </div>
+                }
+
+                <div class="idx-panel-foot">
+                    <span class="idx-meta">@TotalRecords por revisar</span>
+                    <Pagination CurrentPage="CurrentPage"
+                                SelectedPage="SelectedPage"
+                                TotalPages="TotalPages" />
+                </div>
+            }
+        </section>
+    </div>
+</div>

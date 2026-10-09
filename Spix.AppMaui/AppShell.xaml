@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell x:Class="Spix.AppMaui.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:views="clr-namespace:Spix.AppMaui.Views"
+       Shell.FlyoutBehavior="Disabled"
+       Title="Spix">
+
+    <!-- La barra va abajo y no hay hamburguesa: son cuatro destinos y el tecnico
+         trabaja con una mano. Los colores son los del sidebar de la web. -->
+    <Shell.Resources>
+        <Style TargetType="Shell" ApplyToDerivedTypes="True">
+            <Setter Property="Shell.BackgroundColor" Value="{StaticResource SpixBarBottom}" />
+            <Setter Property="Shell.ForegroundColor" Value="White" />
+            <Setter Property="Shell.TitleColor" Value="White" />
+            <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource SpixCard}" />
+            <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource SpixBtnBlueText}" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource SpixBtnDarkStrip}" />
+        </Style>
+    </Shell.Resources>
+
+    <!-- Sin sesion no se ve nada mas -->
+    <ShellContent Route="login"
+                  ContentTemplate="{DataTemplate views:LoginPage}"
+                  Shell.FlyoutItemIsVisible="False"
+                  Shell.TabBarIsVisible="False" />
+
+    <TabBar>
+        <ShellContent Title="Hoy" Route="today" ContentTemplate="{DataTemplate views:TodayPage}" />
+        <ShellContent Title="Proximas" Route="upcoming" ContentTemplate="{DataTemplate views:UpcomingPage}" />
+        <ShellContent Title="Cerradas" Route="closed" ContentTemplate="{DataTemplate views:ClosedPage}" />
+        <ShellContent Title="Perfil" Route="profile" ContentTemplate="{DataTemplate views:ProfilePage}" />
+    </TabBar>
+
+</Shell>
